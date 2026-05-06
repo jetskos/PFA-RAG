@@ -1,5 +1,7 @@
+import os
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
+from django.conf import settings
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q, Prefetch, Count
@@ -40,6 +42,19 @@ def detail_cours(request, cours_id):
         # Grouper les documents par type et filtrer les vides
         documents_par_type = {}
         for doc in chapitre.documents.all():
+            if settings.DEBUG:
+                file_exists = False
+                file_path = ''
+                try:
+                    file_path = doc.fichier_pdf.path
+                    file_exists = os.path.exists(file_path)
+                except Exception as exc:
+                    file_path = f'INDISPONIBLE ({exc})'
+
+                print(
+                    f"[DEBUG PDF] doc_id={doc.id} titre='{doc.titre}' path='{file_path}' exists={file_exists}"
+                )
+
             type_key = doc.get_type_document_display()
             if type_key not in documents_par_type:
                 documents_par_type[type_key] = []

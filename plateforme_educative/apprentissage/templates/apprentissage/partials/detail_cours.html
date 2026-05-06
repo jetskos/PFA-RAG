@@ -1,66 +1,54 @@
-<a href="{% url 'apprentissage:liste_cours' %}" 
-   class="lien-retour" 
-   hx-get="{% url 'apprentissage:liste_cours' %}"
-   hx-target="#zone-principale"
-   hx-swap="outerHTML"
-   hx-push-url="true">
-    ← Retour aux cours
-</a>
+<section class="apprentissage-shell">
+    <aside class="apprentissage-sidebar">
+        <div class="sidebar-card sidebar-card--course">
+            <p class="eyebrow">Cours</p>
+            <h2>{{ cours.titre }}</h2>
+            <p class="sidebar-meta">{{ cours.get_niveau_display }}</p>
+            <p class="sidebar-text">{{ cours.resume|default:cours.description|truncatewords:28 }}</p>
+            <a class="btn btn-secondary btn-full" href="{% url 'apprentissage:liste_cours' %}" hx-get="{% url 'apprentissage:liste_cours' %}" hx-target="#zone-principale" hx-swap="outerHTML" hx-push-url="true">← Tous les cours</a>
+        </div>
 
-<h2>{{ cours.titre }}</h2>
-<div class="meta-cours">
-    <span class="badge-niveau">{{ cours.get_niveau_display }}</span>
-</div>
-
-<div class="description-cours">
-    {{ cours.description|safe }}
-</div>
-
-{% if chapitres_data %}
-    <div class="chapitres-liste">
-        {% for item in chapitres_data %}
-            <div class="chapitre-item">
-                <h3>
-                    <a href="{% url 'apprentissage:detail_chapitre' cours.id item.chapitre.id %}"
-                       hx-get="{% url 'apprentissage:detail_chapitre' cours.id item.chapitre.id %}"
-                       hx-target="#zone-principale"
-                       hx-swap="outerHTML"
-                       hx-push-url="true">
-                        § {{ item.chapitre.ordre }} - {{ item.chapitre.titre }}
+        <nav class="sidebar-nav" aria-label="Chapitres du cours">
+            {% for item in chapitres_data %}
+                <div class="sidebar-chapter">
+                    <a class="sidebar-chapter-link" href="{% url 'apprentissage:detail_chapitre' cours.id item.chapitre.id %}" hx-get="{% url 'apprentissage:detail_chapitre' cours.id item.chapitre.id %}" hx-target="#contenu-cours" hx-swap="innerHTML" hx-push-url="true">
+                        <span class="sidebar-chapter-index">Chapitre {{ item.chapitre.ordre }}</span>
+                        <strong>{{ item.chapitre.titre }}</strong>
                     </a>
-                </h3>
-                
-                {% if item.documents_par_type %}
-                    <div class="documents-par-type">
-                        {% for type_label, docs in item.documents_par_type.items %}
-                            <div class="groupe-documents">
-                                <p class="label-type">{{ type_label }}</p>
-                                <ul class="liste-documents">
+
+                    <div class="sidebar-doc-list">
+                        {% if item.documents_par_type %}
+                            {% for type_label, docs in item.documents_par_type.items %}
+                                <div class="sidebar-doc-group">
+                                    <p class="sidebar-doc-type">{{ type_label }}</p>
                                     {% for doc in docs %}
-                                        <li>
-                                            <a href="{% url 'apprentissage:telecharger_document' doc.id %}" 
-                                               class="doc-lien" 
-                                               download>
-                                                📄 {{ doc.titre }}
-                                            </a>
-                                        </li>
+                                        <a class="sidebar-doc-link" href="{% url 'apprentissage:detail_chapitre' cours.id item.chapitre.id %}#document-{{ doc.id }}" hx-get="{% url 'apprentissage:detail_chapitre' cours.id item.chapitre.id %}" hx-target="#contenu-cours" hx-swap="innerHTML" hx-push-url="true">
+                                            {{ doc.titre }}
+                                        </a>
                                     {% endfor %}
-                                </ul>
-                            </div>
-                        {% endfor %}
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="sidebar-empty">Aucun document.</p>
+                        {% endif %}
                     </div>
-                {% endif %}
-                
-                {% if item.chapitre.url_video %}
-                    <div class="video-bloc">
-                        <a href="{{ item.chapitre.url_video }}" target="_blank" class="btn btn-video">
-                            📺 Regarder la vidéo
-                        </a>
-                    </div>
-                {% endif %}
-            </div>
-        {% endfor %}
-    </div>
-{% else %}
-    <p class="message-empty">Aucun chapitre disponible dans ce cours.</p>
-{% endif %}
+                </div>
+            {% endfor %}
+        </nav>
+    </aside>
+
+    <main class="apprentissage-contenu" id="contenu-cours">
+        {% with chapitres_data.0 as chapitre_initial %}
+            {% if chapitre_initial %}
+                {% include 'apprentissage/partials/detail_chapitre.html' with cours=cours chapitre=chapitre_initial.chapitre documents_par_type=chapitre_initial.documents_par_type %}
+            {% else %}
+                <article class="content-card course-empty">
+                    <p class="eyebrow">Aperçu du cours</p>
+                    <h2>{{ cours.titre }}</h2>
+                    <p>{{ cours.description|safe }}</p>
+                    <p class="message-empty">Aucun chapitre disponible dans ce cours.</p>
+                </article>
+            {% endif %}
+        {% endwith %}
+    </main>
+</section>

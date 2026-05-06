@@ -1,76 +1,76 @@
-<a href="{% url 'apprentissage:detail_cours' cours.id %}" 
-   class="lien-retour"
-   hx-get="{% url 'apprentissage:detail_cours' cours.id %}"
-   hx-target="#zone-principale"
-   hx-swap="outerHTML"
-   hx-push-url="true">
-    ← Retour au cours
-</a>
+{% load apprentissage_extras %}
 
-<h2>{{ chapitre.titre }}</h2>
-<div class="breadcrumb">
-    <a href="{% url 'apprentissage:liste_cours' %}"
-       hx-get="{% url 'apprentissage:liste_cours' %}"
-       hx-target="#zone-principale"
-       hx-swap="outerHTML"
-       hx-push-url="true">
-        Cours
-    </a>
-    /
-    <a href="{% url 'apprentissage:detail_cours' cours.id %}"
-       hx-get="{% url 'apprentissage:detail_cours' cours.id %}"
-       hx-target="#zone-principale"
-       hx-swap="outerHTML"
-       hx-push-url="true">
-        {{ cours.titre }}
-    </a>
-    / {{ chapitre.titre }}
-</div>
-
-{% if chapitre.description %}
-    <div class="description-chapitre">
-        {{ chapitre.description|safe }}
+<article class="content-card chapter-card">
+    <div class="content-hero">
+        <div>
+            <p class="eyebrow">Chapitre {{ chapitre.ordre }}</p>
+            <h2>{{ chapitre.titre }}</h2>
+        </div>
+        <a class="btn btn-ghost" href="{% url 'apprentissage:detail_cours' cours.id %}" hx-get="{% url 'apprentissage:detail_cours' cours.id %}" hx-target="#zone-principale" hx-swap="outerHTML" hx-push-url="true">← Retour au cours</a>
     </div>
-{% endif %}
 
-{% if chapitre.url_video %}
-    <div class="video-section">
-        <h3>Vidéo pédagogique</h3>
-        <a href="{{ chapitre.url_video }}" target="_blank" class="btn btn-video">
-            📺 Regarder la vidéo YouTube
-        </a>
+    <div class="content-breadcrumb">
+        <a href="{% url 'apprentissage:liste_cours' %}" hx-get="{% url 'apprentissage:liste_cours' %}" hx-target="#zone-principale" hx-swap="outerHTML" hx-push-url="true">Cours</a>
+        <span>/</span>
+        <a href="{% url 'apprentissage:detail_cours' cours.id %}" hx-get="{% url 'apprentissage:detail_cours' cours.id %}" hx-target="#zone-principale" hx-swap="outerHTML" hx-push-url="true">{{ cours.titre }}</a>
+        <span>/</span>
+        <span>{{ chapitre.titre }}</span>
     </div>
-{% endif %}
 
-{% if documents_par_type %}
-    <div class="documents-section">
-        <h3>Documents pédagogiques</h3>
-        {% for type_label, docs in documents_par_type.items %}
-            <div class="groupe-type">
-                <h4 class="titre-groupe">{{ type_label }}</h4>
-                {% if docs %}
-                    <ul class="liste-docs-detaillee">
+    {% if chapitre.description %}
+        <div class="rich-copy">
+            {{ chapitre.description|safe }}
+        </div>
+    {% endif %}
+
+    {% if chapitre.url_video %}
+        <section class="media-card media-card--video">
+            <div class="media-card__head">
+                <h3>Vidéo pédagogique</h3>
+                <a class="doc-download" href="{{ chapitre.url_video }}" target="_blank" rel="noopener">Ouvrir la vidéo</a>
+            </div>
+            <div class="video-frame">
+                <iframe src="{{ chapitre.url_video|youtube_embed }}" title="{{ chapitre.titre }}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe>
+            </div>
+        </section>
+    {% endif %}
+
+    {% if documents_par_type %}
+        <div class="docs-stack">
+            <h3>Documents pédagogiques</h3>
+            {% for type_label, docs in documents_par_type.items %}
+                <section class="doc-group">
+                    <h4 class="doc-group__title">{{ type_label }}</h4>
+                    <div class="doc-grid">
                         {% for doc in docs %}
-                            <li class="doc-item">
-                                <div class="doc-header">
-                                    <a href="{% url 'apprentissage:telecharger_document' doc.id %}" 
-                                       class="doc-titre" 
-                                       download>
-                                        📄 {{ doc.titre }}
-                                    </a>
+                            <article class="doc-preview" id="document-{{ doc.id }}">
+                                <div class="doc-preview-head">
+                                    <div>
+                                        <p class="eyebrow">Document</p>
+                                        <h5>{{ doc.titre }}</h5>
+                                    </div>
+                                    <a class="doc-download" href="{{ doc.fichier_pdf.url }}" target="_blank" rel="noopener">Ouvrir le PDF</a>
                                 </div>
+
                                 {% if doc.description %}
                                     <p class="doc-description">{{ doc.description }}</p>
                                 {% endif %}
-                            </li>
+
+                                <div class="doc-embed-shell">
+                                    <iframe src="{{ doc.fichier_pdf.url }}" width="100%" height="700px" style="border: none;"></iframe>
+                                </div>
+
+                                <p class="doc-fallback">
+                                    Si l'aperçu ne s'affiche pas,
+                                    <a href="{{ doc.fichier_pdf.url }}" target="_blank" rel="noopener">ouvrez le PDF dans un nouvel onglet</a>.
+                                </p>
+                            </article>
                         {% endfor %}
-                    </ul>
-                {% else %}
-                    <p class="message-vide">Aucun {{ type_label|lower }} disponible.</p>
-                {% endif %}
-            </div>
-        {% endfor %}
-    </div>
-{% else %}
-    <p class="message-empty">Aucun document disponible dans ce chapitre.</p>
-{% endif %}
+                    </div>
+                </section>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="message-empty">Aucun document disponible dans ce chapitre.</p>
+    {% endif %}
+</article>

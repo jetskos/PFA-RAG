@@ -69,6 +69,7 @@ INSTALLED_APPS = [
    
     'accounts',
     'apprentissage',
+    'logistics',
 ]
 
 MIDDLEWARE = [
@@ -152,7 +153,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
-MEDIA_URL = 'media/'
+MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -179,3 +180,4 @@ AUTH_USER_MODEL = 'accounts.Utilisateur'
 LOGIN_URL = '/auth/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
+X_FRAME_OPTIONS = 'SAMEORIGIN'
