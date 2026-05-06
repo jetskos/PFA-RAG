@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ chapitre.titre }} | Apprentissage{% endblock %}
+
+{% block content %}
+<section class="carte" id="zone-principale">
+    <a href="{% url 'apprentissage:detail_cours' cours.id %}" 
+       class="lien-retour"
+       hx-get="{% url 'apprentissage:detail_cours' cours.id %}"
+       hx-target="#zone-principale"
+       hx-swap="outerHTML"
+       hx-push-url="true">
+        ← Retour au cours
+    </a>
+    
+    <h2>{{ chapitre.titre }}</h2>
+    <div class="breadcrumb">
+        <a href="{% url 'apprentissage:liste_cours' %}"
+           hx-get="{% url 'apprentissage:liste_cours' %}"
+           hx-target="#zone-principale"
+           hx-swap="outerHTML"
+           hx-push-url="true">
+            Cours
+        </a>
+        /
+        <a href="{% url 'apprentissage:detail_cours' cours.id %}"
+           hx-get="{% url 'apprentissage:detail_cours' cours.id %}"
+           hx-target="#zone-principale"
+           hx-swap="outerHTML"
+           hx-push-url="true">
+            {{ cours.titre }}
+        </a>
+        / {{ chapitre.titre }}
+    </div>
+    
+    {% if chapitre.description %}
+        <div class="description-chapitre">
+            {{ chapitre.description|safe }}
+        </div>
+    {% endif %}
+    
+    {% if chapitre.url_video %}
+        <div class="video-section">
+            <h3>Vidéo pédagogique</h3>
+            <a href="{{ chapitre.url_video }}" target="_blank" class="btn btn-video">
+                📺 Regarder la vidéo YouTube
+            </a>
+        </div>
+    {% endif %}
+    
+    {% if documents_par_type %}
+        <div class="documents-section">
+            <h3>Documents pédagogiques</h3>
+            {% for type_label, docs in documents_par_type.items %}
+                <div class="groupe-type">
+                    <h4 class="titre-groupe">{{ type_label }}</h4>
+                    {% if docs %}
+                        <ul class="liste-docs-detaillee">
+                            {% for doc in docs %}
+                                <li class="doc-item">
+                                    <div class="doc-header">
+                                        <a href="{% url 'apprentissage:telecharger_document' doc.id %}" 
+                                           class="doc-titre" 
+                                           download>
+                                            📄 {{ doc.titre }}
+                                        </a>
+                                    </div>
+                                    {% if doc.description %}
+                                        <p class="doc-description">{{ doc.description }}</p>
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="message-vide">Aucun {{ type_label|lower }} disponible.</p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="message-empty">Aucun document disponible dans ce chapitre.</p>
+    {% endif %}
+</section>
+{% endblock %}

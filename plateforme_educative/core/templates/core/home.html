@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}Accueil | Plateforme Educative{% endblock %}
+
+{% block content %}
+<section class="carte hero-carte">
+    {% if user.is_authenticated %}
+        <p class="badge-session">Connecté en tant que {{ user.email }}</p>
+        <h2>Bienvenue dans votre espace</h2>
+        <p>
+            Vous êtes maintenant connecté à la plateforme éducative.
+            Depuis cet espace, vous pouvez consulter les cours, chapitres et documents pédagogiques.
+        </p>
+        <div class="actions">
+            <a class="btn" href="{% url 'apprentissage:liste_cours' %}" hx-get="{% url 'apprentissage:liste_cours' %}" hx-target="#zone-principale" hx-select="#zone-principale" hx-swap="outerHTML" hx-push-url="true">
+                Accéder à l’espace apprentissage
+            </a>
+        </div>
+    {% else %}
+        <h2>Bienvenue</h2>
+        <p>Cette plateforme centralise l'apprentissage, la logistique atelier et les fonctionnalités IA en local.</p>
+        <div class="actions">
+            <a class="btn" href="{% url 'register' %}" hx-get="{% url 'register' %}" hx-target="#zone-principale" hx-select="#zone-principale" hx-swap="outerHTML" hx-push-url="true">Créer un compte</a>
+            <a class="btn btn-secondaire" href="{% url 'login' %}" hx-get="{% url 'login' %}" hx-target="#zone-principale" hx-select="#zone-principale" hx-swap="outerHTML" hx-push-url="true">Se connecter</a>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

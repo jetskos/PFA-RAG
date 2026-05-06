@@ -1,0 +1,43 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Plateforme Educative{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'core/css/app.css' %}">
+    <script src="https://unpkg.com/htmx.org@1.9.12" integrity="sha384-qdDkM7LxvA5hDgydzy83H8XTur2qxGn8pY/+bexdFv+DE5jBqFaUG2RglN6E466z" crossorigin="anonymous"></script>
+</head>
+<body>
+    <header class="barre-top">
+        <div class="barre-marque">
+            <h1>Plateforme Educative IoT et IA</h1>
+            <p>Apprentissage, logistique et assistance locale</p>
+        </div>
+        <nav>
+            <a href="{% url 'accueil' %}">Accueil</a>
+            <a href="{% url 'apprentissage:liste_cours' %}">Apprentissage</a>
+            {% if user.is_authenticated %}
+                {% if user.is_staff %}
+                    <a href="/admin/">Admin</a>
+                {% endif %}
+                <a class="nav-action" href="{% url 'accueil' %}">Mon espace</a>
+            {% else %}
+                <a href="{% url 'register' %}">Inscription</a>
+                <a class="nav-action" href="{% url 'login' %}">Connexion</a>
+            {% endif %}
+        </nav>
+    </header>
+
+    <main class="conteneur" id="zone-principale">
+        {% if messages %}
+            <section class="messages" aria-live="polite">
+                {% for message in messages %}
+                    <p class="message-item">{{ message }}</p>
+                {% endfor %}
+            </section>
+        {% endif %}
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

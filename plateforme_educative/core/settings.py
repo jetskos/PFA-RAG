@@ -10,22 +10,48 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+from datetime import timedelta
 from pathlib import Path
+import os
+
+
+def _load_env_file(env_path: Path) -> None:
+    """Load simple KEY=VALUE lines from a local .env file."""
+    if not env_path.exists():
+        return
+
+    for raw_line in env_path.read_text(encoding='utf-8').splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith('#') or '=' not in line:
+            continue
+
+        key, value = line.split('=', 1)
+        os.environ.setdefault(key.strip(), value.strip().strip('"').strip("'"))
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+_load_env_file(BASE_DIR / '.env')
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-9h8fzyz98diom8_mc@mb%y*%--n3)$!=#-4*l(&e38@pegwd-b'
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-9h8fzyz98diom8_mc@mb%y*%--n3)$!=#-4*l(&e38@pegwd-b')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DJANGO_DEBUG', 'True').lower() in {'1', 'true', 'yes', 'on'}
 
-ALLOWED_HOSTS = []
+
+def _env_list(name: str, default: list[str]) -> list[str]:
+    raw_value = os.getenv(name)
+    if not raw_value:
+        return default
+    return [item.strip() for item in raw_value.split(',') if item.strip()]
+
+
+ALLOWED_HOSTS = _env_list('DJANGO_ALLOWED_HOSTS', ['127.0.0.1', 'localhost'])
 
 
 # Application definition
@@ -37,6 +63,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'rest_framework',
+    'rest_framework_simplejwt',
+   
+    'accounts',
+    'apprentissage',
 ]
 
 MIDDLEWARE = [
@@ -54,7 +86,7 @@ ROOT_URLCONF = 'core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'core' / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -74,8 +106,12 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql' if os.getenv('DB_ENGINE', 'mysql').lower() == 'mysql' else os.getenv('DB_ENGINE'),
+        'NAME': os.getenv('DB_NAME', 'rag_platform1'),
+        'USER': os.getenv('DB_USER', 'root'),
+        'PASSWORD': os.getenv('DB_PASSWORD', 'jatski'),
+        'HOST': os.getenv('DB_HOST', '127.0.0.1'),
+        'PORT': os.getenv('DB_PORT', '3307'),
     }
 }
 
@@ -102,9 +138,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'fr-fr'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Africa/Casablanca'
 
 USE_I18N = True
 
@@ -115,3 +151,31 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [BASE_DIR / 'static']
+MEDIA_URL = 'media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# Configuration de Django REST Framework
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
+
+# Configuration de SimpleJWT (Expiration 24h)
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=24),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'AUTH_HEADER_TYPES': ('Bearer',),
+}
+
+
+
+AUTH_USER_MODEL = 'accounts.Utilisateur'
+
+LOGIN_URL = '/auth/login/'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'

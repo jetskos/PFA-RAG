@@ -1,0 +1,19 @@
+{% if cours_list %}
+    {% for cours in cours_list %}
+    <div class="carte-cours">
+        <h3>{{ cours.titre }}</h3>
+        <p class="niveau">{{ cours.get_niveau_display }}</p>
+        <p class="resume">{{ cours.resume|truncatewords:20 }}</p>
+        <a href="{% url 'apprentissage:detail_cours' cours.id %}" 
+           class="btn" 
+           hx-get="{% url 'apprentissage:detail_cours' cours.id %}"
+           hx-target="#zone-principale"
+           hx-swap="outerHTML"
+           hx-push-url="true">
+            Consulter le cours
+        </a>
+    </div>
+    {% endfor %}
+{% else %}
+    <p class="message-empty">Aucun cours disponible pour le moment.</p>
+{% endif %}
