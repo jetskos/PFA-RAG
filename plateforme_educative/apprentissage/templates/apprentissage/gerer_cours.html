@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Gérer le cours{% endblock %}
+
+{% block content %}
+<section class="page-shell">
+    <div class="page-header">
+        <p class="eyebrow">Apprentissage</p>
+        <h1>{{ cours.titre }}</h1>
+        <p>Gestion détaillée du cours.</p>
+    </div>
+
+    <div class="carte">
+        <div class="actions">
+            <a href="{% url 'apprentissage:espace_formateur' %}" class="btn btn-ghost">Retour à l'espace formateur</a>
+        </div>
+
+        <section style="margin-top: 1.5rem;">
+            <h2>Chapitres</h2>
+            <div class="actions">
+                <button type="button"
+                        class="btn"
+                        hx-get="{% url 'apprentissage:ajouter_chapitre' cours.id %}"
+                        hx-target="#form-container"
+                        hx-swap="innerHTML">
+                    Ajouter un chapitre
+                </button>
+            </div>
+
+            <div id="form-container"></div>
+
+            <div id="chapitres-container">
+                {% include 'apprentissage/partials/chapitres_list.html' with cours=cours chapitres=chapitres %}
+            </div>
+
+            <div id="detail-container" style="margin-top: 1.5rem;">
+                <p class="message-empty">Cliquez sur un chapitre pour afficher son détail et ses documents.</p>
+            </div>
+        </section>
+    </div>
+</section>
+{% endblock %}

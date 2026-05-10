@@ -1,0 +1,254 @@
+{% extends 'base.html' %}
+
+{% block title %}Administration Pédagogique{% endblock %}
+
+{% block content %}
+<section class="page-shell">
+    <div class="page-header">
+        <p class="eyebrow">Administration</p>
+        <h1>Gestion des utilisateurs</h1>
+        <p>Creer, modifier, supprimer et consulter les details des utilisateurs.</p>
+    </div>
+
+    <div class="carte" style="margin-bottom:1rem;">
+        <h2 style="margin-top:0;">Ajouter un utilisateur</h2>
+        <div style="display:grid; gap:0.75rem; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); align-items:end;">
+            <label>
+                Email
+                <input id="create-email" type="email" placeholder="email@exemple.com" required>
+            </label>
+            <label>
+                Mot de passe
+                <input id="create-password" type="password" placeholder="********" required>
+            </label>
+            <label>
+                Role
+                <select id="create-role">
+                    {% for val, label in role_choices %}
+                        <option value="{{ val }}">{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label>
+                Niveau
+                <select id="create-niveau">
+                    {% for val, label in niveau_choices %}
+                        <option value="{{ val }}">{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label style="display:flex; align-items:center; gap:0.5rem;">
+                <input id="create-formateur" type="checkbox">
+                Is formateur
+            </label>
+            <button id="create-user" class="btn">Ajouter</button>
+        </div>
+    </div>
+
+    <div class="carte">
+        <table style="width:100%; border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th style="text-align:left; padding:8px;">Email</th>
+                    <th style="padding:8px;">Role</th>
+                    <th style="padding:8px;">Formateur</th>
+                    <th style="padding:8px;">Niveau</th>
+                    <th style="padding:8px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr data-user-id="{{ user.id }}">
+                    <td style="padding:8px;">{{ user.email }}</td>
+                    <td style="padding:8px;">
+                        <select name="role">
+                            {% for val, label in role_choices %}
+                                <option value="{{ val }}" {% if user.role == val %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <td style="text-align:center; padding:8px;"><input type="checkbox" name="is_formateur" {% if user.is_formateur %}checked{% endif %}></td>
+                    <td style="padding:8px;">
+                        <select name="niveau">
+                            {% for val, label in niveau_choices %}
+                                <option value="{{ val }}" {% if user.niveau == val %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <td style="padding:8px; text-align:center; display:flex; gap:0.4rem; justify-content:center; flex-wrap:wrap;">
+                        <button class="btn btn-outline modify-user">Modifier</button>
+                        <button class="btn btn-outline details-user">Details</button>
+                        <button class="btn btn-danger delete-user">Supprimer</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div id="details-box" class="carte" style="margin-top:1rem; display:none;"></div>
+</section>
+
+<script>
+function csrfToken() {
+    return '{{ csrf_token }}';
+}
+
+var detailsUrlTemplate = "{% url 'accounts:user_details' user_id='00000000-0000-0000-0000-000000000000' %}";
+
+function buildUserRow(user) {
+    var roleOptions = '';
+    {% for val, label in role_choices %}
+    roleOptions += '<option value="{{ val }}"' + (user.role === '{{ val }}' ? ' selected' : '') + '>{{ label }}</option>';
+    {% endfor %}
+
+    var niveauOptions = '';
+    {% for val, label in niveau_choices %}
+    niveauOptions += '<option value="{{ val }}"' + (user.niveau === '{{ val }}' ? ' selected' : '') + '>{{ label }}</option>';
+    {% endfor %}
+
+    return '<tr data-user-id="' + user.id + '">' +
+        '<td style="padding:8px;">' + user.email + '</td>' +
+        '<td style="padding:8px;"><select name="role">' + roleOptions + '</select></td>' +
+        '<td style="text-align:center; padding:8px;"><input type="checkbox" name="is_formateur"' + (user.is_formateur ? ' checked' : '') + '></td>' +
+        '<td style="padding:8px;"><select name="niveau">' + niveauOptions + '</select></td>' +
+        '<td style="padding:8px; text-align:center; display:flex; gap:0.4rem; justify-content:center; flex-wrap:wrap;">' +
+        '<button class="btn btn-outline modify-user">Modifier</button>' +
+        '<button class="btn btn-outline details-user">Details</button>' +
+        '<button class="btn btn-danger delete-user">Supprimer</button>' +
+        '</td>' +
+        '</tr>';
+}
+
+document.getElementById('create-user').addEventListener('click', function(){
+    var email = document.getElementById('create-email').value.trim();
+    var password = document.getElementById('create-password').value;
+    var role = document.getElementById('create-role').value;
+    var niveau = document.getElementById('create-niveau').value;
+    var isFormateur = document.getElementById('create-formateur').checked;
+
+    var data = new FormData();
+    data.append('action', 'create');
+    data.append('email', email);
+    data.append('password', password);
+    data.append('role', role);
+    data.append('niveau', niveau);
+    data.append('is_formateur', isFormateur);
+
+    fetch(window.location.href, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrfToken()
+        },
+        body: data
+    }).then(function(r){ return r.json(); }).then(function(json){
+        if (json.status === 'success') {
+            var tbody = document.querySelector('tbody');
+            tbody.insertAdjacentHTML('afterbegin', buildUserRow(json.user));
+            document.getElementById('create-email').value = '';
+            document.getElementById('create-password').value = '';
+            document.getElementById('create-formateur').checked = false;
+        } else {
+            alert('Erreur: ' + (json.message || 'Echec'));
+        }
+    }).catch(function(err){ console.error(err); alert('Erreur reseau'); });
+});
+
+document.addEventListener('click', function(e){
+    var btn = e.target.closest('.modify-user');
+    if (!btn) return;
+    var row = btn.closest('tr');
+    var userId = row.dataset.userId;
+    var isFormateur = row.querySelector('input[name="is_formateur"]').checked;
+    var niveau = row.querySelector('select[name="niveau"]').value;
+    var role = row.querySelector('select[name="role"]').value;
+
+    var data = new FormData();
+    data.append('user_id', userId);
+    data.append('is_formateur', isFormateur);
+    data.append('niveau', niveau);
+    data.append('role', role);
+
+    fetch(window.location.href, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrfToken()
+        },
+        body: data
+    }).then(function(r){ return r.json(); }).then(function(json){
+        if (json.status === 'success'){
+            var original = btn.innerText;
+            btn.innerText = 'Sauvegarde ok';
+            setTimeout(function(){ btn.innerText = original; }, 1200);
+        } else {
+            alert('Erreur: ' + (json.message || 'Echec'));
+        }
+    }).catch(function(err){ console.error(err); alert('Erreur reseau'); });
+});
+
+document.addEventListener('click', function(e){
+    var del = e.target.closest('.delete-user');
+    if (!del) return;
+    if (!confirm('Supprimer cet utilisateur ?')) return;
+    var row = del.closest('tr');
+    var userId = row.dataset.userId;
+    var data = new FormData();
+    data.append('user_id', userId);
+    data.append('action', 'delete');
+
+    fetch(window.location.href, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrfToken()
+        },
+        body: data
+    }).then(function(r){ return r.json(); }).then(function(json){
+        if (json.status === 'success'){
+            row.remove();
+        } else {
+            alert('Erreur: ' + (json.message || 'Echec'));
+        }
+    }).catch(function(err){ console.error(err); alert('Erreur reseau'); });
+});
+
+document.addEventListener('click', function(e){
+    var detailsBtn = e.target.closest('.details-user');
+    if (!detailsBtn) return;
+    var row = detailsBtn.closest('tr');
+    var userId = row.dataset.userId;
+    var detailsUrl = detailsUrlTemplate.replace('00000000-0000-0000-0000-000000000000', userId);
+
+    fetch(detailsUrl, {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    }).then(function(r){
+        if (!r.ok) {
+            throw new Error('HTTP ' + r.status);
+        }
+        return r.json();
+    }).then(function(json){
+        if (json.status !== 'success') {
+            alert('Erreur: ' + (json.message || 'Echec'));
+            return;
+        }
+        var u = json.user;
+        var box = document.getElementById('details-box');
+        box.style.display = 'block';
+        box.innerHTML =
+            '<h2 style="margin-top:0;">Details utilisateur</h2>' +
+            '<p><strong>Email:</strong> ' + u.email + '</p>' +
+            '<p><strong>Role:</strong> ' + u.role + '</p>' +
+            '<p><strong>Niveau:</strong> ' + u.niveau + '</p>' +
+            '<p><strong>Formateur:</strong> ' + (u.is_formateur ? 'Oui' : 'Non') + '</p>' +
+            '<p><strong>Staff:</strong> ' + (u.is_staff ? 'Oui' : 'Non') + '</p>' +
+            '<p><strong>Superuser:</strong> ' + (u.is_superuser ? 'Oui' : 'Non') + '</p>' +
+            '<p><strong>Actif:</strong> ' + (u.is_active ? 'Oui' : 'Non') + '</p>' +
+            '<p><strong>Cree le:</strong> ' + u.date_creation + '</p>' +
+            '<p><strong>Derniere connexion:</strong> ' + u.last_login + '</p>';
+    }).catch(function(err){ console.error(err); alert('Erreur details: ' + err.message); });
+});
+
+</script>
+
+{% endblock %}

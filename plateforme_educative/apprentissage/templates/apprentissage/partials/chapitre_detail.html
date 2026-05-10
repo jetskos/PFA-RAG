@@ -1,0 +1,25 @@
+<div class="carte">
+    <div class="page-header" style="margin-bottom: 1rem;">
+        <p class="eyebrow">Chapitre</p>
+        <h2>{{ chapitre.titre }}</h2>
+        {% if chapitre.description %}
+            <p>{{ chapitre.description }}</p>
+        {% endif %}
+    </div>
+
+    <div class="actions">
+        <button type="button"
+                class="btn"
+                hx-get="{% url 'apprentissage:ajouter_document' chapitre.id %}"
+                hx-target="#form-container"
+                hx-swap="innerHTML">
+            Ajouter un PDF
+        </button>
+    </div>
+
+    <div id="form-container"></div>
+
+    <div id="documents-container" style="margin-top: 1rem;">
+        {% include 'apprentissage/partials/documents_list.html' with chapitre=chapitre documents=documents %}
+    </div>
+</div>

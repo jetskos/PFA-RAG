@@ -1,0 +1,35 @@
+<form method="post"
+    hx-post="{{ action_url }}"
+      hx-target="#chapitres-container"
+      hx-swap="innerHTML">
+    {% csrf_token %}
+
+    <div class="carte" style="margin-top: 1rem;">
+        {% if form.non_field_errors %}
+            <div class="messages">
+                {% for error in form.non_field_errors %}
+                    <p class="message-item">{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% for field in form %}
+            <p>
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                    <span class="error-text">{{ field.errors.0 }}</span>
+                {% endif %}
+            </p>
+        {% endfor %}
+
+        <div class="actions">
+            <button type="submit" class="btn">{{ submit_label|default:'Soumettre' }}</button>
+            <button type="button"
+                    class="btn btn-ghost"
+                    hx-on:click="document.getElementById('form-container').innerHTML = ''">
+                Annuler
+            </button>
+        </div>
+    </div>
+</form>

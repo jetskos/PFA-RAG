@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %}Espace Formateur{% endblock %}
+
+{% block content %}
+<section class="page-shell">
+    <div class="page-header">
+        <p class="eyebrow">Apprentissage</p>
+        <h1>Espace Formateur</h1>
+        <p>Gérez vos cours depuis cet espace.</p>
+    </div>
+
+    <div class="carte">
+        <div class="actions">
+            <a href="{% url 'apprentissage:nouveau_cours' %}" class="btn">Créer un nouveau cours</a>
+        </div>
+
+        <table style="width:100%; margin-top:1rem; border-collapse: collapse;">
+            <thead>
+                <tr style="text-align:left; border-bottom:1px solid var(--bordure)">
+                    <th>Titre</th>
+                    <th>Niveau</th>
+                    <th>Date création</th>
+                    <th>Actif</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for cours in mes_cours %}
+                <tr style="border-bottom:1px solid #f1f5f9;">
+                    <td><a href="{% url 'apprentissage:gerer_cours' cours.pk %}">{{ cours.titre }}</a></td>
+                    <td>{{ cours.get_niveau_display }}</td>
+                    <td>{{ cours.date_creation|date:'SHORT_DATETIME_FORMAT' }}</td>
+                    <td>{{ cours.actif }}</td>
+                    <td>
+                        <div class="actions" style="margin-top:0; gap:0.5rem;">
+                            <a href="{% url 'apprentissage:editer_cours' cours.pk %}" class="btn btn-ghost" style="padding:0.45rem 0.8rem; font-size:0.85rem;">Modifier</a>
+                            <form method="post" action="{% url 'apprentissage:supprimer_cours' cours.pk %}" onsubmit="return confirm('Attention : Cela supprimera le cours et tous ses chapitres/documents. Confirmer ?');" style="display:inline; margin:0;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-ghost" style="padding:0.45rem 0.8rem; font-size:0.85rem; color:#9b1c1c; border-color:#f5c2c7;">Supprimer</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="5" class="message-empty">Vous n'avez pas encore de cours.</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

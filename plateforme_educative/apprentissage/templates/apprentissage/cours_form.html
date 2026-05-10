@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}Nouveau cours{% endblock %}
+
+{% block content %}
+<section class="page-shell">
+    <div class="page-header">
+        <p class="eyebrow">Apprentissage</p>
+        <h1>Nouveau cours</h1>
+        <p>Créez un nouveau cours pour votre espace formateur.</p>
+    </div>
+
+    <div class="carte auth-carte">
+        <form method="post">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="messages">
+                    {% for error in form.non_field_errors %}
+                        <p class="message-item">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {% for field in form %}
+                <p>
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.help_text %}
+                        <small class="message-empty" style="text-align:left; padding:0; font-style:normal;">{{ field.help_text }}</small>
+                    {% endif %}
+                    {% if field.errors %}
+                        <span class="error-text">{{ field.errors.0 }}</span>
+                    {% endif %}
+                </p>
+            {% endfor %}
+
+            <div class="actions">
+                <button type="submit" class="btn">Soumettre</button>
+                <a href="{% url 'apprentissage:espace_formateur' %}" class="btn btn-ghost">Annuler</a>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}

@@ -73,4 +73,8 @@
     {% else %}
         <p class="message-empty">Aucun document disponible dans ce chapitre.</p>
     {% endif %}
+
+    <div style="margin-top:1rem;">
+        <button hx-post="{% url 'apprentissage:valider_chapitre' chapitre.id %}" hx-swap="outerHTML" class="btn btn-outline">Marquer ce chapitre comme terminé</button>
+    </div>
 </article>

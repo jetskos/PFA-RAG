@@ -1,0 +1,4 @@
+<div class="actions" style="margin-bottom: 1rem; gap: 0.5rem; flex-wrap: wrap;">
+    <a href="{% url 'logistics:inventaire' %}" class="btn {% if active_page == 'inventaire' %}{% else %}btn-ghost{% endif %}">📦 Inventaire</a>
+    <a href="{% url 'logistics:tickets' %}" class="btn {% if active_page == 'tickets' %}{% else %}btn-ghost{% endif %}">🎫 Tickets</a>
+</div>

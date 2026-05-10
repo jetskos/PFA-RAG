@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block title %}Inventaire - Logistics{% endblock %}
+
+{% block content %}
+<section class="page-shell">
+    <div class="page-header">
+        <p class="eyebrow">Logistics</p>
+        <h1>Inventaire</h1>
+        <p>Gestion des équipements.</p>
+    </div>
+
+    {% include 'logistics/partials/navigation.html' with active_page='inventaire' %}
+
+    <div style="display:grid; grid-template-columns: minmax(280px, 38%) minmax(0, 62%); gap: 2rem; align-items: start;">
+        <aside class="apprentissage-sidebar sidebar-card" style="width: 100%;">
+            <h2>Équipements</h2>
+            <div class="actions" role="toolbar" aria-label="Filtres équipements">
+                <button class="btn btn-ghost" hx-get="?etat=TOUS" hx-target="#equipements-list" hx-swap="outerHTML">Tous</button>
+                <button class="btn btn-ghost" hx-get="?etat=DISPONIBLE" hx-target="#equipements-list" hx-swap="outerHTML">Disponible</button>
+                <button class="btn btn-ghost" hx-get="?etat=EN_PANNE" hx-target="#equipements-list" hx-swap="outerHTML">En panne</button>
+                <button class="btn btn-ghost" hx-get="?etat=EN_MAINTENANCE" hx-target="#equipements-list" hx-swap="outerHTML">En maintenance</button>
+            </div>
+
+            <div class="actions" style="margin-top:0.75rem; gap:0.5rem;">
+                <button class="btn" type="button" data-equipment-form-url="{% url 'logistics:ajouter_equipement' %}">Ajouter un équipement</button>
+            </div>
+
+            <div class="sidebar-doc-list carte" id="equipements-list">
+                {% include 'logistics/partials/equipements_list.html' with equipements=equipements %}
+            </div>
+        </aside>
+
+        <section class="content-card" style="width: 100%; min-height: 240px;">
+            <div class="actions" style="justify-content:space-between; align-items:center; margin-bottom: 1rem;">
+                <h2 style="margin:0;">Formulaire équipement</h2>
+                <p style="color: var(--text-muted); margin: 0;">Ajout ou modification</p>
+            </div>
+            <div id="form-equipement-container"></div>
+        </section>
+    </div>
+</section>
+
+<script>
+    function loadEquipmentForm(url) {
+        fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(function(response) { return response.text(); })
+            .then(function(html) {
+                document.getElementById('form-equipement-container').innerHTML = html;
+                if (typeof initSearchableSelects === 'function') {
+                    initSearchableSelects();
+                }
+            });
+    }
+
+    document.addEventListener('click', function(event) {
+        var submitButton = event.target.closest('[data-equipment-form-url]');
+        if (!submitButton) return;
+        event.preventDefault();
+        loadEquipmentForm(submitButton.dataset.equipmentFormUrl);
+    });
+
+    document.addEventListener('submit', function(event) {
+        var form = event.target;
+        if (form && form.id === 'equipement-form') {
+            event.preventDefault();
+            fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: new FormData(form)
+            })
+            .then(function(response) { return response.text(); })
+            .then(function(html) {
+                document.getElementById('equipements-list').innerHTML = html;
+                document.getElementById('form-equipement-container').innerHTML = '';
+                if (typeof initSearchableSelects === 'function') {
+                    initSearchableSelects();
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

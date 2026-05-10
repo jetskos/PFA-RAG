@@ -29,6 +29,11 @@ class ChapitreForm(forms.ModelForm):
 
 
 class DocumentForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.pk:
+            self.fields['fichier_pdf'].required = False
+
     class Meta:
         model = Document
         fields = ('titre', 'type_document', 'fichier_pdf', 'description', 'ordre', 'actif')

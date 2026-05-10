@@ -1,28 +1,153 @@
 {% extends 'base.html' %}
 
-{% block title %}Accueil | Plateforme Educative{% endblock %}
+{% block title %}Accueil | Plateforme Éducative{% endblock %}
 
 {% block content %}
-<section class="carte hero-carte">
-    {% if user.is_authenticated %}
-        <p class="badge-session">Connecté en tant que {{ user.email }}</p>
-        <h2>Bienvenue dans votre espace</h2>
-        <p>
-            Vous êtes maintenant connecté à la plateforme éducative.
-            Depuis cet espace, vous pouvez consulter les cours, chapitres et documents pédagogiques.
-        </p>
-        <div class="actions">
-            <a class="btn" href="{% url 'apprentissage:liste_cours' %}" hx-get="{% url 'apprentissage:liste_cours' %}" hx-target="#zone-principale" hx-select="#zone-principale" hx-swap="outerHTML" hx-push-url="true">
-                Accéder à l’espace apprentissage
+
+{% if user.is_authenticated %}
+
+<section class="accueil-hero-row">
+    <div class="hero-card">
+        <div class="session-pill">
+            <i class="ti ti-circle-check" aria-hidden="true"></i>
+            Connecté en tant que {{ user.email }}
+        </div>
+        <h2>Bienvenue dans <em>votre espace</em></h2>
+        <p>Consultez vos cours, chapitres et documents pédagogiques. Continuez là où vous vous étiez arrêté.</p>
+        <a class="btn-white"
+           href="{% url 'apprentissage:liste_cours' %}"
+           hx-get="{% url 'apprentissage:liste_cours' %}"
+           hx-target="#zone-principale"
+           hx-select="#zone-principale"
+           hx-swap="outerHTML"
+           hx-push-url="true">
+            <i class="ti ti-player-play" aria-hidden="true"></i>
+            Accéder à l'espace apprentissage
+        </a>
+    </div>
+
+    <div class="progress-card">
+        <div class="progress-card-body">
+            <p class="section-micro-label">Cours en cours</p>
+            {% if cours_en_cours %}
+                {% for cours in cours_en_cours %}
+                <div class="progress-course">
+                    <div class="progress-course-name">{{ cours.titre }}</div>
+                    <div class="progress-course-sub">{{ cours.chapitre_actuel }}</div>
+                    <div class="progress-bar-track">
+                        <div class="progress-bar-fill" style="width:{{ cours.progression }}%"></div>
+                    </div>
+                    <div class="progress-pct">{{ cours.progression }}% complété</div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p class="empty-state">Aucun cours commencé pour le moment.</p>
+            {% endif %}
+        </div>
+        <a class="resume-btn"
+           href="{% url 'apprentissage:liste_cours' %}"
+           hx-get="{% url 'apprentissage:liste_cours' %}"
+           hx-target="#zone-principale"
+           hx-select="#zone-principale"
+           hx-swap="outerHTML"
+           hx-push-url="true">
+            <i class="ti ti-arrow-right" aria-hidden="true"></i>
+            Reprendre le cours
+        </a>
+    </div>
+</section>
+
+<div class="features-grid">
+    <div class="feat-card">
+        <div class="feat-icon teal"><i class="ti ti-book-2" aria-hidden="true"></i></div>
+        <div class="feat-title">Catalogue de cours</div>
+        <p class="feat-desc">Parcourez les cours structurés autour de l'IoT, l'IA et la logistique atelier.</p>
+        <a class="feat-link"
+           href="{% url 'apprentissage:liste_cours' %}"
+           hx-get="{% url 'apprentissage:liste_cours' %}"
+           hx-target="#zone-principale"
+           hx-select="#zone-principale"
+           hx-swap="outerHTML"
+           hx-push-url="true">
+            Explorer <i class="ti ti-arrow-right" aria-hidden="true"></i>
+        </a>
+    </div>
+    <div class="feat-card">
+        <div class="feat-icon blue"><i class="ti ti-robot" aria-hidden="true"></i></div>
+        <div class="feat-title">Assistance IA locale</div>
+        <p class="feat-desc">Posez vos questions techniques à l'assistant IA intégré, disponible hors ligne.</p>
+        <a class="feat-link" href="#">
+            Ouvrir <i class="ti ti-arrow-right" aria-hidden="true"></i>
+        </a>
+    </div>
+    <div class="feat-card">
+        <div class="feat-icon amber"><i class="ti ti-clipboard-list" aria-hidden="true"></i></div>
+        <div class="feat-title">Logistique atelier</div>
+        <p class="feat-desc">Gérez les ressources matérielles, les réservations et le suivi d'équipements.</p>
+        <a class="feat-link" href="#">
+            Accéder <i class="ti ti-arrow-right" aria-hidden="true"></i>
+        </a>
+    </div>
+</div>
+
+{% else %}
+
+<section class="accueil-guest">
+    <div class="guest-hero">
+        <span class="guest-eyebrow">
+            <i class="ti ti-sparkles" aria-hidden="true"></i>
+            Plateforme éducative
+        </span>
+        <h2>Apprenez l'IoT et l'IA,<br><em>à votre rythme</em></h2>
+        <p>Cette plateforme centralise l'apprentissage, la logistique atelier et les fonctionnalités IA en local.</p>
+        <div class="guest-ctas">
+            <a class="btn-brand"
+               href="{% url 'accounts:register' %}"
+               hx-get="{% url 'accounts:register' %}"
+               hx-target="#zone-principale"
+               hx-select="#zone-principale"
+               hx-swap="outerHTML"
+               hx-push-url="true">
+                <i class="ti ti-user-plus" aria-hidden="true"></i>
+                Créer un compte
+            </a>
+            <a class="btn-outline"
+               href="{% url 'accounts:login' %}"
+               hx-get="{% url 'accounts:login' %}"
+               hx-target="#zone-principale"
+               hx-select="#zone-principale"
+               hx-swap="outerHTML"
+               hx-push-url="true">
+                Se connecter
             </a>
         </div>
-    {% else %}
-        <h2>Bienvenue</h2>
-        <p>Cette plateforme centralise l'apprentissage, la logistique atelier et les fonctionnalités IA en local.</p>
-        <div class="actions">
-            <a class="btn" href="{% url 'register' %}" hx-get="{% url 'register' %}" hx-target="#zone-principale" hx-select="#zone-principale" hx-swap="outerHTML" hx-push-url="true">Créer un compte</a>
-            <a class="btn btn-secondaire" href="{% url 'login' %}" hx-get="{% url 'login' %}" hx-target="#zone-principale" hx-select="#zone-principale" hx-swap="outerHTML" hx-push-url="true">Se connecter</a>
+    </div>
+
+    <div class="guest-features">
+        <div class="guest-feat">
+            <div class="feat-icon teal"><i class="ti ti-book-2" aria-hidden="true"></i></div>
+            <div>
+                <div class="feat-title">Cours structurés</div>
+                <p class="feat-desc">Chapitres progressifs avec documents et exercices intégrés.</p>
+            </div>
         </div>
-    {% endif %}
+        <div class="guest-feat">
+            <div class="feat-icon blue"><i class="ti ti-robot" aria-hidden="true"></i></div>
+            <div>
+                <div class="feat-title">IA locale</div>
+                <p class="feat-desc">Assistant technique disponible même sans connexion internet.</p>
+            </div>
+        </div>
+        <div class="guest-feat">
+            <div class="feat-icon amber"><i class="ti ti-clipboard-list" aria-hidden="true"></i></div>
+            <div>
+                <div class="feat-title">Logistique atelier</div>
+                <p class="feat-desc">Suivi des équipements et gestion des ressources en temps réel.</p>
+            </div>
+        </div>
+    </div>
 </section>
+
+{% endif %}
+
 {% endblock %}

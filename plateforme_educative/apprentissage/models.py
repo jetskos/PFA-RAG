@@ -44,6 +44,14 @@ class Cours(models.Model):
         default=True,
         verbose_name='Actif'
     )
+    createur = models.ForeignKey(
+        'accounts.Utilisateur',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='cours_crees',
+        verbose_name='Créateur'
+    )
     
     class Meta:
         verbose_name = 'Cours'
@@ -168,3 +176,52 @@ class Document(models.Model):
     
     def __str__(self):
         return f"{self.titre} ({self.get_type_document_display()})"
+
+
+class Progression(models.Model):
+    """Modèle pour suivre la progression d'un étudiant dans un cours."""
+    
+    etudiant = models.ForeignKey(
+        'accounts.Utilisateur',
+        on_delete=models.CASCADE,
+        related_name='progressions',
+        verbose_name='Étudiant'
+    )
+    cours = models.ForeignKey(
+        Cours,
+        on_delete=models.CASCADE,
+        related_name='progressions',
+        verbose_name='Cours'
+    )
+    chapitres_valides = models.ManyToManyField(
+        Chapitre,
+        blank=True,
+        related_name='progressions',
+        verbose_name='Chapitres validés'
+    )
+    date_derniere_consultation = models.DateTimeField(
+        auto_now=True,
+        verbose_name='Date de dernière consultation'
+    )
+    date_creation = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Date de création'
+    )
+    
+    class Meta:
+        verbose_name = 'Progression'
+        verbose_name_plural = 'Progressions'
+        unique_together = ('etudiant', 'cours')
+        ordering = ['-date_derniere_consultation']
+    
+    def __str__(self):
+        return f"{self.etudiant.email} → {self.cours.titre}"
+    
+    @property
+    def pourcentage(self):
+        """Calcule le pourcentage de progression (0-100)."""
+        total_chapitres = self.cours.chapitres.count()
+        if total_chapitres == 0:
+            return 0
+        chapitres_faits = self.chapitres_valides.count()
+        return int((chapitres_faits / total_chapitres) * 100)

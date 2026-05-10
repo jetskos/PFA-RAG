@@ -1,0 +1,37 @@
+{% if chapitres %}
+    <div style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.75rem;">
+        {% for chapitre in chapitres %}
+            <div class="carte" style="background: var(--surface); border: 1px solid var(--bordure); border-radius: 8px; padding: 1rem; transition: box-shadow 0.2s ease;">
+                <div style="display:flex; justify-content:space-between; gap:1rem; align-items:flex-start;">
+                    <button type="button"
+                            style="background:none; border:none; padding:0; text-align:left; cursor:pointer; flex:1;"
+                            hx-get="{% url 'apprentissage:gerer_chapitre' chapitre.id %}"
+                            hx-target="#detail-container"
+                            hx-swap="innerHTML">
+                        <strong>{{ chapitre.ordre }}. {{ chapitre.titre }}</strong>
+                        {% if chapitre.description %}
+                            <p style="margin: 0.5rem 0 0 0; color: var(--texte-secondaire); font-size: 0.9rem;">{{ chapitre.description|truncatewords:15 }}</p>
+                        {% endif %}
+                    </button>
+
+                    <div class="actions" style="margin-top:0; gap:0.4rem; flex-wrap:nowrap;">
+                        <button type="button"
+                                class="btn btn-ghost"
+                                style="padding:0.45rem 0.7rem; font-size:0.85rem;"
+                                onclick="event.stopPropagation(); fetch('{% url 'apprentissage:editer_chapitre' chapitre.id %}', {headers: {'X-Requested-With': 'XMLHttpRequest'}}).then(function(response){ return response.text(); }).then(function(html){ document.getElementById('form-container').innerHTML = html; });">
+                            Modifier
+                        </button>
+                        <button type="button"
+                                class="btn btn-ghost"
+                                style="padding:0.45rem 0.7rem; font-size:0.85rem; color:#9b1c1c; border-color:#f5c2c7;"
+                                onclick="if(confirm('Supprimer ce chapitre ?')) { event.stopPropagation(); fetch('{% url 'apprentissage:supprimer_chapitre' chapitre.id %}', {method: 'POST', headers: {'X-CSRFToken': '{{ csrf_token }}', 'X-Requested-With': 'XMLHttpRequest'}}).then(function(response){ return response.text(); }).then(function(html){ document.getElementById('chapitres-container').innerHTML = html; document.getElementById('detail-container').innerHTML = '<p class=\'message-empty\'>Cliquez sur un chapitre pour afficher son détail et ses documents.</p>'; document.getElementById('form-container').innerHTML = ''; }); }">
+                            Supprimer
+                        </button>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p class="message-empty">Aucun chapitre</p>
+{% endif %}

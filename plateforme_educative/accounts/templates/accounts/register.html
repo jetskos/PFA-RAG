@@ -7,7 +7,7 @@
     <h2>Inscription</h2>
     {% include 'accounts/partials/register_form.html' %}
     <p>Deja un compte ?
-        <a href="{% url 'login' %}" hx-get="{% url 'login' %}" hx-target="#zone-principale" hx-select="#zone-principale" hx-swap="outerHTML" hx-push-url="true">Se connecter</a>
+        <a href="{% url 'accounts:login' %}" hx-get="{% url 'accounts:login' %}" hx-target="#zone-principale" hx-select="#zone-principale" hx-swap="outerHTML" hx-push-url="true">Se connecter</a>
     </p>
 </section>
 {% endblock %}

@@ -1,0 +1,21 @@
+<div id="tickets-list">
+    {% if tickets.exists %}
+        <ul class="liste-docs-detaillee">
+            {% for ticket in tickets %}
+            <li class="doc-item">
+                <div class="doc-header">
+                    <a class="doc-titre">{{ ticket.titre }}</a>
+                </div>
+                <p class="doc-description">{{ ticket.description }}</p>
+                <p>Équipement: {{ ticket.equipement }} {% if ticket.atelier %}| Atelier: {{ ticket.atelier }}{% endif %}</p>
+                <form hx-post="{{ resolve_url }}" hx-target="#tickets-list" hx-swap="outerHTML">
+                    <input type="hidden" name="ticket_id" value="{{ ticket.id }}">
+                    <button class="btn btn-ghost" type="submit">Marquer Résolu</button>
+                </form>
+            </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="message-empty">Aucun ticket actif.</p>
+    {% endif %}
+</div>
