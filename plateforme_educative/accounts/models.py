@@ -32,15 +32,23 @@ class Utilisateur(AbstractBaseUser, PermissionsMixin):
         ('ADMIN', 'Administrateur'),
     )
 
-    # Correspondance avec le cahier des charges
+    NIVEAU_CHOICES = (
+        ('DEBUTANT', 'Débutant'),
+        ('INTERMEDIAIRE', 'Intermédiaire'),
+        ('AVANCE', 'Avancé'),
+    )
+
+    # Correspondance avec le cahier des charges(email unique, rôle, etc.)
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False) 
     email = models.EmailField(unique=True, max_length=255) 
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='ELEVE') 
+    niveau = models.CharField(max_length=20, choices=NIVEAU_CHOICES, default='DEBUTANT')
     date_creation = models.DateTimeField(auto_now_add=True) 
 
     # Requis par Django pour les modèles utilisateurs personnalisés
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    is_formateur = models.BooleanField(default=False)
 
     objects = UtilisateurManager()
 
