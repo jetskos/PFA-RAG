@@ -1,0 +1,68 @@
+/* static/core/css/backgrounds.css */
+
+/* --- ARRIÈRE-PLAN POUR L'ESPACE ÉTUDIANT (Connecté) --- */
+/* Nous ciblons le conteneur principal de la Bento Grid */
+.accueil-hero-row {
+position: relative;
+ z-index: 1; /* S'assure que le contenu est au-dessus du pseudo-élément */
+}
+
+/* Pseudo-élément pour un contrôle précis de l'opacité sans affecter le texte */
+.accueil-hero-row::before {
+ content: '';
+ position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background-image: url('../images/bento-components-bg.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.15; /* Opacité très faible pour la lisibilité */
+  z-index: -1; /* Envoie l'image derrière le contenu */
+  border-radius: var(--radius-lg); /* Applique le même rayon de bordure que la section */
+}
+
+/* --- ARRIÈRE-PLAN GLOBAL POUR L'ESPACE VISITEUR (Non connecté) --- */
+/* Nous ciblons la section guest */
+section.accueil-guest {
+  position: relative;
+  color: #f8fafc; /* Fait passer la couleur de police par défaut au blanc */
+  padding: 40px 0;
+}
+
+/* Pseudo-élément pour un contrôle précis de l'opacité */
+section.accueil-guest::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background-image: url('../images/page-circuit-bg.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.8; /* Opacité plus élevée pour un effet technique */
+  z-index: -1; /* Envoie l'image derrière le contenu */
+}
+
+/* Ajustements pour la lisibilité sur fond sombre */
+section.accueil-guest em,
+section.accueil-guest h2,
+section.accueil-guest .guest-eyebrow,
+section.accueil-guest p,
+section.accueil-guest .feat-title,
+section.accueil-guest .feat-desc {
+  color: inherit; /* Utilise la couleur blanche définie sur le parent */
+}
+
+/* Style spécifique pour les icônes sur fond sombre */
+section.accueil-guest .feat-icon {
+  color: rgba(255, 255, 255, 0.9);
+  background-color: rgba(255, 255, 255, 0.1); /* Fond gris très léger à faible opacité */
+}
+
+/* Ajustements pour le bouton Outline sur fond sombre */
+section.accueil-guest .btn-outline {
+  color: #f8fafc;
+  border-color: #f8fafc;
+}
+section.accueil-guest .btn-outline:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}

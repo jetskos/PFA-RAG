@@ -1,42 +1,52 @@
 {% extends 'base.html' %}
-
 {% block title %}Gérer le cours{% endblock %}
 
 {% block content %}
+<style>
+    .builder-accordion { background: var(--surface); border: 1px solid var(--bordure); border-radius: 8px; margin-bottom: 1rem; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+    .builder-summary { padding: 1rem 1.5rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; background: #f8fafc; font-weight: 600; list-style: none; }
+    .builder-summary::-webkit-details-marker { display: none; }
+    .builder-summary:hover { background: #f1f5f9; }
+    .builder-content { padding: 1.5rem; border-top: 1px solid var(--bordure); background: var(--surface); }
+    
+    /* La Modale en pur CSS */
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+    .modal-content { background: var(--surface); padding: 2rem; border-radius: var(--radius-lg); width: 100%; max-width: 500px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+</style>
+
 <section class="page-shell">
-    <div class="page-header">
-        <p class="eyebrow">Apprentissage</p>
-        <h1>{{ cours.titre }}</h1>
-        <p>Gestion détaillée du cours.</p>
+    <div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-end;">
+        <div>
+            <a href="{% url 'apprentissage:espace_formateur' %}" class="btn-ghost" style="padding: 4px 8px; margin-bottom: 10px; display: inline-block;">← Retour</a>
+            <h1>{{ cours.titre }}</h1>
+            <p>Constructeur de cours : Organisez vos chapitres et documents.</p>
+        </div>
+        <div class="actions" style="display:flex; gap:0.75rem; align-items:center;">
+            <a class="btn btn-ghost" href="{% url 'apprentissage:detail_cours' cours.id %}">
+                Voir le cours
+            </a>
+            <button class="btn-primary"
+                    hx-get="{% url 'apprentissage:ajouter_chapitre' cours.id %}"
+                    hx-target="#modal-body"
+                    onclick="document.getElementById('form-modal').style.display='flex'">
+                <i class="ti ti-plus"></i> Nouveau Chapitre
+            </button>
+        </div>
     </div>
 
-    <div class="carte">
-        <div class="actions">
-            <a href="{% url 'apprentissage:espace_formateur' %}" class="btn btn-ghost">Retour à l'espace formateur</a>
-        </div>
+    <div id="chapitres-container" style="margin-top: 2rem;">
+        {% include 'apprentissage/partials/chapitres_list.html' with cours=cours chapitres=chapitres %}
+    </div>
 
-        <section style="margin-top: 1.5rem;">
-            <h2>Chapitres</h2>
-            <div class="actions">
-                <button type="button"
-                        class="btn"
-                        hx-get="{% url 'apprentissage:ajouter_chapitre' cours.id %}"
-                        hx-target="#form-container"
-                        hx-swap="innerHTML">
-                    Ajouter un chapitre
-                </button>
+    <div id="form-modal" class="modal-overlay">
+        <div class="modal-content" id="modal-body">
             </div>
-
-            <div id="form-container"></div>
-
-            <div id="chapitres-container">
-                {% include 'apprentissage/partials/chapitres_list.html' with cours=cours chapitres=chapitres %}
-            </div>
-
-            <div id="detail-container" style="margin-top: 1.5rem;">
-                <p class="message-empty">Cliquez sur un chapitre pour afficher son détail et ses documents.</p>
-            </div>
-        </section>
     </div>
 </section>
+
+<script>
+    document.getElementById('form-modal').addEventListener('click', function(e) {
+        if (e.target === this) this.style.display = 'none';
+    });
+</script>
 {% endblock %}

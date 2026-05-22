@@ -11,15 +11,13 @@
         <button type="button"
                 class="btn"
                 hx-get="{% url 'apprentissage:ajouter_document' chapitre.id %}"
-                hx-target="#form-container"
-                hx-swap="innerHTML">
+                hx-target="#modal-body"
+                onclick="document.getElementById('form-modal').style.display='flex'">
             Ajouter un PDF
         </button>
     </div>
 
-    <div id="form-container"></div>
-
-    <div id="documents-container" style="margin-top: 1rem;">
+    <div id="docs-chapitre-{{ chapitre.id }}" style="margin-top: 1rem;">
         {% include 'apprentissage/partials/documents_list.html' with chapitre=chapitre documents=documents %}
     </div>
 </div>

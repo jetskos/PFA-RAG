@@ -4,51 +4,40 @@
 
 {% block content %}
 <section class="page-shell">
-    <div class="page-header">
-        <p class="eyebrow">Apprentissage</p>
-        <h1>Espace Formateur</h1>
-        <p>Gérez vos cours depuis cet espace.</p>
+    <div class="page-header" style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <p class="eyebrow">Apprentissage</p>
+            <h1>Espace Formateur</h1>
+            <p>Gérez vos cours et votre contenu pédagogique.</p>
+        </div>
+        <a href="{% url 'apprentissage:nouveau_cours' %}" class="btn-primary">
+            <i class="ti ti-plus" style="font-size: 18px;"></i> Créer un cours
+        </a>
     </div>
 
-    <div class="carte">
-        <div class="actions">
-            <a href="{% url 'apprentissage:nouveau_cours' %}" class="btn">Créer un nouveau cours</a>
-        </div>
+    <div class="grille-cours" style="margin-top: 2rem;">
+        {% for cours in mes_cours %}
+            <div class="carte-cours" style="display: flex; flex-direction: column;">
+                <h3>{{ cours.titre }}</h3>
+                <p class="niveau">{{ cours.get_niveau_display }}</p>
+                
+                <div style="margin: 1rem 0; color: var(--texte-secondaire); font-size: 0.9rem; flex-grow: 1;">
+                    <p><i class="ti ti-calendar"></i> Créé le {{ cours.date_creation|date:'d/m/Y' }}</p>
+                    <p><i class="ti {% if cours.actif %}ti-eye{% else %}ti-eye-off{% endif %}"></i> {% if cours.actif %}Publié et visible{% else %}Brouillon masqué{% endif %}</p>
+                </div>
 
-        <table style="width:100%; margin-top:1rem; border-collapse: collapse;">
-            <thead>
-                <tr style="text-align:left; border-bottom:1px solid var(--bordure)">
-                    <th>Titre</th>
-                    <th>Niveau</th>
-                    <th>Date création</th>
-                    <th>Actif</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-            {% for cours in mes_cours %}
-                <tr style="border-bottom:1px solid #f1f5f9;">
-                    <td><a href="{% url 'apprentissage:gerer_cours' cours.pk %}">{{ cours.titre }}</a></td>
-                    <td>{{ cours.get_niveau_display }}</td>
-                    <td>{{ cours.date_creation|date:'SHORT_DATETIME_FORMAT' }}</td>
-                    <td>{{ cours.actif }}</td>
-                    <td>
-                        <div class="actions" style="margin-top:0; gap:0.5rem;">
-                            <a href="{% url 'apprentissage:editer_cours' cours.pk %}" class="btn btn-ghost" style="padding:0.45rem 0.8rem; font-size:0.85rem;">Modifier</a>
-                            <form method="post" action="{% url 'apprentissage:supprimer_cours' cours.pk %}" onsubmit="return confirm('Attention : Cela supprimera le cours et tous ses chapitres/documents. Confirmer ?');" style="display:inline; margin:0;">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-ghost" style="padding:0.45rem 0.8rem; font-size:0.85rem; color:#9b1c1c; border-color:#f5c2c7;">Supprimer</button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-            {% empty %}
-                <tr>
-                    <td colspan="5" class="message-empty">Vous n'avez pas encore de cours.</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+                <div style="display: flex; gap: 0.5rem; border-top: 1px solid var(--bordure); padding-top: 1rem;">
+                    <a href="{% url 'apprentissage:gerer_cours' cours.pk %}" class="btn" style="flex: 1; text-align: center;">Gérer le contenu</a>
+                    <a href="{% url 'apprentissage:editer_cours' cours.pk %}" class="btn btn-ghost" title="Modifier les infos"><i class="ti ti-pencil"></i></a>
+                </div>
+            </div>
+        {% empty %}
+            <div class="carte" style="grid-column: 1 / -1; text-align: center; padding: 3rem;">
+                <div class="feat-icon teal" style="margin: 0 auto 1rem;"><i class="ti ti-school"></i></div>
+                <h3>Aucun cours pour le moment</h3>
+                <p class="message-empty">Commencez par créer votre premier cours.</p>
+            </div>
+        {% endfor %}
     </div>
 </section>
 {% endblock %}

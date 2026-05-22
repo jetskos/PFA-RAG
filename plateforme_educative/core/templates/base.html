@@ -10,12 +10,12 @@
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=Newsreader:ital,opsz,wght@0,6..72,400;1,6..72,300&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
     <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'core/css/app.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/app.css' %}?v=20260522b">
     <script src="https://unpkg.com/htmx.org@1.9.12" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js" defer></script>
     <style>
         :root {
-            --brand: #0f766e;
+            --brand: #12998e;
             --brand-mid: #0d9488;
             --brand-light: #ccfbf1;
             --brand-accent: #f0a84c;
@@ -53,46 +53,47 @@
             margin: 0 auto;
             display: flex;
             align-items: center;
-            gap: 24px;
-            padding: 0 24px;
-            height: 64px;
+            gap: 18px;
+            padding: 0 20px;
+            min-height: 56px;
         }
 
         .brand {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             text-decoration: none;
             flex-shrink: 0;
+            
         }
 
         .brand-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 9px;
+            width: 80px;
+            height: 60px;
+            border-radius: 150px;
             background: var(--brand);
             display: flex;
             align-items: center;
             justify-content: center;
+            overflow: hidden;
+            flex-shrink: 0;
         }
 
-        .brand-icon i { color: #fff; font-size: 18px; }
-
-        .brand-name { font-size: 15px; font-weight: 500; color: var(--text-main); letter-spacing: -0.01em; }
-        .brand-tagline { font-size: 11px; color: var(--text-muted); font-weight: 300; }
+        .brand-name { font-size: 15px; font-weight: 700; color: var(--text-main); letter-spacing: -0.01em; }
+        .brand-tagline { font-size: 11px; color: var(--text-muted); font-weight: 400; opacity: 0.75; }
 
         .main-nav {
             display: flex;
             align-items: center;
             gap: 2px;
-            margin-left: 20px;
+            margin-left: 14px;
         }
 
         .main-nav a {
-            font-size: 14px;
+            font-size: 13px;
             color: var(--text-muted);
             text-decoration: none;
-            padding: 6px 12px;
+            padding: 5px 10px;
             border-radius: 7px;
             transition: background 0.15s, color 0.15s;
             font-weight: 400;
@@ -104,10 +105,10 @@
         .header-actions { margin-left: auto; display: flex; align-items: center; gap: 10px; }
 
         .btn-ghost {
-            font-size: 14px;
+            font-size: 13px;
             color: var(--text-muted);
             text-decoration: none;
-            padding: 7px 14px;
+            padding: 6px 12px;
             border-radius: 8px;
             border: 1px solid var(--border-md);
             transition: all 0.15s;
@@ -122,12 +123,12 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
             color: #fff;
             background: var(--brand);
             text-decoration: none;
-            padding: 7px 16px;
+            padding: 6px 12px;
             border-radius: 8px;
             border: none;
             transition: background 0.15s;
@@ -140,19 +141,19 @@
         /* ── MESSAGES ── */
         .messages-zone {
             max-width: 1200px;
-            margin: 16px auto 0;
-            padding: 0 24px;
+            margin: 12px auto 0;
+            padding: 0 20px;
         }
 
         .message-item {
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 12px 16px;
+            padding: 10px 14px;
             background: var(--brand-light);
             border-left: 3px solid var(--brand);
             border-radius: 0 8px 8px 0;
-            font-size: 14px;
+            font-size: 13px;
             color: var(--brand);
             margin-bottom: 8px;
         }
@@ -161,7 +162,7 @@
         .site-main {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 32px 24px 64px;
+            padding: 24px 20px 56px;
         }
 
         /* ── ADMIN BADGE ── */
@@ -171,9 +172,9 @@
             gap: 5px;
             background: #faeeda;
             color: #854f0b;
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 500;
-            padding: 3px 9px;
+            padding: 3px 8px;
             border-radius: 20px;
         }
     </style>
@@ -184,7 +185,7 @@
         <div class="header-inner">
             <a href="{% url 'accueil' %}" class="brand">
                 <div class="brand-icon">
-                    <i class="ti ti-circuit-board" aria-hidden="true"></i>
+                    <div class="brand-logo" aria-hidden="true"></div>
                 </div>
                 <div>
                     <div class="brand-name">Plateforme Éducative</div>
@@ -204,7 +205,7 @@
                     <a href="{% url 'logistics:inventaire' %}">Logistique</a>
                 {% endif %}
                 {% if user.is_superuser %}
-                    <a href="{% url 'accounts:admin_dashboard' %}">Gestion Admin</a>
+                    <a href="{% url 'accounts:admin_dashboard' %}">Gestion uTilisateur</a>
                 {% endif %}
             </nav>
 
@@ -216,11 +217,7 @@
                             Formateur
                         </span>
                     {% endif %}
-                    {% if user.is_staff %}
-                        <a href="/admin/" class="btn-ghost">
-                            <i class="ti ti-settings" aria-hidden="true" style="font-size:14px;vertical-align:-2px;margin-right:3px"></i>Admin
-                        </a>
-                    {% endif %}
+                   
                     <a href="{% url 'accueil' %}" class="btn-primary">
                         <i class="ti ti-user-circle" aria-hidden="true" style="font-size:16px"></i>
                         Mon espace

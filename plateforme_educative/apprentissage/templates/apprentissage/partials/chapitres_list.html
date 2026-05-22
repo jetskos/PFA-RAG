@@ -1,37 +1,59 @@
 {% if chapitres %}
-    <div style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.75rem;">
-        {% for chapitre in chapitres %}
-            <div class="carte" style="background: var(--surface); border: 1px solid var(--bordure); border-radius: 8px; padding: 1rem; transition: box-shadow 0.2s ease;">
-                <div style="display:flex; justify-content:space-between; gap:1rem; align-items:flex-start;">
-                    <button type="button"
-                            style="background:none; border:none; padding:0; text-align:left; cursor:pointer; flex:1;"
-                            hx-get="{% url 'apprentissage:gerer_chapitre' chapitre.id %}"
-                            hx-target="#detail-container"
-                            hx-swap="innerHTML">
-                        <strong>{{ chapitre.ordre }}. {{ chapitre.titre }}</strong>
-                        {% if chapitre.description %}
-                            <p style="margin: 0.5rem 0 0 0; color: var(--texte-secondaire); font-size: 0.9rem;">{{ chapitre.description|truncatewords:15 }}</p>
-                        {% endif %}
+    {% for chapitre in chapitres %}
+        <details class="builder-accordion">
+            <summary class="builder-summary">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <i class="ti ti-chevron-down" style="color: var(--brand);"></i>
+                    <span style="font-size: 1.1rem; color: var(--brand);">Chapitre {{ chapitre.ordre }} : {{ chapitre.titre }}</span>
+                </div>
+                
+                <div class="actions" style="margin: 0; gap: 0.5rem;">
+                    <a class="btn btn-ghost" style="padding: 6px 12px; font-size: 0.85rem;"
+                       href="{% url 'apprentissage:detail_chapitre' chapitre.cours.id chapitre.id %}">
+                        Voir
+                    </a>
+                    <button class="btn btn-ghost" style="padding: 6px 12px; font-size: 0.85rem;"
+                            hx-get="{% url 'apprentissage:editer_chapitre' chapitre.id %}"
+                            hx-target="#modal-body"
+                            onclick="document.getElementById('form-modal').style.display='flex'; event.preventDefault();">
+                        Modifier
                     </button>
+                    <button class="btn btn-ghost" style="padding: 6px 12px; font-size: 0.85rem; color: #9b1c1c;"
+                            hx-post="{% url 'apprentissage:supprimer_chapitre' chapitre.id %}"
+                            hx-target="#chapitres-container"
+                            hx-confirm="Confirmer la suppression de ce chapitre et de TOUS ses documents ?"
+                            onclick="event.preventDefault();">
+                        Supprimer
+                    </button>
+                </div>
+            </summary>
 
-                    <div class="actions" style="margin-top:0; gap:0.4rem; flex-wrap:nowrap;">
-                        <button type="button"
-                                class="btn btn-ghost"
-                                style="padding:0.45rem 0.7rem; font-size:0.85rem;"
-                                onclick="event.stopPropagation(); fetch('{% url 'apprentissage:editer_chapitre' chapitre.id %}', {headers: {'X-Requested-With': 'XMLHttpRequest'}}).then(function(response){ return response.text(); }).then(function(html){ document.getElementById('form-container').innerHTML = html; });">
-                            Modifier
+            <div class="builder-content">
+                {% if chapitre.description %}
+                    <p style="color: var(--texte-secondaire); margin-bottom: 1.5rem; font-size: 0.95rem;">{{ chapitre.description }}</p>
+                {% endif %}
+
+                <div style="background: var(--surface-alt); padding: 1.5rem; border-radius: 8px; border: 1px dashed var(--bordure);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h4 style="margin: 0; color: var(--texte);">Documents du chapitre</h4>
+                        <button class="btn" style="padding: 6px 12px; font-size: 0.85rem;"
+                                hx-get="{% url 'apprentissage:ajouter_document' chapitre.id %}"
+                                hx-target="#modal-body"
+                                onclick="document.getElementById('form-modal').style.display='flex'">
+                            <i class="ti ti-file-upload"></i> Ajouter un PDF
                         </button>
-                        <button type="button"
-                                class="btn btn-ghost"
-                                style="padding:0.45rem 0.7rem; font-size:0.85rem; color:#9b1c1c; border-color:#f5c2c7;"
-                                onclick="if(confirm('Supprimer ce chapitre ?')) { event.stopPropagation(); fetch('{% url 'apprentissage:supprimer_chapitre' chapitre.id %}', {method: 'POST', headers: {'X-CSRFToken': '{{ csrf_token }}', 'X-Requested-With': 'XMLHttpRequest'}}).then(function(response){ return response.text(); }).then(function(html){ document.getElementById('chapitres-container').innerHTML = html; document.getElementById('detail-container').innerHTML = '<p class=\'message-empty\'>Cliquez sur un chapitre pour afficher son détail et ses documents.</p>'; document.getElementById('form-container').innerHTML = ''; }); }">
-                            Supprimer
-                        </button>
+                    </div>
+
+                    <div id="docs-chapitre-{{ chapitre.id }}">
+                        {% include 'apprentissage/partials/documents_list.html' with documents=chapitre.documents.all can_edit_documents=can_edit_documents %}
                     </div>
                 </div>
             </div>
-        {% endfor %}
-    </div>
+        </details>
+    {% endfor %}
 {% else %}
-    <p class="message-empty">Aucun chapitre</p>
+    <div class="carte" style="text-align: center; padding: 3rem;">
+        <i class="ti ti-books" style="font-size: 40px; color: var(--border-md); margin-bottom: 1rem; display: block;"></i>
+        <p class="message-empty">Ce cours est vide. Commencez par ajouter un chapitre.</p>
+    </div>
 {% endif %}

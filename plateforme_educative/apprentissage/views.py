@@ -11,6 +11,14 @@ from .models import Cours, Chapitre, Document
 from .forms import CoursForm, ChapitreForm, DocumentForm
 
 
+def _htmx_modal_error_response(request, template_name, context):
+    """Render a form back into the modal when an HTMX submission is invalid."""
+    response = render(request, template_name, context, status=400)
+    if request.headers.get('HX-Request') == 'true':
+        response['HX-Retarget'] = '#modal-body'
+    return response
+
+
 @login_required
 def espace_formateur(request):
     """Espace dédié aux formateurs pour gérer leurs cours."""
@@ -87,6 +95,7 @@ def gerer_cours(request, pk):
     context = {
         'cours': cours,
         'chapitres': chapitres,
+        'can_edit_documents': True,
     }
 
     return render(request, 'apprentissage/gerer_cours.html', context)
@@ -115,12 +124,17 @@ def ajouter_chapitre(request, cours_id):
     else:
         form = ChapitreForm()
 
-    return render(request, 'apprentissage/partials/chapitre_form.html', {
+    context = {
         'form': form,
         'cours': cours,
         'action_url': reverse('apprentissage:ajouter_chapitre', args=[cours.pk]),
         'submit_label': 'Soumettre',
-    })
+    }
+
+    if request.method == 'POST':
+        return _htmx_modal_error_response(request, 'apprentissage/partials/chapitre_form.html', context)
+
+    return render(request, 'apprentissage/partials/chapitre_form.html', context)
 
 
 @login_required
@@ -138,6 +152,7 @@ def gerer_chapitre(request, chapitre_id):
         'chapitre': chapitre,
         'documents': documents,
         'cours': cours,
+        'can_edit_documents': True,
     }
 
     return render(request, 'apprentissage/partials/chapitre_detail.html', context)
@@ -165,12 +180,17 @@ def editer_chapitre(request, chapitre_id):
     else:
         form = ChapitreForm(instance=chapitre)
 
-    return render(request, 'apprentissage/partials/chapitre_form.html', {
+    context = {
         'form': form,
         'cours': cours,
         'action_url': reverse('apprentissage:editer_chapitre', args=[chapitre.pk]),
         'submit_label': 'Enregistrer',
-    })
+    }
+
+    if request.method == 'POST':
+        return _htmx_modal_error_response(request, 'apprentissage/partials/chapitre_form.html', context)
+
+    return render(request, 'apprentissage/partials/chapitre_form.html', context)
 
 
 @login_required
@@ -212,16 +232,22 @@ def ajouter_document(request, chapitre_id):
             return render(request, 'apprentissage/partials/documents_list.html', {
                 'documents': documents,
                 'chapitre': chapitre,
+                'can_edit_documents': True,
             })
     else:
         form = DocumentForm()
 
-    return render(request, 'apprentissage/partials/document_form.html', {
+    context = {
         'form': form,
         'chapitre': chapitre,
         'action_url': reverse('apprentissage:ajouter_document', args=[chapitre.pk]),
         'submit_label': 'Soumettre',
-    })
+    }
+
+    if request.method == 'POST':
+        return _htmx_modal_error_response(request, 'apprentissage/partials/document_form.html', context)
+
+    return render(request, 'apprentissage/partials/document_form.html', context)
 
 
 @login_required
@@ -243,17 +269,23 @@ def editer_document(request, document_id):
             return render(request, 'apprentissage/partials/documents_list.html', {
                 'documents': documents,
                 'chapitre': chapitre,
+                'can_edit_documents': True,
             })
     else:
         form = DocumentForm(instance=document)
 
-    return render(request, 'apprentissage/partials/document_form.html', {
+    context = {
         'form': form,
         'chapitre': chapitre,
         'document': document,
         'action_url': reverse('apprentissage:editer_document', args=[document.pk]),
         'submit_label': 'Enregistrer',
-    })
+    }
+
+    if request.method == 'POST':
+        return _htmx_modal_error_response(request, 'apprentissage/partials/document_form.html', context)
+
+    return render(request, 'apprentissage/partials/document_form.html', context)
 
 
 @login_required
@@ -272,6 +304,7 @@ def supprimer_document(request, document_id):
     return render(request, 'apprentissage/partials/documents_list.html', {
         'documents': documents,
         'chapitre': chapitre,
+        'can_edit_documents': True,
     })
 
 
@@ -354,6 +387,7 @@ def detail_cours(request, cours_id):
     context = {
         'cours': cours,
         'chapitres_data': chapitres_data,
+        'can_edit_documents': False,
     }
     
     if request.headers.get('HX-Request') == 'true':
@@ -386,6 +420,7 @@ def detail_chapitre(request, cours_id, chapitre_id):
         'cours': cours,
         'chapitre': chapitre,
         'documents_par_type': documents_par_type,
+        'can_edit_documents': False,
     }
     
     if request.headers.get('HX-Request') == 'true':
