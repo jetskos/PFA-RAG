@@ -20,12 +20,7 @@
         </p>
         <div class="home-actions">
             <a class="btn btn-primary"
-                    href="{{ resume_url }}"
-                    hx-get="{{ resume_url }}"
-               hx-target="#zone-principale"
-               hx-select="#zone-principale"
-               hx-swap="outerHTML"
-               hx-push-url="true">
+                    href="{{ resume_url }}">
                 <i class="ti ti-player-play" aria-hidden="true"></i>
                 Espace apprentissage
             </a>
@@ -44,7 +39,7 @@
         {% if cours_en_cours %}
             {% for cours in cours_en_cours %}
             <div class="progress-course">
-                <a class="progress-course-name" href="{{ cours.url }}" hx-get="{{ cours.url }}" hx-target="#zone-principale" hx-select="#zone-principale" hx-swap="outerHTML" hx-push-url="true">{{ cours.titre }}</a>
+                <a class="progress-course-name" href="{{ cours.url }}">{{ cours.titre }}</a>
                 <div class="progress-course-sub">{{ cours.chapitre_actuel }}</div>
                 <div class="progress-bar-track">
                     <div class="progress-bar-fill" style="width:{{ cours.progression }}%" ></div>
@@ -57,12 +52,7 @@
         {% endif %}
 
         <a class="resume-btn"
-              href="{{ resume_url }}"
-              hx-get="{{ resume_url }}"
-           hx-target="#zone-principale"
-           hx-select="#zone-principale"
-           hx-swap="outerHTML"
-           hx-push-url="true">
+              href="{{ resume_url }}">
             <i class="ti ti-arrow-right" aria-hidden="true"></i>
             Reprendre le cours
         </a>
@@ -77,12 +67,7 @@
         <div class="feat-icon teal"><i class="ti ti-book-2" aria-hidden="true"></i></div>
         <h3>Catalogue de cours</h3>
         <p>Parcourez les cours structurés autour de l'IoT, l'IA et la logistique atelier.</p>
-        <a href="{% url 'apprentissage:liste_cours' %}"
-           hx-get="{% url 'apprentissage:liste_cours' %}"
-           hx-target="#zone-principale"
-           hx-select="#zone-principale"
-           hx-swap="outerHTML"
-           hx-push-url="true">
+        <a href="{% url 'apprentissage:liste_cours' %}">
             Explorer <i class="ti ti-arrow-right" style="font-size:.85em" aria-hidden="true"></i>
         </a>
     </article>
@@ -151,12 +136,7 @@
         <p class="section-title section-title--light">Pour les apprenants</p>
         <h2>Reprendre là où vous vous étiez arrêté.</h2>
         <a class="btn btn-primary"
-           href="{% url 'apprentissage:liste_cours' %}"
-           hx-get="{% url 'apprentissage:liste_cours' %}"
-           hx-target="#zone-principale"
-           hx-select="#zone-principale"
-           hx-swap="outerHTML"
-           hx-push-url="true">
+           href="{% url 'apprentissage:liste_cours' %}">
             Continuer
         </a>
     </div>
@@ -179,22 +159,12 @@
         </p>
         <div class="home-actions">
             <a class="btn btn-primary"
-                    href="{% url 'accounts:register' %}"
-               hx-get="{% url 'accounts:register' %}"
-               hx-target="#zone-principale"
-               hx-select="#zone-principale"
-               hx-swap="outerHTML"
-               hx-push-url="true">
+                    href="{% url 'accounts:register' %}">
                 <i class="ti ti-user-plus" aria-hidden="true"></i>
                 Créer un compte
             </a>
             <a class="btn btn-ghost"
-               href="{% url 'accounts:login' %}"
-               hx-get="{% url 'accounts:login' %}"
-               hx-target="#zone-principale"
-               hx-select="#zone-principale"
-               hx-swap="outerHTML"
-               hx-push-url="true">
+               href="{% url 'accounts:login' %}">
                 Se connecter
             </a>
         </div>
@@ -252,12 +222,7 @@
         <div class="feat-icon teal"><i class="ti ti-book-2" aria-hidden="true"></i></div>
         <h3>Cours structurés</h3>
         <p>Chapitres progressifs avec documents, vidéos et exercices intégrés.</p>
-        <a href="{% url 'apprentissage:liste_cours' %}"
-           hx-get="{% url 'apprentissage:liste_cours' %}"
-           hx-target="#zone-principale"
-           hx-select="#zone-principale"
-           hx-swap="outerHTML"
-           hx-push-url="true">
+        <a href="{% url 'apprentissage:liste_cours' %}">
             Explorer <i class="ti ti-arrow-right" style="font-size:.85em" aria-hidden="true"></i>
         </a>
     </article>
@@ -297,12 +262,7 @@
         <p class="section-title section-title--light">Pour les apprenants</p>
         <h2>Reprendre où vous vous êtes arrêté et avancer à votre rythme.</h2>
         <a class="btn btn-primary"
-           href="{% url 'accounts:register' %}"
-           hx-get="{% url 'accounts:register' %}"
-           hx-target="#zone-principale"
-           hx-select="#zone-principale"
-           hx-swap="outerHTML"
-           hx-push-url="true">
+           href="{% url 'accounts:register' %}">
             Créer un compte
         </a>
     </div>

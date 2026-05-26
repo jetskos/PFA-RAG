@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}Modifier mon profil | Plateforme Éducative{% endblock %}
+
+{% block content %}
+<style>
+    .profile-edit-form .form-control {
+        width: 100%;
+        padding: 0.75rem 0.9rem;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        color: var(--text-main);
+        font: inherit;
+    }
+
+    .profile-edit-form .form-control:focus {
+        outline: none;
+        border-color: var(--brand);
+        box-shadow: 0 0 0 3px rgba(18, 153, 142, 0.12);
+    }
+
+    .profile-edit-form .errorlist {
+        list-style: none;
+        color: #b91c1c;
+        font-size: 0.9rem;
+        margin: 0;
+    }
+</style>
+<section class="carte" style="max-width: 760px; margin: 0 auto;">
+    <p class="section-title">Profil</p>
+    <h1 style="margin-bottom: 0.5rem;">Modifier mon profil</h1>
+    <p style="color: var(--text-muted); margin-bottom: 1.25rem;">Mettez à jour votre adresse email et votre niveau d’apprentissage. Le rôle reste géré par l’administration.</p>
+
+    <form method="post" class="profile-edit-form" style="display: grid; gap: 1rem;">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
+        <div style="display: grid; gap: 0.35rem;">
+            <label for="id_email" style="font-weight: 600;">Email</label>
+            {{ form.email }}
+            {{ form.email.errors }}
+        </div>
+
+        <div style="display: grid; gap: 0.35rem;">
+            <label for="id_niveau" style="font-weight: 600;">Niveau</label>
+            {{ form.niveau }}
+            {{ form.niveau.errors }}
+        </div>
+
+        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 0.25rem;">
+            <button class="btn-primary" type="submit">Enregistrer</button>
+            <a class="btn-ghost" href="{% url 'accounts:profile' %}">Annuler</a>
+        </div>
+    </form>
+</section>
+{% endblock %}

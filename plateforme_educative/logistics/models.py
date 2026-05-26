@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.exceptions import ValidationError
 
 
 class Equipment(models.Model):
@@ -47,6 +48,16 @@ class Workshop(models.Model):
 
     def __str__(self):
         return self.titre
+    
+    def clean(self):
+        # Ensure end is after start
+        if self.date_fin <= self.date_debut:
+            raise ValidationError({'date_fin': 'La date de fin doit être postérieure à la date de début.'})
+
+    def save(self, *args, **kwargs):
+        # Run model validation before saving to enforce invariants
+        self.full_clean()
+        return super().save(*args, **kwargs)
 
 
 class Ticket(models.Model):

@@ -24,3 +24,14 @@ class EquipmentForm(forms.ModelForm):
             'etat': forms.Select(attrs={'class': 'form-input'}),
             'note': forms.Textarea(attrs={'placeholder': 'Note interne (optionnel)', 'rows': 3, 'class': 'form-input'}),
         }
+
+    def clean_numero_serie(self):
+        numero = self.cleaned_data.get('numero_serie')
+        if not numero:
+            return numero
+        qs = Equipment.objects.filter(numero_serie=numero)
+        if self.instance and self.instance.pk:
+            qs = qs.exclude(pk=self.instance.pk)
+        if qs.exists():
+            raise forms.ValidationError('Un équipement avec ce numéro de série existe déjà.')
+        return numero

@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.http import require_http_methods
-from django.http import HttpResponseBadRequest
-from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseBadRequest, HttpResponseForbidden
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.urls import reverse
 
 from .models import Equipment, Ticket
@@ -41,6 +41,9 @@ def tickets_view(request):
         ticket_id = request.POST.get('ticket_id')
         if not ticket_id:
             return HttpResponseBadRequest('ticket_id manquant')
+        # Only staff/formateurs can mark tickets resolved
+        if not (request.user.is_staff or getattr(request.user, 'is_formateur', False)):
+            return HttpResponseForbidden('Permission refusée')
         ticket = get_object_or_404(Ticket, id=ticket_id)
         ticket.statut = 'RESOLU'
         ticket.save()
@@ -75,6 +78,7 @@ def nuevo_ticket(request):
 
 
 @login_required
+@user_passes_test(lambda u: u.is_staff or getattr(u, 'is_formateur', False))
 @require_http_methods(['GET', 'POST'])
 def ajouter_equipement(request):
     """Ajouter un équipement via fetch/JS (GET: renvoie le formulaire, POST: sauvegarde et renvoie la liste mise à jour)."""
@@ -95,6 +99,7 @@ def ajouter_equipement(request):
 
 
 @login_required
+@user_passes_test(lambda u: u.is_staff or getattr(u, 'is_formateur', False))
 @require_http_methods(['GET', 'POST'])
 def editer_equipement(request, pk):
     """Editer un équipement (GET: formulaire, POST: sauvegarde et retourne la liste)."""
@@ -118,6 +123,7 @@ def editer_equipement(request, pk):
 
 
 @login_required
+@user_passes_test(lambda u: u.is_staff or getattr(u, 'is_formateur', False))
 @require_http_methods(['POST'])
 def supprimer_equipement(request, pk):
     """Supprimer un équipement et renvoyer la liste mise à jour."""

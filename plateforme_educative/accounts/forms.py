@@ -19,3 +19,13 @@ class InscriptionForm(UserCreationForm):
         if commit:
             user.save()
         return user
+
+
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = Utilisateur
+        fields = ('email', 'niveau')
+        widgets = {
+            'email': forms.EmailInput(attrs={'autocomplete': 'email', 'class': 'form-control'}),
+            'niveau': forms.Select(attrs={'class': 'form-control'}),
+        }

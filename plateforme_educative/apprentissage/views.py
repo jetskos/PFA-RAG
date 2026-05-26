@@ -7,7 +7,7 @@ from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.db.models import Q, Prefetch, Count
-from .models import Cours, Chapitre, Document
+from .models import Cours, Chapitre, Document, Progression, ChapitreVisite, ChapitreComplete
 from .forms import CoursForm, ChapitreForm, DocumentForm
 
 
@@ -405,6 +405,12 @@ def detail_chapitre(request, cours_id, chapitre_id):
         cours=cours,
         actif=True
     )
+
+    if request.user.is_authenticated:
+        ChapitreVisite.objects.update_or_create(
+            etudiant=request.user,
+            chapitre=chapitre,
+        )
     
     # Regrouper les documents par type
     documents = chapitre.documents.filter(actif=True).order_by('type_document', 'ordre')
@@ -448,8 +454,6 @@ def telecharger_document(request, document_id):
 @require_http_methods(['POST'])
 def valider_chapitre(request, chapitre_id):
     """Marque un chapitre comme validé pour l'étudiant connecté."""
-    from .models import Progression
-    
     chapitre = get_object_or_404(Chapitre, pk=chapitre_id, actif=True)
     
     # Récupère ou crée la progression pour cet étudiant et ce cours
@@ -460,6 +464,10 @@ def valider_chapitre(request, chapitre_id):
     
     # Ajoute le chapitre aux chapitres validés
     progression.chapitres_valides.add(chapitre)
+    ChapitreComplete.objects.update_or_create(
+        etudiant=request.user,
+        chapitre=chapitre,
+    )
     
     # Retourne un fragment HTML simple
     return HttpResponse(

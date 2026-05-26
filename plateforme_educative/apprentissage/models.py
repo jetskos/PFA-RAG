@@ -225,3 +225,59 @@ class Progression(models.Model):
             return 0
         chapitres_faits = self.chapitres_valides.count()
         return int((chapitres_faits / total_chapitres) * 100)
+
+
+class ChapitreVisite(models.Model):
+    """Historique de consultation d'un chapitre par un utilisateur."""
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    etudiant = models.ForeignKey(
+        'accounts.Utilisateur',
+        on_delete=models.CASCADE,
+        related_name='chapitres_visites',
+        verbose_name='Utilisateur'
+    )
+    chapitre = models.ForeignKey(
+        Chapitre,
+        on_delete=models.CASCADE,
+        related_name='visites',
+        verbose_name='Chapitre'
+    )
+    date_visite = models.DateTimeField(auto_now=True, verbose_name='Date de visite')
+
+    class Meta:
+        verbose_name = 'Visite de chapitre'
+        verbose_name_plural = 'Visites de chapitres'
+        unique_together = ('etudiant', 'chapitre')
+        ordering = ['-date_visite']
+
+    def __str__(self):
+        return f"{self.etudiant.email} → {self.chapitre.titre}"
+
+
+class ChapitreComplete(models.Model):
+    """Historique des chapitres validés par un utilisateur."""
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    etudiant = models.ForeignKey(
+        'accounts.Utilisateur',
+        on_delete=models.CASCADE,
+        related_name='chapitres_completes',
+        verbose_name='Utilisateur'
+    )
+    chapitre = models.ForeignKey(
+        Chapitre,
+        on_delete=models.CASCADE,
+        related_name='validations',
+        verbose_name='Chapitre'
+    )
+    date_completion = models.DateTimeField(auto_now=True, verbose_name='Date de completion')
+
+    class Meta:
+        verbose_name = 'Chapitre terminé'
+        verbose_name_plural = 'Chapitres terminés'
+        unique_together = ('etudiant', 'chapitre')
+        ordering = ['-date_completion']
+
+    def __str__(self):
+        return f"{self.etudiant.email} → {self.chapitre.titre}"
