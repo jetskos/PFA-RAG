@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard Formateur{% endblock %}
+
+{% block content %}
+<section class="page-shell">
+    <div class="page-header">
+        <p class="eyebrow">Formateur</p>
+        <h1>Tableau de bord formateur</h1>
+        <p>Vue de pilotage des cours et des demandes de matériel.</p>
+    </div>
+
+    <div id="dashboard-formateur-structure">
+           {% include 'core/partials/dashboard_actions.html' with role='FORMATEUR' %}
+           {% include 'core/partials/formateur_structure.html' %}
+    </div>
+</section>
+{% endblock %}

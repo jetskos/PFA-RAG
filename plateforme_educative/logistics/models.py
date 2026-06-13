@@ -105,3 +105,50 @@ class Ticket(models.Model):
 
     def __str__(self):
         return self.titre
+
+
+class DemandeMateriel(models.Model):
+    STATUT_CHOICES = (
+        ('PENDING', 'En attente'),
+        ('APPROVED', 'Approuvée'),
+        ('REJECTED', 'Rejetée'),
+        ('RETURNED', 'Retournée'),
+    )
+
+    formateur = models.ForeignKey(
+        'accounts.Utilisateur',
+        on_delete=models.CASCADE,
+        related_name='demandes_materiel',
+        verbose_name='Formateur',
+    )
+    equipement = models.ForeignKey(
+        Equipment,
+        on_delete=models.PROTECT,
+        related_name='demandes_materiel',
+        verbose_name='Équipement',
+    )
+    atelier_cible = models.ForeignKey(
+        Workshop,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='demandes_materiel',
+        verbose_name='Atelier cible',
+    )
+    quantite = models.PositiveIntegerField(verbose_name='Quantité')
+    statut = models.CharField(
+        max_length=20,
+        choices=STATUT_CHOICES,
+        default='PENDING',
+        verbose_name='Statut',
+    )
+    date_creation = models.DateTimeField(auto_now_add=True, verbose_name='Date de création')
+    date_mise_a_jour = models.DateTimeField(auto_now=True, verbose_name='Date de mise à jour')
+
+    class Meta:
+        verbose_name = 'Demande de matériel'
+        verbose_name_plural = 'Demandes de matériel'
+        ordering = ['-date_creation']
+
+    def __str__(self):
+        return f"{self.formateur.email} - {self.equipement.nom} x{self.quantite}"

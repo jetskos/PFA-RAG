@@ -1,5 +1,5 @@
 from django import forms
-from .models import Ticket, Equipment
+from .models import Ticket, Equipment, DemandeMateriel, Workshop
 
 
 class TicketForm(forms.ModelForm):
@@ -35,3 +35,18 @@ class EquipmentForm(forms.ModelForm):
         if qs.exists():
             raise forms.ValidationError('Un équipement avec ce numéro de série existe déjà.')
         return numero
+
+
+class DemandeMaterielForm(forms.ModelForm):
+    class Meta:
+        model = DemandeMateriel
+        fields = ('equipement', 'atelier_cible', 'quantite')
+        widgets = {
+            'equipement': forms.Select(attrs={'class': 'form-control'}),
+            'atelier_cible': forms.Select(attrs={'class': 'form-control'}),
+            'quantite': forms.NumberInput(attrs={'class': 'form-control', 'min': 1}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['atelier_cible'].queryset = Workshop.objects.all().order_by('-date_debut')

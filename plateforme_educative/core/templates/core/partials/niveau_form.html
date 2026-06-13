@@ -1,0 +1,36 @@
+<div class="course-item">
+    <h3 style="margin:0;">Modifier un niveau</h3>
+    <form method="post"
+          hx-post="{{ action_url }}"
+          hx-target="#dashboard-structure"
+          hx-swap="innerHTML"
+          style="display:grid; gap:0.8rem;">
+        {% csrf_token %}
+        <p>
+            <label for="{{ niveau_form.code.id_for_label }}">Code</label>
+            {{ niveau_form.code }}
+            {% if niveau_form.code.errors %}<span class="error-text">{{ niveau_form.code.errors.0 }}</span>{% endif %}
+        </p>
+        <p>
+            <label for="{{ niveau_form.nom.id_for_label }}">Nom</label>
+            {{ niveau_form.nom }}
+            {% if niveau_form.nom.errors %}<span class="error-text">{{ niveau_form.nom.errors.0 }}</span>{% endif %}
+        </p>
+        <p>
+            <label for="{{ niveau_form.ordre.id_for_label }}">Ordre</label>
+            {{ niveau_form.ordre }}
+            {% if niveau_form.ordre.errors %}<span class="error-text">{{ niveau_form.ordre.errors.0 }}</span>{% endif %}
+        </p>
+        <label style="display:flex; align-items:center; gap:0.5rem;">
+            {{ niveau_form.actif }}
+            Actif
+        </label>
+        {% if niveau_form.non_field_errors %}
+            <div class="messages"><p class="message-item">{{ niveau_form.non_field_errors.0 }}</p></div>
+        {% endif %}
+        <div class="actions" style="justify-content:flex-start; gap:0.75rem;">
+            <button type="submit" class="btn">{{ submit_label|default:'Enregistrer' }}</button>
+            <button type="button" class="btn btn-ghost" onclick="document.getElementById('niveau-editor').innerHTML='<h3 style=\'margin:0;\'>Modifier un niveau</h3><p class=\'message-empty\' style=\'margin:0;\'>Choisissez un niveau à droite pour l’éditer.</p>'">{{ cancel_label|default:'Annuler' }}</button>
+        </div>
+    </form>
+</div>

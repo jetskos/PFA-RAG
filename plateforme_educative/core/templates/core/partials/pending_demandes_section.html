@@ -1,0 +1,47 @@
+<section id="pending-demandes-section" class="card">
+    <div class="card-header">
+        <h2>Demandes logistiques en attente</h2>
+        <p>Traitez les demandes de matériel soumises par les formateurs.</p>
+    </div>
+    <div class="card-body">
+        {% if pending_demandes and pending_demandes.exists %}
+            <table style="width:100%; border-collapse: collapse;">
+                <thead>
+                    <tr>
+                        <th style="text-align:left;padding:8px">Date</th>
+                        <th style="text-align:left;padding:8px">Formateur</th>
+                        <th style="text-align:left;padding:8px">Équipement</th>
+                        <th style="text-align:left;padding:8px">Atelier</th>
+                        <th style="text-align:left;padding:8px">Quantité</th>
+                        <th style="text-align:left;padding:8px">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for demande in pending_demandes %}
+                        <tr style="border-top:1px solid #eee;">
+                            <td style="padding:8px;vertical-align:middle">{{ demande.date_creation|date:"SHORT_DATETIME_FORMAT" }}</td>
+                            <td style="padding:8px;vertical-align:middle">{{ demande.formateur.get_full_name|default:demande.formateur.email }}</td>
+                            <td style="padding:8px;vertical-align:middle">{{ demande.equipement.nom }}</td>
+                            <td style="padding:8px;vertical-align:middle">{% if demande.atelier_cible %}{{ demande.atelier_cible.titre }}{% else %}&mdash;{% endif %}</td>
+                            <td style="padding:8px;vertical-align:middle">{{ demande.quantite }}</td>
+                            <td style="padding:8px;vertical-align:middle">
+                                <form hx-post="{% url 'dashboard_admin_process_demande' demande.id %}" hx-target="#pending-demandes-section" hx-swap="outerHTML" method="post" style="display:inline;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="approve" />
+                                    <button type="submit" class="btn-primary">Approuver</button>
+                                </form>
+                                <form hx-post="{% url 'dashboard_admin_process_demande' demande.id %}" hx-target="#pending-demandes-section" hx-swap="outerHTML" method="post" style="display:inline;margin-left:8px;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="reject" />
+                                    <button type="button" onclick="this.closest('form').submit();" class="btn-ghost">Rejeter</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Aucune demande en attente.</p>
+        {% endif %}
+    </div>
+</section>

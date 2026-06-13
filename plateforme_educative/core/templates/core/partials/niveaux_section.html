@@ -1,0 +1,82 @@
+<section id="niveaux-section" class="carte">
+    <div class="actions" style="justify-content:space-between; align-items:center; margin-bottom:1rem;">
+        <div>
+            <h2 style="margin:0;">Niveaux</h2>
+            <p style="margin:0.25rem 0 0; color:var(--text-muted);">Définissez et modifiez les niveaux scolaires disponibles.</p>
+        </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns: minmax(320px, 360px) minmax(0, 1fr); gap:1rem; align-items:start;">
+        <div style="display:grid; gap:1rem;">
+            <div class="course-item">
+                <h3 style="margin:0;">Créer un niveau</h3>
+                <form method="post"
+                      hx-post="{% url 'dashboard_admin_create_niveau' %}"
+                      hx-target="#dashboard-structure"
+                      hx-swap="innerHTML"
+                      style="display:grid; gap:0.8rem;">
+                    {% csrf_token %}
+                    <p>
+                        <label for="{{ niveau_form.code.id_for_label }}">Code</label>
+                        {{ niveau_form.code }}
+                        {% if niveau_form.code.errors %}<span class="error-text">{{ niveau_form.code.errors.0 }}</span>{% endif %}
+                    </p>
+                    <p>
+                        <label for="{{ niveau_form.nom.id_for_label }}">Nom</label>
+                        {{ niveau_form.nom }}
+                        {% if niveau_form.nom.errors %}<span class="error-text">{{ niveau_form.nom.errors.0 }}</span>{% endif %}
+                    </p>
+                    <p>
+                        <label for="{{ niveau_form.ordre.id_for_label }}">Ordre</label>
+                        {{ niveau_form.ordre }}
+                        {% if niveau_form.ordre.errors %}<span class="error-text">{{ niveau_form.ordre.errors.0 }}</span>{% endif %}
+                    </p>
+                    <label style="display:flex; align-items:center; gap:0.5rem;">
+                        {{ niveau_form.actif }}
+                        Actif
+                    </label>
+                    {% if niveau_form.non_field_errors %}
+                        <div class="messages"><p class="message-item">{{ niveau_form.non_field_errors.0 }}</p></div>
+                    {% endif %}
+                    <button type="submit" class="btn">Créer le niveau</button>
+                </form>
+            </div>
+
+            <div class="course-item" id="niveau-editor">
+                <h3 style="margin:0;">Modifier un niveau</h3>
+                <p class="message-empty" style="margin:0;">Choisissez un niveau à droite pour l’éditer.</p>
+            </div>
+        </div>
+
+        <div>
+            {% if niveaux %}
+                <div style="display:grid; gap:0.75rem;">
+                    {% for niveau in niveaux %}
+                        <div class="activity-item">
+                            <div class="activity-item__title">
+                                <strong>{{ niveau.nom }}</strong>
+                                <span class="profile-badge">{{ niveau.code }}</span>
+                            </div>
+                            <div class="activity-item__meta">
+                                <span>Ordre {{ niveau.ordre }}</span>
+                                <span>{{ niveau.classes.count }} classe{{ niveau.classes.count|pluralize }}</span>
+                                <span>{% if niveau.actif %}Actif{% else %}Archivé{% endif %}</span>
+                            </div>
+                            <div class="actions" style="justify-content:flex-start; margin-top:0.45rem;">
+                                <button type="button"
+                                        class="btn btn-ghost"
+                                        hx-get="{% url 'dashboard_admin_edit_niveau' niveau.id %}"
+                                        hx-target="#niveau-editor"
+                                        hx-swap="innerHTML">
+                                    Modifier
+                                </button>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="message-empty">Aucun niveau défini.</p>
+            {% endif %}
+        </div>
+    </div>
+</section>

@@ -316,9 +316,10 @@ def liste_cours(request):
         cours_list = Cours.objects.filter(actif=True).order_by('-date_creation')
     else:
         # Étudiants voient uniquement les cours correspondant à leur niveau
-        user_niveau = getattr(request.user, 'niveau', None)
-        if user_niveau:
-            cours_list = Cours.objects.filter(actif=True, niveau__iexact=user_niveau).order_by('-date_creation')
+        classe = getattr(request.user, 'classe', None)
+        niveau = getattr(classe, 'niveau', None)
+        if niveau:
+            cours_list = Cours.objects.filter(actif=True, niveau=niveau).order_by('-date_creation')
         else:
             cours_list = Cours.objects.filter(actif=True).order_by('-date_creation')
     
@@ -340,9 +341,9 @@ def detail_cours(request, cours_id):
 
     # Sécurité : empêcher un étudiant d'accéder à un cours hors de son niveau
     if request.user.is_authenticated and not (request.user.is_superuser or request.user.is_formateur):
-        user_niveau = getattr(request.user, 'niveau', '').lower()
-        cours_niveau = getattr(cours, 'niveau', '').lower()
-        if user_niveau and cours_niveau and user_niveau != cours_niveau:
+        classe = getattr(request.user, 'classe', None)
+        user_niveau = getattr(classe, 'niveau', None)
+        if user_niveau and cours.niveau_id != user_niveau.id:
             return HttpResponseForbidden("Ce cours ne correspond pas à votre niveau actuel.")
     
     # Précharger les chapitres avec les documents

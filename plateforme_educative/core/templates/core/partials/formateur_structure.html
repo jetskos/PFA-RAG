@@ -1,0 +1,98 @@
+<div style="display:grid; gap:1rem; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items:start;">
+    <section class="carte" style="grid-column: 1 / -1;">
+        <div class="actions" style="justify-content:space-between; align-items:center; margin-bottom:1rem;">
+            <div>
+                <h2 style="margin:0;">Mes Cours</h2>
+                <p style="margin:0.25rem 0 0; color:var(--text-muted);">Vos cours créés et publiés.</p>
+            </div>
+            <a href="{% url 'apprentissage:nouveau_cours' %}" class="btn">Créer un cours</a>
+        </div>
+
+        {% if mes_cours %}
+            <div style="display:grid; gap:0.75rem;">
+                {% for cours in mes_cours %}
+                    <article class="activity-item">
+                        <div class="activity-item__title">
+                            <strong>{{ cours.titre }}</strong>
+                            <span class="profile-badge">{{ cours.niveau.nom }}</span>
+                        </div>
+                        <div class="activity-item__meta">
+                            <span>{% if cours.actif %}Actif{% else %}Archivé{% endif %}</span>
+                            <span>{{ cours.chapitres.count }} chapitre{{ cours.chapitres.count|pluralize }}</span>
+                        </div>
+                        <div class="actions" style="justify-content:flex-start; margin-top:0.35rem;">
+                            <a href="{% url 'apprentissage:gerer_cours' cours.id %}" class="btn btn-ghost">Gérer le cours</a>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="message-empty">Vous n'avez pas encore créé de cours.</p>
+        {% endif %}
+    </section>
+
+    <section class="carte" style="grid-column: 1 / -1;">
+        <div class="actions" style="justify-content:space-between; align-items:center; margin-bottom:1rem;">
+            <div>
+                <h2 style="margin:0;">Mes Demandes Logistiques</h2>
+                <p style="margin:0.25rem 0 0; color:var(--text-muted);">Demandez du matériel pour vos ateliers.</p>
+            </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns: minmax(320px, 360px) minmax(0, 1fr); gap:1rem; align-items:start;">
+            <div class="course-item">
+                <h3 style="margin:0;">Nouvelle demande</h3>
+                <form method="post"
+                      hx-post="{% url 'dashboard_formateur_create_demande' %}"
+                      hx-target="#dashboard-formateur-structure"
+                      hx-swap="innerHTML"
+                      style="display:grid; gap:0.8rem;">
+                    {% csrf_token %}
+                    <p>
+                        <label for="{{ demande_form.equipement.id_for_label }}">Équipement</label>
+                        {{ demande_form.equipement }}
+                        {% if demande_form.equipement.errors %}<span class="error-text">{{ demande_form.equipement.errors.0 }}</span>{% endif %}
+                    </p>
+                    <p>
+                        <label for="{{ demande_form.atelier_cible.id_for_label }}">Atelier cible</label>
+                        {{ demande_form.atelier_cible }}
+                        {% if demande_form.atelier_cible.errors %}<span class="error-text">{{ demande_form.atelier_cible.errors.0 }}</span>{% endif %}
+                    </p>
+                    <p>
+                        <label for="{{ demande_form.quantite.id_for_label }}">Quantité</label>
+                        {{ demande_form.quantite }}
+                        {% if demande_form.quantite.errors %}<span class="error-text">{{ demande_form.quantite.errors.0 }}</span>{% endif %}
+                    </p>
+                    {% if demande_form.non_field_errors %}
+                        <div class="messages"><p class="message-item">{{ demande_form.non_field_errors.0 }}</p></div>
+                    {% endif %}
+                    <button type="submit" class="btn">Envoyer la demande</button>
+                </form>
+            </div>
+
+            <div>
+                {% if mes_demandes %}
+                    <div style="display:grid; gap:0.75rem;">
+                        {% for demande in mes_demandes %}
+                            <article class="activity-item">
+                                <div class="activity-item__title">
+                                    <strong>{{ demande.equipement.nom }}</strong>
+                                    <span class="profile-badge">{{ demande.get_statut_display }}</span>
+                                </div>
+                                <div class="activity-item__meta">
+                                    <span>Quantité {{ demande.quantite }}</span>
+                                    {% if demande.atelier_cible %}
+                                        <span>{{ demande.atelier_cible.titre }}</span>
+                                    {% endif %}
+                                    <span>{{ demande.date_creation|date:'d/m/Y H:i' }}</span>
+                                </div>
+                            </article>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="message-empty">Aucune demande logistique pour le moment.</p>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+</div>

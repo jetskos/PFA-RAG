@@ -1,0 +1,12 @@
+<div style="display:grid; gap:1rem; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items:start;">
+    <div style="grid-column: 1 / -1;">
+        {% include 'core/partials/pending_students_section.html' %}
+    </div>
+
+    <div style="grid-column: 1 / -1;">
+        {% include 'core/partials/pending_demandes_section.html' %}
+    </div>
+
+    {% include 'core/partials/niveaux_section.html' %}
+    {% include 'core/partials/classes_section.html' %}
+</div>

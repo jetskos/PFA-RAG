@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}Mon tableau de bord{% endblock %}
+
+{% block content %}
+<section class="page-shell">
+    <div class="page-header">
+        <p class="eyebrow">Espace élève</p>
+        <h1>Bienvenue, {{ request.user.first_name|default:request.user.get_username }}</h1>
+        <p>Voici un aperçu de votre progression et de vos cours assignés.</p>
+    </div>
+
+    {% include 'core/partials/dashboard_actions.html' with role='ELEVE' %}
+
+    <div style="display:grid; gap:1rem; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items:start;">
+        <div style="grid-column: 1 / -1;">
+            <section class="card">
+                <div class="card-header">
+                    <h2>Mon profil scolaire</h2>
+                </div>
+                <div class="card-body">
+                    <p><strong>Classe:</strong> {% if classe %}{{ classe.nom }}{% else %}&mdash;{% endif %}</p>
+                    <p><strong>Niveau:</strong> {% if niveau %}{{ niveau.nom }}{% else %}&mdash;{% endif %}</p>
+                </div>
+            </section>
+        </div>
+
+        <div style="grid-column: 1 / -1;">
+            <section class="card">
+                <div class="card-header">
+                    <h2>Mes Cours</h2>
+                </div>
+                <div class="card-body">
+                    {% if mes_cours and mes_cours.exists %}
+                        <ul style="list-style:none;padding-left:0">
+                            {% for cours in mes_cours %}
+                                <li style="padding:8px 0;border-bottom:1px solid #f1f1f1;display:flex;justify-content:space-between;align-items:center">
+                                    <div>
+                                        <strong>{{ cours.titre }}</strong>
+                                        <div style="font-size:13px;color:#64748b">{{ cours.description|truncatechars:120 }}</div>
+                                    </div>
+                                    <div>
+                                        <a href="{% url 'apprentissage:detail_cours' cours.id %}" class="btn-primary">Voir le cours</a>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>Aucun cours assigné pour votre niveau pour le moment.</p>
+                    {% endif %}
+                </div>
+            </section>
+        </div>
+    </div>
+</section>
+{% endblock %}

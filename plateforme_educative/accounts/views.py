@@ -1,11 +1,10 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import login
 from django.http import HttpResponse
 from django.urls import reverse
 from .forms import InscriptionForm
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import JsonResponse
-from .models import Utilisateur
+from .models import Utilisateur, Niveau, Classe
 from .forms import ProfileForm
 from apprentissage.models import Progression, ChapitreVisite, ChapitreComplete, Cours
 
@@ -15,13 +14,11 @@ def register_view(request):
         form = InscriptionForm(request.POST)
         if form.is_valid():
             user = form.save()
-            # Connecte automatiquement l'utilisateur après l'inscription
-            login(request, user)
             if request.headers.get('HX-Request') == 'true':
                 response = HttpResponse(status=204)
-                response['HX-Redirect'] = reverse('accounts:login')
+                response['HX-Redirect'] = reverse('accounts:pending')
                 return response
-            return redirect('accounts:login')
+            return redirect('accounts:pending')
     else:
         form = InscriptionForm()
 
@@ -29,6 +26,10 @@ def register_view(request):
     if request.headers.get('HX-Request') == 'true':
         return render(request, 'accounts/partials/register_form.html', context)
     return render(request, 'accounts/register.html', context)
+
+
+def pending_view(request):
+    return render(request, 'accounts/pending.html')
 
 
 @login_required
@@ -43,7 +44,8 @@ def admin_dashboard(request):
             email = (request.POST.get('email') or '').strip().lower()
             password = request.POST.get('password') or ''
             role = request.POST.get('role') or 'ELEVE'
-            niveau = request.POST.get('niveau') or 'DEBUTANT'
+            classe_id = request.POST.get('classe_id') or None
+            niveau_id = request.POST.get('niveau') or None
             is_formateur = request.POST.get('is_formateur') == 'true'
 
             if not email or not password:
@@ -52,18 +54,38 @@ def admin_dashboard(request):
                 return JsonResponse({'status': 'error', 'message': 'Cet email existe deja.'}, status=400)
             if role not in dict(Utilisateur.ROLE_CHOICES):
                 return JsonResponse({'status': 'error', 'message': 'Role invalide.'}, status=400)
-            if niveau not in dict(Utilisateur.NIVEAU_CHOICES):
-                return JsonResponse({'status': 'error', 'message': 'Niveau invalide.'}, status=400)
 
             # Ensure role and helper flag remain coherent.
             if role == 'FORMATEUR':
                 is_formateur = True
 
+            classe = None
+            if classe_id:
+                try:
+                    classe = Classe.objects.select_related('niveau').get(pk=classe_id)
+                except Classe.DoesNotExist:
+                    return JsonResponse({'status': 'error', 'message': 'Classe introuvable.'}, status=404)
+            elif niveau_id:
+                try:
+                    niveau = Niveau.objects.get(pk=niveau_id)
+                except Niveau.DoesNotExist:
+                    return JsonResponse({'status': 'error', 'message': 'Niveau introuvable.'}, status=404)
+                classe = (
+                    Classe.objects.filter(niveau=niveau, actif=True)
+                    .order_by('annee_scolaire', 'nom')
+                    .first()
+                )
+
+            statut_compte = 'ACTIVE' if role != 'ELEVE' else 'PENDING'
+            is_active = role != 'ELEVE'
+
             user = Utilisateur.objects.create_user(
                 email=email,
                 password=password,
                 role=role,
-                niveau=niveau,
+                statut_compte=statut_compte,
+                is_active=is_active,
+                classe=classe,
                 is_formateur=is_formateur,
             )
             return JsonResponse({
@@ -72,7 +94,9 @@ def admin_dashboard(request):
                     'id': str(user.id),
                     'email': user.email,
                     'role': user.role,
+                    'statut_compte': user.statut_compte,
                     'niveau': user.niveau,
+                    'classe': str(user.classe) if user.classe else '',
                     'is_formateur': user.is_formateur,
                     'is_superuser': user.is_superuser,
                 }
@@ -96,8 +120,9 @@ def admin_dashboard(request):
 
         # default: save updates
         is_formateur = request.POST.get('is_formateur') == 'true'
-        niveau = request.POST.get('niveau')
         role = request.POST.get('role')
+        classe_id = request.POST.get('classe_id') or None
+        niveau_id = request.POST.get('niveau') or None
 
         if role in dict(Utilisateur.ROLE_CHOICES):
             user.role = role
@@ -105,8 +130,29 @@ def admin_dashboard(request):
                 is_formateur = True
 
         user.is_formateur = is_formateur
-        if niveau in dict(Utilisateur.NIVEAU_CHOICES):
-            user.niveau = niveau
+
+        if classe_id:
+            try:
+                user.classe = Classe.objects.get(pk=classe_id)
+            except Classe.DoesNotExist:
+                return JsonResponse({'status': 'error', 'message': 'Classe introuvable'}, status=404)
+        elif niveau_id:
+            try:
+                niveau = Niveau.objects.get(pk=niveau_id)
+            except Niveau.DoesNotExist:
+                return JsonResponse({'status': 'error', 'message': 'Niveau introuvable'}, status=404)
+            user.classe = (
+                Classe.objects.filter(niveau=niveau, actif=True)
+                .order_by('annee_scolaire', 'nom')
+                .first()
+            )
+        elif role == 'ELEVE' and not user.classe:
+            user.statut_compte = 'PENDING'
+            user.is_active = False
+        elif role != 'ELEVE':
+            user.statut_compte = 'ACTIVE'
+            user.is_active = True
+
         user.save()
         return JsonResponse({'status': 'success'})
 
@@ -114,8 +160,10 @@ def admin_dashboard(request):
     users = Utilisateur.objects.all().order_by('-date_creation')
     return render(request, 'accounts/admin_dashboard.html', {
         'users': users,
-        'niveau_choices': Utilisateur.NIVEAU_CHOICES,
         'role_choices': Utilisateur.ROLE_CHOICES,
+        'niveau_choices': [(str(niveau.id), niveau.nom) for niveau in Niveau.objects.order_by('ordre', 'nom')],
+        'niveaux': Niveau.objects.prefetch_related('classes').order_by('ordre', 'nom'),
+        'classes': Classe.objects.select_related('niveau').order_by('niveau__ordre', 'nom'),
     })
 
 
@@ -133,7 +181,9 @@ def user_details(request, user_id):
             'id': str(user.id),
             'email': user.email,
             'role': user.get_role_display(),
-            'niveau': user.get_niveau_display(),
+            'niveau': user.classe.niveau.nom if user.classe and user.classe.niveau else '',
+            'classe': str(user.classe) if user.classe else '',
+            'statut_compte': user.get_statut_compte_display(),
             'is_formateur': user.is_formateur,
             'is_staff': user.is_staff,
             'is_superuser': user.is_superuser,
@@ -215,6 +265,8 @@ def profile_view(request):
 
     context = {
         'profile_user': request.user,
+        'profile_class': request.user.classe,
+        'profile_niveau': request.user.classe.niveau if request.user.classe else None,
         'progressions': progressions,
         'completed_progressions': completed_progressions,
         'active_progressions': active_progressions,

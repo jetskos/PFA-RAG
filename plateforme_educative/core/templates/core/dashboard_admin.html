@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}Administration scolaire{% endblock %}
+
+{% block content %}
+<section class="page-shell">
+    <div class="page-header">
+        <p class="eyebrow">School Admin</p>
+        <h1>Tableau de bord administrateur</h1>
+        <p>Gérez les niveaux, les classes et l'activation des étudiants en attente.</p>
+    </div>
+
+    <div id="dashboard-structure">
+        {% include 'core/partials/dashboard_actions.html' with role='ADMIN' %}
+        {% include 'core/partials/admin_structure.html' %}
+    </div>
+</section>
+{% endblock %}

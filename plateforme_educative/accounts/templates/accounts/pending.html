@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Compte en attente | Plateforme Educative{% endblock %}
+
+{% block content %}
+<section class="carte auth-carte" style="max-width: 720px;">
+    <p class="eyebrow">Inscription reçue</p>
+    <h2>Votre compte est en attente de validation</h2>
+    <p>
+        Un administrateur scolaire doit maintenant attribuer votre classe et activer votre compte.
+        Vous pourrez ensuite vous connecter normalement.
+    </p>
+
+    <div style="display:grid; gap:0.75rem; margin-top:1rem;">
+        <div class="course-item">
+            <strong>Étape actuelle</strong>
+            <p style="margin:0.35rem 0 0;">Compte créé, en attente d'approbation.</p>
+        </div>
+        <div class="course-item">
+            <strong>Étape suivante</strong>
+            <p style="margin:0.35rem 0 0;">L'administrateur vous affecte à une classe puis active votre accès.</p>
+        </div>
+    </div>
+
+    <div class="actions" style="margin-top:1rem; justify-content:flex-start;">
+        <a href="{% url 'accounts:login' %}" class="btn btn-ghost">Aller à la connexion</a>
+        <a href="{% url 'accueil' %}" class="btn">Retour à l'accueil</a>
+    </div>
+</section>
+{% endblock %}

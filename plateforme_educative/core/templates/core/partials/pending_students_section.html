@@ -1,0 +1,51 @@
+<section id="pending-section" class="carte">
+    <div class="actions" style="justify-content:space-between; align-items:center; margin-bottom:1rem;">
+        <div>
+            <h2 style="margin:0;">Pending Students</h2>
+            <p style="margin:0.25rem 0 0; color:var(--text-muted);">Attribuez une classe pour activer le compte.</p>
+        </div>
+    </div>
+
+    {% if pending_error %}
+        <div class="messages" style="margin-bottom:1rem;">
+            <p class="message-item">{{ pending_error }}</p>
+        </div>
+    {% endif %}
+
+    {% if pending_rows %}
+        <div style="display:grid; gap:0.85rem;">
+            {% for row in pending_rows %}
+                <article class="course-item" style="gap:0.75rem;">
+                    <div class="course-item__top">
+                        <div>
+                            <h3>{{ row.user.email }}</h3>
+                            <p>Inscrit le {{ row.user.date_creation|date:'d/m/Y H:i' }}</p>
+                        </div>
+                        <span class="profile-badge">En attente</span>
+                    </div>
+
+                    <form method="post"
+                                      hx-post="{% url 'dashboard_admin_activate_pending_student' %}"
+                                      hx-target="#dashboard-structure"
+                                      hx-swap="innerHTML"
+                                      style="display:grid; gap:0.8rem; grid-template-columns: minmax(0, 1fr) auto; align-items:end;">
+                        {% csrf_token %}
+                        {{ row.form.student_id }}
+                        <div>
+                            <label for="{{ row.form.classe.id_for_label }}">Classe</label>
+                            {{ row.form.classe }}
+                            {% if row.form.classe.errors %}
+                                <span class="error-text">{{ row.form.classe.errors.0 }}</span>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <button type="submit" class="btn">Activer</button>
+                        </div>
+                    </form>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="message-empty">Aucun étudiant en attente pour le moment.</p>
+    {% endif %}
+</section>

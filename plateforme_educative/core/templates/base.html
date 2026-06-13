@@ -300,20 +300,24 @@
                 </div>
             </a>
 
-            {% with current_app=request.resolver_match.app_name current_url=request.resolver_match.url_name %}
+            {% with current_url=request.resolver_match.url_name %}
             <nav class="main-nav" aria-label="Navigation principale">
                 <a href="{% url 'accueil' %}" class="{% if current_url == 'accueil' %}active{% endif %}">
                     <i class="ti ti-home" aria-hidden="true" style="font-size:15px;vertical-align:-2px;margin-right:4px"></i>Accueil
                 </a>
-                <a href="{% url 'apprentissage:liste_cours' %}" class="{% if current_app == 'apprentissage' and current_url != 'espace_formateur' %}active{% endif %}">Apprentissage</a>
+                <a href="{% url 'apprentissage:liste_cours' %}" class="{% if current_url == 'liste_cours' or current_url == 'detail_cours' or current_url == 'detail_chapitre' %}active{% endif %}">Apprentissage</a>
                 {% if user.is_authenticated and user.is_formateur %}
                     <a href="{% url 'apprentissage:espace_formateur' %}" class="{% if current_url == 'espace_formateur' %}active{% endif %}">Espace Formateur</a>
                 {% endif %}
-                {% if user.is_superuser %}
-                    <a href="{% url 'logistics:inventaire' %}" class="{% if current_app == 'logistics' and current_url == 'inventaire' %}active{% endif %}">Logistique</a>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'dashboard' %}" class="{% if current_url == 'dashboard' or current_url == 'dashboard_student' or current_url == 'dashboard_formateur' or current_url == 'dashboard_admin' %}active{% endif %}">Mon tableau</a>
                 {% endif %}
                 {% if user.is_superuser %}
-                    <a href="{% url 'accounts:admin_dashboard' %}" class="{% if current_app == 'accounts' and current_url == 'admin_dashboard' %}active{% endif %}">Utilisateurs</a>
+                    <a href="{% url 'logistics:inventaire' %}" class="{% if current_url == 'inventaire' %}active{% endif %}">Logistique</a>
+                {% endif %}
+                {% if user.is_superuser or user.role == 'ADMIN' %}
+                    <a href="{% url 'dashboard_admin' %}" class="{% if current_url == 'dashboard_admin' %}active{% endif %}">Administration</a>
+                    <a href="{% url 'accounts:admin_dashboard' %}" class="{% if current_url == 'admin_dashboard' or current_url == 'user_details' %}active{% endif %}">Gestion d'utilisateurs</a>
                 {% endif %}
             </nav>
 

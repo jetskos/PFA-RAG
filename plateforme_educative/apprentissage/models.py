@@ -1,18 +1,12 @@
 import uuid
 from django.db import models
 from django.core.validators import URLValidator
+from accounts.models import Niveau
 
 
 class Cours(models.Model):
     """Modèle représentant un cours dans la plateforme."""
-    
-    NIVEAU_CHOICES = (
-        ('DEBUTANT', 'Débutant'),
-        ('INTERMEDIAIRE', 'Intermédiaire'),
-        ('AVANCE', 'Avancé'),
-        ('EXPERT', 'Expert'),
-    )
-    
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     titre = models.CharField(
         max_length=255,
@@ -21,10 +15,10 @@ class Cours(models.Model):
     description = models.TextField(
         verbose_name='Description'
     )
-    niveau = models.CharField(
-        max_length=20,
-        choices=NIVEAU_CHOICES,
-        default='DEBUTANT',
+    niveau = models.ForeignKey(
+        Niveau,
+        on_delete=models.CASCADE,
+        related_name='cours',
         verbose_name='Niveau'
     )
     resume = models.TextField(

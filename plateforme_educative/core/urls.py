@@ -18,10 +18,33 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from .views import home_view
+from .views import (
+    home_view,
+    dashboard_router,
+    admin_dashboard_view,
+    formateur_dashboard_view,
+    student_dashboard_view,
+    create_niveau_view,
+    create_classe_view,
+    activate_pending_student_view,
+    edit_niveau_view,
+    create_demande_materiel_view,
+    admin_process_demande_view,
+)
 
 urlpatterns = [
     path('', home_view, name='accueil'),
+    path('dashboard/', dashboard_router, name='dashboard'),
+    path('dashboard/admin/', admin_dashboard_view, name='dashboard_admin'),
+    path('dashboard/admin/niveaux/creer/', create_niveau_view, name='dashboard_admin_create_niveau'),
+    path('dashboard/admin/niveaux/<uuid:niveau_id>/editer/', edit_niveau_view, name='dashboard_admin_edit_niveau'),
+    path('dashboard/admin/classes/creer/', create_classe_view, name='dashboard_admin_create_classe'),
+    path('dashboard/admin/pending/activer/', activate_pending_student_view, name='dashboard_admin_activate_pending_student'),
+        path('dashboard/admin/demandes/<uuid:demande_id>/process/',
+            admin_process_demande_view, name='dashboard_admin_process_demande'),
+    path('dashboard/formateur/', formateur_dashboard_view, name='dashboard_formateur'),
+    path('dashboard/formateur/demandes/creer/', create_demande_materiel_view, name='dashboard_formateur_create_demande'),
+    path('dashboard/student/', student_dashboard_view, name='dashboard_student'),
     path('admin/', admin.site.urls),
     path('auth/', include('accounts.urls')),
     path('apprentissage/', include('apprentissage.urls')),

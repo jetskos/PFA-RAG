@@ -1,0 +1,78 @@
+<section id="classes-section" class="carte">
+    <div class="actions" style="justify-content:space-between; align-items:center; margin-bottom:1rem;">
+        <div>
+            <h2 style="margin:0;">Classes</h2>
+            <p style="margin:0.25rem 0 0; color:var(--text-muted);">Créez des classes rattachées à un niveau.</p>
+        </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns: minmax(320px, 360px) 1fr; gap:1rem; align-items:start;">
+        <div class="course-item">
+            <h3 style="margin:0;">Créer une classe</h3>
+            <form method="post"
+                  hx-post="{% url 'dashboard_admin_create_classe' %}"
+                                    hx-target="#dashboard-structure"
+                                      hx-swap="innerHTML"
+                  style="display:grid; gap:0.8rem;">
+                {% csrf_token %}
+                <p>
+                    <label for="{{ classe_form.niveau.id_for_label }}">Niveau</label>
+                    {{ classe_form.niveau }}
+                    {% if classe_form.niveau.errors %}<span class="error-text">{{ classe_form.niveau.errors.0 }}</span>{% endif %}
+                </p>
+                <p>
+                    <label for="{{ classe_form.code.id_for_label }}">Code</label>
+                    {{ classe_form.code }}
+                    {% if classe_form.code.errors %}<span class="error-text">{{ classe_form.code.errors.0 }}</span>{% endif %}
+                </p>
+                <p>
+                    <label for="{{ classe_form.nom.id_for_label }}">Nom</label>
+                    {{ classe_form.nom }}
+                    {% if classe_form.nom.errors %}<span class="error-text">{{ classe_form.nom.errors.0 }}</span>{% endif %}
+                </p>
+                <p>
+                    <label for="{{ classe_form.annee_scolaire.id_for_label }}">Année scolaire</label>
+                    {{ classe_form.annee_scolaire }}
+                    {% if classe_form.annee_scolaire.errors %}<span class="error-text">{{ classe_form.annee_scolaire.errors.0 }}</span>{% endif %}
+                </p>
+                <p>
+                    <label for="{{ classe_form.capacite.id_for_label }}">Capacité</label>
+                    {{ classe_form.capacite }}
+                    {% if classe_form.capacite.errors %}<span class="error-text">{{ classe_form.capacite.errors.0 }}</span>{% endif %}
+                </p>
+                <label style="display:flex; align-items:center; gap:0.5rem;">
+                    {{ classe_form.actif }}
+                    Actif
+                </label>
+                {% if classe_form.non_field_errors %}
+                    <div class="messages"><p class="message-item">{{ classe_form.non_field_errors.0 }}</p></div>
+                {% endif %}
+                <button type="submit" class="btn">Créer la classe</button>
+            </form>
+        </div>
+
+        <div>
+            {% if classes %}
+                <div style="display:grid; gap:0.75rem;">
+                    {% for classe in classes %}
+                        <div class="activity-item">
+                            <div class="activity-item__title">
+                                <strong>{{ classe.nom }}</strong>
+                                <span class="profile-badge">{{ classe.code }}</span>
+                            </div>
+                            <div class="activity-item__meta">
+                                <span>{{ classe.niveau.nom }}</span>
+                                <span>{{ classe.annee_scolaire }}</span>
+                                <span>Capacité {{ classe.capacite }}</span>
+                                <span>{{ classe.eleves.count }} élève{{ classe.eleves.count|pluralize }}</span>
+                                <span>{% if classe.actif %}Active{% else %}Archivée{% endif %}</span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="message-empty">Aucune classe définie.</p>
+            {% endif %}
+        </div>
+    </div>
+</section>

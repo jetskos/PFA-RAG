@@ -1508,3 +1508,27 @@ form textarea {
         grid-template-columns: 1fr;
     }
 }
+
+/* Dashboard action cards */
+.dash-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+}
+.dash-card {
+    background: var(--surface);
+    border: 1px solid var(--bordure);
+    border-radius: 12px;
+    padding: 1rem;
+    min-width: 220px;
+    flex: 1 1 220px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.dash-card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08); }
+.dash-card .title { font-weight: 700; color: var(--primaire); margin-bottom: 0.5rem; }
+.dash-card .muted { color: var(--texte-secondaire); font-size: 0.95rem; }
+.dash-card .cta { margin-top: 0.75rem; }
