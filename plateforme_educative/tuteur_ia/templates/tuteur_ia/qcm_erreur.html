@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}QCM — Erreur{% endblock %}
+{% block content %}
+<div style="max-width:500px;margin:3rem auto;text-align:center;padding:2rem;background:#fff;border-radius:14px;border:1px solid #e2e8f0;">
+    <div style="font-size:3rem;margin-bottom:1rem;">⚠️</div>
+    <h2 style="color:#0f172a;margin-bottom:.5rem;">QCM indisponible</h2>
+    <p style="color:#64748b;margin-bottom:1.5rem;">{{ message }}</p>
+    <a href="/apprentissage/cours/{{ chapitre.cours.id }}/"
+       style="background:#2563eb;color:#fff;padding:.7rem 1.5rem;border-radius:10px;text-decoration:none;font-weight:600;">
+        Retour au cours
+    </a>
+</div>
+{% endblock %}

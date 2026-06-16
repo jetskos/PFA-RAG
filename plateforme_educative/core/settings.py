@@ -10,6 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import pymysql
+pymysql.install_as_MySQLdb()
+
 from datetime import timedelta
 from pathlib import Path
 import os
@@ -26,7 +29,7 @@ def _load_env_file(env_path: Path) -> None:
             continue
 
         key, value = line.split('=', 1)
-        os.environ.setdefault(key.strip(), value.strip().strip('"').strip("'"))
+        os.environ[key.strip()] = value.strip().strip('"').strip("'")
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -70,6 +73,7 @@ INSTALLED_APPS = [
     'accounts',
     'apprentissage',
     'logistics',
+    'tuteur_ia',
 ]
 
 MIDDLEWARE = [
@@ -181,3 +185,7 @@ LOGIN_URL = '/auth/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 X_FRAME_OPTIONS = 'SAMEORIGIN'
+
+# LLM Configuration (for tuteur_ia)
+GROQ_API_KEY = os.getenv('GROQ_API_KEY', '')
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY', '')

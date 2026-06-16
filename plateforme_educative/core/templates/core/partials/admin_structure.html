@@ -1,12 +1,55 @@
-<div style="display:grid; gap:1rem; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items:start;">
-    <div style="grid-column: 1 / -1;">
-        {% include 'core/partials/pending_students_section.html' %}
+<div style="display:grid; gap:1rem; grid-template-columns: 1fr; align-items:start;">
+    
+    <!-- GLOBAL ADMIN TABS -->
+    <div style="display:flex; justify-content:center; gap:1rem; margin-bottom: 2rem; flex-wrap: wrap;">
+        <button hx-get="{% url 'dashboard_admin' %}?tab=niveaux" hx-target="#dashboard-structure" hx-swap="innerHTML" 
+                class="btn {% if active_tab == 'niveaux' %}btn-primary{% else %}btn-ghost{% endif %}" style="border-radius: 50px; padding: 10px 24px;">
+            <i class="ti ti-layers-linked"></i> Niveaux
+        </button>
+        <button hx-get="{% url 'dashboard_admin' %}?tab=classes" hx-target="#dashboard-structure" hx-swap="innerHTML" 
+                class="btn {% if active_tab == 'classes' %}btn-primary{% else %}btn-ghost{% endif %}" style="border-radius: 50px; padding: 10px 24px;">
+            <i class="ti ti-users-group"></i> Classes
+        </button>
+        <button hx-get="{% url 'dashboard_admin' %}?tab=students" hx-target="#dashboard-structure" hx-swap="innerHTML" 
+                class="btn {% if active_tab == 'students' %}btn-primary{% else %}btn-ghost{% endif %}" style="border-radius: 50px; padding: 10px 24px;">
+            <i class="ti ti-user-plus"></i> Étudiants en attente
+        </button>
+        <button hx-get="{% url 'dashboard_admin' %}?tab=logistics" hx-target="#dashboard-structure" hx-swap="innerHTML" 
+                class="btn {% if active_tab == 'logistics' %}btn-primary{% else %}btn-ghost{% endif %}" style="border-radius: 50px; padding: 10px 24px;">
+            <i class="ti ti-package"></i> Demandes Logistiques
+        </button>
     </div>
 
-    <div style="grid-column: 1 / -1;">
-        {% include 'core/partials/pending_demandes_section.html' %}
+    <!-- TAB CONTENTS -->
+    {% if active_tab == 'students' %}
+    <div style="display: flex; justify-content: center; width: 100%;">
+        <div style="width: 100%; max-width: 1000px;">
+            {% include 'core/partials/pending_students_section.html' %}
+        </div>
     </div>
+    {% endif %}
 
-    {% include 'core/partials/niveaux_section.html' %}
-    {% include 'core/partials/classes_section.html' %}
+    {% if active_tab == 'logistics' %}
+    <div style="display: flex; justify-content: center; width: 100%;">
+        <div style="width: 100%; max-width: 1000px;">
+            {% include 'core/partials/pending_demandes_section.html' %}
+        </div>
+    </div>
+    {% endif %}
+
+    {% if active_tab == 'niveaux' %}
+    <div style="display: flex; justify-content: center; width: 100%;">
+        <div style="width: 100%; max-width: 900px;">
+            {% include 'core/partials/niveaux_section.html' %}
+        </div>
+    </div>
+    {% endif %}
+    
+    {% if active_tab == 'classes' %}
+    <div style="display: flex; justify-content: center; width: 100%;">
+        <div style="width: 100%; max-width: 900px;">
+            {% include 'core/partials/classes_section.html' %}
+        </div>
+    </div>
+    {% endif %}
 </div>

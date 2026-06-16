@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Mon Profil IA{% endblock %}
+
+{% block content %}
+<div class="site-main">
+    <div class="page-shell">
+        <div class="page-header">
+            <div class="eyebrow">Intelligence Artificielle</div>
+            <h1>Mon Profil Cognitif IA</h1>
+            <p>Découvrez comment l'IA s'adapte à votre apprentissage en temps réel en identifiant vos forces et vos axes d'amélioration.</p>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- Colonne Principale -->
+            <div class="main-col" style="display: flex; flex-direction: column; gap: 1.5rem;">
+                
+                <div class="card">
+                    <h3 style="color: var(--accent-emerald); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <span class="feat-icon emerald" style="width: 32px; height: 32px; font-size: 1rem;">🌟</span>
+                        Concepts Maîtrisés
+                    </h3>
+                    {% if profil.concepts_maitrises %}
+                        <div class="badge-gallery" style="display: flex; flex-wrap: wrap; gap: 0.75rem;">
+                            {% for concept in profil.concepts_maitrises %}
+                                <div class="badge-niveau" style="background: var(--accent-emerald-light); color: var(--accent-emerald); border: 1px solid rgba(16, 185, 129, 0.2);">
+                                    ✓ {{ concept }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-secondary" style="font-size: 0.9rem;">L'IA n'a pas encore validé de concepts majeurs. Continuez vos sessions avec le Tuteur IA !</p>
+                    {% endif %}
+                </div>
+
+                <div class="card">
+                    <h3 style="color: var(--accent-warning); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <span class="feat-icon amber" style="width: 32px; height: 32px; font-size: 1rem;">🎯</span>
+                        Concepts Fragiles (À réviser)
+                    </h3>
+                    {% if profil.concepts_fragiles %}
+                        <div class="badge-gallery" style="display: flex; flex-wrap: wrap; gap: 0.75rem;">
+                            {% for concept in profil.concepts_fragiles %}
+                                <div class="role-badge">
+                                    {{ concept }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-secondary" style="font-size: 0.9rem;">Aucun concept fragile détecté pour le moment.</p>
+                    {% endif %}
+                </div>
+
+                <div class="card">
+                    <h3 style="color: var(--brand-primary); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <span class="feat-icon blue" style="width: 32px; height: 32px; font-size: 1rem;">💡</span>
+                        Erreurs Communes Détectées
+                    </h3>
+                    {% if profil.erreurs_communes %}
+                        <ul style="padding-left: 1.5rem; color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6;">
+                            {% for erreur in profil.erreurs_communes %}
+                                <li style="margin-bottom: 0.5rem;">{{ erreur }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-secondary" style="font-size: 0.9rem;">Génial ! Le tuteur n'a relevé aucune erreur récurrente.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Colonne Latérale -->
+            <div class="side-col" style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <div class="glass-card" style="padding: 1.75rem;">
+                    <h3 style="margin-bottom: 1rem;">Style d'apprentissage</h3>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">
+                        Votre profil d'apprentissage IA aide le tuteur à personnaliser ses explications.
+                    </p>
+                    <div style="background: var(--brand-light); border: 1px solid var(--brand-primary); border-radius: var(--radius-sm); padding: 1rem; text-align: center;">
+                        <strong style="color: var(--brand-primary); font-size: 1.1rem; text-transform: uppercase;">{{ profil.style_prefere }}</strong>
+                    </div>
+                </div>
+
+                <div class="card" style="background: var(--brand-gradient); color: #fff; border: none;">
+                    <h3 style="color: #fff; margin-bottom: 0.5rem;">Prêt à progresser ?</h3>
+                    <p style="font-size: 0.85rem; color: rgba(255, 255, 255, 0.9); margin-bottom: 1rem;">
+                        Lancez une nouvelle session de tutorat ou un QCM pour affiner votre profil.
+                    </p>
+                    <a href="{% url 'apprentissage:liste_cours' %}" class="btn" style="background: #fff; color: var(--brand-primary); width: 100%;">Aller aux Cours</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

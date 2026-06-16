@@ -1,53 +1,4 @@
-:root {
-    --fond: #f7f7f2;
-    --surface: #ffffff;
-    --texte: #1f2933;
-    --texte-secondaire: #52606d;
-    --primaire: #0b7285;
-    --primaire-hover: #095c6a;
-    --bordure: #d9e2ec;
-}
-
-* {
-    box-sizing: border-box;
-}
-
-body {
-    margin: 0;
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(180deg, #fefefe 0%, var(--fond) 100%);
-    color: var(--texte);
-}
-
-.barre-top {
-    background: var(--surface);
-    border-bottom: 1px solid var(--bordure);
-    padding: 1rem 1.25rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-}
-
-.barre-top h1 {
-    margin: 0;
-    font-size: 1.05rem;
-}
-
-.barre-top nav {
-    display: flex;
-    gap: 1rem;
-}
-
-.barre-top a {
-    color: var(--primaire);
-    text-decoration: none;
-    font-weight: 600;
-}
-
-.barre-top a:hover {
-    text-decoration: underline;
-}
+/* Variables removed, now using ia_premium.css */
 
 .conteneur {
     width: min(100% - 2rem, 1200px);
@@ -57,8 +8,6 @@ body {
 }
 
 .carte {
-    background-color: var(--surface);
-    border: 1px solid var(--bordure);
     border-radius: 12px;
     padding: 1.25rem;
 }
@@ -72,94 +21,6 @@ body {
     gap: 0.75rem;
     flex-wrap: wrap;
     margin-top: 1rem;
-}
-
-.btn {
-    display: inline-block;
-    background: var(--primaire);
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    padding: 0.65rem 1rem;
-    text-decoration: none;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.btn:hover {
-    background: var(--primaire-hover);
-}
-
-.btn-secondaire {
-    background: #334e68;
-}
-
-.btn-secondary,
-.btn-secondaire:hover,
-.btn-ghost {
-    background: #334e68;
-}
-
-.btn-secondaire:hover {
-    background: #243b53;
-}
-
-.btn-secondary:hover,
-.btn-ghost:hover {
-    background: #243b53;
-}
-
-.btn-ghost {
-    background: transparent;
-    color: var(--primaire);
-    border: 1px solid var(--bordure);
-}
-
-.btn-ghost:hover {
-    color: #fff;
-}
-
-.btn-full {
-    width: 100%;
-    text-align: center;
-}
-
-form p {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-}
-
-form input,
-form select,
-form textarea {
-    border: 1px solid var(--bordure);
-    border-radius: 8px;
-    padding: 0.55rem 0.7rem;
-    font: inherit;
-}
-
-.form-input {
-    width: 100%;
-}
-
-.error-text {
-    color: #c53030;
-    font-size: 0.85rem;
-    font-weight: 500;
-}
-
-.messages {
-    margin-bottom: 1rem;
-}
-
-.message-item {
-    margin: 0;
-    padding: 0.65rem 0.8rem;
-    background: #e6fcf5;
-    border: 1px solid #96f2d7;
-    border-radius: 8px;
-    color: #0c525d;
 }
 
 /* Module Apprentissage */

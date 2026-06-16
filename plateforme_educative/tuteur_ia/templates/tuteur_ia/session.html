@@ -1,0 +1,259 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Tuteur IA — {{ chapitre.titre }}{% endblock %}
+
+{% block content %}
+<script>
+    const CHAPITRE_ID  = "{{ chapitre.id }}";
+    const COURS_ID     = "{{ cours.id }}";
+    const CSRF_TOKEN   = "{{ csrf_token }}";
+    const COURS_URL    = "/apprentissage/cours/{{ cours.id }}/";
+    const QCM_URL      = "/tuteur/qcm/{{ chapitre.id }}/";
+    const MAX_QUESTIONS = 15;
+    const MIN_QUESTIONS = 12;
+</script>
+
+<div class="ia-shell">
+
+    <!-- Sidebar Info & Progress Tracker -->
+    <aside class="ia-sidebar">
+        <div class="ia-card">
+            <p class="lbl">Chapitre</p>
+            <h2>{{ chapitre.titre }}</h2>
+            <p>{{ cours.titre }}</p>
+        </div>
+
+        <div class="ia-card">
+            <p class="lbl">Score de maîtrise</p>
+            <div class="score-val" id="score-val">0%</div>
+            <div class="prog-track"><div class="prog-fill" id="prog-fill"></div></div>
+            <div class="score-lbl">Seuil de validation : 75%</div>
+        </div>
+
+        <div class="ia-card">
+            <p class="lbl">Progression</p>
+            <div class="iter-wrap" id="iter-dots">
+                {% for i in "123456789012345" %}
+                <div class="iter-dot" id="dot-{{ forloop.counter }}"></div>
+                {% endfor %}
+            </div>
+            <p style="margin: .75rem 0 .25rem; font-size: .8rem; font-weight: 600; color: var(--text-secondary);">Statut</p>
+            <span class="role-badge" id="status-badge" style="background-color: var(--brand-light); color: var(--brand-primary); border-color: rgba(99, 102, 241, 0.2);">● En cours</span>
+            <p style="margin: .75rem 0 0; font-size: .75rem; color: var(--text-muted);">
+                Question <span id="q-current" style="font-weight: 700;">0</span> / <span id="q-max" style="font-weight: 700;">—</span>
+            </p>
+        </div>
+
+        <a href="/apprentissage/cours/{{ cours.id }}/" class="ia-back">
+            <i class="ti ti-arrow-left"></i> Retour au cours
+        </a>
+    </aside>
+
+    <!-- Chat Conversational Area -->
+    <div class="ia-chat-area">
+        <div class="ia-chat-hdr">
+            <div class="av">🤖</div>
+            <div class="inf">
+                <h3>Tuteur IA</h3>
+                <p>Session socratique · {{ chapitre.titre }}</p>
+            </div>
+            <span class="qcount" id="q-badge">Chargement…</span>
+        </div>
+
+        <div class="ia-msgs" id="chat-msgs">
+            <div class="typing" id="init-loader"><span></span><span></span><span></span></div>
+        </div>
+
+        <div class="ia-input-bar">
+            <textarea id="msg-input" placeholder="Écris ta réponse… (Entrée pour envoyer, Maj+Entrée = nouvelle ligne)" rows="2" disabled></textarea>
+            <button class="ia-send" id="send-btn" disabled onclick="envoyer()">
+                <i class="ti ti-send" style="font-size: 16px;"></i>
+            </button>
+        </div>
+        <p class="ia-hint">Entrée pour envoyer · Maj+Entrée pour saut de ligne</p>
+
+        <!-- Dynamic Final Panel (Appears at the end) -->
+        <div class="fin-panel" id="fin-panel" style="display: none; margin-top: 1rem;">
+            <h3 id="fin-titre" style="font-weight: 800;"></h3>
+            <p id="fin-msg" style="margin-top: 0.5rem; margin-bottom: 1.5rem;"></p>
+            <div id="fin-actions" style="display: flex; gap: 0.75rem; justify-content: center;"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+// ── State ──────────────────────────────────────────────────────────────────
+let sessionId   = null;
+let finie       = false;
+let iteration   = 0;
+let maxQuestions = 0;
+
+const URL_INIT    = `/tuteur/session/${CHAPITRE_ID}/`;
+const urlRepondre = id => `/tuteur/session/${id}/repondre/`;
+
+// ── UI ───────────────────────────────────────────────────────────────────
+function removeLoader(id='init-loader') { document.getElementById(id)?.remove(); }
+
+function addMsg(texte, role) {
+    removeLoader();
+    const zone = document.getElementById('chat-msgs');
+    const div  = document.createElement('div');
+    div.className = `bubble ${role}`;
+    div.innerHTML = texte
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/\n/g, '<br>');
+    zone.appendChild(div);
+    zone.scrollTop = zone.scrollHeight;
+}
+
+function addTyping() {
+    removeLoader('typing-indicator');
+    const zone = document.getElementById('chat-msgs');
+    const d    = document.createElement('div');
+    d.className = 'typing'; d.id = 'typing-indicator';
+    d.innerHTML = '<span></span><span></span><span></span>';
+    zone.appendChild(d);
+    zone.scrollTop = zone.scrollHeight;
+}
+
+function updateStats(score, iter, maxQ) {
+    const pct = Math.round((score||0)*100);
+    document.getElementById('score-val').textContent = pct + '%';
+    const fill = document.getElementById('prog-fill');
+    fill.style.width      = pct + '%';
+    fill.style.background = pct>=75 ? 'var(--accent-emerald)' : pct>=40 ? 'var(--accent-warning)' : 'var(--accent-danger)';
+
+    iteration   = iter || 0;
+    maxQuestions = maxQ || maxQuestions || MAX_QUESTIONS;
+
+    document.getElementById('q-current').textContent = iteration;
+    document.getElementById('q-max').textContent     = maxQuestions;
+    document.getElementById('q-badge').textContent   = `Q ${iteration}/${maxQuestions}`;
+
+    // Update dots
+    for (let i=1; i<=15; i++) {
+        const dot = document.getElementById(`dot-${i}`);
+        if (!dot) continue;
+        dot.className = 'iter-dot' + (i<iteration?' done': i===iteration?' current':'');
+    }
+}
+
+function setInput(on) {
+    document.getElementById('msg-input').disabled = !on;
+    document.getElementById('send-btn').disabled  = !on;
+    if (on) document.getElementById('msg-input').focus();
+}
+
+function afficherFin(score, mastery) {
+    finie = true;
+    setInput(false);
+
+    const pct     = Math.round((score||0)*100);
+    const badge   = document.getElementById('status-badge');
+    const panel   = document.getElementById('fin-panel');
+    const titre   = document.getElementById('fin-titre');
+    const msg     = document.getElementById('fin-msg');
+    const actions = document.getElementById('fin-actions');
+
+    panel.style.display = 'block';
+
+    if (mastery >= 0.75) {
+        badge.className = 'role-badge';
+        badge.style.backgroundColor = 'var(--accent-emerald-light)';
+        badge.style.color = 'var(--accent-emerald)';
+        badge.style.borderColor = 'rgba(16, 185, 129, 0.2)';
+        badge.textContent = '✓ Maîtrisé';
+        
+        titre.textContent = `🎉 Félicitations ! Score : ${pct}%`;
+        msg.textContent   = 'Tu maîtrises bien ce chapitre ! Teste tes connaissances avec le QCM.';
+        actions.innerHTML = `
+            <a href="${QCM_URL}" class="btn btn-success">📝 Faire le QCM</a>
+            <a href="${COURS_URL}" class="btn btn-outline">Retour au cours</a>`;
+    } else {
+        badge.className = 'role-badge';
+        badge.style.backgroundColor = 'var(--accent-warning-light)';
+        badge.style.color = 'var(--accent-warning)';
+        badge.style.borderColor = 'rgba(245, 158, 11, 0.2)';
+        badge.textContent = '↺ À revoir';
+        
+        titre.textContent = `Score : ${pct}% — Continue !`;
+        msg.textContent   = 'Tu n\'as pas encore atteint 75%. Relis le chapitre et recommence la session.';
+        actions.innerHTML = `
+            <a href="/apprentissage/cours/${COURS_ID}/" class="btn btn-danger">📖 Réviser le chapitre</a>
+            <a href="/tuteur/session/${CHAPITRE_ID}/" class="btn btn-outline">Recommencer</a>`;
+    }
+}
+
+// ── API ───────────────────────────────────────────────────────────────────
+async function demarrer() {
+    try {
+        const r    = await fetch(URL_INIT, {
+            method:'POST',
+            headers:{'Content-Type':'application/json','X-CSRFToken':CSRF_TOKEN},
+            body: JSON.stringify({}),
+        });
+        const data = await r.json();
+        if (!r.ok) { removeLoader(); addMsg(`❌ ${data.error||'Erreur serveur'}`, 'err'); return; }
+
+        sessionId = data.session_id;
+        maxQuestions = Math.floor(Math.random()*(MAX_QUESTIONS-MIN_QUESTIONS+1))+MIN_QUESTIONS;
+
+        addMsg(data.message, 'ai');
+        updateStats(data.mastery_score, data.iteration, maxQuestions);
+        setInput(true);
+    } catch(e) {
+        removeLoader();
+        addMsg(`❌ Erreur réseau : ${e.message}`, 'err');
+    }
+}
+
+async function envoyer() {
+    if (finie || !sessionId) return;
+    const input = document.getElementById('msg-input');
+    const txt   = input.value.trim();
+    if (!txt) return;
+
+    addMsg(txt, 'user');
+    input.value = '';
+    setInput(false);
+    addTyping();
+
+    try {
+        const r    = await fetch(urlRepondre(sessionId), {
+            method:'POST',
+            headers:{'Content-Type':'application/json','X-CSRFToken':CSRF_TOKEN},
+            body: JSON.stringify({message:txt}),
+        });
+        const data = await r.json();
+        removeLoader('typing-indicator');
+
+        if (!r.ok) { addMsg(`❌ ${data.error||'Erreur serveur'}`, 'err'); setInput(true); return; }
+
+        addMsg(data.message, 'ai');
+        updateStats(data.mastery_score, data.iteration, maxQuestions);
+
+        const mastery = data.mastery_score || 0;
+        const iter    = data.iteration || 0;
+        if (data.session_terminee || mastery >= 0.75 || iter >= maxQuestions) {
+            afficherFin(mastery, mastery);
+        } else {
+            setInput(true);
+        }
+    } catch(e) {
+        removeLoader('typing-indicator');
+        addMsg(`❌ Erreur : ${e.message}`, 'err');
+        setInput(true);
+    }
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('msg-input').addEventListener('keydown', e => {
+        if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); envoyer(); }
+    });
+    demarrer();
+});
+</script>
+{% endblock %}

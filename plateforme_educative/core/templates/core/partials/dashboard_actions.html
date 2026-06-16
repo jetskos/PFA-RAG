@@ -1,41 +1,5 @@
 <div class="dash-actions">
-    {% if role == 'ADMIN' %}
-        <div class="dash-card">
-            <div>
-                <div class="title">Gérer les niveaux & classes</div>
-                <div class="muted">Ajoutez ou modifiez les niveaux et classes scolaires.</div>
-            </div>
-            <div class="cta">
-                <form hx-get="{% url 'dashboard_admin' %}" hx-target="#dashboard-structure" hx-swap="outerHTML">
-                    <button type="submit" class="btn">Ouvrir</button>
-                </form>
-            </div>
-        </div>
-
-        <div class="dash-card">
-            <div>
-                <div class="title">Étudiants en attente</div>
-                <div class="muted">Activez les comptes étudiants en attente.</div>
-            </div>
-            <div class="cta">
-                <form hx-get="{% url 'dashboard_admin' %}" hx-target="#dashboard-structure" hx-swap="outerHTML">
-                    <button type="submit" class="btn">Gérer</button>
-                </form>
-            </div>
-        </div>
-
-        <div class="dash-card">
-            <div>
-                <div class="title">Demandes logistiques</div>
-                <div class="muted">Traitez les demandes de matériel soumises par les formateurs.</div>
-            </div>
-            <div class="cta">
-                <form hx-get="{% url 'dashboard_admin' %}" hx-target="#dashboard-structure" hx-swap="outerHTML">
-                    <button type="submit" class="btn">Voir</button>
-                </form>
-            </div>
-        </div>
-    {% elif role == 'FORMATEUR' %}
+    {% if role == 'FORMATEUR' %}
         <div class="dash-card">
             <div>
                 <div class="title">Mes cours</div>
@@ -51,9 +15,8 @@
                 <div class="muted">Demandez du matériel pour vos ateliers.</div>
             </div>
             <div class="cta">
-                <form hx-get="{% url 'dashboard_formateur' %}" hx-target="#dashboard-structure" hx-swap="outerHTML">
-                    <button type="submit" class="btn">Créer</button>
-                </form>
+                <!-- Fallback to inventaire or logistics page if dashboard_formateur doesn't have partials -->
+                <a href="{% url 'logistics:inventaire' %}" class="btn">Créer</a>
             </div>
         </div>
     {% else %}
@@ -63,9 +26,8 @@
                 <div class="muted">Cours assignés à votre niveau scolaire.</div>
             </div>
             <div class="cta">
-                <form hx-get="{% url 'dashboard_student' %}" hx-target="#zone-principale" hx-swap="outerHTML">
-                    <button type="submit" class="btn">Voir</button>
-                </form>
+                <!-- Anchor to the courses section below to avoid HTMX nesting -->
+                <a href="#mes-cours" class="btn">Voir</a>
             </div>
         </div>
     {% endif %}

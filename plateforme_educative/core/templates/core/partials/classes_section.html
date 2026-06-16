@@ -7,48 +7,55 @@
     </div>
 
     <div style="display:grid; grid-template-columns: minmax(320px, 360px) 1fr; gap:1rem; align-items:start;">
-        <div class="course-item">
-            <h3 style="margin:0;">Créer une classe</h3>
-            <form method="post"
-                  hx-post="{% url 'dashboard_admin_create_classe' %}"
-                                    hx-target="#dashboard-structure"
-                                      hx-swap="innerHTML"
-                  style="display:grid; gap:0.8rem;">
-                {% csrf_token %}
-                <p>
-                    <label for="{{ classe_form.niveau.id_for_label }}">Niveau</label>
-                    {{ classe_form.niveau }}
-                    {% if classe_form.niveau.errors %}<span class="error-text">{{ classe_form.niveau.errors.0 }}</span>{% endif %}
-                </p>
-                <p>
-                    <label for="{{ classe_form.code.id_for_label }}">Code</label>
-                    {{ classe_form.code }}
-                    {% if classe_form.code.errors %}<span class="error-text">{{ classe_form.code.errors.0 }}</span>{% endif %}
-                </p>
-                <p>
-                    <label for="{{ classe_form.nom.id_for_label }}">Nom</label>
-                    {{ classe_form.nom }}
-                    {% if classe_form.nom.errors %}<span class="error-text">{{ classe_form.nom.errors.0 }}</span>{% endif %}
-                </p>
-                <p>
-                    <label for="{{ classe_form.annee_scolaire.id_for_label }}">Année scolaire</label>
-                    {{ classe_form.annee_scolaire }}
-                    {% if classe_form.annee_scolaire.errors %}<span class="error-text">{{ classe_form.annee_scolaire.errors.0 }}</span>{% endif %}
-                </p>
-                <p>
-                    <label for="{{ classe_form.capacite.id_for_label }}">Capacité</label>
-                    {{ classe_form.capacite }}
-                    {% if classe_form.capacite.errors %}<span class="error-text">{{ classe_form.capacite.errors.0 }}</span>{% endif %}
-                </p>
-                <label style="display:flex; align-items:center; gap:0.5rem;">
-                    {{ classe_form.actif }}
-                    Actif
-                </label>
-                {% if classe_form.non_field_errors %}
-                    <div class="messages"><p class="message-item">{{ classe_form.non_field_errors.0 }}</p></div>
-                {% endif %}
-                <button type="submit" class="btn">Créer la classe</button>
-            </form>
+        <div style="display:grid; gap:1rem;">
+            <div class="course-item">
+                <h3 style="margin:0;">Créer une classe</h3>
+                <form method="post"
+                      hx-post="{% url 'dashboard_admin_create_classe' %}"
+                      hx-target="#dashboard-structure"
+                      hx-swap="innerHTML"
+                      style="display:grid; gap:0.8rem;">
+                    {% csrf_token %}
+                    <p>
+                        <label for="{{ classe_form.niveau.id_for_label }}">Niveau</label>
+                        {{ classe_form.niveau }}
+                        {% if classe_form.niveau.errors %}<span class="error-text">{{ classe_form.niveau.errors.0 }}</span>{% endif %}
+                    </p>
+                    <p>
+                        <label for="{{ classe_form.code.id_for_label }}">Code</label>
+                        {{ classe_form.code }}
+                        {% if classe_form.code.errors %}<span class="error-text">{{ classe_form.code.errors.0 }}</span>{% endif %}
+                    </p>
+                    <p>
+                        <label for="{{ classe_form.nom.id_for_label }}">Nom</label>
+                        {{ classe_form.nom }}
+                        {% if classe_form.nom.errors %}<span class="error-text">{{ classe_form.nom.errors.0 }}</span>{% endif %}
+                    </p>
+                    <p>
+                        <label for="{{ classe_form.annee_scolaire.id_for_label }}">Année scolaire</label>
+                        {{ classe_form.annee_scolaire }}
+                        {% if classe_form.annee_scolaire.errors %}<span class="error-text">{{ classe_form.annee_scolaire.errors.0 }}</span>{% endif %}
+                    </p>
+                    <p>
+                        <label for="{{ classe_form.capacite.id_for_label }}">Capacité</label>
+                        {{ classe_form.capacite }}
+                        {% if classe_form.capacite.errors %}<span class="error-text">{{ classe_form.capacite.errors.0 }}</span>{% endif %}
+                    </p>
+                    <label style="display:flex; align-items:center; gap:0.5rem;">
+                        {{ classe_form.actif }}
+                        Actif
+                    </label>
+                    {% if classe_form.non_field_errors %}
+                        <div class="messages"><p class="message-item">{{ classe_form.non_field_errors.0 }}</p></div>
+                    {% endif %}
+                    <button type="submit" class="btn">Créer la classe</button>
+                </form>
+            </div>
+
+            <div class="course-item" id="classe-editor">
+                <h3 style="margin:0;">Modifier une classe</h3>
+                <p class="message-empty" style="margin:0;">Choisissez une classe à droite pour l’éditer ou voir les élèves.</p>
+            </div>
         </div>
 
         <div>
@@ -66,6 +73,19 @@
                                 <span>Capacité {{ classe.capacite }}</span>
                                 <span>{{ classe.eleves.count }} élève{{ classe.eleves.count|pluralize }}</span>
                                 <span>{% if classe.actif %}Active{% else %}Archivée{% endif %}</span>
+                            </div>
+                            <div class="actions" style="justify-content:flex-start; margin-top:0.45rem;">
+                                <button type="button"
+                                        class="btn btn-ghost"
+                                        hx-get="{% url 'dashboard_admin_edit_classe' classe.id %}"
+                                        hx-target="#classe-editor"
+                                        hx-swap="innerHTML">
+                                    Modifier
+                                </button>
+                                <a href="{% url 'dashboard_admin_manage_classe_students' classe.id %}"
+                                   class="btn btn-ghost">
+                                    Voir élèves
+                                </a>
                             </div>
                         </div>
                     {% endfor %}

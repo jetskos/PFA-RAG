@@ -1,0 +1,27 @@
+<div class="course-item">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+        <h3 style="margin:0;">Élèves - {{ classe.nom }}</h3>
+        <button type="button" class="btn btn-ghost" style="padding: 4px 8px; font-size: 0.85rem;" onclick="document.getElementById('classe-editor').innerHTML='<h3 style=\'margin:0;\'>Modifier une classe</h3><p class=\'message-empty\' style=\'margin:0;\'>Choisissez une classe à droite pour l’éditer.</p>'">Fermer</button>
+    </div>
+    
+    {% if eleves %}
+        <ul style="list-style:none; padding:0; margin:0; display:grid; gap:0.5rem;">
+            {% for eleve in eleves %}
+            <li style="display:flex; justify-content:space-between; align-items:center; padding:0.5rem; background:var(--bg-surface-alt); border:1px solid var(--border-color); border-radius:var(--radius-sm);">
+                <div>
+                    <strong style="display:block;">{{ eleve.first_name }} {{ eleve.last_name }}</strong>
+                    <span style="font-size:0.8rem; color:var(--text-secondary);">{{ eleve.email }}</span>
+                </div>
+                <button hx-post="{% url 'dashboard_admin_remove_student' eleve.id %}"
+                        hx-target="#dashboard-structure"
+                        hx-swap="innerHTML"
+                        class="btn btn-ghost" style="color: #ef4444; padding: 4px 8px; font-size:0.8rem;">
+                    Retirer
+                </button>
+            </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="message-empty" style="margin:0;">Aucun élève dans cette classe.</p>
+    {% endif %}
+</div>

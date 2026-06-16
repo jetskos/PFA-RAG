@@ -74,8 +74,9 @@ def _admin_dashboard_context():
     }
 
 
-def _render_admin_structure(request, context=None, status=200):
+def _render_admin_structure(request, context=None, status=200, active_tab='niveaux'):
     render_context = _admin_dashboard_context()
+    render_context['active_tab'] = active_tab
     if context:
         render_context.update(context)
     return render(request, 'core/partials/admin_structure.html', render_context, status=status)
@@ -144,18 +145,28 @@ def dashboard_router(request):
 
 @role_required('ADMIN')
 def admin_dashboard_view(request):
-    return render(request, 'core/dashboard_admin.html', {
+    tab = request.GET.get('tab', 'niveaux')
+    context = {
         'role': 'ADMIN',
+        'active_tab': tab,
         **_admin_dashboard_context(),
-    })
+    }
+    if request.headers.get('HX-Request'):
+        return render(request, 'core/partials/admin_structure.html', context)
+    return render(request, 'core/dashboard_admin.html', context)
 
 
 @role_required('FORMATEUR')
 def formateur_dashboard_view(request):
-    return render(request, 'core/dashboard_formateur.html', {
+    tab = request.GET.get('tab', 'all')
+    context = {
         'role': 'FORMATEUR',
+        'active_tab': tab,
         **_formateur_dashboard_context(request),
-    })
+    }
+    if request.headers.get('HX-Request'):
+        return render(request, 'core/partials/formateur_structure.html', context)
+    return render(request, 'core/dashboard_formateur.html', context)
 
 
 @role_required('ELEVE')
@@ -182,11 +193,11 @@ def create_niveau_view(request):
         form = NiveauForm(request.POST)
         if form.is_valid():
             form.save()
-            return _render_admin_structure(request)
+            return _render_admin_structure(request, active_tab='niveaux')
     else:
         form = NiveauForm()
 
-    return _render_admin_structure(request, {'niveau_form': form}, status=400 if request.method == 'POST' else 200)
+    return _render_admin_structure(request, {'niveau_form': form}, status=400 if request.method == 'POST' else 200, active_tab='niveaux')
 
 
 @role_required('ADMIN')
@@ -198,7 +209,7 @@ def edit_niveau_view(request, niveau_id):
         form = NiveauForm(request.POST, instance=niveau)
         if form.is_valid():
             form.save()
-            return _render_admin_structure(request)
+            return _render_admin_structure(request, active_tab='niveaux')
     else:
         form = NiveauForm(instance=niveau)
 
@@ -218,11 +229,91 @@ def create_classe_view(request):
         form = ClasseForm(request.POST)
         if form.is_valid():
             form.save()
-            return _render_admin_structure(request)
+            return _render_admin_structure(request, active_tab='classes')
     else:
         form = ClasseForm()
 
-    return _render_admin_structure(request, {'classe_form': form}, status=400 if request.method == 'POST' else 200)
+    return _render_admin_structure(request, {'classe_form': form}, status=400 if request.method == 'POST' else 200, active_tab='classes')
+
+
+@role_required('ADMIN')
+@require_http_methods(['GET', 'POST'])
+def edit_classe_view(request, classe_id):
+    classe = get_object_or_404(Classe, pk=classe_id)
+
+    if request.method == 'POST':
+        form = ClasseForm(request.POST, instance=classe)
+        if form.is_valid():
+            form.save()
+            return _render_admin_structure(request, active_tab='classes')
+    else:
+        form = ClasseForm(instance=classe)
+
+    return render(request, 'core/partials/classe_form.html', {
+        'classe_form': form,
+        'classe': classe,
+        'submit_label': 'Enregistrer',
+        'cancel_label': 'Annuler',
+        'action_url': reverse('dashboard_admin_edit_classe', args=[classe.id]),
+    }, status=400 if request.method == 'POST' else 200)
+
+
+@role_required('ADMIN')
+@require_http_methods(['GET'])
+def manage_classe_students_view(request, classe_id):
+    classe = get_object_or_404(Classe, pk=classe_id)
+    eleves = Utilisateur.objects.filter(classe=classe, role='ELEVE').order_by('email')
+    pending_students = Utilisateur.objects.filter(classe__isnull=True, role='ELEVE').order_by('email')
+    return render(request, 'core/classe_students_page.html', {
+        'classe': classe,
+        'eleves': eleves,
+        'pending_students': pending_students,
+    })
+
+@role_required('ADMIN')
+@require_http_methods(['POST'])
+def remove_student_from_classe_page_view(request, classe_id, student_id):
+    student = get_object_or_404(Utilisateur, pk=student_id)
+    student.classe = None
+    student.save(update_fields=['classe'])
+    return redirect('dashboard_admin_manage_classe_students', classe_id=classe_id)
+
+@role_required('ADMIN')
+@require_http_methods(['POST'])
+def delete_student_from_classe_page_view(request, classe_id, student_id):
+    student = get_object_or_404(Utilisateur, pk=student_id)
+    student.delete()
+    return redirect('dashboard_admin_manage_classe_students', classe_id=classe_id)
+
+@role_required('ADMIN')
+@require_http_methods(['POST'])
+def assign_student_to_classe_page_view(request, classe_id):
+    classe = get_object_or_404(Classe, pk=classe_id)
+    student_id = request.POST.get('student_id')
+    if student_id:
+        student = get_object_or_404(Utilisateur, pk=student_id)
+        student.classe = classe
+        student.statut_compte = 'ACTIVE'
+        student.is_active = True
+        student.save(update_fields=['classe', 'statut_compte', 'is_active'])
+    return redirect('dashboard_admin_manage_classe_students', classe_id=classe_id)
+
+@role_required('ADMIN')
+@require_http_methods(['POST'])
+def add_student_to_classe_page_view(request, classe_id):
+    classe = get_object_or_404(Classe, pk=classe_id)
+    email = request.POST.get('email')
+    password = request.POST.get('password')
+    if email and password and not Utilisateur.objects.filter(email=email).exists():
+        Utilisateur.objects.create_user(
+            email=email,
+            password=password,
+            role='ELEVE',
+            statut_compte='ACTIVE',
+            is_active=True,
+            classe=classe
+        )
+    return redirect('dashboard_admin_manage_classe_students', classe_id=classe_id)
 
 
 @role_required('ADMIN')
@@ -240,11 +331,11 @@ def activate_pending_student_view(request):
         if student.role == 'ELEVE':
             student.is_formateur = False
         student.save(update_fields=['classe', 'statut_compte', 'is_active', 'is_formateur'])
-        return _render_admin_structure(request)
+        return _render_admin_structure(request, active_tab='students')
 
     return _render_admin_structure(request, {
         'pending_error': form.errors.as_text(),
-    }, status=400)
+    }, status=400, active_tab='students')
 
 
 @role_required('FORMATEUR')
@@ -275,7 +366,7 @@ def admin_process_demande_view(request, demande_id):
     elif action == 'reject':
         demande.statut = 'REJECTED'
     else:
-        return _render_admin_structure(request, {'pending_error': 'Action invalide.'}, status=400)
+        return _render_admin_structure(request, {'pending_error': 'Action invalide.'}, status=400, active_tab='logistics')
 
     demande.save(update_fields=['statut'])
     # After processing, re-render the pending demandes section so HTMX can swap it.
