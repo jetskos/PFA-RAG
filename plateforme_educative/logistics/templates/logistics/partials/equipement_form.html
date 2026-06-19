@@ -1,7 +1,11 @@
-<form id="equipement-form" method="post" action="{{ action_url }}">
+<form id="equipement-form" method="post" action="{{ action_url }}"
+      hx-post="{{ action_url }}"
+      hx-target="#equipements-list"
+      hx-swap="innerHTML"
+      hx-on::after-request="if(event.detail.target.id === 'equipements-list') document.getElementById('form-equipement-container').innerHTML = document.getElementById('placeholder-template').innerHTML">
     {% csrf_token %}
 
-    <div class="carte" style="margin-top: 0.75rem;">
+    <div class="carte mt-3">
         {% if form.non_field_errors %}
             <div class="messages">
                 {% for error in form.non_field_errors %}
@@ -22,7 +26,7 @@
 
         <div class="actions">
             <button type="submit" class="btn">{{ submit_label|default:'Soumettre' }}</button>
-            <button type="button" class="btn btn-ghost" onclick="document.getElementById('form-equipement-container').innerHTML = ''">Annuler</button>
+            <button type="button" class="btn btn-ghost" hx-on:click="document.getElementById('form-equipement-container').innerHTML = document.getElementById('placeholder-template').innerHTML">Annuler</button>
         </div>
     </div>
 </form>

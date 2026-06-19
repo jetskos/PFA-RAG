@@ -5,12 +5,12 @@
 
 {% block content %}
 <script>
-    const SESSION_ID  = "{{ session.id }}";
+    let SESSION_ID  = "";
     const CSRF_TOKEN  = "{{ csrf_token }}";
     const COURS_ID    = "{{ cours.id }}";
     const CHAPITRE_ID = "{{ chapitre.id }}";
-    const QUESTIONS   = {{ questions|safe }};
-    const N           = QUESTIONS.length;
+    let QUESTIONS   = [];
+    let N           = 0;
 </script>
 
 <div class="qcm-shell">
@@ -20,52 +20,49 @@
         <div class="ic">📝</div>
         <div>
             <h1>QCM — {{ chapitre.titre }}</h1>
-            <p>{{ cours.titre }} · Tentative n°{{ tentative }}</p>
+            <p>{{ cours.titre }} · Tentative n°<span id="tentative-num">{{ tentative }}</span></p>
         </div>
         <div class="meta">
-            <div><strong>{{ n_questions }}</strong> questions</div>
+            <div><strong><span id="questions-count">{{ n_questions }}</span></strong> questions</div>
             <div style="opacity: 0.8; font-size: 0.75rem;">Seuil : 80/100</div>
         </div>
     </div>
 
-    <!-- Progress indicator -->
-    <div class="qprog"><div class="qprog-fill" id="qprog-fill" style="width:0%"></div></div>
-
-    <!-- Indicators dots -->
-    <div class="q-dots" id="q-dots" style="margin-bottom: 1.5rem;">
-        {% for q in questions %}
-        <div class="q-dot {% if forloop.first %}current{% endif %}"
-             id="qdot-{{ forloop.counter0 }}"
-             onclick="goTo({{ forloop.counter0 }})"></div>
-        {% endfor %}
+    <!-- AJAX Loading Spinner -->
+    <div id="qcm-generator-loader" style="text-align: center; padding: 4rem 2rem; background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); margin-bottom: 2rem;">
+        <div style="width: 48px; height: 48px; border: 4px solid var(--border-default); border-top: 4px solid var(--primary); border-radius: 50%; display: inline-block; animation: spin 1s linear infinite; margin-bottom: 1.5rem;"></div>
+        <h2 style="font-size: 1.35rem; font-weight: 700; color: var(--text-primary); margin: 0 0 0.5rem 0;">Génération du QCM en cours...</h2>
+        <p style="color: var(--text-muted); font-size: 0.9rem; max-width: 45ch; margin: 0 auto;">L'IA ou le cache génèrent vos questions basées sur le cours. Merci de patienter quelques secondes.</p>
     </div>
 
-    <!-- Questions cards loop -->
-    {% for q in questions %}
-    <div class="q-card {% if forloop.first %}active{% endif %}" id="q-{{ forloop.counter0 }}">
-        <div class="q-num">Question {{ forloop.counter }} / {{ n_questions }}</div>
-        <div class="q-text">{{ q.question }}</div>
-        <div class="opt-list">
-            {% for opt in q.options_avec_lettres %}
-            <div class="opt"
-                 id="opt-{{ forloop.parentloop.counter0 }}-{{ forloop.counter0 }}"
-                 onclick="choisir({{ forloop.parentloop.counter0 }}, {{ forloop.counter0 }}, this)">
-                <div class="opt-letter">{{ opt.lettre }}</div>
-                <span>{{ opt.texte }}</span>
-            </div>
-            {% endfor %}
-        </div>
-        <div class="expl" id="expl-{{ forloop.counter0 }}">
-            💡 {{ q.explication }}
-        </div>
-    </div>
-    {% endfor %}
+    <style>
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 
-    <!-- Bottom navigation actions -->
-    <div class="q-nav">
-        <button class="btn-nav btn-prev" id="btn-prev" onclick="prev()" disabled>← Précédent</button>
-        <button class="btn-nav btn-next" id="btn-next" onclick="next()">Suivant →</button>
-        <button class="btn-nav btn-submit" id="btn-submit" style="display:none" onclick="soumettre()" disabled>Voir mes résultats ✓</button>
+    <!-- Main QCM Container (Hidden until loaded) -->
+    <div id="qcm-main-content" style="display: none;">
+        <!-- Progress indicator -->
+        <div class="qprog"><div class="qprog-fill" id="qprog-fill" style="width:0%"></div></div>
+
+        <!-- Indicators dots -->
+        <div class="q-dots" id="q-dots" style="margin-bottom: 1.5rem;">
+            <!-- Generated dynamically -->
+        </div>
+
+        <!-- Questions cards wrapper -->
+        <div id="questions-container">
+            <!-- Generated dynamically -->
+        </div>
+
+        <!-- Bottom navigation actions -->
+        <div class="q-nav">
+            <button class="btn-nav btn-prev" id="btn-prev" onclick="prev()" disabled>← Précédent</button>
+            <button class="btn-nav btn-next" id="btn-next" onclick="next()">Suivant →</button>
+            <button class="btn-nav btn-submit" id="btn-submit" style="display:none" onclick="soumettre()" disabled>Voir mes résultats ✓</button>
+        </div>
     </div>
 
     <!-- Final results stats card (Hidden by default) -->
@@ -100,6 +97,105 @@ let current  = 0;
 let reponses = {};
 let soumis   = false;
 
+// Trigger AJAX loading immediately
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const res = await fetch(`/tuteur/qcm/${CHAPITRE_ID}/generer-api/`);
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Erreur serveur');
+
+        SESSION_ID = data.session_id;
+        QUESTIONS = data.questions;
+        N = QUESTIONS.length;
+
+        // Update counts
+        document.getElementById('questions-count').textContent = N;
+        document.getElementById('tentative-num').textContent = data.tentative;
+
+        // Generate Q-dots
+        const dotsContainer = document.getElementById('q-dots');
+        dotsContainer.innerHTML = '';
+        QUESTIONS.forEach((q, i) => {
+            const dot = document.createElement('div');
+            dot.className = `q-dot ${i === 0 ? 'current' : ''}`;
+            dot.id = `qdot-${i}`;
+            dot.onclick = () => goTo(i);
+            dotsContainer.appendChild(dot);
+        });
+
+        // Generate Q-cards
+        const questionsContainer = document.getElementById('questions-container');
+        questionsContainer.innerHTML = '';
+        QUESTIONS.forEach((q, i) => {
+            const card = document.createElement('div');
+            card.className = `q-card ${i === 0 ? 'active' : ''}`;
+            card.id = `q-${i}`;
+
+            const num = document.createElement('div');
+            num.className = 'q-num';
+            num.textContent = `Question ${i + 1} / ${N}`;
+            card.appendChild(num);
+
+            const text = document.createElement('div');
+            text.className = 'q-text';
+            text.textContent = q.question;
+            card.appendChild(text);
+
+            const optList = document.createElement('div');
+            optList.className = 'opt-list';
+
+            q.options_avec_lettres.forEach((opt, j) => {
+                const optDiv = document.createElement('div');
+                optDiv.className = 'opt';
+                optDiv.id = `opt-${i}-${j}`;
+                optDiv.onclick = () => choisir(i, j, optDiv);
+
+                const optLetter = document.createElement('div');
+                optLetter.className = 'opt-letter';
+                optLetter.textContent = opt.lettre;
+                optDiv.appendChild(optLetter);
+
+                const optSpan = document.createElement('span');
+                optSpan.textContent = opt.texte;
+                optDiv.appendChild(optSpan);
+
+                optList.appendChild(optDiv);
+            });
+            card.appendChild(optList);
+
+            const expl = document.createElement('div');
+            expl.className = 'expl';
+            expl.id = `expl-${i}`;
+            expl.innerHTML = `💡 ${q.explication}`;
+            card.appendChild(expl);
+
+            questionsContainer.appendChild(card);
+        });
+
+        // Hide loader, show main content
+        document.getElementById('qcm-generator-loader').style.display = 'none';
+        document.getElementById('qcm-main-content').style.display = 'block';
+
+        updateProg();
+        updateNav();
+
+    } catch (e) {
+        const noPdf = e.message && e.message.includes('PDF');
+        document.getElementById('qcm-generator-loader').innerHTML = `
+            <div style="font-size: 3rem; margin-bottom:1rem;">${noPdf ? '📄' : '⚠️'}</div>
+            <h2 style="color:${noPdf ? '#f59e0b' : '#ef4444'}; font-size:1.35rem; font-weight:700;">
+              ${noPdf ? 'Aucun PDF disponible pour ce chapitre' : 'Impossible de charger le QCM'}
+            </h2>
+            <p style="color:var(--text-secondary); font-size:0.9rem; margin-top:0.5rem; max-width:50ch; margin: 0.75rem auto 0;">
+              ${noPdf
+                ? 'Le formateur doit d\'abord uploader un document PDF dans ce chapitre pour activer la génération automatique du QCM.'
+                : (e.message || "Erreur de connexion.")}
+            </p>
+            <a href="/apprentissage/cours/${COURS_ID}/" class="btn btn-primary" style="margin-top:1.5rem; text-decoration:none;">Retour au cours</a>
+        `;
+    }
+});
+
 function goTo(idx) {
     if (soumis) return;
     document.getElementById(`q-${current}`).classList.remove('active');
@@ -130,8 +226,10 @@ function updateNav() {
 function updateDots() {
     for (let i = 0; i < N; i++) {
         const d = document.getElementById(`qdot-${i}`);
-        d.classList.toggle('answered', i in reponses && i !== current);
-        d.classList.toggle('current',  i === current);
+        if(d) {
+            d.classList.toggle('answered', i in reponses && i !== current);
+            d.classList.toggle('current',  i === current);
+        }
     }
 }
 
@@ -196,8 +294,10 @@ function afficherCorrections(details) {
             }
         });
         const expl = document.getElementById(`expl-${i}`);
-        expl.classList.add('show');
-        if (!d.est_correcte) expl.classList.add('wrong-expl');
+        if(expl) {
+            expl.classList.add('show');
+            if (!d.est_correcte) expl.classList.add('wrong-expl');
+        }
     });
 }
 
@@ -222,14 +322,14 @@ function afficherResultats(data) {
     if (score >= 80) {
         let html = '';
         if (data.prochain_chapitre_id) {
-            html += `<a href="/apprentissage/cours/${COURS_ID}/chapitre/${data.prochain_chapitre_id}/" class="btn btn-primary">Chapitre suivant →</a>`;
+            html += `<a href="/apprentissage/cours/${COURS_ID}/chapitre/${data.prochain_chapitre_id}/" class="btn btn-primary" style="text-decoration:none;">Chapitre suivant →</a>`;
         }
-        html += `<a href="/apprentissage/cours/${COURS_ID}/" class="btn btn-outline">Retour au cours</a>`;
+        html += `<a href="/apprentissage/cours/${COURS_ID}/" class="btn btn-outline" style="text-decoration:none;">Retour au cours</a>`;
         actions.innerHTML = html;
     } else {
         actions.innerHTML = `
-            <a href="/apprentissage/cours/${COURS_ID}/chapitre/${CHAPITRE_ID}/" class="btn btn-primary" style="background: var(--accent-warning);">📖 Réviser le chapitre</a>
-            <a href="/tuteur/qcm/${CHAPITRE_ID}/" class="btn btn-outline">🔄 Refaire le QCM</a>`;
+            <a href="/apprentissage/cours/${COURS_ID}/chapitre/${CHAPITRE_ID}/" class="btn btn-primary" style="background: var(--accent-warning); text-decoration:none;">📖 Réviser le chapitre</a>
+            <a href="/tuteur/qcm/${CHAPITRE_ID}/" class="btn btn-outline" style="text-decoration:none;">🔄 Refaire le QCM</a>`;
     }
 
     const panel = document.getElementById('result-panel');
@@ -240,8 +340,5 @@ function afficherResultats(data) {
     document.getElementById('btn-prev').style.display   = 'none';
     document.getElementById('btn-next').style.display   = 'none';
 }
-
-updateProg();
-updateNav();
 </script>
 {% endblock %}

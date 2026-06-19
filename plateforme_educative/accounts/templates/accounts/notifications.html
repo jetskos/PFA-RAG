@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block title %}Mes Notifications | EduTech{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <div>
+            <h1 style="font-size: 1.75rem; font-weight: 800; color: var(--text-primary);">Mes Notifications</h1>
+            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.25rem;">Consultez vos alertes et l'activité de votre compte.</p>
+        </div>
+        
+        {% if unread_notifications_count > 0 %}
+            <form action="{% url 'accounts:mark_notifications_read_all' %}" method="POST" style="margin: 0;">
+                {% csrf_token %}
+                <button type="submit" class="btn-ghost" style="font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+                    <i class="ti ti-mail-opened"></i> Tout marquer comme lu
+                </button>
+            </form>
+        {% endif %}
+    </div>
+
+    {% if notifications %}
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+            {% for notif in notifications %}
+                <div class="notification-item {% if not notif.lu %}unread{% endif %}" id="notif-{{ notif.id }}" 
+                     style="background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: 12px; padding: 16px 20px; display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; position: relative; transition: var(--transition); {% if not notif.lu %}border-left: 4px solid var(--primary); padding-left: 16px;{% endif %}">
+                    
+                    <div style="display: flex; gap: 14px; align-items: flex-start;">
+                        <div class="notif-icon-wrapper" style="width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+                            {% if notif.type == 'COMPTE_ACTIVE' %}background: #ECFDF5; color: #10B981;
+                            {% elif notif.type == 'QCM_CORRIGE' %}background: #EEF2FF; color: #4F46E5;
+                            {% elif notif.type == 'NOUVEAU_COURS' %}background: #EFF6FF; color: #3B82F6;
+                            {% else %}background: #FFFBEB; color: #F59E0B;{% endif %}">
+                            
+                            {% if notif.type == 'COMPTE_ACTIVE' %}
+                                <i class="ti ti-user-check" style="font-size: 20px;"></i>
+                            {% elif notif.type == 'QCM_CORRIGE' %}
+                                <i class="ti ti-checkbox" style="font-size: 20px;"></i>
+                            {% elif notif.type == 'NOUVEAU_COURS' %}
+                                <i class="ti ti-book" style="font-size: 20px;"></i>
+                            {% else %}
+                                <i class="ti ti-settings" style="font-size: 20px;"></i>
+                            {% endif %}
+                        </div>
+
+                        <div>
+                            <h3 style="font-size: 14px; font-weight: 700; color: var(--text-primary); margin: 0 0 4px 0;">
+                                {{ notif.titre }}
+                            </h3>
+                            <p style="font-size: 13px; color: var(--text-secondary); margin: 0 0 8px 0; line-height: 1.4;">
+                                {{ notif.message }}
+                            </p>
+                            <span style="font-size: 11px; color: var(--text-muted);">
+                                {{ notif.date_creation|date:"d/m/Y H:i" }}
+                            </span>
+                            
+                            {% if notif.url %}
+                                <div style="margin-top: 10px;">
+                                    <a href="{{ notif.url }}" class="btn-ghost" style="padding: 4px 10px; font-size: 11px; display: inline-flex; align-items: center; gap: 4px; border-radius: 6px; text-decoration: none;">
+                                        Voir les détails <i class="ti ti-arrow-right" style="font-size: 12px;"></i>
+                                    </a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% if not notif.lu %}
+                        <form action="{% url 'accounts:mark_notification_read' notif.id %}" method="POST" style="margin: 0; flex-shrink: 0;"
+                              hx-post="{% url 'accounts:mark_notification_read' notif.id %}"
+                              hx-swap="none"
+                              hx-on::after-request="document.getElementById('notif-{{ notif.id }}').style.borderLeft='1px solid var(--border-light)'; document.getElementById('notif-{{ notif.id }}').style.paddingLeft='20px'; this.remove();">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-ghost" style="padding: 6px; border-radius: 50%; width: 28px; height: 28px; justify-content: center; border: none; background: transparent; cursor: pointer;" title="Marquer comme lu">
+                                <i class="ti ti-check" style="font-size: 16px;"></i>
+                            </button>
+                        </form>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 4rem 2rem; background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: 12px; box-shadow: var(--shadow-sm);">
+            <div style="font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem;">
+                <i class="ti ti-bell-off"></i>
+            </div>
+            <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary); margin: 0 0 0.5rem 0;">Aucune notification</h3>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; max-width: 35ch; margin: 0 auto;">Vous êtes à jour ! Vos nouvelles alertes apparaîtront ici.</p>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+    .notification-item.unread:hover {
+        background: var(--bg-elevated) !important;
+    }
+</style>
+{% endblock %}

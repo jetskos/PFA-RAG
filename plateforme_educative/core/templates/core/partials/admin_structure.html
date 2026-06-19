@@ -1,55 +1,128 @@
+<style>
+    /* Tabs Layout - SaaS Premium */
+    .tabs-container {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+        padding: 0.5rem;
+        background: #f8fafc;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        width: fit-content;
+    }
+
+    .tab-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 24px;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #475569;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        outline: none;
+    }
+
+    .tab-pill:hover {
+        color: #0f172a;
+        background: rgba(15, 23, 42, 0.05);
+    }
+
+    .tab-pill.is-active {
+        background: #ffffff;
+        color: #0f172a !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        font-weight: 700;
+    }
+
+    .tab-badge {
+        font-size: 0.75rem;
+        font-weight: 800;
+        padding: 2px 8px;
+        border-radius: 9999px;
+        background: #e2e8f0;
+        color: #475569;
+        transition: all 0.2s ease;
+    }
+
+    [data-theme="dark"] .tab-badge {
+        background: var(--gray-700);
+        color: var(--text-muted);
+    }
+
+    .tab-pill.is-active .tab-badge {
+        background: #0f766e;
+        color: #ffffff;
+    }
+    
+    .structure-content-card {
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.025);
+        border: 1px solid #e2e8f0;
+        padding: 2rem;
+    }
+</style>
+
 <div style="display:grid; gap:1rem; grid-template-columns: 1fr; align-items:start;">
     
     <!-- GLOBAL ADMIN TABS -->
-    <div style="display:flex; justify-content:center; gap:1rem; margin-bottom: 2rem; flex-wrap: wrap;">
-        <button hx-get="{% url 'dashboard_admin' %}?tab=niveaux" hx-target="#dashboard-structure" hx-swap="innerHTML" 
-                class="btn {% if active_tab == 'niveaux' %}btn-primary{% else %}btn-ghost{% endif %}" style="border-radius: 50px; padding: 10px 24px;">
-            <i class="ti ti-layers-linked"></i> Niveaux
+    <div class="tabs-container">
+        <button hx-get="{% url 'dashboard_admin_structure' %}?tab=niveaux" hx-target="#dashboard-structure" hx-swap="innerHTML" 
+                class="tab-pill {% if active_tab == 'niveaux' %}is-active{% endif %}">
+            <i class="ti ti-layers-linked"></i> Niveaux <span class="tab-badge">{{ niveaux|length }}</span>
         </button>
-        <button hx-get="{% url 'dashboard_admin' %}?tab=classes" hx-target="#dashboard-structure" hx-swap="innerHTML" 
-                class="btn {% if active_tab == 'classes' %}btn-primary{% else %}btn-ghost{% endif %}" style="border-radius: 50px; padding: 10px 24px;">
-            <i class="ti ti-users-group"></i> Classes
+        <button hx-get="{% url 'dashboard_admin_structure' %}?tab=classes" hx-target="#dashboard-structure" hx-swap="innerHTML" 
+                class="tab-pill {% if active_tab == 'classes' %}is-active{% endif %}">
+            <i class="ti ti-users-group"></i> Classes <span class="tab-badge">{{ classes|length }}</span>
         </button>
-        <button hx-get="{% url 'dashboard_admin' %}?tab=students" hx-target="#dashboard-structure" hx-swap="innerHTML" 
-                class="btn {% if active_tab == 'students' %}btn-primary{% else %}btn-ghost{% endif %}" style="border-radius: 50px; padding: 10px 24px;">
-            <i class="ti ti-user-plus"></i> Étudiants en attente
+        <button hx-get="{% url 'dashboard_admin_structure' %}?tab=students" hx-target="#dashboard-structure" hx-swap="innerHTML" 
+                class="tab-pill {% if active_tab == 'students' %}is-active{% endif %}">
+            <i class="ti ti-user-plus"></i> Étudiants en attente <span class="tab-badge">{{ pending_students|length }}</span>
         </button>
-        <button hx-get="{% url 'dashboard_admin' %}?tab=logistics" hx-target="#dashboard-structure" hx-swap="innerHTML" 
-                class="btn {% if active_tab == 'logistics' %}btn-primary{% else %}btn-ghost{% endif %}" style="border-radius: 50px; padding: 10px 24px;">
-            <i class="ti ti-package"></i> Demandes Logistiques
+        <button hx-get="{% url 'dashboard_admin_structure' %}?tab=logistics" hx-target="#dashboard-structure" hx-swap="innerHTML" 
+                class="tab-pill {% if active_tab == 'logistics' %}is-active{% endif %}">
+            <i class="ti ti-package"></i> Demandes Logistiques <span class="tab-badge">{{ pending_demandes|length }}</span>
         </button>
     </div>
 
     <!-- TAB CONTENTS -->
-    {% if active_tab == 'students' %}
-    <div style="display: flex; justify-content: center; width: 100%;">
-        <div style="width: 100%; max-width: 1000px;">
-            {% include 'core/partials/pending_students_section.html' %}
+    <div class="structure-content-card" style="width: 100%;">
+        {% if active_tab == 'students' %}
+        <div style="display: flex; justify-content: center; width: 100%;">
+            <div style="width: 100%;">
+                {% include 'core/partials/pending_students_section.html' %}
+            </div>
         </div>
-    </div>
-    {% endif %}
+        {% endif %}
 
-    {% if active_tab == 'logistics' %}
-    <div style="display: flex; justify-content: center; width: 100%;">
-        <div style="width: 100%; max-width: 1000px;">
-            {% include 'core/partials/pending_demandes_section.html' %}
+        {% if active_tab == 'logistics' %}
+        <div style="display: flex; justify-content: center; width: 100%;">
+            <div style="width: 100%;">
+                {% include 'core/partials/pending_demandes_section.html' %}
+            </div>
         </div>
-    </div>
-    {% endif %}
+        {% endif %}
 
-    {% if active_tab == 'niveaux' %}
-    <div style="display: flex; justify-content: center; width: 100%;">
-        <div style="width: 100%; max-width: 900px;">
-            {% include 'core/partials/niveaux_section.html' %}
+        {% if active_tab == 'niveaux' %}
+        <div style="display: flex; justify-content: center; width: 100%;">
+            <div style="width: 100%;">
+                {% include 'core/partials/niveaux_section.html' %}
+            </div>
         </div>
-    </div>
-    {% endif %}
-    
-    {% if active_tab == 'classes' %}
-    <div style="display: flex; justify-content: center; width: 100%;">
-        <div style="width: 100%; max-width: 900px;">
-            {% include 'core/partials/classes_section.html' %}
+        {% endif %}
+        
+        {% if active_tab == 'classes' %}
+        <div style="display: flex; justify-content: center; width: 100%;">
+            <div style="width: 100%;">
+                {% include 'core/partials/classes_section.html' %}
+            </div>
         </div>
+        {% endif %}
     </div>
-    {% endif %}
 </div>

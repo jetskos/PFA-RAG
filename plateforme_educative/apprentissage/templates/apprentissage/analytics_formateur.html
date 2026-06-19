@@ -1,0 +1,196 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ titre_page }}{% endblock %}
+
+{% block content %}
+<section class="page-shell" style="max-width: 1200px; margin: 0 auto; padding: 2rem 1rem;">
+    <!-- En-tête -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <div>
+            <h1>📊 Tableau de bord Analytics — Formateur</h1>
+            <p class="muted">Vue d'ensemble de la progression et des performances de vos élèves.</p>
+        </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem;">
+        <!-- Card 1 -->
+        <div class="carte" style="background: var(--surface); border: 1px solid var(--bordure); border-radius: 12px; padding: 1.5rem; display: flex; align-items: center; gap: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
+            <div style="font-size: 2.5rem; color: var(--brand-primary);">📚</div>
+            <div>
+                <div style="font-size: 1.8rem; font-weight: 800; line-height: 1.1; color: var(--text-primary);">{{ stats.total_cours }}</div>
+                <div style="font-size: 0.85rem; color: var(--texte-secondaire); text-transform: uppercase; font-weight: 600; margin-top: 2px;">Cours créés</div>
+            </div>
+        </div>
+        <!-- Card 2 -->
+        <div class="carte" style="background: var(--surface); border: 1px solid var(--bordure); border-radius: 12px; padding: 1.5rem; display: flex; align-items: center; gap: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
+            <div style="font-size: 2.5rem; color: var(--accent-teal, #10b981);">🎓</div>
+            <div>
+                <div style="font-size: 1.8rem; font-weight: 800; line-height: 1.1; color: var(--text-primary);">{{ stats.total_inscrits }}</div>
+                <div style="font-size: 0.85rem; color: var(--texte-secondaire); text-transform: uppercase; font-weight: 600; margin-top: 2px;">Élèves uniques</div>
+            </div>
+        </div>
+        <!-- Card 3 -->
+        <div class="carte" style="background: var(--surface); border: 1px solid var(--bordure); border-radius: 12px; padding: 1.5rem; display: flex; align-items: center; gap: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
+            <div style="font-size: 2.5rem; color: #f59e0b;">🏆</div>
+            <div>
+                <div style="font-size: 1.8rem; font-weight: 800; line-height: 1.1; color: var(--text-primary);">{{ stats.score_qcm_moyen_global }}%</div>
+                <div style="font-size: 0.85rem; color: var(--texte-secondaire); text-transform: uppercase; font-weight: 600; margin-top: 2px;">Moyenne QCM Globale</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 2rem; margin-bottom: 2.5rem;">
+        <!-- Chart 1: Complétion par cours -->
+        <div class="carte" style="background: var(--surface); border: 1px solid var(--bordure); border-radius: 12px; padding: 1.5rem;">
+            <h3 style="margin-top: 0; margin-bottom: 1.5rem; font-size: 1.15rem; font-weight: 700; color: var(--text-primary);">📈 Complétion moyenne par cours (%)</h3>
+            <div style="position: relative; height: 300px; width: 100%;">
+                <canvas id="completionChart"></canvas>
+            </div>
+        </div>
+        
+        <!-- Chart 2: Répartition de progression -->
+        <div class="carte" style="background: var(--surface); border: 1px solid var(--bordure); border-radius: 12px; padding: 1.5rem;">
+            <h3 style="margin-top: 0; margin-bottom: 1.5rem; font-size: 1.15rem; font-weight: 700; color: var(--text-primary);">👥 Répartition globale des progressions</h3>
+            <div style="position: relative; height: 300px; width: 100%;">
+                <canvas id="repartitionChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Layout 2 Colonnes : Détail des cours (Gauche) & Élèves en difficulté (Droite) -->
+    <div style="display: grid; grid-template-columns: 3fr 2fr; gap: 2rem; margin-bottom: 2.5rem; align-items: start; min-width: 0;">
+        <!-- Détail par cours -->
+        <div class="carte" style="background: var(--surface); border: 1px solid var(--bordure); border-radius: 12px; padding: 1.5rem; overflow-x: auto;">
+            <h3 style="margin-top: 0; margin-bottom: 1.25rem; font-size: 1.15rem; font-weight: 700; color: var(--text-primary);">📋 Détails de vos cours</h3>
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background: var(--surface-alt, rgba(0,0,0,0.02)); border-bottom: 1px solid var(--bordure); text-align: left; font-size: 0.8rem; color: var(--texte-secondaire); text-transform: uppercase;">
+                        <th style="padding: 0.75rem 1rem;">Cours</th>
+                        <th style="padding: 0.75rem 1rem; text-align: center;">Inscrits</th>
+                        <th style="padding: 0.75rem 1rem; text-align: center;">Complétion</th>
+                        <th style="padding: 0.75rem 1rem; text-align: center;">Moyenne QCM</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in stats.details_cours %}
+                    <tr style="border-bottom: 1px solid var(--bordure);">
+                        <td style="padding: 1rem; font-weight: 600;">{{ item.titre }}</td>
+                        <td style="padding: 1rem; text-align: center;">{{ item.nb_inscrits }}</td>
+                        <td style="padding: 1rem; text-align: center;">{{ item.taux_completion_moyen }}%</td>
+                        <td style="padding: 1rem; text-align: center; font-weight: 700; color: var(--brand-primary);">{{ item.score_qcm_moyen }}%</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" style="padding: 2rem; text-align: center; color: var(--texte-secondaire);">Aucun cours créé pour le moment.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Élèves en difficulté -->
+        <div class="carte" style="background: var(--surface); border: 1px solid var(--bordure); border-radius: 12px; padding: 1.5rem;">
+            <h3 style="margin-top: 0; margin-bottom: 1.25rem; font-size: 1.15rem; font-weight: 700; color: #ef4444; display: flex; align-items: center; gap: 0.5rem;">
+                ⚠️ Élèves en difficulté
+            </h3>
+            <div style="max-height: 400px; overflow-y: auto; display: flex; flex-direction: column; gap: 1rem;">
+                {% for item in diff_students %}
+                <div style="padding: 0.85rem; border: 1px solid var(--bordure); border-radius: 8px; background: rgba(239, 68, 68, 0.03);">
+                    <div style="font-weight: 600; font-size: 0.95rem; color: var(--text-primary);">{{ item.get_full_name }}</div>
+                    <div style="font-size: 0.8rem; color: var(--texte-secondaire); margin: 0.2rem 0;">Cours : {{ item.cours_titre }}</div>
+                    <div style="display: flex; gap: 1rem; font-size: 0.8rem; font-weight: 600; margin-top: 0.35rem;">
+                        <span style="color: var(--brand-primary);">Progression: {{ item.progression }}%</span>
+                        <span style="color: #ef4444;">QCM: {% if item.moyenne_qcm %}{{ item.moyenne_qcm }}%{% else %}N/A{% endif %}</span>
+                    </div>
+                    <span style="display: inline-block; background: #ef4444; color: white; font-size: 0.7rem; padding: 0.1rem 0.4rem; border-radius: 4px; font-weight: 600; margin-top: 0.5rem;">
+                        {{ item.raison }}
+                    </span>
+                </div>
+                {% empty %}
+                <div style="padding: 2rem; text-align: center; color: var(--texte-secondaire);">
+                    🎉 Aucun élève sous le seuil d'alerte.
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Prepare Data
+    const coursLabels = [];
+    const completionData = [];
+    const repartitionData = { '0-25': 0, '25-50': 0, '50-75': 0, '75-100': 0 };
+
+    {% for item in stats.details_cours %}
+        coursLabels.push("{{ item.titre|escapejs }}");
+        completionData.push({{ item.taux_completion_moyen }});
+        repartitionData['0-25'] += {{ item.repartition.0-25 }};
+        repartitionData['25-50'] += {{ item.repartition.25-50 }};
+        repartitionData['50-75'] += {{ item.repartition.50-75 }};
+        repartitionData['75-100'] += {{ item.repartition.75-100 }};
+    {% endfor %}
+
+    // Chart 1: Completion rate per course
+    const ctx1 = document.getElementById('completionChart').getContext('2d');
+    new Chart(ctx1, {
+        type: 'bar',
+        data: {
+            labels: coursLabels,
+            datasets: [{
+                label: 'Taux de complétion moyen',
+                data: completionData,
+                backgroundColor: 'rgba(20, 184, 166, 0.75)',
+                borderColor: 'rgb(20, 184, 166)',
+                borderWidth: 1,
+                borderRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    ticks: { callback: value => value + '%' }
+                }
+            }
+        }
+    });
+
+    // Chart 2: Distribution of progressions
+    const ctx2 = document.getElementById('repartitionChart').getContext('2d');
+    new Chart(ctx2, {
+        type: 'doughnut',
+        data: {
+            labels: ['0-25%', '25-50%', '50-75%', '75-100%'],
+            datasets: [{
+                data: [
+                    repartitionData['0-25'],
+                    repartitionData['25-50'],
+                    repartitionData['50-75'],
+                    repartitionData['75-100']
+                ],
+                backgroundColor: [
+                    '#ef4444',
+                    '#f59e0b',
+                    '#3b82f6',
+                    '#10b981'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom' }
+            }
+        }
+    });
+</script>
+{% endblock %}

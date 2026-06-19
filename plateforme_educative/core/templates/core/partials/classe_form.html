@@ -1,46 +1,263 @@
-<div class="course-item">
-    <h3 style="margin:0;">Modifier une classe</h3>
-    <form method="post"
-          hx-post="{{ action_url }}"
-          hx-target="#dashboard-structure"
-          hx-swap="innerHTML"
-          style="display:grid; gap:0.8rem;">
-        {% csrf_token %}
-        <p>
-            <label for="{{ classe_form.niveau.id_for_label }}">Niveau</label>
-            {{ classe_form.niveau }}
-            {% if classe_form.niveau.errors %}<span class="error-text">{{ classe_form.niveau.errors.0 }}</span>{% endif %}
-        </p>
-        <p>
-            <label for="{{ classe_form.code.id_for_label }}">Code</label>
-            {{ classe_form.code }}
-            {% if classe_form.code.errors %}<span class="error-text">{{ classe_form.code.errors.0 }}</span>{% endif %}
-        </p>
-        <p>
-            <label for="{{ classe_form.nom.id_for_label }}">Nom</label>
-            {{ classe_form.nom }}
-            {% if classe_form.nom.errors %}<span class="error-text">{{ classe_form.nom.errors.0 }}</span>{% endif %}
-        </p>
-        <p>
-            <label for="{{ classe_form.annee_scolaire.id_for_label }}">Année scolaire</label>
-            {{ classe_form.annee_scolaire }}
-            {% if classe_form.annee_scolaire.errors %}<span class="error-text">{{ classe_form.annee_scolaire.errors.0 }}</span>{% endif %}
-        </p>
-        <p>
-            <label for="{{ classe_form.capacite.id_for_label }}">Capacité</label>
-            {{ classe_form.capacite }}
-            {% if classe_form.capacite.errors %}<span class="error-text">{{ classe_form.capacite.errors.0 }}</span>{% endif %}
-        </p>
-        <label style="display:flex; align-items:center; gap:0.5rem;">
-            {{ classe_form.actif }}
-            Actif
-        </label>
-        {% if classe_form.non_field_errors %}
-            <div class="messages"><p class="message-item">{{ classe_form.non_field_errors.0 }}</p></div>
-        {% endif %}
-        <div class="actions" style="justify-content:flex-start; gap:0.75rem;">
-            <button type="submit" class="btn">{{ submit_label|default:'Enregistrer' }}</button>
-            <button type="button" class="btn btn-ghost" onclick="document.getElementById('classe-editor').innerHTML='<h3 style=\'margin:0;\'>Modifier une classe</h3><p class=\'message-empty\' style=\'margin:0;\'>Choisissez une classe à droite pour l’éditer.</p>'">{{ cancel_label|default:'Annuler' }}</button>
+<style>
+    /* Si les styles de la modal sont déjà dans niveau_form.html, pas besoin de tout dupliquer, 
+       mais pour être sûr que ça marche quel que soit l'ordre de chargement, on les inclut. */
+    .modal-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(15, 23, 42, 0.4);
+        backdrop-filter: blur(8px);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: fadeIn 0.2s ease-out;
+    }
+
+    .modal-dialog {
+        background: #ffffff;
+        width: 100%;
+        max-width: 550px;
+        border-radius: 20px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        overflow: hidden;
+        animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    @keyframes slideUp {
+        from { opacity: 0; transform: translateY(20px) scale(0.95); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .modal-header {
+        padding: 1.5rem 2rem;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #f8fafc;
+    }
+
+    .modal-title {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin: 0;
+    }
+
+    .btn-close {
+        background: transparent;
+        border: none;
+        color: #64748b;
+        font-size: 1.5rem;
+        cursor: pointer;
+        padding: 4px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+    }
+
+    .btn-close:hover {
+        background: #e2e8f0;
+        color: #ef4444;
+    }
+
+    .modal-body {
+        padding: 2rem;
+    }
+
+    .modal-form-field {
+        margin-bottom: 1.25rem;
+    }
+
+    .modal-form-field label {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #334155;
+        margin-bottom: 0.5rem;
+    }
+
+    .modal-form-field input, .modal-form-field select {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border-radius: 10px;
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        color: #0f172a;
+        font-size: 0.95rem;
+        transition: all 0.2s;
+    }
+
+    .modal-form-field input:focus, .modal-form-field select:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .modal-checkbox-field {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-top: 1.5rem;
+        padding: 1rem;
+        background: #f8fafc;
+        border-radius: 10px;
+        border: 1px solid #e2e8f0;
+    }
+
+    .modal-checkbox-field input[type="checkbox"] {
+        width: 1.25rem;
+        height: 1.25rem;
+        accent-color: #3b82f6;
+    }
+
+    .modal-checkbox-field label {
+        font-weight: 600;
+        color: #334155;
+        cursor: pointer;
+        margin: 0;
+    }
+
+    .modal-footer {
+        padding: 1.5rem 2rem;
+        background: #f8fafc;
+        border-top: 1px solid #e2e8f0;
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+    }
+
+    .btn-modal-cancel {
+        padding: 0.75rem 1.5rem;
+        background: transparent;
+        color: #64748b;
+        font-weight: 600;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .btn-modal-cancel:hover {
+        background: #e2e8f0;
+        color: #334155;
+    }
+
+    .btn-modal-submit-blue {
+        padding: 0.75rem 1.5rem;
+        background: #3b82f6;
+        color: white;
+        font-weight: 600;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.2);
+    }
+
+    .btn-modal-submit-blue:hover {
+        background: #2563eb;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 8px -1px rgba(59, 130, 246, 0.3);
+    }
+
+    .error-text {
+        color: #ef4444;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-top: 0.25rem;
+        display: block;
+    }
+    
+    .form-grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.25rem;
+    }
+</style>
+
+<div class="modal-backdrop" id="classe-modal">
+    <div class="modal-dialog">
+        <div class="modal-header">
+            <h3 class="modal-title">{% if is_create %}Créer une classe{% else %}Modifier la classe{% endif %}</h3>
+            <button class="btn-close" onclick="document.getElementById('modal-container').innerHTML=''" aria-label="Fermer">
+                <i class="ti ti-x"></i>
+            </button>
         </div>
-    </form>
+        
+        <form method="post"
+              hx-post="{{ action_url }}"
+              hx-target="#classe-modal"
+              hx-swap="outerHTML">
+            {% csrf_token %}
+            
+            <div class="modal-body">
+                
+                <div class="form-grid-2">
+                    <div class="modal-form-field">
+                        <label for="{{ classe_form.niveau.id_for_label }}">Niveau d'appartenance</label>
+                        {{ classe_form.niveau }}
+                        {% if classe_form.niveau.errors %}<span class="error-text">{{ classe_form.niveau.errors.0 }}</span>{% endif %}
+                    </div>
+                    
+                    <div class="modal-form-field">
+                        <label for="{{ classe_form.code.id_for_label }}">Code de la classe (ex: BTS-1)</label>
+                        {{ classe_form.code }}
+                        {% if classe_form.code.errors %}<span class="error-text">{{ classe_form.code.errors.0 }}</span>{% endif %}
+                    </div>
+                </div>
+                
+                <div class="modal-form-field">
+                    <label for="{{ classe_form.nom.id_for_label }}">Nom complet de la classe</label>
+                    {{ classe_form.nom }}
+                    {% if classe_form.nom.errors %}<span class="error-text">{{ classe_form.nom.errors.0 }}</span>{% endif %}
+                </div>
+                
+                <div class="form-grid-2">
+                    <div class="modal-form-field">
+                        <label for="{{ classe_form.annee_scolaire.id_for_label }}">Année scolaire</label>
+                        {{ classe_form.annee_scolaire }}
+                        {% if classe_form.annee_scolaire.errors %}<span class="error-text">{{ classe_form.annee_scolaire.errors.0 }}</span>{% endif %}
+                    </div>
+                    
+                    <div class="modal-form-field">
+                        <label for="{{ classe_form.capacite.id_for_label }}">Capacité maximale</label>
+                        {{ classe_form.capacite }}
+                        {% if classe_form.capacite.errors %}<span class="error-text">{{ classe_form.capacite.errors.0 }}</span>{% endif %}
+                    </div>
+                </div>
+                
+                <div class="modal-checkbox-field">
+                    {{ classe_form.actif }}
+                    <label for="{{ classe_form.actif.id_for_label }}">Classe active sur la plateforme</label>
+                </div>
+                
+                {% if classe_form.non_field_errors %}
+                    <div style="margin-top: 1rem; padding: 0.75rem; background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; color: #b91c1c;">
+                        {{ classe_form.non_field_errors.0 }}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn-modal-cancel" onclick="document.getElementById('modal-container').innerHTML=''">
+                    {{ cancel_label|default:'Annuler' }}
+                </button>
+                <button type="submit" class="btn-modal-submit-blue">
+                    {{ submit_label|default:'Enregistrer' }}
+                </button>
+            </div>
+        </form>
+    </div>
 </div>

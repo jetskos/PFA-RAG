@@ -1,56 +1,254 @@
 {% extends 'base.html' %}
 
-{% block title %}Mon tableau de bord{% endblock %}
+{% block title %}Mon tableau de bord étudiant{% endblock %}
 
 {% block content %}
+<style>
+    body { background-color: #f8fafc; }
+    
+    .quick-access-card {
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        text-decoration: none;
+        color: inherit;
+        transition: all 0.2s ease;
+        border: none;
+    }
+    .quick-access-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    }
+    
+    .dashboard-panel {
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        padding: 2rem;
+        border: none;
+    }
+    
+    .progress-course-card {
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        border: none;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1.5rem;
+        transition: all 0.2s ease;
+    }
+    .progress-course-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    }
+    
+    .section-title-bold {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .panel-title-bold {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+</style>
+
 <section class="page-shell">
-    <div class="page-header">
-        <p class="eyebrow">Espace élève</p>
-        <h1>Bienvenue, {{ request.user.first_name|default:request.user.get_username }}</h1>
-        <p>Voici un aperçu de votre progression et de vos cours assignés.</p>
+    <div class="page-header" style="border-bottom: 1px solid var(--border-light); padding-bottom: 1.5rem; margin-bottom: 2rem;">
+        <p class="eyebrow" style="color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">Espace Élève</p>
+        <h1 style="font-size: 2.25rem; font-weight: 800; color: #0f172a;">Bienvenue, {{ request.user.first_name|default:request.user.get_username }}</h1>
+        <p style="color: var(--text-muted); font-size: 1.1rem;">Voici un aperçu de votre progression académique et de vos cours.</p>
     </div>
 
-    {% include 'core/partials/dashboard_actions.html' with role='ELEVE' %}
+    <!-- 1. Cartes d'accès rapide -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
+        <a href="{% url 'apprentissage:liste_cours' %}" class="quick-access-card">
+            <div style="background: rgba(15, 118, 110, 0.1); color: #0f766e; padding: 0.85rem; border-radius: 50%; margin-bottom: 1rem;">
+                <i class="ti ti-books" style="font-size: 1.6rem;"></i>
+            </div>
+            <h3 style="font-size: 1.1rem; font-weight: 800; color: #0f172a; margin: 0 0 0.25rem 0;">Mes cours</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">Parcourir les modules</p>
+        </a>
+        <a href="{% url 'apprentissage:mes_notes' %}" class="quick-access-card">
+            <div style="background: rgba(3, 105, 161, 0.1); color: #0369a1; padding: 0.85rem; border-radius: 50%; margin-bottom: 1rem;">
+                <i class="ti ti-report-analytics" style="font-size: 1.6rem;"></i>
+            </div>
+            <h3 style="font-size: 1.1rem; font-weight: 800; color: #0f172a; margin: 0 0 0.25rem 0;">Carnet de notes</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">Résultats et QCM</p>
+        </a>
+        <a href="{% url 'apprentissage:devoirs_liste' %}" class="quick-access-card">
+            <div style="background: rgba(245, 158, 11, 0.1); color: #f59e0b; padding: 0.85rem; border-radius: 50%; margin-bottom: 1rem;">
+                <i class="ti ti-file-pencil" style="font-size: 1.6rem;"></i>
+            </div>
+            <h3 style="font-size: 1.1rem; font-weight: 800; color: #0f172a; margin: 0 0 0.25rem 0;">Mes devoirs</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">Travaux à rendre</p>
+        </a>
+        <a href="{% url 'apprentissage:calendrier' %}" class="quick-access-card">
+            <div style="background: rgba(99, 102, 241, 0.1); color: #6366f1; padding: 0.85rem; border-radius: 50%; margin-bottom: 1rem;">
+                <i class="ti ti-calendar-event" style="font-size: 1.6rem;"></i>
+            </div>
+            <h3 style="font-size: 1.1rem; font-weight: 800; color: #0f172a; margin: 0 0 0.25rem 0;">Calendrier</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">Échéances et planning</p>
+        </a>
+    </div>
 
-    <div style="display:grid; gap:1rem; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items:start;">
-        <div style="grid-column: 1 / -1;">
-            <section class="card">
-                <div class="card-header">
-                    <h2>Mon profil scolaire</h2>
+    <!-- 2. Profil & Radar Chart -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
+        <!-- Infos Profil -->
+        <div class="dashboard-panel">
+            <h2 class="panel-title-bold">
+                <i class="ti ti-user-circle" style="color: #0f766e;"></i> Mon profil scolaire
+            </h2>
+            <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-light); padding-bottom: 0.75rem;">
+                    <span style="color: var(--text-muted); font-weight: 500;">Classe</span>
+                    <strong style="color: #0f172a; font-weight: 800;">{% if classe %}{{ classe.nom }}{% else %}Non assignée{% endif %}</strong>
                 </div>
-                <div class="card-body">
-                    <p><strong>Classe:</strong> {% if classe %}{{ classe.nom }}{% else %}&mdash;{% endif %}</p>
-                    <p><strong>Niveau:</strong> {% if niveau %}{{ niveau.nom }}{% else %}&mdash;{% endif %}</p>
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-light); padding-bottom: 0.75rem;">
+                    <span style="color: var(--text-muted); font-weight: 500;">Niveau d'études</span>
+                    <strong style="color: #0f172a; font-weight: 800;">{% if niveau %}{{ niveau.nom }}{% else %}Non assigné{% endif %}</strong>
                 </div>
-            </section>
+                <div style="display: flex; justify-content: space-between; padding-bottom: 0.5rem;">
+                    <span style="color: var(--text-muted); font-weight: 500;">Statut académique</span>
+                    <span style="background: rgba(16, 185, 129, 0.15); color: #059669; padding: 4px 10px; border-radius: 6px; font-size: 0.85rem; font-weight: 800;">Inscrit Actif</span>
+                </div>
+            </div>
         </div>
 
-        <div style="grid-column: 1 / -1;">
-            <section class="card">
-                <div class="card-header">
-                    <h2>Mes Cours</h2>
-                </div>
-                <div class="card-body">
-                    {% if mes_cours and mes_cours.exists %}
-                        <ul style="list-style:none;padding-left:0">
-                            {% for cours in mes_cours %}
-                                <li style="padding:8px 0;border-bottom:1px solid #f1f1f1;display:flex;justify-content:space-between;align-items:center">
-                                    <div>
-                                        <strong>{{ cours.titre }}</strong>
-                                        <div style="font-size:13px;color:#64748b">{{ cours.description|truncatechars:120 }}</div>
-                                    </div>
-                                    <div>
-                                        <a href="{% url 'apprentissage:detail_cours' cours.id %}" class="btn-primary">Voir le cours</a>
-                                    </div>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    {% else %}
-                        <p>Aucun cours assigné pour votre niveau pour le moment.</p>
-                    {% endif %}
-                </div>
-            </section>
+        <!-- Radar Chart -->
+        <div class="dashboard-panel" style="display: flex; flex-direction: column; align-items: center;">
+            <h2 class="panel-title-bold" style="align-self: flex-start;">
+                <i class="ti ti-chart-radar" style="color: #0f766e;"></i> Bilan de progression
+            </h2>
+            <div style="width: 100%; min-height: 320px; position: relative;">
+                <canvas id="skillsRadarChart"></canvas>
+            </div>
         </div>
     </div>
+
+    <!-- 3. Grille des cours -->
+    <div style="margin-bottom: 2rem;">
+        <h2 class="section-title-bold">
+            <i class="ti ti-books" style="color: #0f766e;"></i> Mes cours en cours
+        </h2>
+        
+        {% if mes_cours %}
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem;">
+                {% for cours in mes_cours %}
+                <div class="progress-course-card">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem;">
+                        <h3 style="font-size: 1.15rem; font-weight: 800; margin: 0; color: #0f172a; line-height: 1.4;">{{ cours.titre }}</h3>
+                        <span style="font-size: 0.85rem; font-weight: 800; color: #0f766e; background: rgba(15, 118, 110, 0.1); padding: 4px 10px; border-radius: 6px; white-space: nowrap;">En cours</span>
+                    </div>
+                    <p style="font-size: 0.95rem; color: var(--text-muted); margin: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">{{ cours.description|default:"Aucune description disponible pour ce cours." }}</p>
+                    
+                    <div style="margin-top: auto; padding-top: 0.5rem;">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 700; color: #0f172a; margin-bottom: 0.5rem;">
+                            <span>Progression</span>
+                            <span style="color: #0f766e;">{{ cours.progression_percent }}%</span>
+                        </div>
+                        <div style="width: 100%; height: 8px; background: #e2e8f0; border-radius: 999px; overflow: hidden;">
+                            <div style="height: 100%; background: #0f766e; width: {{ cours.progression_percent }}%; border-radius: 999px; transition: width 0.5s ease;"></div>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-light); padding-top: 1rem; margin-top: 0.5rem;">
+                        <span style="font-size: 0.9rem; font-weight: 600; color: var(--text-muted);"><i class="ti ti-file-text"></i> {{ cours.chapitres_count }} chapitres</span>
+                        <a href="{% url 'apprentissage:detail_cours' cours.id %}" class="btn" style="background: #0f172a; color: #ffffff; padding: 0.5rem 1rem; font-size: 0.9rem; border-radius: 8px; font-weight: 600;">Reprendre</a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div style="background: #ffffff; border: 2px dashed #cbd5e1; border-radius: 12px; padding: 4rem 2rem; text-align: center;">
+                <div style="color: #94a3b8; font-size: 3.5rem; margin-bottom: 1rem;"><i class="ti ti-books-off"></i></div>
+                <h3 style="color: #0f172a; font-weight: 800; font-size: 1.25rem; margin-bottom: 0.5rem;">Aucun cours assigné</h3>
+                <p style="color: var(--text-muted); font-size: 1.05rem;">Vous n'avez pas encore de cours assignés pour votre niveau actuel.</p>
+            </div>
+        {% endif %}
+    </div>
+
 </section>
+
+<!-- Scripts for Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('skillsRadarChart').getContext('2d');
+        
+        // Données dynamiques injectées depuis la vue Django
+        const labels = {{ radar_labels_json|safe }};
+        const dataValues = {{ radar_data_json|safe }};
+        
+        const data = {
+            labels: labels,
+            datasets: [{
+                label: 'Progression (%)',
+                data: dataValues,
+                backgroundColor: 'rgba(15, 118, 110, 0.25)', // Teal translucide
+                borderColor: 'rgba(15, 118, 110, 1)',
+                pointBackgroundColor: 'rgba(15, 118, 110, 1)',
+                pointBorderColor: '#ffffff',
+                pointHoverBackgroundColor: '#ffffff',
+                pointHoverBorderColor: 'rgba(15, 118, 110, 1)',
+                borderWidth: 2,
+                pointRadius: 4,
+                pointHoverRadius: 6
+            }]
+        };
+
+        const config = {
+            type: 'radar',
+            data: data,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        angleLines: { color: 'rgba(0, 0, 0, 0.08)' },
+                        grid: { color: 'rgba(0, 0, 0, 0.08)' },
+                        pointLabels: {
+                            font: { family: "'Inter', sans-serif", size: 12, weight: '700' },
+                            color: '#334155' // Slate 700
+                        },
+                        ticks: {
+                            display: false,
+                            min: 0,
+                            max: 100,
+                            stepSize: 20
+                        }
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(15, 23, 42, 0.95)', // Slate 900
+                        titleFont: { family: "'Inter', sans-serif", size: 14, weight: '800' },
+                        bodyFont: { family: "'Inter', sans-serif", size: 13, weight: '500' },
+                        padding: 12,
+                        cornerRadius: 8,
+                        displayColors: false
+                    }
+                }
+            }
+        };
+
+        new Chart(ctx, config);
+    });
+</script>
 {% endblock %}

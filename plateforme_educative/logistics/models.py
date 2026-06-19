@@ -151,4 +151,4 @@ class DemandeMateriel(models.Model):
         ordering = ['-date_creation']
 
     def __str__(self):
-        return f"{self.formateur.email} - {self.equipement.nom} x{self.quantite}"
+        return f"{self.formateur.get_full_name()} - {self.equipement.nom} x{self.quantite}"

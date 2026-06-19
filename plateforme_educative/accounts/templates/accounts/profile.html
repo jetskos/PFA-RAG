@@ -3,562 +3,309 @@
 {% block title %}Mon profil | Plateforme Éducative{% endblock %}
 
 {% block content %}
-<style>
-    .profile-shell {
-        display: grid;
-        gap: 1.5rem;
-    }
-
-    .profile-hero {
-        display: grid;
-        grid-template-columns: minmax(0, 1.4fr) minmax(320px, 0.9fr);
-        gap: 1.25rem;
-        align-items: stretch;
-    }
-
-    .profile-card {
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: var(--radius-lg);
-        box-shadow: 0 8px 30px rgba(15, 23, 42, 0.04);
-        padding: 1.25rem;
-    }
-
-    .profile-card h1,
-    .profile-card h2,
-    .profile-card h3 {
-        margin: 0;
-    }
-
-    .profile-kicker {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.35rem 0.7rem;
-        border-radius: 999px;
-        background: var(--brand-light);
-        color: var(--brand-mid);
-        font-size: 12px;
-        font-weight: 600;
-        margin-bottom: 1rem;
-    }
-
-    .profile-header {
-        display: flex;
-        gap: 1rem;
-        align-items: center;
-    }
-
-    .profile-avatar {
-        width: 72px;
-        height: 72px;
-        border-radius: 22px;
-        background: linear-gradient(135deg, var(--brand), #14b8a6);
-        color: #fff;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.35rem;
-        font-weight: 700;
-        flex-shrink: 0;
-    }
-
-    .profile-name {
-        display: grid;
-        gap: 0.35rem;
-    }
-
-    .profile-name h1 {
-        font-size: clamp(1.5rem, 3vw, 2.2rem);
-        line-height: 1.05;
-        letter-spacing: -0.03em;
-    }
-
-    .profile-meta {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.6rem;
-        color: var(--text-muted);
-        font-size: 0.95rem;
-    }
-
-    .profile-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.35rem;
-        padding: 0.35rem 0.7rem;
-        border-radius: 999px;
-        background: var(--surface-alt);
-        border: 1px solid var(--border);
-        color: var(--text-main);
-        font-size: 0.85rem;
-        font-weight: 500;
-    }
-
-    .profile-panel {
-        display: grid;
-        gap: 0.85rem;
-    }
-
-    .profile-panel__row {
-        display: flex;
-        justify-content: space-between;
-        gap: 1rem;
-        padding: 0.8rem 0;
-        border-bottom: 1px solid var(--border);
-    }
-
-    .profile-panel__row:last-child {
-        border-bottom: 0;
-        padding-bottom: 0;
-    }
-
-    .profile-panel__label {
-        color: var(--text-muted);
-        font-size: 0.88rem;
-    }
-
-    .profile-panel__value {
-        color: var(--text-main);
-        font-weight: 600;
-        text-align: right;
-    }
-
-    .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(5, minmax(0, 1fr));
-        gap: 1rem;
-    }
-
-    .stat-card {
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: var(--radius-lg);
-        padding: 1rem 1.1rem;
-    }
-
-    .stat-card__label {
-        color: var(--text-muted);
-        font-size: 0.82rem;
-        margin-bottom: 0.3rem;
-    }
-
-    .stat-card__value {
-        font-size: 1.4rem;
-        font-weight: 700;
-        letter-spacing: -0.03em;
-        color: var(--text-main);
-    }
-
-    .section-grid {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 1rem;
-    }
-
-    .course-list {
-        display: grid;
-        gap: 0.85rem;
-    }
-
-    .course-item {
-        display: grid;
-        gap: 0.55rem;
-        padding: 1rem;
-        border: 1px solid var(--border);
-        border-radius: var(--radius-lg);
-        background: var(--surface);
-    }
-
-    .course-item__top {
-        display: flex;
-        justify-content: space-between;
-        gap: 1rem;
-        align-items: start;
-    }
-
-    .course-item h3 {
-        font-size: 1rem;
-        line-height: 1.2;
-    }
-
-    .course-item p {
-        color: var(--text-muted);
-        margin: 0;
-    }
-
-    .progress-track {
-        width: 100%;
-        height: 9px;
-        border-radius: 999px;
-        background: var(--surface-alt);
-        overflow: hidden;
-    }
-
-    .progress-fill {
-        height: 100%;
-        border-radius: inherit;
-        background: linear-gradient(90deg, var(--brand), #14b8a6);
-    }
-
-    .course-item__footer {
-        display: flex;
-        justify-content: space-between;
-        gap: 1rem;
-        font-size: 0.88rem;
-        color: var(--text-muted);
-    }
-
-    .history-list {
-        display: grid;
-        gap: 0.8rem;
-    }
-
-    .activity-list {
-        display: grid;
-        gap: 0.8rem;
-    }
-
-    .activity-item {
-        padding: 0.95rem 1rem;
-        border-radius: var(--radius-lg);
-        border: 1px solid var(--border);
-        background: var(--surface);
-        display: grid;
-        gap: 0.45rem;
-    }
-
-    .activity-item__title {
-        display: flex;
-        justify-content: space-between;
-        gap: 1rem;
-        align-items: start;
-    }
-
-    .activity-item__title strong {
-        font-size: 0.98rem;
-    }
-
-    .activity-item__meta {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        color: var(--text-muted);
-        font-size: 0.86rem;
-    }
-
-    .role-banner {
-        display: grid;
-        gap: 0.75rem;
-    }
-
-    .role-banner__head {
-        display: flex;
-        justify-content: space-between;
-        gap: 1rem;
-        align-items: start;
-    }
-
-    .role-banner__actions {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.6rem;
-    }
-
-    .history-item {
-        padding: 0.95rem 1rem;
-        border-radius: var(--radius-lg);
-        border: 1px solid var(--border);
-        background: linear-gradient(180deg, #ffffff, #fbfdff);
-    }
-
-    .history-item__title {
-        display: flex;
-        justify-content: space-between;
-        gap: 1rem;
-        align-items: start;
-        margin-bottom: 0.5rem;
-    }
-
-    .history-item__title strong {
-        font-size: 0.98rem;
-    }
-
-    .history-item__meta {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        color: var(--text-muted);
-        font-size: 0.86rem;
-    }
-
-    .empty-state {
-        padding: 1rem;
-        border-radius: var(--radius-lg);
-        border: 1px dashed var(--border-md);
-        color: var(--text-muted);
-        background: var(--surface-alt);
-    }
-
-    @media (max-width: 980px) {
-        .profile-hero,
-        .section-grid,
-        .stats-grid {
-            grid-template-columns: 1fr 1fr;
-        }
-    }
-
-    @media (max-width: 720px) {
-        .profile-hero,
-        .section-grid,
-        .stats-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .profile-header {
-            align-items: start;
-        }
-
-        .profile-meta,
-        .course-item__footer,
-        .history-item__meta {
-            flex-direction: column;
-            align-items: start;
-        }
-
-        .profile-panel__row,
-        .course-item__top,
-        .history-item__title {
-            flex-direction: column;
-        }
-
-        .profile-panel__value {
-            text-align: left;
-        }
-    }
-</style>
 
 <section class="profile-shell">
-    <div class="profile-hero">
-        <article class="profile-card">
-            <span class="profile-kicker"><i class="ti ti-user-circle" aria-hidden="true"></i> {{ role_context.role_title }}</span>
-            <div class="profile-header">
-                <div class="profile-avatar" aria-hidden="true">
-                    {{ profile_user.get_username|default:''|cut:'@'|slice:':2'|upper }}
+    {% include 'accounts/partials/profile_nav.html' with profile_tab='apercu' %}
+
+    <div class="profile-grid">
+        <!-- LEFT COLUMN: SIDEBAR USER DETAILS -->
+        <aside class="sidebar-wrapper">
+            <!-- Main User Card -->
+            <article class="glass-card sidebar-user-card">
+                <!-- Interactive Avatar Box -->
+                <div class="avatar-interactive" onclick="document.getElementById('profile-avatar-input').click();">
+                    {% if profile_user.photo %}
+                        <img class="avatar-image" src="{{ profile_user.photo.url }}" alt="Photo de profil">
+                        <div class="avatar-overlay" onclick="event.stopPropagation();">
+                            <button type="button" class="avatar-overlay-btn" onclick="document.getElementById('profile-avatar-input').click();">
+                                <i class="ti ti-camera" aria-hidden="true"></i> Modifier
+                            </button>
+                            <button type="button" class="avatar-overlay-btn btn-delete" onclick="if(confirm('Supprimer votre photo actuelle ?')) document.getElementById('profile-avatar-delete-form').submit();">
+                                <i class="ti ti-trash" aria-hidden="true"></i> Supprimer
+                            </button>
+                        </div>
+                    {% else %}
+                        <div class="avatar-initials">
+                            {% if profile_user.first_name %}
+                                {{ profile_user.first_name|make_list|first|upper }}{% if profile_user.last_name %}{{ profile_user.last_name|make_list|first|upper }}{% endif %}
+                            {% else %}
+                                {{ profile_user.email|slice:":2"|upper }}
+                            {% endif %}
+                        </div>
+                        <div class="avatar-overlay">
+                            <button type="button" class="avatar-overlay-btn">
+                                <i class="ti ti-camera" aria-hidden="true"></i> Ajouter
+                            </button>
+                        </div>
+                    {% endif %}
                 </div>
-                <div class="profile-name">
-                    <h1>{{ profile_user.email }}</h1>
-                    <p style="color: var(--text-muted); margin: 0; max-width: 54ch;">{{ role_context.role_description }}</p>
-                    <div class="profile-meta">
-                        <span class="profile-badge"><i class="ti ti-school" aria-hidden="true"></i> {{ profile_user.get_role_display }}</span>
-                        <span class="profile-badge"><i class="ti ti-chart-bar" aria-hidden="true"></i> {{ profile_user.get_niveau_display }}</span>
-                        {% if profile_user.is_formateur %}
-                            <span class="profile-badge"><i class="ti ti-badge" aria-hidden="true"></i> Formateur</span>
-                        {% endif %}
+
+                <!-- Identity Details -->
+                <div class="user-ident">
+                    <h2 style="margin: 0; font-size: 1.5rem; font-weight: 800; color: #0f172a;">{{ profile_user.get_full_name }}</h2>
+                    <div class="user-email" style="margin-top: 4px; font-size: 0.95rem;" title="{{ profile_user.email }}">{{ profile_user.email }}</div>
+                    <div style="margin-top: 8px;">
+                        <span class="user-role-badge {% if profile_user.is_superuser %}badge-secondary{% endif %}">
+                            <i class="ti ti-shield-check" aria-hidden="true"></i> {{ profile_user.get_role_display }}
+                        </span>
                     </div>
                 </div>
-            </div>
-        </article>
 
-        <aside class="profile-card profile-panel">
-            <div class="profile-panel__row">
-                <span class="profile-panel__label">Compte créé le</span>
-                <span class="profile-panel__value">{{ profile_user.date_creation|date:'d/m/Y H:i' }}</span>
-            </div>
-            <div class="profile-panel__row">
-                <span class="profile-panel__label">Statut</span>
-                <span class="profile-panel__value">{% if profile_user.is_active %}Actif{% else %}Inactif{% endif %}</span>
-            </div>
-            <div class="profile-panel__row">
-                <span class="profile-panel__label">Accès</span>
-                <span class="profile-panel__value">{{ profile_user.get_role_display }}</span>
-            </div>
-            <div class="profile-panel__row">
-                <span class="profile-panel__label">Niveau pédagogique</span>
-                <span class="profile-panel__value">{{ profile_user.get_niveau_display }}</span>
-            </div>
-            <div class="profile-panel__row">
-                <span class="profile-panel__label">Mise à jour</span>
-                <span class="profile-panel__value"><a href="{% url 'accounts:profile_edit' %}">Modifier le profil</a></span>
-            </div>
+                <!-- Mini Details List -->
+                <div class="info-list">
+                    <div class="info-item">
+                        <span class="info-label">Statut du compte</span>
+                        <span class="info-value" style="color: #10b981; display: inline-flex; align-items: center; gap: 4px;">
+                            <span style="width:8px; height:8px; border-radius:50%; background:#10b981; display:inline-block;"></span>
+                            {% if profile_user.is_active %}Actif{% else %}En attente{% endif %}
+                        </span>
+                    </div>
+                    {% if profile_user.niveau_label %}
+                    <div class="info-item">
+                        <span class="info-label">Niveau</span>
+                        <span class="info-value">{{ profile_user.niveau_label }}</span>
+                    </div>
+                    {% endif %}
+                    {% if profile_user.classe %}
+                    <div class="info-item">
+                        <span class="info-label">Classe</span>
+                        <span class="info-value">{{ profile_user.classe.nom }}</span>
+                    </div>
+                    {% endif %}
+                    <div class="info-item">
+                        <span class="info-label">Inscrit le</span>
+                        <span class="info-value">{{ profile_user.date_creation|date:'d/m/Y' }}</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Actions and shortcuts panel -->
+            <article class="glass-card">
+                <h3 style="font-size: 0.95rem; font-weight: 700; margin: 0 0 1rem 0; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.05em;">
+                    <i class="ti ti-external-link" aria-hidden="true"></i> Accès & Actions
+                </h3>
+                <div style="display: flex; flex-direction: column; gap: 0.65rem;">
+                    {% for action in role_context.role_actions %}
+                        <a class="btn-ghost" href="{{ action.url }}" style="justify-content: center; width: 100%;">
+                            {{ action.label }}
+                        </a>
+                    {% endfor %}
+                    <a class="btn-primary" href="{% url 'accounts:profile_edit' %}" style="justify-content: center; width: 100%;">
+                        <i class="ti ti-settings" aria-hidden="true"></i> Paramètres
+                    </a>
+                    <a class="btn-ghost" href="{% url 'accounts:change_password' %}" style="justify-content: center; width: 100%;">
+                        <i class="ti ti-lock" aria-hidden="true"></i> Sécurité & Mot de passe
+                    </a>
+                </div>
+            </article>
         </aside>
-    </div>
 
-    <section class="profile-card role-banner">
-        <div class="role-banner__head">
-            <div>
-                <p class="section-title" style="margin-bottom:0.25rem;">Vue de compte</p>
-                <h2>Raccourcis et pilotage</h2>
-            </div>
-        </div>
-        <p style="color: var(--text-muted); margin: 0;">Vous voyez ici les indicateurs utiles pour votre rôle et vos accès habituels.</p>
-        <div class="role-banner__actions">
-            {% for action in role_context.role_actions %}
-                <a class="btn-ghost" href="{{ action.url }}">{{ action.label }}</a>
-            {% endfor %}
-            <a class="btn-primary" href="{% url 'accounts:profile_edit' %}">Modifier le profil</a>
-        </div>
-        <div class="stats-grid" style="grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 0.25rem;">
-            {% for label, value in role_context.role_kpis.items %}
-                <article class="stat-card" style="box-shadow:none;">
-                    <div class="stat-card__label">{{ label|title|cut:'_'|default:label }}</div>
-                    <div class="stat-card__value">{{ value }}</div>
-                </article>
-            {% endfor %}
-        </div>
-    </section>
-
-    <section class="stats-grid" aria-label="Résumé de progression">
-        <article class="stat-card">
-            <div class="stat-card__label">Cours commencés</div>
-            <div class="stat-card__value">{{ profile_stats.started }}</div>
-        </article>
-        <article class="stat-card">
-            <div class="stat-card__label">Cours terminés</div>
-            <div class="stat-card__value">{{ profile_stats.completed }}</div>
-        </article>
-        <article class="stat-card">
-            <div class="stat-card__label">En cours</div>
-            <div class="stat-card__value">{{ profile_stats.in_progress }}</div>
-        </article>
-        <article class="stat-card">
-            <div class="stat-card__label">Chapitres validés</div>
-            <div class="stat-card__value">{{ profile_stats.chapters_validated }}</div>
-        </article>
-        <article class="stat-card">
-            <div class="stat-card__label">Chapitres suivis</div>
-            <div class="stat-card__value">{{ profile_stats.chapters_total }}</div>
-        </article>
-    </section>
-
-    <section class="section-grid">
-        <article class="profile-card">
-            <div style="display:flex; justify-content:space-between; gap:1rem; align-items:end; margin-bottom:1rem;">
-                <div>
-                    <p class="section-title" style="margin-bottom:0.25rem;">Activité récente</p>
-                    <h2>Chapitres visités</h2>
+        <!-- RIGHT COLUMN: MAIN WORKSPACE -->
+        <main class="main-wrapper">
+            <!-- Counter stats strip -->
+            <section class="stats-layout" aria-label="Statistiques de formation">
+                <div class="stat-mini-card">
+                    <div class="stat-icon icon-started"><i class="ti ti-book" aria-hidden="true"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-num">{{ profile_stats.started }}</span>
+                        <span class="stat-title">Commencés</span>
+                    </div>
                 </div>
-                <span class="profile-badge">{{ recent_visits|length }}</span>
-            </div>
-
-            <div class="activity-list">
-                {% if recent_visits %}
-                    {% for visit in recent_visits %}
-                        <article class="activity-item">
-                            <div class="activity-item__title">
-                                <strong>{{ visit.chapitre.titre }}</strong>
-                                <span class="profile-badge">{{ visit.chapitre.cours.titre }}</span>
-                            </div>
-                            <div class="activity-item__meta">
-                                <span>{{ visit.chapitre.cours.get_niveau_display }}</span>
-                                <span>Visité le {{ visit.date_visite|date:'d/m/Y H:i' }}</span>
-                            </div>
-                        </article>
-                    {% endfor %}
-                {% else %}
-                    <p class="empty-state">Aucun chapitre visité récemment.</p>
-                {% endif %}
-            </div>
-        </article>
-
-        <article class="profile-card">
-            <div style="display:flex; justify-content:space-between; gap:1rem; align-items:end; margin-bottom:1rem;">
-                <div>
-                    <p class="section-title" style="margin-bottom:0.25rem;">Réussites récentes</p>
-                    <h2>Chapitres terminés</h2>
+                <div class="stat-mini-card">
+                    <div class="stat-icon icon-progress"><i class="ti ti-player-play" aria-hidden="true"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-num">{{ profile_stats.in_progress }}</span>
+                        <span class="stat-title">En cours</span>
+                    </div>
                 </div>
-                <span class="profile-badge">{{ recent_completions|length }}</span>
-            </div>
-
-            <div class="activity-list">
-                {% if recent_completions %}
-                    {% for completion in recent_completions %}
-                        <article class="activity-item">
-                            <div class="activity-item__title">
-                                <strong>{{ completion.chapitre.titre }}</strong>
-                                <span class="profile-badge"><i class="ti ti-circle-check" aria-hidden="true"></i> Terminé</span>
-                            </div>
-                            <div class="activity-item__meta">
-                                <span>{{ completion.chapitre.cours.titre }}</span>
-                                <span>{{ completion.date_completion|date:'d/m/Y H:i' }}</span>
-                            </div>
-                        </article>
-                    {% endfor %}
-                {% else %}
-                    <p class="empty-state">Aucun chapitre terminé récemment.</p>
-                {% endif %}
-            </div>
-        </article>
-    </section>
-
-    <section class="section-grid">
-        <article class="profile-card">
-            <div style="display:flex; justify-content:space-between; gap:1rem; align-items:end; margin-bottom:1rem;">
-                <div>
-                    <p class="section-title" style="margin-bottom:0.25rem;">Progression actuelle</p>
-                    <h2>Vos cours en cours</h2>
+                <div class="stat-mini-card">
+                    <div class="stat-icon icon-completed"><i class="ti ti-checkbox" aria-hidden="true"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-num">{{ profile_stats.completed }}</span>
+                        <span class="stat-title">Terminés</span>
+                    </div>
                 </div>
-                <a class="btn-ghost" href="{% url 'apprentissage:liste_cours' %}">Voir les cours</a>
-            </div>
+                <div class="stat-mini-card">
+                    <div class="stat-icon icon-chapters"><i class="ti ti-award" aria-hidden="true"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-num">{{ profile_stats.chapters_validated }}</span>
+                        <span class="stat-title">Chapitres</span>
+                    </div>
+                </div>
+            </section>
 
-            <div class="course-list">
-                {% if active_progressions %}
-                    {% for progression in active_progressions %}
-                        <article class="course-item">
-                            <div class="course-item__top">
-                                <div>
-                                    <h3>{{ progression.cours.titre }}</h3>
-                                    <p>{{ progression.cours.get_niveau_display }}</p>
+            <!-- Current progressions -->
+            <section class="glass-card">
+                <div class="section-header">
+                    <h2><i class="ti ti-device-laptop" aria-hidden="true"></i> Cours en cours de lecture</h2>
+                    <span class="user-role-badge badge-secondary">{{ active_progressions|length }} en cours</span>
+                </div>
+
+                <div class="progress-grid">
+                    {% if active_progressions %}
+                        {% for progression in active_progressions %}
+                            <article class="progress-course-card">
+                                <div class="course-card-top">
+                                    <div class="course-card-info">
+                                        <h3>{{ progression.cours.titre }}</h3>
+                                        <p>{{ progression.cours.get_niveau_display|default:"Général" }}</p>
+                                    </div>
+                                    <span class="course-card-pct">{{ progression.pourcentage }}%</span>
                                 </div>
-                                <span class="profile-badge">{{ progression.pourcentage }}%</span>
-                            </div>
-                            <div class="progress-track" aria-hidden="true">
-                                <div class="progress-fill" style="width: {{ progression.pourcentage }}%;"></div>
-                            </div>
-                            <div class="course-item__footer">
-                                <span>{{ progression.chapitres_valides.count }} / {{ progression.cours.chapitres.count }} chapitres</span>
-                                <span>Dernière consultation : {{ progression.date_derniere_consultation|date:'d/m/Y H:i' }}</span>
-                            </div>
-                            <div>
-                                <a class="btn-primary" href="{% url 'apprentissage:detail_cours' progression.cours.id %}">Continuer</a>
-                            </div>
-                        </article>
-                    {% endfor %}
-                {% else %}
-                    <p class="empty-state">Aucun cours en cours pour le moment.</p>
-                {% endif %}
-            </div>
-        </article>
-
-        <article class="profile-card">
-            <div style="display:flex; justify-content:space-between; gap:1rem; align-items:end; margin-bottom:1rem;">
-                <div>
-                    <p class="section-title" style="margin-bottom:0.25rem;">Historique</p>
-                    <h2>Cours terminés</h2>
+                                <div class="progress-bar-wrapper">
+                                    <div class="progress-bar-fill" style="width: {{ progression.pourcentage }}%;"></div>
+                                </div>
+                                <div class="course-card-footer">
+                                    <span>
+                                        <i class="ti ti-list-check" aria-hidden="true"></i>
+                                        {{ progression.chapitres_valides.count }} / {{ progression.cours.chapitres.count }} chapitres
+                                    </span>
+                                    <span>
+                                        <i class="ti ti-calendar-time" aria-hidden="true"></i>
+                                        Dernière visite : {{ progression.date_derniere_consultation|date:'d/m/Y H:i' }}
+                                    </span>
+                                </div>
+                                <div style="margin-top: 0.25rem;">
+                                    <a class="btn-primary" href="{% url 'apprentissage:detail_cours' progression.cours.id %}" style="padding: 6px 16px; font-size: 12px; width: 100%; justify-content: center;">
+                                        Reprendre le cours <i class="ti ti-arrow-right" aria-hidden="true"></i>
+                                    </a>
+                                </div>
+                            </article>
+                        {% endfor %}
+                    {% else %}
+                        <div class="empty-state">
+                            <i class="ti ti-books" aria-hidden="true"></i>
+                            <span>Aucun cours commencé actuellement.</span>
+                            <a class="btn-ghost" href="{% url 'apprentissage:liste_cours' %}" style="margin-top: 0.5rem; font-size: 12px;">
+                                Parcourir le catalogue
+                            </a>
+                        </div>
+                    {% endif %}
                 </div>
-                <span class="profile-badge">{{ completed_progressions|length }}</span>
+            </section>
+
+            <!-- Activity history: Double columns -->
+            <div class="activity-split">
+                <!-- Visited chapters -->
+                <section class="glass-card">
+                    <div class="section-header">
+                        <h2><i class="ti ti-clock" aria-hidden="true"></i> Récemment visités</h2>
+                    </div>
+                    <div class="activity-list">
+                        {% if recent_visits %}
+                            {% for visit in recent_visits %}
+                                <article class="activity-item">
+                                    <div class="activity-item-title">
+                                        <span style="word-break: break-all;">{{ visit.chapitre.titre }}</span>
+                                        <span class="activity-item-course">{{ visit.chapitre.cours.titre }}</span>
+                                    </div>
+                                    <div class="activity-item-meta">
+                                        <span>{{ visit.chapitre.cours.get_niveau_display|default:"" }}</span>
+                                        <span>Le {{ visit.date_visite|date:'d/m/Y H:i' }}</span>
+                                    </div>
+                                </article>
+                            {% endfor %}
+                        {% else %}
+                            <div class="empty-state" style="padding: 1.5rem;">
+                                <i class="ti ti-history" aria-hidden="true"></i>
+                                <span style="font-size: 0.8rem;">Aucune visite récente.</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                </section>
+
+                <!-- Completed chapters -->
+                <section class="glass-card">
+                    <div class="section-header">
+                        <h2><i class="ti ti-circle-check" aria-hidden="true"></i> Chapitres validés</h2>
+                    </div>
+                    <div class="activity-list">
+                        {% if recent_completions %}
+                            {% for completion in recent_completions %}
+                                <article class="activity-item" style="border-left: 3px solid #10b981;">
+                                    <div class="activity-item-title">
+                                        <span style="word-break: break-all;">{{ completion.chapitre.titre }}</span>
+                                        <span class="activity-item-course" style="color: #059669; background: rgba(16, 185, 129, 0.1);">{{ completion.chapitre.cours.titre }}</span>
+                                    </div>
+                                    <div class="activity-item-meta">
+                                        <span style="color:#10b981; font-weight: 600;"><i class="ti ti-checkbox" aria-hidden="true"></i> Succès</span>
+                                        <span>Le {{ completion.date_completion|date:'d/m/Y H:i' }}</span>
+                                    </div>
+                                </article>
+                            {% endfor %}
+                        {% else %}
+                            <div class="empty-state" style="padding: 1.5rem;">
+                                <i class="ti ti-circle-check" aria-hidden="true"></i>
+                                <span style="font-size: 0.8rem;">Aucun chapitre validé récemment.</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                </section>
             </div>
 
-            <div class="history-list">
-                {% if completed_progressions %}
-                    {% for progression in completed_progressions %}
-                        <article class="history-item">
-                            <div class="history-item__title">
-                                <strong>{{ progression.cours.titre }}</strong>
-                                <span class="profile-badge"><i class="ti ti-circle-check" aria-hidden="true"></i> 100%</span>
-                            </div>
-                            <div class="history-item__meta">
-                                <span>{{ progression.cours.get_niveau_display }}</span>
-                                <span>{{ progression.chapitres_valides.count }} chapitres validés</span>
-                                <span>Consulté le {{ progression.date_derniere_consultation|date:'d/m/Y H:i' }}</span>
-                            </div>
-                        </article>
-                    {% endfor %}
-                {% else %}
-                    <p class="empty-state">Aucun cours terminé pour le moment.</p>
-                {% endif %}
-            </div>
-        </article>
-    </section>
+            <!-- Completed courses history -->
+            <section class="glass-card">
+                <div class="section-header">
+                    <h2><i class="ti ti-award" aria-hidden="true"></i> Parcours terminés</h2>
+                    <span class="user-role-badge" style="background:#d1fae5; color:#065f46;">{{ completed_progressions|length }} certifiés</span>
+                </div>
+                <div class="progress-grid">
+                    {% if completed_progressions %}
+                        {% for progression in completed_progressions %}
+                            <article class="progress-course-card" style="border-color: #d1fae5; background: rgba(240, 253, 250, 0.5);">
+                                <div class="course-card-top">
+                                    <div class="course-card-info">
+                                        <h3 style="color: #065f46;">{{ progression.cours.titre }}</h3>
+                                        <p>{{ progression.cours.get_niveau_display|default:"Général" }}</p>
+                                    </div>
+                                    <span class="course-card-pct" style="color:#047857; background:#d1fae5;">100%</span>
+                                </div>
+                                <div class="progress-bar-wrapper" style="background:#e6fcf5;">
+                                    <div class="progress-bar-fill" style="width: 100%; background:#10b981;"></div>
+                                </div>
+                                <div class="course-card-footer" style="border-top-color: #d1fae5;">
+                                    <span>
+                                        <i class="ti ti-star" aria-hidden="true" style="color:var(--accent);"></i>
+                                        Félicitations ! Parcours achevé.
+                                    </span>
+                                    <span>
+                                        Dernière visite : {{ progression.date_derniere_consultation|date:'d/m/Y' }}
+                                    </span>
+                                </div>
+                            </article>
+                        {% endfor %}
+                    {% else %}
+                        <div class="empty-state">
+                            <i class="ti ti-trophy" aria-hidden="true"></i>
+                            <span>Terminez des cours pour voir vos badges de réussite ici !</span>
+                        </div>
+                    {% endif %}
+                </div>
+            </section>
+        </main>
+    </div>
 </section>
+
+<!-- Direct Upload Form -->
+<form id="profile-avatar-form" method="post" action="{% url 'accounts:profile_edit' %}" enctype="multipart/form-data" style="display:none;">
+    {% csrf_token %}
+    <input type="hidden" name="email" value="{{ profile_user.email }}">
+    <input type="file" name="photo" id="profile-avatar-input" accept="image/*">
+</form>
+
+<!-- Direct Delete Form -->
+<form id="profile-avatar-delete-form" method="post" action="{% url 'accounts:profile_edit' %}" style="display:none;">
+    {% csrf_token %}
+    <input type="hidden" name="email" value="{{ profile_user.email }}">
+    <input type="hidden" name="supprimer_photo" value="on">
+</form>
+
+<script>
+    // Handles clicking overlay area -> triggers input file selector
+    document.getElementById('profile-avatar-input').addEventListener('change', function() {
+        if(this.files && this.files.length > 0) {
+            document.getElementById('profile-avatar-form').submit();
+        }
+    });
+</script>
 {% endblock %}

@@ -1,31 +1,39 @@
-<div id="equipements-list">
-    {% if equipements.exists %}
-        <ul class="liste-docs-detaillee">
-            {% for eq in equipements %}
-            <li class="doc-item">
-                <div class="doc-header" style="display:flex; justify-content:space-between; align-items:center; gap:0.5rem;">
-                    <div style="flex:1;">
-                        <a class="doc-titre">{{ eq.nom }}</a>
-                        <p class="doc-description" style="margin:0.25rem 0 0 0;">S/N: {{ eq.numero_serie }}</p>
-                    </div>
-                    <div class="actions" style="gap:0.4rem;">
-                        <button type="button" class="btn btn-ghost" style="padding:0.35rem 0.5rem; font-size:0.85rem;" data-equipment-form-url="{% url 'logistics:editer_equipement' eq.id %}">Modifier</button>
-                        <button type="button" class="btn btn-ghost" style="padding:0.35rem 0.5rem; font-size:0.85rem; color:#9b1c1c; border-color:#f5c2c7;" onclick="if(confirm('Supprimer cet équipement ?')){ fetch('{% url 'logistics:supprimer_equipement' eq.id %}', {method:'POST', headers: {'X-CSRFToken': '{{ csrf_token }}', 'X-Requested-With': 'XMLHttpRequest'}}).then(function(r){return r.text();}).then(function(html){ document.getElementById('equipements-list').innerHTML = html; document.getElementById('form-equipement-container').innerHTML = ''; }); }">Supprimer</button>
-                    </div>
+{% if equipements.exists %}
+    <ul class="liste-docs-detaillee">
+        {% for eq in equipements %}
+        <li class="doc-item">
+            <div class="doc-header actions-between gap-sm m-0">
+                <div class="flex-1">
+                    <a class="doc-titre">{{ eq.nom }}</a>
+                    <p class="doc-description mt-2 m-0">S/N: {{ eq.numero_serie }}</p>
                 </div>
-                <p style="margin-top:0.5rem;">
-                    {% if eq.etat == 'DISPONIBLE' %}
-                        <span class="badge-niveau" style="background: #e6f7ef; color: #036;">Disponible</span>
-                    {% elif eq.etat == 'EN_PANNE' %}
-                        <span class="badge-niveau" style="background: #fff1f0; color: #8b0000;">En panne</span>
-                    {% else %}
-                        <span class="badge-niveau" style="background: #fff7e6; color: #7a4b00;">En maintenance</span>
-                    {% endif %}
-                </p>
-            </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p class="message-empty">Aucun équipement trouvé.</p>
-    {% endif %}
-</div>
+                {% if user.is_staff or user.is_formateur %}
+                <div class="actions gap-xs m-0">
+                    <button class="btn btn-ghost btn-sm"
+                            hx-get="{% url 'logistics:editer_equipement' eq.id %}"
+                            hx-target="#form-equipement-container"
+                            hx-swap="innerHTML">Modifier</button>
+                    <button class="btn btn-ghost btn-sm btn-danger"
+                            hx-post="{% url 'logistics:supprimer_equipement' eq.id %}"
+                            hx-confirm="Supprimer cet équipement ?"
+                            hx-target="#equipements-list"
+                            hx-swap="innerHTML"
+                            hx-on::after-request="document.getElementById('form-equipement-container').innerHTML = document.getElementById('placeholder-template').innerHTML">Supprimer</button>
+                </div>
+                {% endif %}
+            </div>
+            <p class="mt-2 m-0">
+                {% if eq.etat == 'DISPONIBLE' %}
+                    <span class="badge-niveau badge-disponible">Disponible</span>
+                {% elif eq.etat == 'EN_PANNE' %}
+                    <span class="badge-niveau badge-panne">En panne</span>
+                {% else %}
+                    <span class="badge-niveau badge-maintenance">En maintenance</span>
+                {% endif %}
+            </p>
+        </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p class="message-empty">Aucun équipement trouvé.</p>
+{% endif %}

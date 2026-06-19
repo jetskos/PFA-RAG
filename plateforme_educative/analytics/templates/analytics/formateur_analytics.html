@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ titre_page }}{% endblock %}
+
+{% block content %}
+<section class="page-shell">
+    <!-- En-tête -->
+    <div class="page-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;">
+        <div>
+            <p class="eyebrow">
+                <a href="{% url 'apprentissage:espace_formateur' %}" style="color: var(--brand-primary);">Espace Formateur</a> › Analytics
+            </p>
+            <h1>{{ cours.titre }}</h1>
+            <p class="muted">Statistiques et indicateurs pédagogiques du cours.</p>
+        </div>
+        <div style="display: flex; gap: 0.75rem;">
+            <a href="{% url 'analytics:export_formateur_analytics_csv' cours.id %}?classe={{ classe_selectionnee|default:'' }}&seuil={{ seuil }}" class="btn" style="text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem; background: var(--bg-surface); border: 1px solid var(--border-color);">
+                <i class="ti ti-download"></i> Exporter CSV
+            </a>
+            <a href="{% url 'apprentissage:gerer_cours' cours.id %}" class="btn btn-ghost" style="text-decoration: none;">
+                Retour au cours
+            </a>
+        </div>
+    </div>
+
+    <!-- Barre de filtres -->
+    <div class="carte" style="padding: 1.25rem; background: var(--surface-alt); border: 1px solid var(--bordure); margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+        <form method="GET" style="display: flex; align-items: center; gap: 1.5rem; margin: 0; flex-wrap: wrap;">
+            <!-- Filtre classe -->
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <label for="classe-select" style="font-weight: 600; font-size: 0.9rem; margin-bottom: 0;">Classe :</label>
+                <select name="classe" id="classe-select" onchange="this.form.submit()" style="padding: 0.45rem 1rem; border-radius: 6px; border: 1px solid var(--bordure); background: var(--surface); color: var(--text-primary); font-size: 0.88rem; font-weight: 600; cursor: pointer; outline: none;">
+                    <option value="">Toutes les classes</option>
+                    {% for cl in classes %}
+                        <option value="{{ cl.id }}" {% if classe_selectionnee == cl.id|stringformat:"s" %}selected{% endif %}>
+                            {{ cl.nom }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Seuil de difficulté -->
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <label for="seuil-select" style="font-weight: 600; font-size: 0.9rem; margin-bottom: 0;">Seuil d'alerte QCM :</label>
+                <select name="seuil" id="seuil-select" onchange="this.form.submit()" style="padding: 0.45rem 1rem; border-radius: 6px; border: 1px solid var(--bordure); background: var(--surface); color: var(--text-primary); font-size: 0.88rem; font-weight: 600; cursor: pointer; outline: none;">
+                    <option value="30" {% if seuil == 30 %}selected{% endif %}>&lt; 30%</option>
+                    <option value="40" {% if seuil == 40 %}selected{% endif %}>&lt; 40%</option>
+                    <option value="50" {% if seuil == 50 %}selected{% endif %}>&lt; 50% (Défaut)</option>
+                    <option value="60" {% if seuil == 60 %}selected{% endif %}>&lt; 60%</option>
+                    <option value="70" {% if seuil == 70 %}selected{% endif %}>&lt; 70%</option>
+                    <option value="80" {% if seuil == 80 %}selected{% endif %}>&lt; 80%</option>
+                </select>
+            </div>
+        </form>
+    </div>
+
+    <!-- Section 1 : Taux de complétion par classe -->
+    <div class="carte" style="margin-bottom: 2rem;">
+        <h2 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+            <i class="ti ti-chart-bar" style="color: var(--brand-primary);"></i> Taux de complétion par classe
+        </h2>
+        
+        <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+            {% for classe, data in completion_data.items %}
+            <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem; font-size: 0.9rem;">
+                    <strong>{{ classe.nom }}</strong>
+                    <span style="color: var(--texte-secondaire);">{{ data.pourcentage }}% complété ({{ data.nb_eleves }} élève{{ data.nb_eleves|pluralize }})</span>
+                </div>
+                <!-- Barre de progression -->
+                <div style="width: 100%; height: 10px; background: var(--surface-alt); border-radius: 999px; overflow: hidden; border: 1px solid var(--bordure);">
+                    <div style="width: {{ data.pourcentage }}%; height: 100%; background: linear-gradient(90deg, var(--brand-primary) 0%, var(--accent-teal) 100%); border-radius: 999px; transition: width 0.5s ease;"></div>
+                </div>
+            </div>
+            {% empty %}
+                <p class="muted" style="text-align: center; padding: 1rem;">Aucune classe active pour le niveau de ce cours.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Layout 2 Colonnes : Élèves en difficulté (Gauche) & Temps estimé (Droite) -->
+    <div style="display: grid; grid-template-columns: 3fr 2fr; gap: 1.5rem; align-items: start; min-width: 0;">
+        
+        <!-- Colonne Gauche : Élèves en difficulté -->
+        <div class="carte" style="padding: 0; overflow: hidden;">
+            <div style="padding: 1.5rem; border-bottom: 1px solid var(--bordure);">
+                <h2 style="font-size: 1.15rem; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="ti ti-alert-triangle" style="color: #ef4444;"></i> Élèves en difficulté (Moyenne QCM &lt; {{ seuil }}%)
+                </h2>
+            </div>
+            
+            {% if etudiants_diff %}
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: var(--surface-alt); font-size: 0.78rem; text-transform: uppercase; color: var(--texte-secondaire); border-bottom: 1px solid var(--bordure);">
+                            <th style="padding: 0.85rem 1.25rem; text-align: left;">Étudiant</th>
+                            <th style="padding: 0.85rem 1rem; text-align: center;">Moyenne QCM</th>
+                            <th style="padding: 0.85rem 1rem; text-align: center;">Complétion</th>
+                            <th style="padding: 0.85rem 1rem; text-align: center;">Devoirs rendus</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in etudiants_diff %}
+                        <tr style="border-top: 1px solid var(--bordure);">
+                            <td style="padding: 1rem 1.25rem;">
+                                <div style="font-weight: 600; font-size: 0.9rem;">{{ student.get_full_name }}</div>
+                                <div style="font-size: 0.75rem; color: var(--texte-secondaire);">{{ student.classe.nom }}</div>
+                            </td>
+                            <td style="padding: 1rem 1rem; text-align: center;">
+                                <span style="font-weight: 700; color: #ef4444;">{{ student.moyenne_qcm }}%</span>
+                            </td>
+                            <td style="padding: 1rem 1rem; text-align: center; font-size: 0.88rem; font-weight: 600;">
+                                {{ student.taux_completion }}%
+                            </td>
+                            <td style="padding: 1rem 1rem; text-align: center; font-size: 0.88rem;">
+                                {{ student.nb_devoirs_rendus }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div style="padding: 3rem; text-align: center; color: var(--texte-secondaire);">
+                    🎉 Aucun élève n'est en difficulté pour les critères sélectionnés !
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Colonne Droite : Estimation temps passé -->
+        <div class="carte" style="padding: 0; overflow: hidden;">
+            <div style="padding: 1.5rem; border-bottom: 1px solid var(--bordure);">
+                <h2 style="font-size: 1.15rem; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="ti ti-clock" style="color: var(--accent-teal);"></i> Temps d'apprentissage estimé
+                </h2>
+            </div>
+
+            <!-- Note méthodologique / Disclaimer -->
+            <div style="background: rgba(13, 148, 136, 0.04); border-bottom: 1px solid var(--bordure); padding: 1rem 1.5rem; font-size: 0.78rem; color: var(--texte-secondaire); line-height: 1.5;">
+                <strong>💡 Note méthodologique :</strong> Cette durée représente le temps écoulé (delta) entre la validation du premier et du dernier chapitre du cours. Elle n'enregistre pas la durée de session active continue, mais le rythme de progression global de l'élève.
+            </div>
+
+            <div style="max-height: 400px; overflow-y: auto;">
+                {% if list_temps_passe %}
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background: var(--surface-alt); font-size: 0.75rem; text-transform: uppercase; color: var(--texte-secondaire); border-bottom: 1px solid var(--bordure);">
+                                <th style="padding: 0.75rem 1.25rem; text-align: left;">Élève</th>
+                                <th style="padding: 0.75rem 1rem; text-align: right;">Durée</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in list_temps_passe %}
+                            <tr style="border-top: 1px solid var(--bordure);">
+                                <td style="padding: 0.75rem 1.25rem;">
+                                    <div style="font-weight: 500; font-size: 0.85rem;">{{ item.student.get_full_name }}</div>
+                                    <div style="font-size: 0.75rem; color: var(--texte-secondaire);">Comp. : {{ item.completion }}%</div>
+                                </td>
+                                <td style="padding: 0.75rem 1rem; text-align: right; font-weight: 700; font-size: 0.85rem; color: var(--accent-teal);">
+                                    {{ item.temps_str }}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <div style="padding: 2rem; text-align: center; color: var(--texte-secondaire);">
+                        Aucune donnée d'apprentissage disponible.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+    </div>
+
+</section>
+{% endblock %}

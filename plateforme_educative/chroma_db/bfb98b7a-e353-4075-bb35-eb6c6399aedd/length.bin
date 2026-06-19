@@ -1,8 +1,0 @@
-irectclient
-7. DifferenceJPAvsJDBC→JPA=ORM,JDBC=basniveau
-8. DifferenceJPAvsHibernate→JPA=specification,Hibernate=implementation
-9. Strategiesd’heritageJPA→JOINED,SINGLE_TABLE,TABLE_PER_CLASS
-10. RelationsJPA→@ManyToOne,@OneToMany(mappedBy)
-11. @SpringBootApplication → @Configuration + @EnableAutoConfiguration + @ComponentScan
-12. Rolede@Autowired→ Injectionautomatiquededependances
-1

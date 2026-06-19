@@ -1,13 +1,109 @@
 {% extends 'base.html' %}
-
-{% block title %}Tous les cours | Apprentissage{% endblock %}
+{% load static %}
+{% block title %}Catalogue des cours | EduTech{% endblock %}
 
 {% block content %}
-<section class="carte" id="zone-principale">
-    <h2>Tous les cours</h2>
-    
-    <div class="grille-cours">
+<style>
+    .catalog-hero {
+        /* L'image de fond */
+        background-image: url('{% static "images/pngtree-teacher-s-college-classroom-coaching-course-poster-background-image_188494.jpg" %}');
+        background-size: cover;
+        background-position: center bottom;
+        /* Aligné en bas pour bien voir les livres/la ville */
+        background-repeat: no-repeat;
+        background-color: #fdfbf7;
+        border-radius: 24px;
+        min-height: 200px;
+        /* On augmente la hauteur pour bien profiter de l'image */
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 2rem 3rem;
+        margin-bottom: 2rem;
+        text-align: center;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .catalog-hero h1 {
+        font-size: 3rem;
+        font-weight: 900;
+        margin: 0 0 1rem 0;
+        color: #0f172a;
+        /* Texte foncé car l'image est claire */
+        letter-spacing: -0.03em;
+        text-shadow: 0 2px 10px rgba(255, 255, 255, 0.8);
+    }
+
+    .catalog-hero p {
+        font-size: 1.15rem;
+        color: #334155;
+        font-weight: 500;
+        max-width: 600px;
+        margin: 0 auto 2rem auto;
+        text-shadow: 0 2px 10px rgba(255, 255, 255, 0.8);
+    }
+
+    .catalog-search-container {
+        max-width: 600px;
+        margin: 0 auto;
+        position: relative;
+    }
+
+    .catalog-search-container i {
+        position: absolute;
+        left: 1.25rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #64748b;
+        font-size: 1.25rem;
+    }
+
+    .catalog-search-container input {
+        width: 100%;
+        padding: 1rem 1.25rem 1rem 3.5rem;
+        border-radius: 99px;
+        border: none;
+        font-size: 1.05rem;
+        background: rgba(255, 255, 255, 0.95);
+        color: #0f172a;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s;
+    }
+
+    .catalog-search-container input:focus {
+        outline: none;
+        background: #ffffff;
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3);
+    }
+
+    .grille-cours {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1rem;
+    }
+</style>
+
+<div class="page-shell" style="max-width: 1200px; margin: 0 auto; padding-top: 2rem;">
+    <!-- HERO SECTION -->
+    <div class="catalog-hero">
+        <h1>Catalogue des cours</h1>
+        <p>Explorez notre collection de cours interactifs, découvrez les modules de vos collègues, ou commencez votre
+            apprentissage.</p>
+
+        <div class="catalog-search-container">
+            <i class="ti ti-search"></i>
+            <input type="search" name="q" placeholder="Rechercher par titre, matière ou formateur..."
+                hx-get="{% url 'apprentissage:liste_cours' %}" hx-trigger="keyup changed delay:300ms, search"
+                hx-target="#zone-principale" autocomplete="off" value="{{ q }}">
+        </div>
+    </div>
+
+    <!-- MAIN GRID -->
+    <div id="zone-principale" class="grille-cours">
         {% include 'apprentissage/partials/liste_cours.html' %}
     </div>
-</section>
+</div>
 {% endblock %}

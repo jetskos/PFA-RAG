@@ -31,7 +31,10 @@
                         {% for eleve in eleves %}
                         <tr>
                             <td style="padding:12px 8px; border-bottom:1px solid var(--border);">
-                                <strong>{{ eleve.email }}</strong>
+                                <strong>{% if eleve.first_name and eleve.last_name %}{{ eleve.first_name }} {{ eleve.last_name }}{% else %}{{ eleve.email }}{% endif %}</strong>
+                                {% if eleve.first_name %}
+                                    <div style="font-size: 0.85rem; color: #64748b;">{{ eleve.email }}</div>
+                                {% endif %}
                             </td>
                             <td style="padding:12px 8px; border-bottom:1px solid var(--border); text-align:center;">
                                 <span class="role-badge" style="background:{% if eleve.is_active %}#d1fae5; color:#065f46{% else %}#fef3c7; color:#92400e{% endif %};">
@@ -64,6 +67,16 @@
                 <h3 style="margin-top:0;">Créer un nouvel élève</h3>
                 <form method="post" action="{% url 'dashboard_admin_add_student_page' classe.id %}" style="display:grid; gap:0.8rem;">
                     {% csrf_token %}
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.8rem;">
+                        <label>
+                            Prénom
+                            <input type="text" name="first_name" placeholder="Prénom" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px; margin-top:4px;">
+                        </label>
+                        <label>
+                            Nom
+                            <input type="text" name="last_name" placeholder="Nom" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px; margin-top:4px;">
+                        </label>
+                    </div>
                     <label>
                         Email
                         <input type="email" name="email" required placeholder="eleve@exemple.com" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px; margin-top:4px;">
@@ -85,7 +98,13 @@
                         <select name="student_id" required style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px; margin-top:4px;">
                             <option value="">Sélectionner un élève...</option>
                             {% for p_student in pending_students %}
-                                <option value="{{ p_student.id }}">{{ p_student.email }}</option>
+                                <option value="{{ p_student.id }}">
+                                    {% if p_student.first_name and p_student.last_name %}
+                                        {{ p_student.first_name }} {{ p_student.last_name }} ({{ p_student.email }})
+                                    {% else %}
+                                        {{ p_student.email }}
+                                    {% endif %}
+                                </option>
                             {% endfor %}
                         </select>
                     </label>

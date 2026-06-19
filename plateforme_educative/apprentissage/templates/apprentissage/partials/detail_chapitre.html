@@ -1,163 +1,1065 @@
 {% load apprentissage_extras %}
 
-<article class="content-card chapter-card">
-    <div class="content-hero">
-        <div>
-            <p class="eyebrow">Chapitre {{ chapitre.ordre }}</p>
-            <h2>{{ chapitre.titre }}</h2>
-        </div>
-        <a class="btn btn-ghost" href="{% url 'apprentissage:detail_cours' cours.id %}" hx-get="{% url 'apprentissage:detail_cours' cours.id %}" hx-target="#zone-principale" hx-swap="outerHTML" hx-push-url="true">← Retour au cours</a>
-    </div>
-
-    <div class="content-breadcrumb">
-        <a href="{% url 'apprentissage:liste_cours' %}" hx-get="{% url 'apprentissage:liste_cours' %}" hx-target="#zone-principale" hx-swap="outerHTML" hx-push-url="true">Cours</a>
-        <span>/</span>
-        <a href="{% url 'apprentissage:detail_cours' cours.id %}" hx-get="{% url 'apprentissage:detail_cours' cours.id %}" hx-target="#zone-principale" hx-swap="outerHTML" hx-push-url="true">{{ cours.titre }}</a>
-        <span>/</span>
-        <span>{{ chapitre.titre }}</span>
-    </div>
-
-    {% if chapitre.description %}
-        <div class="rich-copy">
-            {{ chapitre.description|safe }}
-        </div>
-    {% endif %}
-
-    {% if chapitre.url_video %}
-        <section class="media-card media-card--video">
-            <div class="media-card__head">
-                <h3>Vidéo pédagogique</h3>
-                <a class="doc-download" href="{{ chapitre.url_video }}" target="_blank" rel="noopener">Ouvrir la vidéo</a>
-            </div>
-            <div class="video-frame">
-                <iframe src="{{ chapitre.url_video|youtube_embed }}" title="{{ chapitre.titre }}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe>
-            </div>
-        </section>
-    {% endif %}
-
-    {% if documents_par_type %}
-        <div class="docs-stack">
-            <h3>Documents pédagogiques</h3>
-            {% for type_label, docs in documents_par_type.items %}
-                <section class="doc-group">
-                    <h4 class="doc-group__title">{{ type_label }}</h4>
-                    <div class="doc-grid">
-                        {% for doc in docs %}
-                            <article class="doc-preview" id="document-{{ doc.id }}">
-                                <div class="doc-preview-head">
-                                    <div>
-                                        <p class="eyebrow">Document</p>
-                                        <h5>{{ doc.titre }}</h5>
-                                    </div>
-                                    <a class="doc-download" href="{{ doc.fichier_pdf.url }}" target="_blank" rel="noopener">Visualiser</a>
-                                </div>
-
-                                {% if doc.description %}
-                                    <p class="doc-description">{{ doc.description }}</p>
-                                {% endif %}
-
-                                <div class="actions" style="margin: 0.8rem 0 0; gap: 0.5rem; flex-wrap: wrap;">
-                                    <a class="btn btn-ghost" href="{{ doc.fichier_pdf.url }}" target="_blank" rel="noopener">Ouvrir le PDF</a>
-                                    <a class="btn btn-ghost" href="{% url 'apprentissage:telecharger_document' doc.id %}">Télécharger</a>
-                                </div>
-
-                                <div class="doc-embed-shell">
-                                    <iframe src="{{ doc.fichier_pdf.url }}" width="100%" height="700px" style="border: none;"></iframe>
-                                </div>
-
-                                <p class="doc-fallback">
-                                    Si l'aperçu ne s'affiche pas,
-                                    <a href="{{ doc.fichier_pdf.url }}" target="_blank" rel="noopener">ouvrez le PDF dans un nouvel onglet</a>.
-                                </p>
-                            </article>
-                        {% endfor %}
-                    </div>
-                </section>
-            {% endfor %}
-        </div>
-    {% else %}
-        <p class="message-empty">Aucun document disponible dans ce chapitre.</p>
-    {% endif %}
-
-    <div style="margin-top: 3rem; display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; border-top: 1px solid var(--border-color); padding-top: 1.5rem;">
-        <button hx-post="{% url 'apprentissage:valider_chapitre' chapitre.id %}" hx-swap="outerHTML" class="btn btn-outline">
-            <i class="ti ti-circle-check"></i> Marquer ce chapitre comme terminé
-        </button>
-
-        <a href="/tuteur/qcm/{{ chapitre.id }}/" class="btn btn-success" style="padding: 0.65rem 1.25rem;">
-            <i class="ti ti-checkbox"></i> Faire le QCM
-        </a>
-    </div>
-</article>
-
-<!-- Floating Chat widget for AI Tutor -->
 <style>
-.chat-fab {
-    position: fixed;
-    bottom: 2.5rem;
-    right: 2.5rem;
-    z-index: 9999;
+/* ── CHAPTER DETAIL CONTAINER ── */
+.chapitre-detail-container {
+    display: flex;
+    gap: 1.5rem;
+    width: 100%;
+    margin-top: 1.5rem;
+    align-items: flex-start;
 }
 
-.chat-fab-btn {
-    width: 60px; height: 60px;
-    background: var(--brand-gradient, linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%));
-    border-radius: 50%;
-    border: none;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.6rem;
-    box-shadow: 0 4px 20px rgba(79, 70, 229, 0.45);
-    transition: transform .2s, box-shadow .2s;
-    position: relative;
+.chapitre-col-gauche {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    transition: all 0.3s ease;
 }
-.chat-fab-btn:hover { transform: scale(1.08); box-shadow: 0 6px 28px rgba(79, 70, 229, 0.55); }
 
-.chat-fab-btn .notif {
-    position: absolute; top: -2px; right: -2px;
-    width: 14px; height: 14px;
-    background: var(--accent-danger, #ef4444);
-    border-radius: 50%;
-    border: 2px solid var(--bg-surface, #ffffff);
-    animation: pulse 2s infinite;
+.chapitre-col-droite {
+    width: 340px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 6rem;
+    transition: all 0.3s ease;
 }
-@keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.2)} }
 
-.chat-fab-tooltip {
-    position: absolute;
-    right: 72px; bottom: 50%;
-    transform: translateY(50%);
-    background: var(--text-primary, #111827);
-    color: var(--bg-surface, #ffffff);
+.tuteur-hidden .chapitre-col-droite {
+    display: none !important;
+}
+
+.tuteur-hidden .chapitre-col-gauche {
+    width: 100% !important;
+    flex: 1 !important;
+}
+
+@media (max-width: 1024px) {
+    .chapitre-detail-container {
+        flex-direction: column;
+    }
+    .chapitre-col-gauche,
+    .chapitre-col-droite {
+        width: 100% !important;
+    }
+    .chapitre-col-droite {
+        position: static;
+    }
+}
+
+/* ── HEADER BAR & NAVIGATION ── */
+.chapitre-header-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 1.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.chapitre-nav-arrows {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.nav-arrow-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
     padding: 0.5rem 1rem;
-    border-radius: var(--radius-sm, 0.375rem);
-    font-size: 0.78rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    background-color: var(--bg-surface-alt);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    transition: var(--transition);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.nav-arrow-btn:hover:not(.disabled) {
+    border-color: var(--brand-primary);
+    color: var(--brand-primary);
+    background-color: var(--brand-light);
+}
+
+.nav-arrow-btn.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.breadcrumb-accent {
+    color: var(--brand-primary);
     font-weight: 700;
-    white-space: nowrap;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity .2s;
-    box-shadow: var(--shadow-md);
+}
+
+.content-breadcrumb {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.content-breadcrumb a {
+    color: var(--text-secondary);
+    transition: var(--transition);
+}
+
+.content-breadcrumb a:hover {
+    color: var(--brand-primary);
+}
+
+/* ── VIDEO PLAYER ── */
+.video-container-wrapper {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.video-container-wrapper h3 {
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.video-player-direct {
+    width: 100%;
+    border-radius: var(--radius-sm);
+    outline: none;
+    max-height: 480px;
+    background-color: #000;
+}
+
+.video-source-info {
+    margin-top: 0.85rem;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    border-top: 1px solid var(--border-color);
+    padding-top: 0.75rem;
+}
+
+.video-source-info a {
+    color: var(--brand-primary);
+    word-break: break-all;
+}
+
+.video-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 280px;
+    background-color: var(--bg-surface-alt);
+    border: 1px dashed var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--text-muted);
+    gap: 0.75rem;
+}
+
+/* ── DOCUMENTS LIST ── */
+.docs-stack {
+    margin-top: 0.5rem;
+}
+
+.doc-group {
+    margin-top: 1.5rem;
+}
+
+.doc-group__title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 1rem;
+}
+
+.doc-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+}
+
+.doc-preview {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.doc-preview-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.doc-preview-head h5 {
+    font-size: 1rem;
+    margin-top: 0.2rem;
+}
+
+.doc-description {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    margin-top: 0.75rem;
+}
+
+.doc-embed-shell {
+    margin-top: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+}
+
+.doc-fallback {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 0.75rem;
+}
+
+/* ── EVALUATION SECTION ── */
+.eval-section {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1.75rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.eval-section h3 {
+    margin-bottom: 0.5rem;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.eval-intro-text {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+}
+
+.eval-buttons-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+@media (max-width: 640px) {
+    .eval-buttons-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.eval-option {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    background-color: var(--bg-surface-alt);
+    padding: 1.25rem;
+    border-radius: var(--radius-md);
     border: 1px solid var(--border-color);
 }
-.chat-fab-tooltip::after {
-    content: '';
-    position: absolute; right: -5px; top: 50%;
-    transform: translateY(-50%);
-    border: 5px solid transparent;
-    border-left-color: var(--text-primary, #111827);
-    border-right: none;
+
+.eval-desc {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
 }
-.chat-fab-btn:hover + .chat-fab-tooltip,
-.chat-fab:hover .chat-fab-tooltip { opacity: 1; }
+
+/* ── RAG TUTOR CARD ── */
+.tuteur-rag-card {
+    display: flex;
+    flex-direction: column;
+    height: 620px;
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+}
+
+.chat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem;
+    border-bottom: 1px solid var(--border-color);
+    background-color: var(--bg-surface-alt);
+}
+
+.chat-title-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+}
+
+.status-indicator-dot {
+    width: 9px;
+    height: 9px;
+    background-color: var(--accent-emerald);
+    border-radius: 50%;
+    display: inline-block;
+    box-shadow: 0 0 10px var(--accent-emerald);
+    animation: indicator-pulse 2s infinite;
+}
+
+@keyframes indicator-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.45; }
+}
+
+.chat-menu-placeholder {
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 0.25rem;
+    transition: var(--transition);
+}
+.chat-menu-placeholder:hover {
+    color: var(--text-primary);
+}
+
+.chat-messages-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    background-color: var(--bg-app);
+}
+
+.chat-msg {
+    max-width: 88%;
+    padding: 0.85rem 1.1rem;
+    border-radius: var(--radius-md);
+    font-size: 0.88rem;
+    line-height: 1.6;
+    position: relative;
+    word-break: break-word;
+}
+
+.msg-assistant {
+    background-color: var(--bg-surface);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    align-self: flex-start;
+    border-top-left-radius: 2px;
+}
+
+.msg-student {
+    background-color: var(--brand-primary);
+    color: #ffffff;
+    align-self: flex-end;
+    border-top-right-radius: 2px;
+}
+
+.msg-sources {
+    margin-top: 0.65rem;
+    border-top: 1px solid var(--border-color);
+    padding-top: 0.5rem;
+    font-size: 0.76rem;
+    color: var(--text-secondary);
+}
+
+.msg-sources details {
+    cursor: pointer;
+}
+
+.msg-sources summary {
+    font-weight: 700;
+    color: var(--brand-primary);
+    outline: none;
+    user-select: none;
+}
+
+.sources-content {
+    margin-top: 0.35rem;
+    background-color: var(--bg-surface-alt);
+    padding: 0.6rem;
+    border-radius: var(--radius-sm);
+    font-family: monospace;
+    white-space: pre-wrap;
+    max-height: 140px;
+    overflow-y: auto;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+
+/* Code Styles */
+.inline-code {
+    background-color: var(--bg-surface-alt);
+    color: var(--accent-danger);
+    padding: 0.15rem 0.35rem;
+    border-radius: var(--radius-sm);
+    font-family: monospace;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.msg-student .inline-code {
+    background-color: rgba(0, 0, 0, 0.25);
+    color: #ffffff;
+}
+
+.code-block-pre {
+    background-color: var(--bg-surface-alt);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 0.75rem;
+    overflow-x: auto;
+    margin: 0.65rem 0;
+}
+
+.code-block-code {
+    font-family: monospace;
+    font-size: 0.82rem;
+    color: var(--text-primary);
+    white-space: pre;
+    line-height: 1.4;
+}
+
+/* Action Chips */
+.chat-action-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0.85rem 1.25rem;
+    border-top: 1px solid var(--border-color);
+    background-color: var(--bg-surface-alt);
+}
+
+.chat-chip {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-full);
+    padding: 0.35rem 0.85rem;
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    text-decoration: none;
+}
+
+.chat-chip:hover {
+    border-color: var(--brand-primary);
+    color: var(--brand-primary);
+    background-color: var(--brand-light);
+}
+
+/* Chat Input Bar */
+.chat-input-bar {
+    display: flex;
+    padding: 0.85rem 1.25rem;
+    background-color: var(--bg-surface);
+    border-top: 1px solid var(--border-color);
+    gap: 0.65rem;
+    align-items: center;
+}
+
+.chat-input-bar input {
+    flex: 1;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 0.65rem 0.95rem;
+    font-size: 0.88rem;
+    background-color: var(--bg-app);
+    color: var(--text-primary);
+    outline: none;
+    transition: var(--transition);
+}
+
+.chat-input-bar input:focus {
+    border-color: var(--brand-primary);
+    box-shadow: 0 0 0 2px var(--brand-light);
+}
+
+.btn-chat-send {
+    background: var(--brand-gradient);
+    color: #ffffff;
+    border: none;
+    border-radius: var(--radius-sm);
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: 1rem;
+}
+
+.btn-chat-send:hover {
+    filter: brightness(1.15);
+    transform: translateY(-1px);
+}
+
+/* Typing Indicator Animation */
+.typing-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+.typing-indicator span {
+    width: 6px;
+    height: 6px;
+    background-color: var(--brand-primary);
+    border-radius: 50%;
+    animation: typing-bounce 1.4s infinite ease-in-out both;
+}
+.typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+.typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+@keyframes typing-bounce {
+    0%, 80%, 100% { transform: scale(0); }
+    40% { transform: scale(1); }
+}
+.typing-text {
+    font-style: italic;
+    color: var(--text-secondary);
+}
 </style>
 
-<div class="chat-fab">
-    <button class="chat-fab-btn"
-            onclick="window.location.href='/tuteur/session/{{ chapitre.id }}/'"
-            title="Démarrer le tuteur IA">
-        🤖
-        <span class="notif"></span>
-    </button>
-    <div class="chat-fab-tooltip">Assistant IA disponible</div>
+<div class="chapitre-detail-container">
+    
+    <!-- COLONNE GAUCHE (62% ou 100%) -->
+    <div class="chapitre-col-gauche">
+        
+        <!-- Breadcrumb & Nav -->
+        <div class="chapitre-header-bar">
+            <div class="content-breadcrumb">
+                <a href="{% url 'apprentissage:liste_cours' %}" hx-get="{% url 'apprentissage:liste_cours' %}" hx-target="#zone-principale" hx-swap="outerHTML" hx-push-url="true">Cours</a>
+                <span>/</span>
+                <a href="{% url 'apprentissage:detail_cours' cours.id %}" hx-get="{% url 'apprentissage:detail_cours' cours.id %}" hx-target="#zone-principale" hx-swap="outerHTML" hx-push-url="true">{{ cours.titre }}</a>
+                <span>/</span>
+                <span class="breadcrumb-accent">{{ chapitre.titre }}</span>
+            </div>
+            
+            <div class="chapitre-nav-arrows">
+                <!-- Toggle Assistant -->
+                <button type="button" class="nav-arrow-btn" id="btn-toggle-tuteur" title="Afficher/Masquer le Tuteur Assistant">
+                    <i class="ti ti-messages"></i> <span>Masquer Assistant</span>
+                </button>
+
+                {% if chapitre_precedent %}
+                    <a href="{% url 'apprentissage:detail_chapitre' cours.id chapitre_precedent.id %}" 
+                       hx-get="{% url 'apprentissage:detail_chapitre' cours.id chapitre_precedent.id %}" 
+                       hx-target="#contenu-cours" 
+                       hx-swap="innerHTML" 
+                       hx-push-url="true"
+                       class="nav-arrow-btn" 
+                       title="Chapitre précédent">
+                        <i class="ti ti-arrow-left"></i> Précédent
+                    </a>
+                {% else %}
+                    <span class="nav-arrow-btn disabled"><i class="ti ti-arrow-left"></i> Précédent</span>
+                {% endif %}
+                
+                {% if chapitre_suivant %}
+                    <a href="{% url 'apprentissage:detail_chapitre' cours.id chapitre_suivant.id %}" 
+                       hx-get="{% url 'apprentissage:detail_chapitre' cours.id chapitre_suivant.id %}" 
+                       hx-target="#contenu-cours" 
+                       hx-swap="innerHTML" 
+                       hx-push-url="true"
+                       class="nav-arrow-btn" 
+                       title="Chapitre suivant">
+                        Suivant <i class="ti ti-arrow-right"></i>
+                    </a>
+                {% else %}
+                    <span class="nav-arrow-btn disabled">Suivant <i class="ti ti-arrow-right"></i></span>
+                {% endif %}
+            </div>
+        </div>
+
+        <div>
+            <p class="eyebrow">Chapitre {{ chapitre.ordre }}</p>
+            <h2 style="font-size: 2rem; font-weight: 800; margin-top: 0.25rem;">{{ chapitre.titre }}</h2>
+        </div>
+
+        <!-- Video Player -->
+        <div class="video-container-wrapper">
+            <h3><i class="ti ti-brand-youtube" style="color: var(--accent-danger);"></i> Vidéo Pédagogique</h3>
+            {% if chapitre.url_video %}
+                {% if is_direct_video %}
+                    <video class="video-player-direct" controls>
+                        <source src="{{ chapitre.url_video }}" type="video/mp4">
+                        Votre navigateur ne supporte pas la lecture de vidéos.
+                    </video>
+                {% elif is_youtube %}
+                    <div class="video-frame">
+                        <iframe src="{{ chapitre.url_video|youtube_embed }}" title="{{ chapitre.titre }}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe>
+                    </div>
+                {% elif is_vimeo %}
+                    <div class="video-frame">
+                        <iframe src="{{ vimeo_embed_url }}" title="{{ chapitre.titre }}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" frameborder="0" allowfullscreen loading="lazy"></iframe>
+                    </div>
+                {% else %}
+                    <div class="video-frame">
+                        <iframe src="{{ chapitre.url_video }}" title="{{ chapitre.titre }}" allowfullscreen loading="lazy"></iframe>
+                    </div>
+                {% endif %}
+                <div class="video-source-info">
+                    <i class="ti ti-link"></i> Source : <a href="{{ chapitre.url_video }}" target="_blank" rel="noopener">{{ chapitre.url_video }}</a>
+                </div>
+            {% else %}
+                <div class="video-placeholder">
+                    <i class="ti ti-video-off" style="font-size: 2.5rem;"></i>
+                    <p>Aucune vidéo disponible pour ce chapitre.</p>
+                </div>
+            {% endif %}
+        </div>
+
+        {% if chapitre.description %}
+            <div class="rich-copy" style="font-size: 1rem; color: var(--text-secondary); line-height: 1.6;">
+                {{ chapitre.description|safe }}
+            </div>
+        {% endif %}
+
+        <!-- Documents -->
+        {% if documents_par_type %}
+            <div class="docs-stack">
+                <h3 style="font-size: 1.25rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 1rem;"><i class="ti ti-files"></i> Documents pédagogiques</h3>
+                {% for type_label, docs in documents_par_type.items %}
+                    <section class="doc-group">
+                        <h4 class="doc-group__title">{{ type_label }}</h4>
+                        <div class="doc-grid">
+                            {% for doc in docs %}
+                                <article class="doc-preview" id="document-{{ doc.id }}">
+                                    <div class="doc-preview-head">
+                                        <div>
+                                            <p class="eyebrow">Document</p>
+                                            <h5 style="margin-top: 0.25rem; font-weight: 700;">{{ doc.titre }}</h5>
+                                        </div>
+                                        <div style="display: flex; gap: 0.5rem;">
+                                            {% if doc.fichier_pdf %}
+                                                <a class="btn btn-ghost" href="{{ doc.fichier_pdf.url }}" target="_blank" rel="noopener">
+                                                    <i class="ti ti-external-link"></i> Visualiser
+                                                </a>
+                                            {% endif %}
+                                            <a class="btn btn-outline" href="{% url 'apprentissage:telecharger_document' doc.id %}">
+                                                <i class="ti ti-download"></i> Télécharger
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                    {% if doc.description %}
+                                        <p class="doc-description">{{ doc.description }}</p>
+                                    {% endif %}
+
+                                    {% if doc.fichier_pdf %}
+                                        <div class="doc-embed-shell">
+                                            <iframe src="{{ doc.fichier_pdf.url }}" width="100%" height="500px" style="border: none;"></iframe>
+                                        </div>
+                                    {% else %}
+                                        <div class="doc-fallback">
+                                            <p><i class="ti ti-alert-circle"></i> Le fichier PDF n'est pas disponible pour ce document.</p>
+                                        </div>
+                                    {% endif %}
+                                </article>
+                            {% endfor %}
+                        </div>
+                    </section>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- Section Evaluer mes connaissances -->
+        <section class="eval-section">
+            <h3><i class="ti ti-award" style="color: var(--accent-warning);"></i> Évaluer mes connaissances</h3>
+            <p class="eval-intro-text">Testez votre compréhension de ce chapitre avec les outils IA interactifs.</p>
+            <div class="eval-buttons-grid">
+                <div class="eval-option">
+                    <a href="{% url 'tuteur_ia:demarrer_qcm' chapitre.id %}" class="btn btn-success btn-full" style="padding: 0.75rem;">
+                        <i class="ti ti-checkbox"></i> Passer le QCM
+                    </a>
+                    <p class="eval-desc">
+                        Un questionnaire interactif auto-corrigé généré en temps réel par l'IA à partir du contenu des PDF du chapitre.
+                    </p>
+                </div>
+                <div class="eval-option">
+                    <a href="{% url 'tuteur_ia:demarrer_session' chapitre.id %}" class="btn btn-primary btn-full" style="padding: 0.75rem;">
+                        <i class="ti ti-messages"></i> Study Buddy — mode socratique
+                    </a>
+                    <p class="eval-desc">
+                        Une discussion interactive où l'IA vous pose des questions et vous guide étape par étape (contrairement au Tuteur Assistant qui répond à vos questions).
+                    </p>
+                </div>
+            </div>
+        </section>
+        
+        <div style="margin-top: 1rem; border-top: 1px solid var(--border-color); padding-top: 1rem; display: flex; gap: 0.75rem;">
+            <button hx-post="{% url 'apprentissage:valider_chapitre' chapitre.id %}" hx-swap="outerHTML" class="btn btn-outline">
+                <i class="ti ti-circle-check"></i> Marquer ce chapitre comme terminé
+            </button>
+        </div>
+
+    </div>
+
+    <!-- COLONNE DROITE (34%) - Tuteur Assistant (RAG) -->
+    <div class="chapitre-col-droite">
+        <div class="tuteur-rag-card">
+            
+            <!-- En-tête -->
+            <div class="chat-header">
+                <div class="chat-title-wrapper">
+                    <span class="status-indicator-dot"></span>
+                    <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--text-primary);">Tuteur Assistant</h4>
+                </div>
+                <div class="chat-menu-placeholder" title="Options de session (Placeholder)">
+                    <i class="ti ti-dots-vertical"></i>
+                </div>
+            </div>
+
+            <!-- Messages scrollables -->
+            <div class="chat-messages-area" id="chat-messages-area">
+                {% if session_assistant and session_assistant.messages %}
+                    {% for msg in session_assistant.messages %}
+                        <div class="chat-msg {% if msg.role == 'user' %}msg-student{% else %}msg-assistant{% endif %}">
+                            <div class="msg-content markdown-body" data-raw="{{ msg.content }}"></div>
+                            {% if msg.role == 'assistant' and msg.sources %}
+                                <div class="msg-sources">
+                                    <details>
+                                        <summary><i class="ti ti-book"></i> Sources utilisées</summary>
+                                        <div class="sources-content">{{ msg.sources }}</div>
+                                    </details>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <!-- Message d'accueil par défaut -->
+                    <div class="chat-msg msg-assistant">
+                        <div class="msg-content">
+                            Bonjour ! Je suis connecté au contexte du chapitre <strong>{{ chapitre.titre }}</strong>. Que souhaitez-vous approfondir ?
+                        </div>
+                    </div>
+                {% endif %}
+
+                <!-- Indicateur l'assistant écrit... -->
+                <div id="chat-loading-indicator" class="chat-msg msg-assistant" style="display: none;">
+                    <div class="msg-content">
+                        <div class="typing-indicator">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                        <span class="typing-text">L'assistant réfléchit...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions rapides -->
+            <div class="chat-action-chips">
+                <button type="button" class="chat-chip" id="chip-resume">
+                    <i class="ti ti-notes"></i> Résumer le chapitre
+                </button>
+                <a href="{% url 'tuteur_ia:demarrer_qcm' chapitre.id %}" class="chat-chip">
+                    <i class="ti ti-award"></i> Générer un QCM
+                </a>
+                <button type="button" class="chat-chip" id="chip-expliquer">
+                    <i class="ti ti-help-circle"></i> Expliquer un point
+                </button>
+            </div>
+
+            <!-- Barre de saisie -->
+            <form id="chat-input-form" class="chat-input-bar">
+                <input type="text" id="chat-user-input" placeholder="Posez une question..." required autocomplete="off" />
+                <button type="submit" class="btn-chat-send" title="Envoyer la question">
+                    <i class="ti ti-send"></i>
+                </button>
+            </form>
+            
+        </div>
+    </div>
+
 </div>
+
+<!-- ── JAVASCRIPT CONTROLLER ── -->
+<script>
+(function() {
+    const messagesArea = document.getElementById("chat-messages-area");
+    const form = document.getElementById("chat-input-form");
+    const input = document.getElementById("chat-user-input");
+    const typingIndicator = document.getElementById("chat-loading-indicator");
+    const chipResume = document.getElementById("chip-resume");
+    const chipExpliquer = document.getElementById("chip-expliquer");
+    const btnToggle = document.getElementById("btn-toggle-tuteur");
+    const container = document.querySelector(".chapitre-detail-container");
+    const csrfToken = "{{ csrf_token }}";
+    const sessionId = "{{ session_assistant.id }}";
+
+    // Toggle Assistant Panel
+    if (btnToggle && container) {
+        btnToggle.addEventListener("click", function() {
+            container.classList.toggle("tuteur-hidden");
+            const isHidden = container.classList.contains("tuteur-hidden");
+            const btnText = btnToggle.querySelector("span");
+            const btnIcon = btnToggle.querySelector("i");
+            if (isHidden) {
+                btnText.textContent = "Afficher Assistant";
+                btnIcon.className = "ti ti-message-2";
+            } else {
+                btnText.textContent = "Masquer Assistant";
+                btnIcon.className = "ti ti-messages";
+            }
+            scrollToBottom();
+        });
+    }
+
+    // ── Markdown Parser ──
+    function parseMarkdown(text) {
+        if (!text) return "";
+        let escaped = text
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
+
+        // Code blocks
+        escaped = escaped.replace(/```(\w*)\n([\s\S]*?)```/gm, function(match, lang, code) {
+            return `<pre class="code-block-pre"><code class="code-block-code">${code.trim()}</code></pre>`;
+        });
+
+        // Inline code
+        escaped = escaped.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');
+
+        // Bold
+        escaped = escaped.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+
+        // Convert newlines to breaks
+        let parts = escaped.split(/(<pre[\s\S]*?<\/pre>)/g);
+        for (let i = 0; i < parts.length; i++) {
+            if (!parts[i].startsWith('<pre')) {
+                parts[i] = parts[i].replace(/\n/g, '<br>');
+            }
+        }
+        return parts.join('');
+    }
+
+    function scrollToBottom() {
+        if (messagesArea) {
+            messagesArea.scrollTop = messagesArea.scrollHeight;
+        }
+    }
+
+    // Convert past markdown messages to HTML
+    if (messagesArea) {
+        messagesArea.querySelectorAll(".markdown-body").forEach(el => {
+            const raw = el.getAttribute("data-raw");
+            if (raw) {
+                el.innerHTML = parseMarkdown(raw);
+            }
+        });
+        scrollToBottom();
+    }
+
+    // Typewriter effect for responses
+    function typeMessage(element, htmlContent, onComplete) {
+        element.innerHTML = "";
+        let tempDiv = document.createElement("div");
+        tempDiv.innerHTML = htmlContent;
+        
+        let childNodes = Array.from(tempDiv.childNodes);
+        let currentChildIndex = 0;
+        
+        function renderNextChild() {
+            if (currentChildIndex >= childNodes.length) {
+                if (onComplete) onComplete();
+                return;
+            }
+            
+            let node = childNodes[currentChildIndex];
+            let clonedNode = node.cloneNode(true);
+            element.appendChild(clonedNode);
+            
+            if (node.nodeType === Node.TEXT_NODE) {
+                let text = node.textContent;
+                let words = text.split(" ");
+                clonedNode.textContent = "";
+                let wordIndex = 0;
+                
+                function showNextWord() {
+                    if (wordIndex >= words.length) {
+                        currentChildIndex++;
+                        renderNextChild();
+                        return;
+                    }
+                    clonedNode.textContent += (wordIndex === 0 ? "" : " ") + words[wordIndex];
+                    wordIndex++;
+                    scrollToBottom();
+                    setTimeout(showNextWord, 18);
+                }
+                showNextWord();
+            } else {
+                currentChildIndex++;
+                scrollToBottom();
+                setTimeout(renderNextChild, 60);
+            }
+        }
+        
+        renderNextChild();
+    }
+
+    // AJAX submit function
+    function submitQuestion(question) {
+        if (!question) return;
+
+        // Append user question
+        const userMsg = document.createElement("div");
+        userMsg.className = "chat-msg msg-student";
+        const userContent = document.createElement("div");
+        userContent.className = "msg-content";
+        userContent.textContent = question;
+        userMsg.appendChild(userContent);
+        
+        messagesArea.insertBefore(userMsg, typingIndicator);
+        scrollToBottom();
+        
+        // Show typing indicator
+        typingIndicator.style.display = "block";
+        scrollToBottom();
+
+        if (!sessionId || sessionId === "None") {
+            typingIndicator.style.display = "none";
+            showErrorMessage("Erreur : session d'assistant indisponible.");
+            return;
+        }
+
+        const url = `/tuteur/assistant/${sessionId}/question/`;
+
+        fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": csrfToken
+            },
+            body: JSON.stringify({ question: question })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Erreur de communication avec le serveur.");
+            }
+            return response.json();
+        })
+        .then(data => {
+            typingIndicator.style.display = "none";
+            
+            if (data.error) {
+                showErrorMessage(data.error);
+                return;
+            }
+
+            // Create assistant message elements
+            const assistMsg = document.createElement("div");
+            assistMsg.className = "chat-msg msg-assistant";
+            
+            const assistContent = document.createElement("div");
+            assistContent.className = "msg-content";
+            assistMsg.appendChild(assistContent);
+            
+            if (data.sources && data.sources.trim() !== "" && !data.sources.includes("[Aucun")) {
+                const sourcesDiv = document.createElement("div");
+                sourcesDiv.className = "msg-sources";
+                
+                // Format sources content text cleanly
+                let escapedSources = escapeHTML(data.sources).replace(/\n/g, '<br>');
+                
+                sourcesDiv.innerHTML = `
+                    <details>
+                        <summary><i class="ti ti-book"></i> Sources utilisées</summary>
+                        <div class="sources-content">${escapedSources}</div>
+                    </details>
+                `;
+                assistMsg.appendChild(sourcesDiv);
+            }
+            
+            messagesArea.insertBefore(assistMsg, typingIndicator);
+            scrollToBottom();
+
+            // Animate progressive writing
+            const formatted = parseMarkdown(data.reponse);
+            typeMessage(assistContent, formatted, function() {
+                scrollToBottom();
+            });
+        })
+        .catch(err => {
+            typingIndicator.style.display = "none";
+            showErrorMessage(err.message || "Une erreur réseau est survenue.");
+            console.error(err);
+        });
+    }
+
+    function showErrorMessage(errorMsg) {
+        const errorDiv = document.createElement("div");
+        errorDiv.className = "chat-msg msg-assistant";
+        errorDiv.style.borderColor = "var(--accent-danger)";
+        errorDiv.style.backgroundColor = "var(--accent-danger-light)";
+        
+        const content = document.createElement("div");
+        content.className = "msg-content";
+        content.style.color = "var(--accent-danger)";
+        content.innerHTML = `<strong>Erreur :</strong> ${escapeHTML(errorMsg)}`;
+        
+        errorDiv.appendChild(content);
+        messagesArea.insertBefore(errorDiv, typingIndicator);
+        scrollToBottom();
+    }
+
+    function escapeHTML(text) {
+        return text
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
+    }
+
+    // Form submission
+    if (form) {
+        form.addEventListener("submit", function(e) {
+            e.preventDefault();
+            const question = input.value.trim();
+            if (question) {
+                input.value = "";
+                submitQuestion(question);
+            }
+        });
+    }
+
+    // Chips clicks
+    if (chipResume) {
+        chipResume.addEventListener("click", function() {
+            submitQuestion("Résume-moi ce chapitre de façon claire");
+        });
+    }
+
+    if (chipExpliquer) {
+        chipExpliquer.addEventListener("click", function() {
+            input.value = "Explique-moi le concept de : ";
+            input.focus();
+        });
+    }
+
+})();
+</script>

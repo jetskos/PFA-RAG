@@ -1,7 +1,16 @@
 import uuid
 from django.db import models
-from django.core.validators import URLValidator
+from django.core.validators import URLValidator, FileExtensionValidator
+from django.core.exceptions import ValidationError
 from accounts.models import Niveau
+
+
+def validate_file_size(value):
+    """Valide que le fichier ne dépasse pas 10 Mo."""
+    limit_mb = 10
+    if value.size > limit_mb * 1024 * 1024:
+        raise ValidationError(f"Le fichier ne doit pas dépasser {limit_mb} Mo.")
+
 
 
 class Cours(models.Model):
@@ -25,6 +34,12 @@ class Cours(models.Model):
         verbose_name='Résumé court',
         blank=True,
         help_text='Résumé affiché dans les listes'
+    )
+    image_couverture = models.ImageField(
+        upload_to='cours_covers/', 
+        null=True, 
+        blank=True, 
+        verbose_name='Image de couverture'
     )
     date_creation = models.DateTimeField(
         auto_now_add=True,
@@ -135,7 +150,11 @@ class Document(models.Model):
     fichier_pdf = models.FileField(
         upload_to='documents/%Y/%m/',
         verbose_name='Fichier PDF',
-        help_text='PDF à télécharger ou analyser'
+        help_text='PDF à télécharger ou analyser',
+        validators=[
+            FileExtensionValidator(allowed_extensions=['pdf']),
+            validate_file_size,
+        ]
     )
     description = models.TextField(
         verbose_name='Description',
@@ -209,7 +228,7 @@ class Progression(models.Model):
         ordering = ['-date_derniere_consultation']
     
     def __str__(self):
-        return f"{self.etudiant.email} → {self.cours.titre}"
+        return f"{self.etudiant.get_full_name()} → {self.cours.titre}"
     
     @property
     def pourcentage(self):
@@ -246,7 +265,7 @@ class ChapitreVisite(models.Model):
         ordering = ['-date_visite']
 
     def __str__(self):
-        return f"{self.etudiant.email} → {self.chapitre.titre}"
+        return f"{self.etudiant.get_full_name()} → {self.chapitre.titre}"
 
 
 class ChapitreComplete(models.Model):
@@ -274,4 +293,207 @@ class ChapitreComplete(models.Model):
         ordering = ['-date_completion']
 
     def __str__(self):
-        return f"{self.etudiant.email} → {self.chapitre.titre}"
+        return f"{self.etudiant.get_full_name()} → {self.chapitre.titre}"
+
+
+# ── Extensions autorisées pour les pièces jointes ──────────────────────────────
+EXTENSIONS_AUTORISEES = ['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png']
+
+
+class Devoir(models.Model):
+    """Devoir assigné par un formateur à un chapitre."""
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    chapitre = models.ForeignKey(
+        Chapitre,
+        on_delete=models.CASCADE,
+        related_name='devoirs',
+        verbose_name='Chapitre'
+    )
+    titre = models.CharField(max_length=255, verbose_name='Titre')
+    consigne = models.TextField(verbose_name='Consigne')
+    fichier_consigne = models.FileField(
+        upload_to='devoirs/consignes/%Y/%m/',
+        blank=True,
+        null=True,
+        verbose_name='Fichier consigne (facultatif)',
+        validators=[
+            FileExtensionValidator(allowed_extensions=EXTENSIONS_AUTORISEES),
+            validate_file_size,
+        ]
+    )
+    date_limite = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name='Date limite de rendu'
+    )
+    note_max = models.PositiveSmallIntegerField(default=20, verbose_name='Note maximale')
+    createur = models.ForeignKey(
+        'accounts.Utilisateur',
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='devoirs_crees',
+        verbose_name='Créateur'
+    )
+    actif = models.BooleanField(default=True, verbose_name='Actif')
+    date_creation = models.DateTimeField(auto_now_add=True, verbose_name='Date de création')
+
+    class Meta:
+        verbose_name = 'Devoir'
+        verbose_name_plural = 'Devoirs'
+        ordering = ['-date_creation']
+
+    def __str__(self):
+        return f"{self.titre} — {self.chapitre.titre}"
+
+
+class Soumission(models.Model):
+    """Soumission d'un élève pour un devoir donné."""
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    devoir = models.ForeignKey(
+        Devoir,
+        on_delete=models.CASCADE,
+        related_name='soumissions',
+        verbose_name='Devoir'
+    )
+    etudiant = models.ForeignKey(
+        'accounts.Utilisateur',
+        on_delete=models.CASCADE,
+        related_name='soumissions',
+        verbose_name='Étudiant'
+    )
+    fichier = models.FileField(
+        upload_to='devoirs/soumissions/%Y/%m/',
+        verbose_name='Fichier soumis',
+        validators=[
+            FileExtensionValidator(allowed_extensions=EXTENSIONS_AUTORISEES),
+            validate_file_size,
+        ]
+    )
+    commentaire_eleve = models.TextField(blank=True, verbose_name='Commentaire de l\'élève')
+    date_soumission = models.DateTimeField(auto_now=True, verbose_name='Date de soumission')
+
+    # Correction
+    note = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        verbose_name='Note obtenue'
+    )
+    feedback = models.TextField(blank=True, verbose_name='Feedback du formateur')
+    corrige_par = models.ForeignKey(
+        'accounts.Utilisateur',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='soumissions_corrigees',
+        verbose_name='Corrigé par'
+    )
+    date_correction = models.DateTimeField(null=True, blank=True, verbose_name='Date de correction')
+
+    class Meta:
+        verbose_name = 'Soumission'
+        verbose_name_plural = 'Soumissions'
+        unique_together = ('devoir', 'etudiant')
+        ordering = ['-date_soumission']
+
+    def __str__(self):
+        return f"Soumission de {self.etudiant.get_full_name()} — {self.devoir.titre}"
+
+    @property
+    def est_corrigee(self):
+        return self.note is not None
+
+
+class Evenement(models.Model):
+    TYPE_EVENEMENT_CHOICES = (
+        ('ECHEANCE_DEVOIR', 'Échéance Devoir'),
+        ('SESSION', 'Session'),
+        ('EXAMEN', 'Examen'),
+        ('AUTRE', 'Autre'),
+    )
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    titre = models.CharField(max_length=255, verbose_name="Titre")
+    description = models.TextField(blank=True, verbose_name="Description")
+    type = models.CharField(
+        max_length=20,
+        choices=TYPE_EVENEMENT_CHOICES,
+        default='AUTRE',
+        verbose_name="Type d'événement"
+    )
+    date_debut = models.DateTimeField(verbose_name="Date de début")
+    date_fin = models.DateTimeField(null=True, blank=True, verbose_name="Date de fin")
+    cours = models.ForeignKey(
+        Cours,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='evenements',
+        verbose_name="Cours"
+    )
+    createur = models.ForeignKey(
+        'accounts.Utilisateur',
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='evenements_crees',
+        verbose_name="Créateur"
+    )
+    classe = models.ForeignKey(
+        'accounts.Classe',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='evenements',
+        verbose_name="Classe cible"
+    )
+    date_creation = models.DateTimeField(auto_now_add=True, verbose_name="Date de création")
+
+    class Meta:
+        ordering = ['date_debut']
+        verbose_name = "Événement"
+        verbose_name_plural = "Événements"
+
+    def __str__(self):
+        return f"{self.titre} ({self.get_type_display()})"
+
+
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
+
+@receiver(post_save, sender=Devoir)
+def synchroniser_devoir_evenement(sender, instance, created, **kwargs):
+    search_str = f"[Devoir ID: {instance.id}]"
+    if not instance.date_limite or not instance.actif:
+        Evenement.objects.filter(description__contains=search_str).delete()
+        return
+
+    evt = Evenement.objects.filter(description__contains=search_str).first()
+    titre = f"Échéance : {instance.titre}"
+    description = f"Date limite pour rendre le devoir '{instance.titre}'. {search_str}"
+    
+    if evt:
+        evt.titre = titre
+        evt.description = description
+        evt.date_debut = instance.date_limite
+        evt.createur = instance.createur
+        evt.cours = instance.chapitre.cours
+        evt.save()
+    else:
+        Evenement.objects.create(
+            titre=titre,
+            description=description,
+            type='ECHEANCE_DEVOIR',
+            date_debut=instance.date_limite,
+            createur=instance.createur,
+            cours=instance.chapitre.cours
+        )
+
+@receiver(post_delete, sender=Devoir)
+def supprimer_devoir_evenement(sender, instance, **kwargs):
+    search_str = f"[Devoir ID: {instance.id}]"
+    Evenement.objects.filter(description__contains=search_str).delete()
+
+

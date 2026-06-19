@@ -22,6 +22,7 @@ from .views import (
     home_view,
     dashboard_router,
     admin_dashboard_view,
+    admin_structure_page_view,
     formateur_dashboard_view,
     student_dashboard_view,
     create_niveau_view,
@@ -42,6 +43,7 @@ urlpatterns = [
     path('', home_view, name='accueil'),
     path('dashboard/', dashboard_router, name='dashboard'),
     path('dashboard/admin/', admin_dashboard_view, name='dashboard_admin'),
+    path('dashboard/admin/structure/', admin_structure_page_view, name='dashboard_admin_structure'),
     path('dashboard/admin/niveaux/creer/', create_niveau_view, name='dashboard_admin_create_niveau'),
     path('dashboard/admin/niveaux/<uuid:niveau_id>/editer/', edit_niveau_view, name='dashboard_admin_edit_niveau'),
     path('dashboard/admin/classes/creer/', create_classe_view, name='dashboard_admin_create_classe'),
@@ -62,6 +64,9 @@ urlpatterns = [
     path('apprentissage/', include('apprentissage.urls')),
     path('logistics/', include('logistics.urls', namespace='logistics')),
     path('tuteur/', include('tuteur_ia.urls', namespace='tuteur_ia')),
+    path('analytics/', include('analytics.urls', namespace='analytics')),
+    path('audit/', include('audit.urls', namespace='audit')),
+    path('api/', include('api.urls')),
 ]
 
 if settings.DEBUG:

@@ -7,17 +7,57 @@
         {% endif %}
     </div>
 
-    <div class="actions">
+    <div class="actions" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
         <button type="button"
                 class="btn"
                 hx-get="{% url 'apprentissage:ajouter_document' chapitre.id %}"
                 hx-target="#modal-body"
                 onclick="document.getElementById('form-modal').style.display='flex'">
-            Ajouter un PDF
+            <i class="ti ti-file-plus"></i> Ajouter un PDF
         </button>
+        <a href="{% url 'apprentissage:devoir_creer' chapitre_id=chapitre.id %}" class="btn">
+            <i class="ti ti-clipboard-plus"></i> Créer un devoir
+        </a>
     </div>
 
     <div id="docs-chapitre-{{ chapitre.id }}" style="margin-top: 1rem;">
         {% include 'apprentissage/partials/documents_list.html' with chapitre=chapitre documents=documents %}
     </div>
+
+    <!-- Devoirs du chapitre -->
+    {% with devoirs=chapitre.devoirs.all %}
+    {% if devoirs %}
+    <div style="margin-top: 1.5rem; border-top: 1px solid var(--bordure); padding-top: 1rem;">
+        <h3 style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--texte-secondaire); margin-bottom: 0.75rem;">
+            <i class="ti ti-clipboard-list"></i> Devoirs ({{ devoirs|length }})
+        </h3>
+        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+            {% for devoir in devoirs %}
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.6rem 0.75rem; background: var(--surface-alt); border-radius: 0.5rem; border: 1px solid var(--bordure);">
+                <div>
+                    <span style="font-weight: 600; font-size: 0.9rem;">{{ devoir.titre }}</span>
+                    <span style="color: var(--texte-secondaire); font-size: 0.8rem; margin-left: 0.5rem;">· /{{ devoir.note_max }}
+                        {% if devoir.date_limite %}· ⏰ {{ devoir.date_limite|date:"d/m/Y" }}{% endif %}
+                    </span>
+                </div>
+                <div style="display: flex; gap: 0.4rem;">
+                    <a href="{% url 'apprentissage:devoir_detail' devoir_id=devoir.pk %}" class="btn btn-ghost" style="font-size: 0.8rem; padding: 0.3rem 0.6rem;" title="Voir les soumissions">
+                        <i class="ti ti-eye"></i>
+                    </a>
+                    <a href="{% url 'apprentissage:devoir_editer' devoir_id=devoir.pk %}" class="btn btn-ghost" style="font-size: 0.8rem; padding: 0.3rem 0.6rem;" title="Modifier">
+                        <i class="ti ti-pencil"></i>
+                    </a>
+                    <form method="post" action="{% url 'apprentissage:devoir_supprimer' devoir_id=devoir.pk %}" style="display:inline;" onsubmit="return confirm('Supprimer ce devoir ?')">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-ghost" style="font-size: 0.8rem; padding: 0.3rem 0.6rem; color: #f44336;" title="Supprimer">
+                            <i class="ti ti-trash"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    {% endwith %}
 </div>

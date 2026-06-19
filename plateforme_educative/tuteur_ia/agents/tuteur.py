@@ -5,14 +5,31 @@ from typing import Any
 from langchain_core.messages import SystemMessage, HumanMessage
 from tuteur_ia.graph.state import StudyBuddyState
 from tuteur_ia.prompts.tuteur import TUTOR_SYSTEM_PROMPT, TUTOR_USER_PROMPT_TEMPLATE
-from tuteur_ia.tools.rag_tool import rag_search
 from tuteur_ia.agents.llm_factory import get_llm
 
 
 def _try_rag_enrichment(concept: str, chapitre_id: str) -> str:
+    """Multi-requêtes RAG pour couvrir l'ensemble du contenu PDF du chapitre."""
     try:
-        content = rag_search(concept, chapitre_id=chapitre_id)
-        return content if content else ""
+        from tuteur_ia.tools.chroma_store import search as chroma_search
+        from tuteur_ia.tools.rag_tool import rag_search
+        queries = [
+            "concepts définitions introduction",
+            "exemples propriétés caractéristiques",
+            "applications pratiques",
+        ]
+        all_texts = []
+        seen = set()
+        for q in queries:
+            for r in chroma_search(query=q, chapitre_id=chapitre_id, n_results=3):
+                t = r.get("text", "").strip()
+                if t and t not in seen:
+                    seen.add(t)
+                    all_texts.append(t)
+        if all_texts:
+            return "\n\n---\n\n".join(all_texts)
+        # Fallback
+        return rag_search(concept, chapitre_id=chapitre_id) or ""
     except Exception:
         return ""
 
@@ -22,12 +39,15 @@ def tuteur_node(state: StudyBuddyState) -> dict[str, Any]:
     Nœud Tuteur : pose une question socratique pour guider l'étudiant.
     N'utilise jamais la réponse directe — guide par le questionnement.
     """
-    llm = get_llm(temperature=0.7)
+    llm = get_llm(temperature=0.7, model_name="llama-3.1-8b-instant")
 
-    rag_content = _try_rag_enrichment(
-        state["current_concept"],
-        chapitre_id=state["chapitre_id"],
-    )
+    rag_content = state.get("rag_context")
+    if not rag_content:
+        rag_content = _try_rag_enrichment(
+            state["current_concept"],
+            chapitre_id=state["chapitre_id"],
+        )
+
 
     recent_messages = ""
     if state.get("messages"):
@@ -53,7 +73,8 @@ def tuteur_node(state: StudyBuddyState) -> dict[str, Any]:
     response = llm.invoke(messages)
 
     return {
-        "messages": messages + [response],
+        "messages": [response],
         "iteration": state.get("iteration", 0) + 1,
         "next_action": "evaluate",
+        "rag_context": rag_content,
     }

@@ -12,351 +12,15 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
     <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
     
-    <link rel="stylesheet" href="{% static 'core/css/app.css' %}?v=20260522b">
-    <link rel="stylesheet" href="{% static 'core/css/ia_premium.css' %}?v=20260524a">
+    <link rel="stylesheet" href="{% static 'core/css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/components.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/formateur.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/apprentissage.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/tuteur.css' %}">
     
     <script src="https://unpkg.com/htmx.org@1.9.12" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js" defer></script>
-    
-    <style>
-        /* ============================================
-           MODERN REDESIGN - Preserves all functionality
-        ============================================ */
-        
-        :root {
-            --primary: #0D9488;
-            --primary-dark: #0F766E;
-            --primary-light: #CCFBF1;
-            --primary-ultra-light: #F0FDFA;
-            --secondary: #4F46E5;
-            --secondary-light: #EEF2FF;
-            --accent: #F59E0B;
-            
-            --gray-50: #F8FAFC;
-            --gray-100: #F1F5F9;
-            --gray-200: #E2E8F0;
-            --gray-300: #CBD5E1;
-            --gray-400: #94A3B8;
-            --gray-500: #64748B;
-            --gray-600: #475569;
-            --gray-700: #334155;
-            --gray-800: #1E293B;
-            --gray-900: #0F172A;
-            
-            --bg-page: var(--gray-50);
-            --bg-surface: #FFFFFF;
-            --bg-elevated: var(--gray-50);
-            --text-primary: var(--gray-900);
-            --text-secondary: var(--gray-600);
-            --text-muted: var(--gray-500);
-            --border-light: var(--gray-200);
-            --border-default: var(--gray-300);
-            
-            --radius-sm: 6px;
-            --radius-md: 10px;
-            --radius-lg: 16px;
-            --radius-xl: 20px;
-            
-            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
-            --shadow: 0 1px 3px rgba(0,0,0,0.1);
-            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
-            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
-            
-            --transition: all 0.2s ease;
-        }
-        
-        [data-theme="dark"] {
-            --bg-page: var(--gray-900);
-            --bg-surface: var(--gray-800);
-            --bg-elevated: var(--gray-700);
-            --text-primary: #F1F5F9;
-            --text-secondary: #CBD5E1;
-            --text-muted: #94A3B8;
-            --border-light: var(--gray-700);
-            --border-default: var(--gray-600);
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            background: var(--bg-page);
-            color: var(--text-primary);
-            line-height: 1.5;
-            -webkit-font-smoothing: antialiased;
-        }
-        
-        /* Header */
-        .site-header {
-            background: var(--bg-surface);
-            border-bottom: 1px solid var(--border-light);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        
-        .header-inner {
-            max-width: 1280px;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            gap: 32px;
-            padding: 0 24px;
-            height: 64px;
-        }
-        
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            text-decoration: none;
-            flex-shrink: 0;
-        }
-        
-        .brand-icon {
-            width: 36px;
-            height: 36px;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .brand-logo {
-            color: white;
-            font-size: 20px;
-        }
-        
-        .brand-name {
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--text-primary);
-        }
-        
-        .brand-tagline {
-            font-size: 11px;
-            color: var(--text-muted);
-            margin-top: 2px;
-        }
-        
-        /* Navigation */
-        .main-nav {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            flex: 1;
-        }
-        
-        .main-nav a {
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--text-secondary);
-            text-decoration: none;
-            padding: 8px 14px;
-            border-radius: 8px;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .main-nav a i {
-            font-size: 18px;
-        }
-        
-        .main-nav a:hover {
-            background: var(--bg-elevated);
-            color: var(--text-primary);
-        }
-        
-        .main-nav a.active {
-            color: var(--primary);
-            background: var(--primary-ultra-light);
-        }
-        
-        [data-theme="dark"] .main-nav a.active {
-            background: rgba(13, 148, 136, 0.15);
-        }
-        
-        /* Header Actions */
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        
-        .role-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: #FEF3C7;
-            color: #92400E;
-            font-size: 11px;
-            font-weight: 600;
-            padding: 4px 12px;
-            border-radius: 100px;
-        }
-        
-        [data-theme="dark"] .role-badge {
-            background: rgba(245, 158, 11, 0.15);
-            color: #FBBF24;
-        }
-        
-        .account-avatar {
-            width: 36px;
-            height: 36px;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 13px;
-            font-weight: 600;
-        }
-        
-        /* Buttons */
-        .btn-ghost {
-            background: transparent;
-            border: 1px solid var(--border-default);
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--text-secondary);
-            cursor: pointer;
-            font-family: inherit;
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .btn-ghost:hover {
-            background: var(--bg-elevated);
-            color: var(--text-primary);
-        }
-        
-        .btn-primary {
-            background: var(--primary);
-            border: none;
-            padding: 8px 20px;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 600;
-            color: white;
-            cursor: pointer;
-            font-family: inherit;
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            text-decoration: none;
-        }
-        
-        .btn-primary:hover {
-            background: var(--primary-dark);
-            transform: translateY(-1px);
-        }
-        
-        /* Messages - Toast style */
-        .messages-zone {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            max-width: 380px;
-            pointer-events: none;
-        }
-        
-        .message-item {
-            pointer-events: auto;
-            background: var(--bg-surface);
-            border-left: 4px solid var(--primary);
-            border-radius: 12px;
-            padding: 14px 18px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            box-shadow: var(--shadow-lg);
-            font-size: 13px;
-            color: var(--text-primary);
-            animation: slideInRight 0.3s ease;
-        }
-        
-        @keyframes slideInRight {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-        
-        /* Main content */
-        .site-main {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 32px 24px 64px;
-            min-height: calc(100vh - 65px);
-        }
-        
-        /* Responsive */
-        @media (max-width: 900px) {
-            .header-inner {
-                padding: 0 16px;
-                gap: 16px;
-                flex-wrap: wrap;
-                height: auto;
-                padding: 12px 16px;
-            }
-            
-            .brand-tagline {
-                display: none;
-            }
-            
-            .main-nav {
-                order: 3;
-                width: 100%;
-                overflow-x: auto;
-                padding-bottom: 4px;
-            }
-            
-            .main-nav::-webkit-scrollbar {
-                display: none;
-            }
-            
-            .header-actions {
-                margin-left: auto;
-            }
-            
-            .site-main {
-                padding: 20px 16px 40px;
-            }
-        }
-        
-        @media (max-width: 640px) {
-            .main-nav a {
-                padding: 6px 10px;
-                font-size: 12px;
-            }
-            
-            .btn-primary, .btn-ghost {
-                padding: 6px 12px;
-                font-size: 12px;
-            }
-        }
-    </style>
+
 </head>
 <body>
 
@@ -374,21 +38,40 @@
 
         {% with current_url=request.resolver_match.url_name %}
         <nav class="main-nav">
-            <a href="{% url 'accueil' %}" class="{% if current_url == 'accueil' %}active{% endif %}">
-                <i class="ti ti-home"></i> <span>Accueil</span>
-            </a>
+            {% if user.is_authenticated and user.role == 'ADMIN' %}
+                <a href="{% url 'dashboard_admin' %}" class="{% if current_url == 'dashboard_admin' %}active{% endif %}">
+                    <i class="ti ti-home"></i> <span>Accueil</span>
+                </a>
+            {% else %}
+                <a href="{% url 'accueil' %}" class="{% if current_url == 'accueil' %}active{% endif %}">
+                    <i class="ti ti-home"></i> <span>Accueil</span>
+                </a>
+            {% endif %}
+            
             <a href="{% url 'apprentissage:liste_cours' %}" class="{% if current_url == 'liste_cours' or current_url == 'detail_cours' or current_url == 'detail_chapitre' %}active{% endif %}">
                 <i class="ti ti-book"></i> <span>Apprentissage</span>
             </a>
+            
             {% if user.is_authenticated and user.is_formateur %}
                 <a href="{% url 'apprentissage:espace_formateur' %}" class="{% if current_url == 'espace_formateur' %}active{% endif %}">
                     <i class="ti ti-school"></i> <span>Formateur</span>
                 </a>
             {% endif %}
+            
             {% if user.is_authenticated %}
-                <a href="{% url 'dashboard' %}" class="{% if current_url == 'dashboard' or current_url == 'dashboard_student' or current_url == 'dashboard_formateur' or current_url == 'dashboard_admin' %}active{% endif %}">
-                    <i class="ti ti-dashboard"></i> <span>Tableau</span>
+                <a href="{% url 'apprentissage:calendrier' %}" class="{% if current_url == 'calendrier' %}active{% endif %}">
+                    <i class="ti ti-calendar"></i> <span>Calendrier</span>
                 </a>
+                
+                {% if user.role == 'ADMIN' %}
+                    <a href="{% url 'dashboard_admin_structure' %}" class="{% if current_url == 'dashboard_admin_structure' %}active{% endif %}">
+                        <i class="ti ti-dashboard"></i> <span>Tableau</span>
+                    </a>
+                {% else %}
+                    <a href="{% url 'dashboard' %}" class="{% if current_url == 'dashboard' or current_url == 'dashboard_student' or current_url == 'dashboard_formateur' %}active{% endif %}">
+                        <i class="ti ti-dashboard"></i> <span>Tableau</span>
+                    </a>
+                {% endif %}
             {% endif %}
             {% if user.is_superuser %}
                 <a href="{% url 'logistics:inventaire' %}" class="{% if current_url == 'inventaire' %}active{% endif %}">
@@ -403,32 +86,128 @@
         </nav>
 
         <div class="header-actions">
-            <button id="theme-toggle" class="btn-ghost" style="padding: 8px; border-radius: 50%; width: 36px; height: 36px; justify-content: center;">
+            {% if user.is_authenticated %}
+                <div class="notifications-dropdown-container">
+                    <button class="btn-ghost" id="notifications-dropdown-btn" aria-haspopup="true" aria-expanded="false" style="padding: 8px; border-radius: 50%; width: 36px; height: 36px; justify-content: center; position: relative; display: inline-flex; cursor: pointer; color: var(--text-secondary); background: transparent;" title="Notifications">
+                        <i class="ti ti-bell" style="font-size: 18px;"></i>
+                        {% if unread_notifications_count > 0 %}
+                            <span class="notifications-badge" style="position: absolute; top: -2px; right: -2px; background: #ef4444; color: white; font-size: 9px; font-weight: bold; border-radius: 50%; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;">
+                                {{ unread_notifications_count }}
+                            </span>
+                        {% endif %}
+                    </button>
+                    
+                    <div class="notifications-dropdown-menu" id="notifications-dropdown-menu">
+                        <div class="notifications-dropdown-header">
+                            <h3>Notifications</h3>
+                            {% if unread_notifications_count > 0 %}
+                                <form action="{% url 'accounts:mark_notifications_read_all' %}" method="POST" style="margin: 0;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="mark-all-read-btn">Tout marquer comme lu</button>
+                                </form>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="notifications-dropdown-list">
+                            {% if recent_notifications %}
+                                {% for notif in recent_notifications %}
+                                    <a href="{% if notif.url %}{{ notif.url }}{% else %}{% url 'accounts:notifications_list' %}{% endif %}" class="notifications-dropdown-item {% if not notif.lu %}unread{% endif %}">
+                                        <div class="notif-dropdown-icon {% if notif.type == 'COMPTE_ACTIVE' %}icon-active{% elif notif.type == 'QCM_CORRIGE' %}icon-qcm{% elif notif.type == 'NOUVEAU_COURS' %}icon-cours{% elif notif.type == 'NOUVELLE_INSCRIPTION' %}icon-signup{% else %}icon-default{% endif %}">
+                                            {% if notif.type == 'COMPTE_ACTIVE' %}
+                                                <i class="ti ti-user-check"></i>
+                                            {% elif notif.type == 'QCM_CORRIGE' %}
+                                                <i class="ti ti-checkbox"></i>
+                                            {% elif notif.type == 'NOUVEAU_COURS' %}
+                                                <i class="ti ti-book"></i>
+                                            {% elif notif.type == 'NOUVELLE_INSCRIPTION' %}
+                                                <i class="ti ti-user-plus"></i>
+                                            {% else %}
+                                                <i class="ti ti-settings"></i>
+                                            {% endif %}
+                                        </div>
+                                        <div class="notif-dropdown-content">
+                                            <div class="notif-dropdown-title-row">
+                                                <span class="notif-dropdown-title">{{ notif.titre }}</span>
+                                                <span class="notif-dropdown-age">{{ notif.age_humanise }}</span>
+                                            </div>
+                                            <p class="notif-dropdown-text">{{ notif.message }}</p>
+                                        </div>
+                                    </a>
+                                {% endfor %}
+                            {% else %}
+                                <div class="notifications-dropdown-empty">
+                                    <i class="ti ti-bell-off"></i>
+                                    <p>Aucune notification</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="notifications-dropdown-footer">
+                            <a href="{% url 'accounts:notifications_list' %}">Voir toutes les notifications</a>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            <button id="theme-toggle" class="btn-ghost" style="padding: 8px; border-radius: 50%; width: 36px; height: 36px; justify-content: center; margin-right: 4px;">
                 <i class="ti ti-sun" id="theme-toggle-light-icon" style="font-size: 18px;"></i>
                 <i class="ti ti-moon" id="theme-toggle-dark-icon" style="font-size: 18px; display: none;"></i>
             </button>
             
             {% if user.is_authenticated %}
-                {% if user.is_formateur %}
-                    <span class="role-badge"><i class="ti ti-school"></i> Formateur</span>
-                {% elif user.role == 'ADMIN' %}
-                    <span class="role-badge" style="background: #DBEAFE; color: #1E40AF;"><i class="ti ti-shield"></i> Admin</span>
-                {% else %}
-                    <span class="role-badge" style="background: var(--primary-ultra-light); color: var(--primary);"><i class="ti ti-user"></i> Élève</span>
-                {% endif %}
-
-                <a href="{% url 'accounts:profile' %}">
-                    <div class="account-avatar">
-                        {{ user.get_username|default:''|slice:':2'|upper }}
-                    </div>
-                </a>
-                
-                <form action="{% url 'accounts:logout' %}" method="post" style="display:inline;">
-                    {% csrf_token %}
-                    <button type="submit" class="btn-ghost">
-                        <i class="ti ti-logout"></i> <span>Quitter</span>
+                <div class="profile-dropdown-container">
+                    <button class="profile-capsule-trigger" id="profile-dropdown-btn" aria-haspopup="true" aria-expanded="false">
+                        <div class="profile-capsule-info">
+                            <span class="profile-capsule-name">
+                                {% if user.first_name and user.last_name %}
+                                    {{ user.first_name }} {{ user.last_name }}
+                                {% elif user.first_name %}
+                                    {{ user.first_name }}
+                                {% else %}
+                                    {{ user.get_full_name|truncatechars:16 }}
+                                {% endif %}
+                            </span>
+                            <span class="profile-capsule-badge {% if user.is_superuser or user.role == 'ADMIN' %}badge-admin{% elif user.is_formateur %}badge-formateur{% else %}badge-eleve{% endif %}">
+                                {% if user.role == 'ADMIN' %}Admin{% elif user.is_formateur %}Formateur{% else %}Élève{% endif %}
+                            </span>
+                        </div>
+                        <div class="profile-capsule-avatar">
+                            {% if user.photo %}
+                                <img src="{{ user.photo.url }}" alt="Photo de profil" class="profile-capsule-img">
+                            {% else %}
+                                <span class="profile-capsule-initials">
+                                    {% if user.first_name %}
+                                        {{ user.first_name|make_list|first|upper }}{% if user.last_name %}{{ user.last_name|make_list|first|upper }}{% endif %}
+                                    {% else %}
+                                        {{ user.email|slice:":2"|upper }}
+                                    {% endif %}
+                                </span>
+                            {% endif %}
+                        </div>
                     </button>
-                </form>
+                    
+                    <div class="profile-dropdown-menu" id="profile-dropdown-menu">
+                        <a href="{% url 'accounts:profile' %}" class="dropdown-item">
+                            <i class="ti ti-user-circle"></i>
+                            <span>Paramètres du profil</span>
+                        </a>
+                        
+                        <a href="{% url 'dashboard' %}" class="dropdown-item">
+                            <i class="ti ti-arrows-left-right"></i>
+                            <span>Changer de rôle</span>
+                        </a>
+                        
+                        <div class="dropdown-divider"></div>
+                        
+                        <form action="{% url 'accounts:logout' %}" method="post" id="logout-form-dropdown" style="margin: 0;">
+                            {% csrf_token %}
+                            <button type="submit" class="dropdown-item logout-btn">
+                                <i class="ti ti-logout"></i>
+                                <span>Déconnexion</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
             {% else %}
                 <a href="{% url 'accounts:register' %}" class="btn-ghost">
                     <i class="ti ti-user-plus"></i> <span>Inscription</span>
@@ -513,7 +292,74 @@
             setTimeout(() => msg.remove(), 300);
         });
     }, 4000);
+
+    // Dropdown toggle
+    const dropdownBtn = document.getElementById('profile-dropdown-btn');
+    const dropdownMenu = document.getElementById('profile-dropdown-menu');
+    
+    // Notifications dropdown toggle
+    const notifBtn = document.getElementById('notifications-dropdown-btn');
+    const notifMenu = document.getElementById('notifications-dropdown-menu');
+    
+    if (dropdownBtn && dropdownMenu) {
+        dropdownBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            
+            // Close notifications dropdown if open
+            if (notifMenu) notifMenu.classList.remove('is-open');
+            if (notifBtn) notifBtn.setAttribute('aria-expanded', 'false');
+            
+            const isOpen = dropdownMenu.classList.contains('is-open');
+            if (isOpen) {
+                dropdownMenu.classList.remove('is-open');
+                dropdownBtn.setAttribute('aria-expanded', 'false');
+            } else {
+                dropdownMenu.classList.add('is-open');
+                dropdownBtn.setAttribute('aria-expanded', 'true');
+            }
+        });
+        
+        document.addEventListener('click', (e) => {
+            if (!dropdownBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                dropdownMenu.classList.remove('is-open');
+                dropdownBtn.setAttribute('aria-expanded', 'false');
+            }
+        });
+    }
+    
+    if (notifBtn && notifMenu) {
+        notifBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            
+            // Close profile dropdown if open
+            if (dropdownMenu) dropdownMenu.classList.remove('is-open');
+            if (dropdownBtn) dropdownBtn.setAttribute('aria-expanded', 'false');
+            
+            const isOpen = notifMenu.classList.contains('is-open');
+            if (isOpen) {
+                notifMenu.classList.remove('is-open');
+                notifBtn.setAttribute('aria-expanded', 'false');
+            } else {
+                notifMenu.classList.add('is-open');
+                notifBtn.setAttribute('aria-expanded', 'true');
+            }
+        });
+        
+        document.addEventListener('click', (e) => {
+            if (!notifBtn.contains(e.target) && !notifMenu.contains(e.target)) {
+                notifMenu.classList.remove('is-open');
+                notifBtn.setAttribute('aria-expanded', 'false');
+            }
+        });
+    }
+    
+    // Écouteur global pour fermer la modale
+    document.body.addEventListener("closeModal", function() {
+        document.getElementById("modal-container").innerHTML = "";
+    });
 </script>
+
+<div id="modal-container"></div>
 
 </body>
 </html>

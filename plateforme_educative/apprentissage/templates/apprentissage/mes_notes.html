@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block title %}Mon Carnet de Notes{% endblock %}
+
+{% block content %}
+<section class="page-shell">
+    <div class="page-header" style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <p class="eyebrow">Évaluations</p>
+            <h1>Mon carnet de notes</h1>
+            <p>Vue d'ensemble de vos scores QCM par chapitre.</p>
+        </div>
+        <div style="display: flex; gap: 0.75rem; align-items: center;">
+            {% if bulletin.moyenne_generale is not None %}
+                <span class="badge badge-lg" style="
+                    font-size: 1.1rem;
+                    padding: 0.5rem 1.2rem;
+                    border-radius: 999px;
+                    background: {% if bulletin.moyenne_generale >= 80 %}linear-gradient(135deg, #4caf50, #2e7d32){% elif bulletin.moyenne_generale >= 50 %}linear-gradient(135deg, #ff9800, #e65100){% else %}linear-gradient(135deg, #f44336, #b71c1c){% endif %};
+                    color: #fff;
+                    font-weight: 700;">
+                    Moyenne générale : {{ bulletin.moyenne_generale }}/100
+                </span>
+            {% endif %}
+            <a href="{% url 'apprentissage:exporter_bulletin_csv' %}" class="btn btn-ghost">
+                <i class="ti ti-download"></i> Exporter CSV
+            </a>
+        </div>
+    </div>
+
+    {% if bulletin.cours %}
+        {% for cours_data in bulletin.cours %}
+        <div class="carte" style="margin-top: 2rem; padding: 0; overflow: hidden;">
+            <!-- En-tête du cours -->
+            <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--bordure); display: flex; justify-content: space-between; align-items: center; background: var(--surface-alt);">
+                <div>
+                    <h3 style="margin: 0 0 0.25rem;">{{ cours_data.cours.titre }}</h3>
+                    <span class="badge" style="font-size: 0.78rem;">{{ cours_data.cours.niveau.nom }}</span>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-size: 0.85rem; color: var(--texte-secondaire);">Progression</div>
+                    <div style="font-size: 1.3rem; font-weight: 700; color: var(--accent);">{{ cours_data.progression }}%</div>
+                    {% if cours_data.moyenne_cours is not None %}
+                        <div style="font-size: 0.9rem; margin-top: 0.15rem; color: {% if cours_data.moyenne_cours >= 80 %}#4caf50{% elif cours_data.moyenne_cours >= 50 %}#ff9800{% else %}#f44336{% endif %};">
+                            Moyenne : {{ cours_data.moyenne_cours }}/100
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Tableau des chapitres -->
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background: var(--surface-alt); font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--texte-secondaire);">
+                        <th style="padding: 0.6rem 1.5rem; text-align: left;">#</th>
+                        <th style="padding: 0.6rem 1rem; text-align: left;">Chapitre</th>
+                        <th style="padding: 0.6rem 1rem; text-align: center;">Meilleur score</th>
+                        <th style="padding: 0.6rem 1.5rem; text-align: center;">Statut</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ch in cours_data.chapitres %}
+                    <tr style="border-top: 1px solid var(--bordure);">
+                        <td style="padding: 0.75rem 1.5rem; color: var(--texte-secondaire); font-size: 0.85rem;">§{{ ch.chapitre.ordre }}</td>
+                        <td style="padding: 0.75rem 1rem; font-weight: 500;">{{ ch.chapitre.titre }}</td>
+                        <td style="padding: 0.75rem 1rem; text-align: center;">
+                            {% if ch.meilleur_score is not None %}
+                                <span style="font-weight: 700; font-size: 1rem; color: {% if ch.meilleur_score >= 80 %}#4caf50{% elif ch.meilleur_score >= 50 %}#ff9800{% else %}#f44336{% endif %};">
+                                    {{ ch.meilleur_score }}/100
+                                </span>
+                            {% else %}
+                                <span style="color: var(--texte-secondaire); font-size: 0.85rem;">—</span>
+                            {% endif %}
+                        </td>
+                        <td style="padding: 0.75rem 1.5rem; text-align: center;">
+                            {% if ch.statut == 'REUSSI' %}
+                                <span class="badge" style="background: rgba(76,175,80,0.15); color: #4caf50; border: 1px solid #4caf5055;">✓ Réussi</span>
+                            {% elif ch.statut == 'ECHOUE' %}
+                                <span class="badge" style="background: rgba(244,67,54,0.15); color: #f44336; border: 1px solid #f4433655;">✗ Échoué</span>
+                            {% else %}
+                                <span class="badge" style="background: var(--surface-alt); color: var(--texte-secondaire); border: 1px solid var(--bordure);">Non tenté</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="carte" style="text-align: center; padding: 4rem 2rem; margin-top: 2rem;">
+            <div class="feat-icon" style="margin: 0 auto 1rem; background: var(--surface-alt);"><i class="ti ti-chart-bar"></i></div>
+            <h3>Aucune évaluation pour le moment</h3>
+            <p class="message-empty">Commencez un cours et passez des QCM pour voir vos notes apparaître ici.</p>
+            <a href="{% url 'apprentissage:liste_cours' %}" class="btn-primary" style="display: inline-block; margin-top: 1.5rem;">Voir les cours</a>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}
