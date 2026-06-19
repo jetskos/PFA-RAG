@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %}Calendrier scolaire{% endblock %}
+
+{% block content %}
+<section class="page-shell" style="max-width: 1000px; margin: 0 auto; padding: 2rem 1rem;">
+    <!-- En-tête -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <h1>📅 Calendrier & Événements</h1>
+            <p class="muted" style="margin: 0.25rem 0 0 0;">Retrouvez l'agenda des devoirs, examens et sessions de cours.</p>
+        </div>
+        {% if can_manage %}
+        <div>
+            <a href="{% url 'apprentissage:creer_evenement' %}" class="btn" style="text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; background: var(--brand-primary); color: white; padding: 0.6rem 1.2rem; border-radius: 8px; font-weight: 600; transition: transform 0.2s, background-color 0.2s;">
+                ➕ Créer un événement
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Agenda list -->
+    <div class="carte" style="padding: 1.5rem; background: var(--surface); border: 1px solid var(--bordure); border-radius: 12px;">
+        <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.5rem; border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem;">Événements à venir</h2>
+        
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+            {% for evt in events %}
+            <div style="display: flex; gap: 1.5rem; padding: 1rem; border: 1px solid var(--bordure); border-radius: 8px; background: var(--surface-alt, rgba(0,0,0,0.02)); transition: transform 0.2s; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+                <div style="display: flex; gap: 1.5rem; align-items: center;">
+                    <!-- Date badge -->
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--brand-primary); color: white; width: 64px; height: 64px; border-radius: 8px; font-weight: 700;">
+                        <span style="font-size: 0.75rem; text-transform: uppercase;">{{ evt.date_debut|date:"M" }}</span>
+                        <span style="font-size: 1.4rem; line-height: 1.1;">{{ evt.date_debut|date:"d" }}</span>
+                    </div>
+                    
+                    <!-- Info -->
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                            <span class="badge" style="background: {% if evt.type == 'ECHEANCE_DEVOIR' %}#ef4444{% elif evt.type == 'SESSION' %}#3b82f6{% elif evt.type == 'EXAMEN' %}#f59e0b{% else %}#10b981{% endif %}; color: white; font-size: 0.75rem; padding: 0.15rem 0.5rem; border-radius: 4px; font-weight: 600;">
+                                {{ evt.get_type_display }}
+                            </span>
+                            {% if evt.cours %}
+                            <span style="font-size: 0.8rem; color: var(--texte-secondaire); font-weight: 500;">
+                                Cours : {{ evt.cours.titre }}
+                            </span>
+                            {% endif %}
+                            {% if evt.classe %}
+                            <span style="font-size: 0.8rem; color: var(--texte-secondaire); font-weight: 500;">
+                                Classe : {{ evt.classe.nom }}
+                            </span>
+                            {% endif %}
+                        </div>
+                        <h3 style="font-size: 1.1rem; margin: 0.35rem 0 0.2rem 0; font-weight: 700; color: var(--text-primary);">{{ evt.titre }}</h3>
+                        <p style="margin: 0; font-size: 0.9rem; color: var(--texte-secondaire);">{{ evt.description }}</p>
+                        <div style="font-size: 0.8rem; color: var(--texte-secondaire); margin-top: 0.25rem;">
+                            🕒 {{ evt.date_debut|date:"H:i" }} {% if evt.date_fin %} - {{ evt.date_fin|date:"H:i" }}{% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions for managers -->
+                {% if can_manage and evt.createur == request.user or request.user.is_superuser or request.user.role == 'ADMIN' %}
+                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                    <a href="{% url 'apprentissage:modifier_evenement' evt.id %}" class="btn btn-ghost" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; text-decoration: none; border: 1px solid var(--bordure); border-radius: 6px; font-weight: 600;">
+                        ✏️ Modifier
+                    </a>
+                    <form action="{% url 'apprentissage:supprimer_evenement' evt.id %}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet événement ?');" style="margin: 0;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-ghost" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; color: #ef4444; border: 1px solid #ef4444; border-radius: 6px; background: transparent; font-weight: 600; cursor: pointer; transition: background-color 0.2s;">
+                            🗑️ Supprimer
+                        </button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+            {% empty %}
+            <div style="padding: 3rem; text-align: center; color: var(--texte-secondaire);">
+                📅 Aucun événement de planifié pour le moment.
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

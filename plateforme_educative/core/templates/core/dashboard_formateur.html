@@ -3,16 +3,57 @@
 {% block title %}Dashboard Formateur{% endblock %}
 
 {% block content %}
-<section class="page-shell">
-    <div class="page-header">
-        <p class="eyebrow">Formateur</p>
-        <h1>Tableau de bord formateur</h1>
-        <p>Vue de pilotage des cours et des demandes de matériel.</p>
+<section class="page-shell formateur-shell">
+    <!-- WELCOME HERO SECTION -->
+    <div class="welcome-hero" style="margin-bottom: 2.5rem; display: flex; align-items: center; justify-content: space-between; background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.6)); border-radius: 24px; padding: 2.5rem 3rem; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); backdrop-filter: blur(10px);">
+        <div>
+            <span class="eyebrow" style="color: #3b82f6; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.85rem; margin-bottom: 0.5rem; display: inline-block;">Espace Formateur</span>
+            <h1 style="font-size: 2.5rem; font-weight: 800; color: #0f172a; margin: 0 0 0.5rem 0;">Bonjour, {{ request.user.get_full_name|default:request.user.email|default:'Formateur' }} 👋</h1>
+            <p style="color: #64748b; font-size: 1.1rem; margin: 0; max-width: 500px;">Prêt à inspirer vos étudiants aujourd'hui ? Gérez vos cours, suivez leurs progressions et organisez vos ateliers.</p>
+        </div>
+        <div class="hero-stats" style="display: flex; gap: 2rem; border-left: 1px solid rgba(226, 232, 240, 0.8); padding-left: 2rem;">
+            <div style="text-align: center;">
+                <div style="font-size: 2rem; font-weight: 800; color: #0f172a;">{{ mes_cours|length }}</div>
+                <div style="font-size: 0.85rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">Cours actifs</div>
+            </div>
+        </div>
+    </div>
+    <!-- ACTION BAR COMPACTE -->
+    <div class="action-bar-compact" style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 2rem; background: #ffffff; border-radius: 16px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05); margin-bottom: 2rem;">
+        <h1 style="margin: 0; font-size: 1.5rem; font-weight: 800; color: #0f172a;">Mes Cours</h1>
+        <div style="display: flex; gap: 1rem;">
+            <a href="{% url 'apprentissage:formateur_notes' %}" class="btn-ghost" style="color: #64748b; font-weight: 600; padding: 0.5rem 1rem;">
+                <i class="ti ti-chart-bar" style="margin-right: 6px;"></i> Voir les Notes
+            </a>
+            <button class="btn-outline" hx-get="{% url 'dashboard_formateur_create_demande' %}" hx-target="#modal-container" style="color: #0f172a; border-color: #e2e8f0; font-weight: 600; padding: 0.5rem 1rem;">
+                <i class="ti ti-package" style="margin-right: 6px;"></i> Demande Matériel
+            </button>
+            <a href="{% url 'apprentissage:nouveau_cours' %}" class="btn-primary" style="background: #3b82f6; border-radius: 8px; font-weight: 600; padding: 0.5rem 1rem;">
+                <i class="ti ti-plus" style="margin-right: 6px;"></i> Nouveau Cours
+            </a>
+        </div>
     </div>
 
+    <!-- MAIN GRID CONTAINER -->
     <div id="dashboard-formateur-structure">
-           {% include 'core/partials/dashboard_actions.html' with role='FORMATEUR' %}
            {% include 'core/partials/formateur_structure.html' %}
     </div>
 </section>
+
+<!-- Modal Container for Logistics -->
+<div id="modal-container"></div>
+
+<style>
+    body { background-color: #f8fafc; } /* Premium SaaS background */
+    .formateur-shell { max-width: 1200px; margin: 0 auto; padding-top: 2rem; }
+    
+    .btn-ghost { background: transparent; border: none; cursor: pointer; transition: all 0.2s; border-radius: 8px; display: inline-flex; align-items: center; }
+    .btn-ghost:hover { background: #f1f5f9; color: #0f172a; }
+    
+    .btn-outline { background: white; border: 1px solid #e2e8f0; cursor: pointer; transition: all 0.2s; border-radius: 8px; display: inline-flex; align-items: center; }
+    .btn-outline:hover { background: #f8fafc; border-color: #cbd5e1; }
+    
+    .btn-primary { background: #3b82f6; color: white; border: none; cursor: pointer; transition: all 0.2s; border-radius: 8px; display: inline-flex; align-items: center; }
+    .btn-primary:hover { background: #2563eb; }
+</style>
 {% endblock %}

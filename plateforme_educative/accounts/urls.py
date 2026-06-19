@@ -1,5 +1,6 @@
-from django.urls import path
+from django.urls import path, reverse_lazy
 from django.contrib.auth import views as auth_views
+from django.views.decorators.cache import never_cache
 from . import views
 
 app_name = 'accounts'
@@ -7,10 +8,24 @@ app_name = 'accounts'
 urlpatterns = [
     path('register/', views.register_view, name='register'),
     path('pending/', views.pending_view, name='pending'),
-    path('login/', auth_views.LoginView.as_view(template_name='accounts/login.html'), name='login'),
+    path('login/', never_cache(views.CustomLoginView.as_view(
+        redirect_authenticated_user=True,   # déjà connecté -> redirige au lieu de réafficher le form
+    )), name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('profil/', views.profile_view, name='profile'),
     path('profil/modifier/', views.profile_edit_view, name='profile_edit'),
+    path('profil/securite/', views.change_password_view, name='change_password'),
     path('gestion/', views.admin_dashboard, name='admin_dashboard'),
     path('gestion/utilisateurs/<uuid:user_id>/details/', views.user_details, name='user_details'),
+
+    # Réinitialisation de mot de passe (via mot de passe temporaire)
+    path('password-reset/', views.custom_password_reset_view, name='password_reset'),
+    path('password-reset/done/', auth_views.PasswordResetDoneView.as_view(
+        template_name='accounts/password_reset_done.html'
+    ), name='password_reset_done'),
+
+    # Notifications
+    path('notifications/', views.notifications_list_view, name='notifications_list'),
+    path('notifications/marquer-lu/', views.mark_notifications_read_all_view, name='mark_notifications_read_all'),
+    path('notifications/<uuid:pk>/marquer-lu/', views.mark_notification_read_view, name='mark_notification_read'),
 ]

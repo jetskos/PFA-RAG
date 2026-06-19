@@ -15,7 +15,6 @@ Logique de déclenchement :
 """
 import os
 import logging
-import threading
 
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
@@ -25,53 +24,11 @@ logger = logging.getLogger(__name__)
 
 def _index_document_async(document_id: str, pdf_path: str):
     """
-    Lance l'indexation dans un thread daemon séparé.
-    Non bloquant : la requête HTTP admin répond immédiatement.
+    Lance l'indexation via une tâche Celery (ou de manière synchrone si DEBUG=True).
     """
-    def _run():
-        logger.info(f"[ChromaDB] Indexation démarrée — doc {document_id[:8]}...")
-        try:
-            from apprentissage.models import Document
-            from tuteur_ia.tools.pdf_extractor import extract_and_chunk_pdf
-            from tuteur_ia.tools.chroma_store import add_chunks
+    from apprentissage.tasks import indexer_document_task
+    indexer_document_task.delay(document_id=document_id, pdf_path=pdf_path)
 
-            # 1. Extraire et chunker le PDF
-            full_text, chunks = extract_and_chunk_pdf(pdf_path)
-
-            if not full_text:
-                logger.warning(f"[ChromaDB] PDF vide ou scanné : {pdf_path}")
-                return
-
-            # 2. Mettre à jour contenu_extrait en base
-            Document.objects.filter(pk=document_id).update(
-                contenu_extrait=full_text
-            )
-
-            # 3. Récupérer métadonnées pour les filtres ChromaDB
-            doc = Document.objects.get(pk=document_id)
-
-            # 4. Indexer dans ChromaDB (remplace les anciens chunks si existants)
-            add_chunks(
-                chunks=chunks,
-                document_id=document_id,
-                document_titre=doc.titre,
-                chapitre_id=str(doc.chapitre_id),
-                cours_id=str(doc.chapitre.cours_id),
-            )
-
-            logger.info(
-                f"[ChromaDB] ✓ '{doc.titre}' indexé : "
-                f"{len(full_text):,} chars, {len(chunks)} chunks"
-            )
-
-        except Exception as e:
-            logger.error(
-                f"[ChromaDB] ✗ Erreur indexation {document_id}: {e}",
-                exc_info=True,
-            )
-
-    thread = threading.Thread(target=_run, daemon=True, name=f"chroma-{document_id[:8]}")
-    thread.start()
 
 
 def _pdf_has_changed(instance) -> bool:

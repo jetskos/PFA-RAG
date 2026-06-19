@@ -9,7 +9,7 @@ import logging
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, render
-from django.http import JsonResponse
+from django.http import JsonResponse, StreamingHttpResponse
 from django.views.decorators.http import require_http_methods
 from langchain_core.messages import HumanMessage
 
@@ -36,7 +36,9 @@ def _get_last_ai_message(messages: list) -> str:
 def demarrer_session(request, chapitre_id):
     """
     GET  → page HTML de la session
-    POST → initialise le graph et retourne la première question (JSON)
+    POST → crée la session INSTANTANÉMENT et retourne un message d'accueil.
+            Le graph LangGraph (RAG + LLM) ne démarre qu'au premier vrai
+            message de l'étudiant, dans la vue `repondre`.
     """
     from apprentissage.models import Chapitre
     chapitre = get_object_or_404(Chapitre, id=chapitre_id, actif=True)
@@ -52,10 +54,9 @@ def demarrer_session(request, chapitre_id):
             'session_existante': session_existante,
         })
 
-    # POST — démarrer
+    # POST — créer la session sans appeler le LLM
     try:
-        profil_ia, _ = ProfilEtudiantIA.objects.get_or_create(etudiant=request.user)
-        thread_id    = f"{str(request.user.id)[:8]}_{str(chapitre_id)[:8]}_{uuid_module.uuid4().hex[:8]}"
+        thread_id = f"{str(request.user.id)[:8]}_{str(chapitre_id)[:8]}_{uuid_module.uuid4().hex[:8]}"
 
         session = SessionTuteur.objects.create(
             etudiant=request.user,
@@ -63,46 +64,19 @@ def demarrer_session(request, chapitre_id):
             thread_id=thread_id,
         )
 
-        # Normaliser le niveau de l'étudiant
-        niveau_label = getattr(request.user, 'niveau_label', '').upper()
-        if 'DÉBUTANT' in niveau_label or 'DEBUTANT' in niveau_label:
-            niveau = 'DEBUTANT'
-        elif 'INTERMÉDIAIRE' in niveau_label or 'INTERMEDIAIRE' in niveau_label:
-            niveau = 'INTERMEDIAIRE'
-        elif 'AVANCÉ' in niveau_label or 'AVANCE' in niveau_label:
-            niveau = 'AVANCE'
-        else:
-            niveau = 'DEBUTANT'  # Défaut
-
-        graph = get_graph()
-        initial_state = {
-            "messages":       [],
-            "subject":        cours.titre,
-            "current_concept": chapitre.titre,
-            "chapitre_id":    str(chapitre.id),
-            "cours_id":       str(cours.id),
-            "etudiant_id":    str(request.user.id),
-            "niveau":         niveau,
-            "diagnosis":      None,
-            "last_evaluation": None,
-            "mastery_score":  0.0,
-            "iteration":      0,
-            "student_profile": profil_ia.to_dict(),
-            "next_action":    "tutor",
-        }
-
-        config = {"configurable": {"thread_id": session.thread_id}}
-        final_state = None
-        for event in graph.stream(initial_state, config, stream_mode="values"):
-            final_state = event
-
-        first_msg = _get_last_ai_message(final_state.get("messages", [])) if final_state else ""
+        # Message d'accueil instantané — aucun appel LLM
+        prenom = request.user.get_short_name()
+        welcome = (
+            f"Prêt à explorer **{chapitre.titre}** ? "
+            f"Dis-moi d'abord ce que tu sais déjà sur ce sujet."
+        )
 
         return JsonResponse({
-            "session_id":   str(session.id),
-            "message":      first_msg or "Bonjour ! Commençons cette session de tutorat.",
-            "mastery_score": final_state.get("mastery_score", 0.0) if final_state else 0.0,
-            "iteration":    final_state.get("iteration", 0) if final_state else 0,
+            "session_id":    str(session.id),
+            "message":       welcome,
+            "mastery_score": 0.0,
+            "iteration":     0,
+            "cold_start":    True,   # indique que le graph n'est pas encore initialisé
         })
 
     except Exception as e:
@@ -136,15 +110,58 @@ def repondre(request, session_id):
         graph  = get_graph()
         config = {"configurable": {"thread_id": session.thread_id}}
 
-        graph.update_state(
-            config,
-            {"messages": [HumanMessage(content=message)]},
-            as_node="tutor",
-        )
+        # Normaliser niveau étudiant
+        def _get_niveau(user):
+            lbl = getattr(user, 'niveau_label', '').upper()
+            if 'DÉBUTANT' in lbl or 'DEBUTANT' in lbl:
+                return 'DEBUTANT'
+            if 'INTERMÉDIAIRE' in lbl or 'INTERMEDIAIRE' in lbl:
+                return 'INTERMEDIAIRE'
+            if 'AVANCÉ' in lbl or 'AVANCE' in lbl:
+                return 'AVANCE'
+            return 'DEBUTANT'
 
-        final_state = None
-        for event in graph.stream(None, config, stream_mode="values"):
-            final_state = event
+        profil_ia, _ = ProfilEtudiantIA.objects.get_or_create(etudiant=request.user)
+        niveau = _get_niveau(request.user)
+        chapitre = session.chapitre
+        cours    = chapitre.cours
+
+        # Vérifier si le graph a déjà un état (sessions existantes)
+        state_obj = graph.get_state(config)
+        graph_initialized = bool(state_obj.values and "current_concept" in state_obj.values)
+
+        if not graph_initialized:
+            # PREMIER MESSAGE : lancer le graph depuis zéro avec le message
+            # de l'étudiant déjà inclus dans l'état initial.
+            initial_state = {
+                "messages":        [HumanMessage(content=message)],
+                "subject":         cours.titre,
+                "current_concept": chapitre.titre,
+                "chapitre_id":     str(chapitre.id),
+                "cours_id":        str(cours.id),
+                "etudiant_id":     str(request.user.id),
+                "niveau":          niveau,
+                "diagnosis":       None,
+                "last_evaluation": None,
+                "mastery_score":   0.0,
+                "iteration":       0,
+                "student_profile": profil_ia.to_dict(),
+                "next_action":     "tutor",
+                "rag_context":     None,
+            }
+            final_state = None
+            for event in graph.stream(initial_state, config, stream_mode="values"):
+                final_state = event
+        else:
+            # TOURS SUIVANTS : injecter la réponse et continuer
+            graph.update_state(
+                config,
+                {"messages": [HumanMessage(content=message)]},
+                as_node="tutor",
+            )
+            final_state = None
+            for event in graph.stream(None, config, stream_mode="values"):
+                final_state = event
 
         tutor_response = ""
         mastery_score  = 0.0
@@ -170,7 +187,7 @@ def repondre(request, session_id):
         session.save()
 
         return JsonResponse({
-            "message":          tutor_response or "Merci pour votre réponse !",
+            "message":          tutor_response or "Continue, tu es sur la bonne voie !",
             "mastery_score":    mastery_score,
             "iteration":        iteration,
             "session_terminee": session_terminee,
@@ -213,3 +230,112 @@ def profil_etudiant_ia(request):
     return render(request, 'tuteur_ia/profil.html', {
         'profil': profil,
     })
+
+
+from tuteur_ia.models import SessionAssistant
+from django.utils import timezone
+
+@login_required
+def demarrer_assistant(request, chapitre_id):
+    """
+    Initialise ou charge la session de l'Assistant RAG pour un chapitre.
+    Retourne l'ID de la session et l'historique des messages.
+    """
+    from apprentissage.models import Chapitre
+    chapitre = get_object_or_404(Chapitre, id=chapitre_id, actif=True)
+    
+    session, created = SessionAssistant.objects.get_or_create(
+        etudiant=request.user,
+        chapitre=chapitre
+    )
+    
+    return JsonResponse({
+        "session_id": str(session.id),
+        "messages": session.messages,
+    })
+
+
+@login_required
+@require_http_methods(['POST'])
+def poser_question(request, session_id):
+    """
+    Pose une question à l'Assistant RAG.
+    Utilise le modèle rapide llama-3.1-8b-instant + contexte RAG limité pour des réponses rapides.
+    """
+    session = get_object_or_404(SessionAssistant, id=session_id, etudiant=request.user)
+
+    try:
+        data = json.loads(request.body)
+        question = data.get('question', '').strip() or data.get('message', '').strip() or data.get('reponse', '').strip()
+    except json.JSONDecodeError:
+        question = request.POST.get('question', '').strip() or request.POST.get('message', '').strip() or request.POST.get('reponse', '').strip()
+
+    if not question:
+        return JsonResponse({"error": "Question vide."}, status=400)
+
+    try:
+        # ── Recherche RAG rapide (résultats limités pour réduire la taille du contexte) ──
+        from tuteur_ia.tools.rag_tool import rag_search
+        context = rag_search(
+            query=question,
+            chapitre_id=str(session.chapitre.id),
+            cours_id=str(session.chapitre.cours.id),
+            n_results=3,  # Limiter à 3 résultats au lieu de la valeur par défaut
+        )
+        # Tronquer le contexte à 1500 caractères max pour éviter les prompts trop longs
+        if context and len(context) > 1500:
+            context = context[:1500] + "\n[...]"
+
+        # ── Historique limité aux 4 derniers échanges (mémoire courte pour la rapidité) ──
+        from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
+        chat_history = []
+        for msg in session.messages[-8:]:  # Max 4 tours (user+assistant)
+            if msg.get('role') == 'user':
+                chat_history.append(HumanMessage(content=msg.get('content', '')))
+            elif msg.get('role') == 'assistant':
+                # Tronquer les anciennes réponses longues
+                content = msg.get('content', '')
+                chat_history.append(AIMessage(content=content[:500] if len(content) > 500 else content))
+
+        system_prompt = (
+            f"Tu es le Tuteur Assistant du chapitre '{session.chapitre.titre}'.\n"
+            "Extraits de référence :\n"
+            f"{context or '[Aucun extrait disponible]'}\n\n"
+            "Réponds en français, de façon claire et concise (max 3 paragraphes). "
+            "Formate en Markdown si utile."
+        )
+
+        messages_to_send = [SystemMessage(content=system_prompt)] + chat_history + [HumanMessage(content=question)]
+
+        # ── LLM rapide : llama-3.1-8b-instant (le plus rapide sur Groq) ──
+        from tuteur_ia.agents.llm_factory import get_llm
+        llm = get_llm(temperature=0.3, model_name="llama-3.1-8b-instant")
+        response = llm.invoke(messages_to_send)
+        reponse_content = response.content
+
+        # ── Enregistrement historique ──
+        session.messages.append({
+            'role': 'user',
+            'content': question,
+            'timestamp': timezone.now().isoformat()
+        })
+        session.messages.append({
+            'role': 'assistant',
+            'content': reponse_content,
+            'sources': context,
+            'timestamp': timezone.now().isoformat()
+        })
+        # Garder seulement les 20 derniers messages pour ne pas alourdir la DB
+        if len(session.messages) > 20:
+            session.messages = session.messages[-20:]
+        session.save()
+
+        return JsonResponse({
+            'reponse': reponse_content,
+            'sources': context,
+        })
+
+    except Exception as e:
+        logger.error(f"Erreur poser_question : {e}", exc_info=True)
+        return JsonResponse({"error": str(e)}, status=500)
+

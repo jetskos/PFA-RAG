@@ -17,7 +17,7 @@ class ProfilEtudiantIA(models.Model):
         verbose_name_plural = 'Profils Étudiants IA'
 
     def __str__(self):
-        return f"Profil IA - {self.etudiant.email}"
+        return f"Profil IA - {self.etudiant.get_full_name()}"
 
     def to_dict(self):
         return {
@@ -56,7 +56,7 @@ class SessionTuteur(models.Model):
         verbose_name_plural = 'Sessions Tuteur'
 
     def __str__(self):
-        return f"Session {self.etudiant.email} - {self.chapitre.titre}"
+        return f"Session {self.etudiant.get_full_name()} - {self.chapitre.titre}"
 
 
 class SessionQCM(models.Model):
@@ -83,4 +83,46 @@ class SessionQCM(models.Model):
         verbose_name_plural = 'Sessions QCM'
 
     def __str__(self):
-        return f"QCM {self.etudiant.email} - {self.chapitre.titre} (score={self.score})"
+        return f"QCM {self.etudiant.get_full_name()} - {self.chapitre.titre} (score={self.score})"
+
+
+class QuestionCache(models.Model):
+    """Banque de questions QCM générées par IA pour un chapitre."""
+    chapitre = models.OneToOneField('apprentissage.Chapitre', on_delete=models.CASCADE, related_name='qcm_cache')
+    questions = models.JSONField(default=list)  # Stocke la liste de toutes les questions générées [{question, options, reponse_correcte, explication}]
+    date_creation = models.DateTimeField(auto_now_add=True)
+    date_modification = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Cache de questions QCM'
+        verbose_name_plural = 'Caches de questions QCM'
+
+    def __str__(self):
+        return f"Cache {self.chapitre.titre} ({len(self.questions)} questions)"
+
+
+class SessionAssistant(models.Model):
+    """Session de discussion avec l'Assistant RAG explicatif (Tuteur Pédagogique)."""
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    etudiant = models.ForeignKey(
+        'accounts.Utilisateur',
+        on_delete=models.CASCADE,
+        related_name='sessions_assistant'
+    )
+    chapitre = models.ForeignKey(
+        'apprentissage.Chapitre',
+        on_delete=models.CASCADE,
+        related_name='sessions_assistant'
+    )
+    messages = models.JSONField(default=list)  # [{'role': 'user'|'assistant', 'content': str, 'sources': str, 'timestamp': str}]
+    date_creation = models.DateTimeField(auto_now_add=True)
+    date_modification = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Session Assistant'
+        verbose_name_plural = 'Sessions Assistant'
+        ordering = ['-date_modification']
+
+    def __str__(self):
+        return f"Assistant {self.etudiant.get_full_name()} - {self.chapitre.titre}"
+

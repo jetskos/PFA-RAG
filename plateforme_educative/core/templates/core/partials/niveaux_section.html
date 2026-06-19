@@ -1,81 +1,307 @@
-<section id="niveaux-section" class="carte">
-    <div class="actions" style="justify-content:space-between; align-items:center; margin-bottom:1rem;">
-        <div>
-            <h2 style="margin:0;">Niveaux</h2>
-            <p style="margin:0.25rem 0 0; color:var(--text-muted);">Définissez et modifiez les niveaux scolaires disponibles.</p>
-        </div>
-    </div>
+<style>
+    /* Full width layout */
+    .admin-list-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
 
-    <div style="display:grid; grid-template-columns: minmax(320px, 360px) minmax(0, 1fr); gap:1rem; align-items:start;">
-        <div style="display:grid; gap:1rem;">
-            <div class="course-item">
-                <h3 style="margin:0;">Créer un niveau</h3>
-                <form method="post"
-                      hx-post="{% url 'dashboard_admin_create_niveau' %}"
-                      hx-target="#dashboard-structure"
-                      hx-swap="innerHTML"
-                      style="display:grid; gap:0.8rem;">
-                    {% csrf_token %}
-                    <p>
-                        <label for="{{ niveau_form.code.id_for_label }}">Code</label>
-                        {{ niveau_form.code }}
-                        {% if niveau_form.code.errors %}<span class="error-text">{{ niveau_form.code.errors.0 }}</span>{% endif %}
-                    </p>
-                    <p>
-                        <label for="{{ niveau_form.nom.id_for_label }}">Nom</label>
-                        {{ niveau_form.nom }}
-                        {% if niveau_form.nom.errors %}<span class="error-text">{{ niveau_form.nom.errors.0 }}</span>{% endif %}
-                    </p>
-                    <p>
-                        <label for="{{ niveau_form.ordre.id_for_label }}">Ordre</label>
-                        {{ niveau_form.ordre }}
-                        {% if niveau_form.ordre.errors %}<span class="error-text">{{ niveau_form.ordre.errors.0 }}</span>{% endif %}
-                    </p>
-                    <label style="display:flex; align-items:center; gap:0.5rem;">
-                        {{ niveau_form.actif }}
-                        Actif
-                    </label>
-                    {% if niveau_form.non_field_errors %}
-                        <div class="messages"><p class="message-item">{{ niveau_form.non_field_errors.0 }}</p></div>
-                    {% endif %}
-                    <button type="submit" class="btn">Créer le niveau</button>
-                </form>
+    /* Control Bar */
+    .control-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+    }
+    
+    .search-filter-group {
+        display: flex;
+        gap: 1rem;
+        flex: 1;
+        max-width: 600px;
+    }
+    
+    .control-search {
+        position: relative;
+        flex: 1;
+    }
+    
+    .control-search i {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #64748b;
+    }
+    
+    .control-search input {
+        width: 100%;
+        padding: 0.75rem 1rem 0.75rem 2.5rem;
+        border-radius: 10px;
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        font-size: 0.95rem;
+        transition: all 0.2s;
+    }
+    
+    .control-search input:focus {
+        outline: none;
+        border-color: #0f766e;
+        box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.1);
+    }
+    
+    .control-filter select {
+        padding: 0.75rem 2.5rem 0.75rem 1rem;
+        border-radius: 10px;
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        font-size: 0.95rem;
+        color: #334155;
+        font-weight: 500;
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        transition: all 0.2s;
+    }
+    
+    .control-filter select:focus {
+        outline: none;
+        border-color: #0f766e;
+    }
+
+    .btn-create {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        background: #0f766e;
+        color: white;
+        font-weight: 600;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 6px -1px rgba(15, 118, 110, 0.2);
+    }
+
+    .btn-create:hover {
+        background: #0d9488;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 8px -1px rgba(15, 118, 110, 0.3);
+    }
+
+    /* Wide Level Row - Glass Card Premium */
+    .level-item-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.25rem 1.5rem;
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        border-left: 4px solid #0f766e;
+        border-radius: 16px;
+        gap: 1.5rem;
+        transition: all 0.3s ease;
+        margin-bottom: 1rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+    }
+
+    .level-item-row:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+        border-color: #cbd5e1;
+    }
+
+    .level-item-row.is-inactive {
+        border-left-color: #94a3b8;
+        opacity: 0.8;
+    }
+
+    .level-avatar-circle {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        background: rgba(15, 118, 110, 0.1);
+        color: #0f766e;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        font-weight: 700;
+        flex-shrink: 0;
+    }
+
+    .level-item-row.is-inactive .level-avatar-circle {
+        background: #f1f5f9;
+        color: #64748b;
+    }
+
+    .level-details-col {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        flex: 1;
+    }
+
+    .level-title-text {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin: 0;
+    }
+
+    .level-meta-row {
+        font-size: 0.85rem;
+        color: #64748b;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .status-indicator-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.75rem;
+        font-weight: 800;
+        padding: 4px 10px;
+        border-radius: 9999px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .status-indicator-badge.active {
+        background: #d1fae5;
+        color: #065f46;
+    }
+
+    .status-indicator-badge.inactive {
+        background: #f1f5f9;
+        color: #64748b;
+    }
+
+    .classes-count-col {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #475569;
+        width: 120px;
+        flex-shrink: 0;
+    }
+
+    .btn-edit {
+        padding: 8px 16px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #3b82f6;
+        background: rgba(59, 130, 246, 0.1);
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .btn-edit:hover {
+        background: rgba(59, 130, 246, 0.2);
+    }
+</style>
+
+<section id="niveaux-section">
+    <div class="admin-list-container">
+        
+        <div class="control-bar">
+            <div class="search-filter-group">
+                <div class="control-search">
+                    <i class="ti ti-search"></i>
+                    <input type="search" 
+                           name="q" 
+                           placeholder="Rechercher un niveau..." 
+                           hx-get="{% url 'dashboard_admin_structure' %}?tab=niveaux" 
+                           hx-trigger="keyup changed delay:300ms" 
+                           hx-target="#dashboard-structure"
+                           hx-include="[name='status']"
+                           autocomplete="off">
+                </div>
+                <div class="control-filter">
+                    <select name="status"
+                            hx-get="{% url 'dashboard_admin_structure' %}?tab=niveaux"
+                            hx-trigger="change"
+                            hx-target="#dashboard-structure"
+                            hx-include="[name='q']">
+                        <option value="">Tous les statuts</option>
+                        <option value="actif">Actifs uniquement</option>
+                        <option value="inactif">Inactifs uniquement</option>
+                    </select>
+                </div>
             </div>
 
-            <div class="course-item" id="niveau-editor">
-                <h3 style="margin:0;">Modifier un niveau</h3>
-                <p class="message-empty" style="margin:0;">Choisissez un niveau à droite pour l’éditer.</p>
-            </div>
+            <button class="btn-create" 
+                    hx-get="{% url 'dashboard_admin_create_niveau' %}" 
+                    hx-target="#modal-container" 
+                    hx-swap="innerHTML">
+                <i class="ti ti-plus"></i> Créer un Niveau
+            </button>
         </div>
 
         <div>
             {% if niveaux %}
-                <div style="display:grid; gap:0.75rem;">
+                <div style="display:flex; flex-direction:column;">
                     {% for niveau in niveaux %}
-                        <div class="activity-item">
-                            <div class="activity-item__title">
-                                <strong>{{ niveau.nom }}</strong>
-                                <span class="profile-badge">{{ niveau.code }}</span>
+                        <div class="level-item-row {% if not niveau.actif %}is-inactive{% endif %}">
+                            
+                            <!-- Initials/Code Avatar -->
+                            <div class="level-avatar-circle" aria-hidden="true">
+                                {{ niveau.code|slice:":2"|upper }}
                             </div>
-                            <div class="activity-item__meta">
-                                <span>Ordre {{ niveau.ordre }}</span>
+                            
+                            <!-- Level Info Details -->
+                            <div class="level-details-col">
+                                <h4 class="level-title-text">{{ niveau.nom }}</h4>
+                                <div class="level-meta-row">
+                                    <span><i class="ti ti-sort-ascending" aria-hidden="true"></i> Ordre: {{ niveau.ordre }}</span>
+                                    <span>&bull;</span>
+                                    <span>Code unique: <code style="background: #f1f5f9; padding: 2px 6px; border-radius: 4px; color: #475569;">{{ niveau.code }}</code></span>
+                                </div>
+                            </div>
+
+                            <!-- Classes counter badge -->
+                            <div class="classes-count-col">
+                                <i class="ti ti-users-group" aria-hidden="true" style="color: #94a3b8;"></i>
                                 <span>{{ niveau.classes.count }} classe{{ niveau.classes.count|pluralize }}</span>
-                                <span>{% if niveau.actif %}Actif{% else %}Archivé{% endif %}</span>
                             </div>
-                            <div class="actions" style="justify-content:flex-start; margin-top:0.45rem;">
+
+                            <!-- Active status tag -->
+                            <div>
+                                <span class="status-indicator-badge {% if niveau.actif %}active{% else %}inactive{% endif %}">
+                                    {% if niveau.actif %}&bull; ACTIF{% else %}&bull; ARCHIVÉ{% endif %}
+                                </span>
+                            </div>
+
+                            <!-- Action buttons -->
+                            <div style="display:flex; gap:0.5rem; align-items:center;">
                                 <button type="button"
-                                        class="btn btn-ghost"
+                                        class="btn-edit"
                                         hx-get="{% url 'dashboard_admin_edit_niveau' niveau.id %}"
-                                        hx-target="#niveau-editor"
+                                        hx-target="#modal-container"
                                         hx-swap="innerHTML">
-                                    Modifier
+                                    <i class="ti ti-edit"></i> Modifier
                                 </button>
                             </div>
                         </div>
                     {% endfor %}
                 </div>
             {% else %}
-                <p class="message-empty">Aucun niveau défini.</p>
+                <div style="text-align:center; padding: 4rem 2rem; background: #f8fafc; border-radius: 16px; border: 1px dashed #cbd5e1;">
+                    <i class="ti ti-layers-linked" style="font-size: 3rem; color: #94a3b8; margin-bottom: 1rem; display: block;"></i>
+                    <p style="margin:0; color: #475569; font-size: 1.1rem; font-weight: 600;">Aucun niveau configuré dans la plateforme.</p>
+                </div>
             {% endif %}
         </div>
     </div>

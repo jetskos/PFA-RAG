@@ -17,7 +17,36 @@ def diagnostiqueur_node(state: StudyBuddyState) -> dict[str, Any]:
     Nœud diagnostic : analyse le niveau initial de l'étudiant.
     Produit un JSON avec les questions diagnostiques et les prérequis à vérifier.
     """
-    llm = get_llm(temperature=0.3)
+    # Récupérer le contenu du PDF lié au chapitre
+    rag_content = state.get("rag_context")
+    if not rag_content:
+        from tuteur_ia.tools.chroma_store import search as chroma_search
+        from tuteur_ia.tools.rag_tool import rag_search
+        chapitre_id = state["chapitre_id"]
+        try:
+            # Multi-requêtes pour couvrir tout le contenu du PDF
+            queries = [
+                "concepts définitions introduction",
+                "exemples propriétés caractéristiques",
+                "applications pratiques",
+            ]
+            all_texts = []
+            seen = set()
+            for q in queries:
+                for r in chroma_search(query=q, chapitre_id=chapitre_id, n_results=3):
+                    t = r.get("text", "").strip()
+                    if t and t not in seen:
+                        seen.add(t)
+                        all_texts.append(t)
+            rag_content = "\n\n---\n\n".join(all_texts) if all_texts else rag_search(
+                query="contenu principal",
+                chapitre_id=chapitre_id,
+                n_results=6,
+            )
+        except Exception:
+            rag_content = ""
+
+    llm = get_llm(temperature=0.3, model_name="llama-3.1-8b-instant")
 
     user_prompt = DIAGNOSTIC_USER_PROMPT_TEMPLATE.format(
         etudiant_email=state.get("etudiant_id", "unknown"),
@@ -25,6 +54,7 @@ def diagnostiqueur_node(state: StudyBuddyState) -> dict[str, Any]:
         concept=state["current_concept"],
         concepts_maitrises=", ".join(state["student_profile"].get("mastered_concepts", [])) or "aucun",
         concepts_fragiles=", ".join(state["student_profile"].get("fragile_concepts", [])) or "aucun",
+        rag_content=rag_content or "[Pas de contenu de référence disponible]",
     )
 
     messages = [
@@ -53,6 +83,7 @@ def diagnostiqueur_node(state: StudyBuddyState) -> dict[str, Any]:
         "diagnosis": diagnosis,
         "mastery_score": 0.0,
         "iteration": 0,
-        "messages": messages + [response],
         "next_action": "tutor",
+        "rag_context": rag_content,
     }
+

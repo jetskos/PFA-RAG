@@ -3,168 +3,24 @@
 {% block title %}Accueil | Plateforme Éducative{% endblock %}
 
 {% block content %}
-
-{% if user.is_authenticated %}
-
 <section class="home-hero">
-
-    <div class="home-hero__copy">
-        <span class="home-kicker">
-            <i class="ti ti-circle-check" aria-hidden="true"></i>
-            Connecté · {{ user.email }}
-        </span>
-        <h1>Bienvenue dans <em>votre espace</em></h1>
-        <p>
-            Continuez là où vous vous étiez arrêté. Vos cours, chapitres
-            et documents pédagogiques sont tous ici.
-        </p>
-        <div class="home-actions">
-            <a class="btn btn-primary"
-                    href="{{ resume_url }}">
-                <i class="ti ti-player-play" aria-hidden="true"></i>
-                Espace apprentissage
-            </a>
-            {% if user.is_formateur %}
-                <a class="btn btn-ghost"
-                   href="{% url 'apprentissage:espace_formateur' %}">
-                    Espace formateur
-                </a>
-            {% endif %}
-        </div>
-    </div>
-
-    <div class="home-progress-card">
-        <p class="section-title">Cours en cours</p>
-
-        {% if cours_en_cours %}
-            {% for cours in cours_en_cours %}
-            <div class="progress-course">
-                <a class="progress-course-name" href="{{ cours.url }}">{{ cours.titre }}</a>
-                <div class="progress-course-sub">{{ cours.chapitre_actuel }}</div>
-                <div class="progress-bar-track">
-                    <div class="progress-bar-fill" style="width:{{ cours.progression }}%" ></div>
-                </div>
-                <div class="progress-pct">{{ cours.progression }}% complété</div>
-            </div>
-            {% endfor %}
-        {% else %}
-            <p class="empty-state">Aucun cours commencé pour le moment.</p>
-        {% endif %}
-
-        <a class="resume-btn"
-              href="{{ resume_url }}">
-            <i class="ti ti-arrow-right" aria-hidden="true"></i>
-            Reprendre le cours
-        </a>
-    </div>
-
-</section>
-
-
-<section class="home-pillars">
-
-    <article class="home-panel">
-        <div class="feat-icon teal"><i class="ti ti-book-2" aria-hidden="true"></i></div>
-        <h3>Catalogue de cours</h3>
-        <p>Parcourez les cours structurés autour de l'IoT, l'IA et la logistique atelier.</p>
-        <a href="{% url 'apprentissage:liste_cours' %}">
-            Explorer <i class="ti ti-arrow-right" style="font-size:.85em" aria-hidden="true"></i>
-        </a>
-    </article>
-
-    <article class="home-panel home-panel--image home-panel--image-dark">
-        <div class="home-panel__shade"></div>
-        <div class="home-panel__content">
-            <p class="home-panel__eyebrow">Architecture</p>
-            <h3>Le matériel comme support d'apprentissage.</h3>
-        </div>
-    </article>
-
-    <article class="home-panel home-panel--image home-panel--image-light">
-        <div class="home-panel__shade home-panel__shade--soft"></div>
-        <div class="home-panel__content">
-            <p class="home-panel__eyebrow">Composants IoT</p>
-            <h3>Capteurs, LEDs et prototypage.</h3>
-        </div>
-    </article>
-
-    <article class="home-panel">
-        <div class="feat-icon amber"><i class="ti ti-robot" aria-hidden="true"></i></div>
-        <h3>IA locale</h3>
-        <p>Assistant technique disponible même sans connexion internet.</p>
-    </article>
-
-</section>
-
-<section class="home-gallery">
-    <article class="home-gallery-card home-gallery-card--robot">
-        <div class="home-gallery-card__overlay"></div>
-        <div class="home-gallery-card__content">
-            <span>Robotique</span>
-            <h3>IA et machines qui prennent forme.</h3>
-        </div>
-    </article>
-    <article class="home-gallery-card home-gallery-card--kit">
-        <div class="home-gallery-card__overlay home-gallery-card__overlay--soft"></div>
-        <div class="home-gallery-card__content">
-            <span>STEM kit</span>
-            <h3>Construire, tester, corriger.</h3>
-        </div>
-    </article>
-    <article class="home-gallery-card home-gallery-card--kid">
-        <div class="home-gallery-card__overlay"></div>
-        <div class="home-gallery-card__content">
-            <span>Apprentissage guidé</span>
-            <h3>Une lecture plus humaine du prototypage.</h3>
-        </div>
-    </article>
-</section>
-
-<section class="home-bottom">
-    <div class="home-bottom__card">
-        <p class="section-title">Logistique atelier</p>
-        <h2>Gérez les ressources, réservations et équipements.</h2>
-        <p>Suivi en temps réel du matériel disponible dans l'atelier.</p>
-        {% if user.is_superuser %}
-            <a class="btn btn-primary" style="margin-top:1rem"
-               href="{% url 'logistics:inventaire' %}">
-                Accéder à l'inventaire
-            </a>
-        {% endif %}
-    </div>
-    <div class="home-bottom__card home-bottom__card--accent">
-        <p class="section-title section-title--light">Pour les apprenants</p>
-        <h2>Reprendre là où vous vous étiez arrêté.</h2>
-        <a class="btn btn-primary"
-           href="{% url 'apprentissage:liste_cours' %}">
-            Continuer
-        </a>
-    </div>
-</section>
-
-{% else %}
-
-
-<section class="home-hero">
-
     <div class="home-hero__copy">
         <span class="home-kicker">
             <i class="ti ti-circuit-board" aria-hidden="true"></i>
-            IoT · IA · Atelier
+            IoT · IA · Logistique
         </span>
-        <h1>Apprenez l'IoT et l'IA, <em>à votre rythme.</em></h1>
+        <h1>La plateforme éducative <em>nouvelle génération.</em></h1>
         <p>
-            Parcours pédagogiques structurés, documents techniques,
-            et assistance IA — dans une interface sobre et orientée terrain.
+            Des parcours pédagogiques structurés en IoT et Réseaux, 
+            soutenus par une IA d'assistance locale et un système de gestion d'atelier performant.
         </p>
         <div class="home-actions">
-            <a class="btn btn-primary"
-                    href="{% url 'accounts:register' %}">
-                <i class="ti ti-user-plus" aria-hidden="true"></i>
-                Créer un compte
+            <a class="btn btn-primary" href="{% url 'accounts:register' %}">
+                <i class="ti ti-rocket" aria-hidden="true"></i>
+                Commencer maintenant
             </a>
-            <a class="btn btn-ghost"
-               href="{% url 'accounts:login' %}">
+            <a class="btn btn-ghost" href="{% url 'accounts:login' %}">
+                <i class="ti ti-login" aria-hidden="true"></i>
                 Se connecter
             </a>
         </div>
@@ -188,86 +44,74 @@
             </div>
         </div>
     </div>
-
 </section>
 
-<section class="home-gallery">
-    <article class="home-gallery-card home-gallery-card--robot">
-        <div class="home-gallery-card__overlay"></div>
-        <div class="home-gallery-card__content">
-            <span>Robotique</span>
-            <h3>IA et machines qui prennent forme.</h3>
-        </div>
-    </article>
-    <article class="home-gallery-card home-gallery-card--kit">
-        <div class="home-gallery-card__overlay home-gallery-card__overlay--soft"></div>
-        <div class="home-gallery-card__content">
-            <span>STEM kit</span>
-            <h3>Construire, tester, corriger.</h3>
-        </div>
-    </article>
-    <article class="home-gallery-card home-gallery-card--kid">
-        <div class="home-gallery-card__overlay"></div>
-        <div class="home-gallery-card__content">
-            <span>Apprentissage guidé</span>
-            <h3>Une lecture plus humaine du prototypage.</h3>
-        </div>
-    </article>
-</section>
-
-{# ── GUEST FEATURES BENTO ── #}
 <section class="home-pillars">
-
     <article class="home-panel">
         <div class="feat-icon teal"><i class="ti ti-book-2" aria-hidden="true"></i></div>
         <h3>Cours structurés</h3>
-        <p>Chapitres progressifs avec documents, vidéos et exercices intégrés.</p>
-        <a href="{% url 'apprentissage:liste_cours' %}">
-            Explorer <i class="ti ti-arrow-right" style="font-size:.85em" aria-hidden="true"></i>
-        </a>
+        <p>Chapitres progressifs avec documents techniques, vidéos d'atelier et QCM auto-générés.</p>
     </article>
 
     <article class="home-panel home-panel--image home-panel--image-dark">
         <div class="home-panel__shade"></div>
         <div class="home-panel__content">
-            <p class="home-panel__eyebrow">Technique</p>
-            <h3>Une ambiance proche du laboratoire.</h3>
+            <p class="home-panel__eyebrow">Interface</p>
+            <h3>Un design pensé pour la concentration.</h3>
         </div>
     </article>
 
     <article class="home-panel home-panel--image home-panel--image-light">
         <div class="home-panel__shade home-panel__shade--soft"></div>
         <div class="home-panel__content">
-            <p class="home-panel__eyebrow">Composants</p>
-            <h3>Une vue claire des modules et prototypes.</h3>
+            <p class="home-panel__eyebrow">Matériel</p>
+            <h3>Une gestion d'atelier intégrée et fluide.</h3>
         </div>
     </article>
 
     <article class="home-panel">
         <div class="feat-icon blue"><i class="ti ti-robot" aria-hidden="true"></i></div>
-        <h3>IA locale</h3>
-        <p>Assistant technique disponible même sans connexion internet.</p>
+        <h3>Tuteur IA Dédié</h3>
+        <p>Assistant pédagogique 100% basé sur les supports de cours fournis par les formateurs.</p>
     </article>
-
 </section>
 
-{# ── GUEST BOTTOM ── #}
+<section class="home-gallery">
+    <article class="home-gallery-card home-gallery-card--robot">
+        <div class="home-gallery-card__overlay"></div>
+        <div class="home-gallery-card__content">
+            <span>Technologies immersives</span>
+            <h3>L'intelligence artificielle au service de la pratique.</h3>
+        </div>
+    </article>
+    <article class="home-gallery-card home-gallery-card--kit">
+        <div class="home-gallery-card__overlay home-gallery-card__overlay--soft"></div>
+        <div class="home-gallery-card__content">
+            <span>Apprentissage concret</span>
+            <h3>Construire, tester et itérer sur de vrais projets.</h3>
+        </div>
+    </article>
+    <article class="home-gallery-card home-gallery-card--kid">
+        <div class="home-gallery-card__overlay"></div>
+        <div class="home-gallery-card__content">
+            <span>Suivi personnalisé</span>
+            <h3>Un accompagnement adapté à chaque élève.</h3>
+        </div>
+    </article>
+</section>
+
 <section class="home-bottom">
     <div class="home-bottom__card">
         <p class="section-title">Pour les formateurs</p>
-        <h2>Créer, organiser et mettre à jour les contenus sans perdre la structure.</h2>
-        <p>La plateforme garde un vocabulaire simple, des cartes lisibles et un chemin de navigation direct.</p>
+        <h2>Créer, organiser et mettre à jour les contenus sans friction.</h2>
+        <p>Bénéficiez d'une interface d'édition type Notion et d'un tableau de bord de suivi académique extrêmement clair.</p>
     </div>
     <div class="home-bottom__card home-bottom__card--accent">
-        <p class="section-title section-title--light">Pour les apprenants</p>
-        <h2>Reprendre où vous vous êtes arrêté et avancer à votre rythme.</h2>
-        <a class="btn btn-primary"
-           href="{% url 'accounts:register' %}">
+        <p class="section-title section-title--light">Prêt à démarrer ?</p>
+        <h2>Rejoignez l'aventure technologique.</h2>
+        <a class="btn btn-primary" href="{% url 'accounts:register' %}">
             Créer un compte
         </a>
     </div>
 </section>
-
-{% endif %}
-
 {% endblock %}

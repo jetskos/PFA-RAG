@@ -1,36 +1,238 @@
-<div class="course-item">
-    <h3 style="margin:0;">Modifier un niveau</h3>
-    <form method="post"
-          hx-post="{{ action_url }}"
-          hx-target="#dashboard-structure"
-          hx-swap="innerHTML"
-          style="display:grid; gap:0.8rem;">
-        {% csrf_token %}
-        <p>
-            <label for="{{ niveau_form.code.id_for_label }}">Code</label>
-            {{ niveau_form.code }}
-            {% if niveau_form.code.errors %}<span class="error-text">{{ niveau_form.code.errors.0 }}</span>{% endif %}
-        </p>
-        <p>
-            <label for="{{ niveau_form.nom.id_for_label }}">Nom</label>
-            {{ niveau_form.nom }}
-            {% if niveau_form.nom.errors %}<span class="error-text">{{ niveau_form.nom.errors.0 }}</span>{% endif %}
-        </p>
-        <p>
-            <label for="{{ niveau_form.ordre.id_for_label }}">Ordre</label>
-            {{ niveau_form.ordre }}
-            {% if niveau_form.ordre.errors %}<span class="error-text">{{ niveau_form.ordre.errors.0 }}</span>{% endif %}
-        </p>
-        <label style="display:flex; align-items:center; gap:0.5rem;">
-            {{ niveau_form.actif }}
-            Actif
-        </label>
-        {% if niveau_form.non_field_errors %}
-            <div class="messages"><p class="message-item">{{ niveau_form.non_field_errors.0 }}</p></div>
-        {% endif %}
-        <div class="actions" style="justify-content:flex-start; gap:0.75rem;">
-            <button type="submit" class="btn">{{ submit_label|default:'Enregistrer' }}</button>
-            <button type="button" class="btn btn-ghost" onclick="document.getElementById('niveau-editor').innerHTML='<h3 style=\'margin:0;\'>Modifier un niveau</h3><p class=\'message-empty\' style=\'margin:0;\'>Choisissez un niveau à droite pour l’éditer.</p>'">{{ cancel_label|default:'Annuler' }}</button>
+<style>
+    .modal-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(15, 23, 42, 0.4);
+        backdrop-filter: blur(8px);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: fadeIn 0.2s ease-out;
+    }
+
+    .modal-dialog {
+        background: #ffffff;
+        width: 100%;
+        max-width: 500px;
+        border-radius: 20px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        overflow: hidden;
+        animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    @keyframes slideUp {
+        from { opacity: 0; transform: translateY(20px) scale(0.95); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .modal-header {
+        padding: 1.5rem 2rem;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #f8fafc;
+    }
+
+    .modal-title {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin: 0;
+    }
+
+    .btn-close {
+        background: transparent;
+        border: none;
+        color: #64748b;
+        font-size: 1.5rem;
+        cursor: pointer;
+        padding: 4px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+    }
+
+    .btn-close:hover {
+        background: #e2e8f0;
+        color: #ef4444;
+    }
+
+    .modal-body {
+        padding: 2rem;
+    }
+
+    .modal-form-field {
+        margin-bottom: 1.25rem;
+    }
+
+    .modal-form-field label {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #334155;
+        margin-bottom: 0.5rem;
+    }
+
+    .modal-form-field input, .modal-form-field select {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border-radius: 10px;
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        color: #0f172a;
+        font-size: 0.95rem;
+        transition: all 0.2s;
+    }
+
+    .modal-form-field input:focus, .modal-form-field select:focus {
+        outline: none;
+        border-color: #0f766e;
+        box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.1);
+    }
+
+    .modal-checkbox-field {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-top: 1.5rem;
+        padding: 1rem;
+        background: #f8fafc;
+        border-radius: 10px;
+        border: 1px solid #e2e8f0;
+    }
+
+    .modal-checkbox-field input[type="checkbox"] {
+        width: 1.25rem;
+        height: 1.25rem;
+        accent-color: #0f766e;
+    }
+
+    .modal-checkbox-field label {
+        font-weight: 600;
+        color: #334155;
+        cursor: pointer;
+        margin: 0;
+    }
+
+    .modal-footer {
+        padding: 1.5rem 2rem;
+        background: #f8fafc;
+        border-top: 1px solid #e2e8f0;
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+    }
+
+    .btn-modal-cancel {
+        padding: 0.75rem 1.5rem;
+        background: transparent;
+        color: #64748b;
+        font-weight: 600;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .btn-modal-cancel:hover {
+        background: #e2e8f0;
+        color: #334155;
+    }
+
+    .btn-modal-submit {
+        padding: 0.75rem 1.5rem;
+        background: #0f766e;
+        color: white;
+        font-weight: 600;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        box-shadow: 0 4px 6px -1px rgba(15, 118, 110, 0.2);
+    }
+
+    .btn-modal-submit:hover {
+        background: #0d9488;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 8px -1px rgba(15, 118, 110, 0.3);
+    }
+
+    .error-text {
+        color: #ef4444;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-top: 0.25rem;
+        display: block;
+    }
+</style>
+
+<div class="modal-backdrop" id="niveau-modal">
+    <div class="modal-dialog">
+        <div class="modal-header">
+            <h3 class="modal-title">{% if is_create %}Créer un niveau{% else %}Modifier le niveau{% endif %}</h3>
+            <button class="btn-close" onclick="document.getElementById('modal-container').innerHTML=''" aria-label="Fermer">
+                <i class="ti ti-x"></i>
+            </button>
         </div>
-    </form>
+        
+        <form method="post"
+              hx-post="{{ action_url }}"
+              hx-target="#niveau-modal"
+              hx-swap="outerHTML">
+            {% csrf_token %}
+            
+            <div class="modal-body">
+                <div class="modal-form-field">
+                    <label for="{{ niveau_form.code.id_for_label }}">Code d'identification</label>
+                    {{ niveau_form.code }}
+                    {% if niveau_form.code.errors %}<span class="error-text">{{ niveau_form.code.errors.0 }}</span>{% endif %}
+                </div>
+                
+                <div class="modal-form-field">
+                    <label for="{{ niveau_form.nom.id_for_label }}">Nom complet du niveau</label>
+                    {{ niveau_form.nom }}
+                    {% if niveau_form.nom.errors %}<span class="error-text">{{ niveau_form.nom.errors.0 }}</span>{% endif %}
+                </div>
+                
+                <div class="modal-form-field">
+                    <label for="{{ niveau_form.ordre.id_for_label }}">Ordre d'affichage (ex: 1, 2, 3)</label>
+                    {{ niveau_form.ordre }}
+                    {% if niveau_form.ordre.errors %}<span class="error-text">{{ niveau_form.ordre.errors.0 }}</span>{% endif %}
+                </div>
+                
+                <div class="modal-checkbox-field">
+                    {{ niveau_form.actif }}
+                    <label for="{{ niveau_form.actif.id_for_label }}">Niveau actif sur la plateforme</label>
+                </div>
+                
+                {% if niveau_form.non_field_errors %}
+                    <div style="margin-top: 1rem; padding: 0.75rem; background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; color: #b91c1c;">
+                        {{ niveau_form.non_field_errors.0 }}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn-modal-cancel" onclick="document.getElementById('modal-container').innerHTML=''">
+                    {{ cancel_label|default:'Annuler' }}
+                </button>
+                <button type="submit" class="btn-modal-submit">
+                    {{ submit_label|default:'Enregistrer' }}
+                </button>
+            </div>
+        </form>
+    </div>
 </div>

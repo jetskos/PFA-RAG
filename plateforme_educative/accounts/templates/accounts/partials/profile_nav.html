@@ -1,0 +1,71 @@
+<nav class="profile-nav" aria-label="Navigation du profil">
+    <a href="{% url 'accounts:profile' %}"
+       class="profile-nav__tab {% if profile_tab == 'apercu' %}is-active{% endif %}">
+        <i class="ti ti-user-circle" aria-hidden="true"></i> Aperçu du profil
+    </a>
+    <a href="{% url 'accounts:profile_edit' %}"
+       class="profile-nav__tab {% if profile_tab == 'edition' %}is-active{% endif %}">
+        <i class="ti ti-settings" aria-hidden="true"></i> Paramètres
+    </a>
+    <a href="{% url 'accounts:change_password' %}"
+       class="profile-nav__tab {% if profile_tab == 'securite' %}is-active{% endif %}">
+        <i class="ti ti-lock" aria-hidden="true"></i> Sécurité
+    </a>
+</nav>
+
+<style>
+    .profile-nav {
+        position: relative;
+        z-index: 5;
+        display: inline-flex;
+        width: fit-content;
+        gap: 0.35rem;
+        padding: 0.35rem;
+        border-radius: var(--radius-md);
+        background: var(--bg-surface);
+        border: 1px solid var(--border-light);
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow-sm);
+    }
+    .profile-nav__tab {
+        position: relative;
+        z-index: 1;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.6rem 1.2rem;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-decoration: none;
+        cursor: pointer;
+        transition: var(--transition);
+        white-space: nowrap;
+    }
+    .profile-nav__tab:hover {
+        color: var(--primary);
+        background: var(--primary-ultra-light);
+    }
+    [data-theme="dark"] .profile-nav__tab:hover {
+        background: rgba(13, 148, 136, 0.12);
+    }
+    .profile-nav__tab.is-active {
+        background: var(--primary);
+        color: #ffffff !important;
+        box-shadow: 0 4px 12px rgba(13, 148, 136, 0.25);
+    }
+    
+    @media (max-width: 480px) {
+        .profile-nav {
+            display: flex;
+            width: 100%;
+        }
+        .profile-nav__tab {
+            flex: 1;
+            justify-content: center;
+            font-size: 0.85rem;
+            padding: 0.5rem 0.8rem;
+        }
+    }
+</style>

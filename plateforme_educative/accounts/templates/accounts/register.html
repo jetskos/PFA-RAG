@@ -3,11 +3,13 @@
 {% block title %}Inscription | Plateforme Educative{% endblock %}
 
 {% block content %}
-<section class="carte auth-carte" id="zone-principale">
-    <h2>Inscription</h2>
-    {% include 'accounts/partials/register_form.html' %}
-    <p>Deja un compte ?
-        <a href="{% url 'accounts:login' %}" hx-get="{% url 'accounts:login' %}" hx-target="#zone-principale" hx-select="#zone-principale" hx-swap="outerHTML" hx-push-url="true">Se connecter</a>
-    </p>
-</section>
+<div class="auth-container">
+    <section class="carte auth-carte">
+        <h2>Inscription</h2>
+        {% include 'accounts/partials/register_form.html' %}
+        <p>Deja un compte ?
+            <a href="{% url 'accounts:login' %}" hx-get="{% url 'accounts:login' %}" hx-target="#zone-principale" hx-select="#zone-principale" hx-swap="outerHTML" hx-push-url="true">Se connecter</a>
+        </p>
+    </section>
+</div>
 {% endblock %}

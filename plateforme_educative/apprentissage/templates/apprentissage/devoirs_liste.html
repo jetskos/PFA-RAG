@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block title %}Mes Devoirs{% endblock %}
+
+{% block content %}
+<section class="page-shell">
+    <div class="page-header">
+        <p class="eyebrow">Apprentissage</p>
+        <h1>Mes devoirs</h1>
+        <p>Consultez et déposez vos travaux ici.</p>
+    </div>
+
+    {% if devoirs_data %}
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
+            {% for item in devoirs_data %}
+            {% with devoir=item.devoir soumission=item.soumission %}
+            <div class="carte" style="display: flex; flex-direction: column; gap: 0; padding: 0; overflow: hidden; border: 1px solid var(--bordure);">
+                <!-- Statut badge en haut -->
+                <div style="
+                    padding: 0.4rem 1rem;
+                    font-size: 0.78rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
+                    {% if soumission %}
+                        {% if soumission.est_corrigee %}
+                            background: rgba(76,175,80,0.15); color: #4caf50;
+                        {% else %}
+                            background: rgba(33,150,243,0.15); color: #2196f3;
+                        {% endif %}
+                    {% else %}
+                        {% if devoir.date_limite and devoir.date_limite < now %}
+                            background: rgba(244,67,54,0.15); color: #f44336;
+                        {% else %}
+                            background: rgba(255,152,0,0.15); color: #ff9800;
+                        {% endif %}
+                    {% endif %}
+                ">
+                    {% if soumission %}
+                        {% if soumission.est_corrigee %}✓ Corrigé — {{ soumission.note }}/{{ devoir.note_max }}{% else %}📤 Soumis{% endif %}
+                    {% else %}
+                        {% if devoir.date_limite and devoir.date_limite < now %}⏰ Délai dépassé{% else %}📋 À rendre{% endif %}
+                    {% endif %}
+                </div>
+
+                <div style="padding: 1.25rem; flex: 1; display: flex; flex-direction: column; gap: 0.5rem;">
+                    <div style="font-size: 0.78rem; color: var(--texte-secondaire);">
+                        {{ devoir.chapitre.cours.titre }} › {{ devoir.chapitre.titre }}
+                    </div>
+                    <h3 style="margin: 0; font-size: 1rem;">{{ devoir.titre }}</h3>
+                    <p style="font-size: 0.85rem; color: var(--texte-secondaire); flex: 1;">
+                        {{ devoir.consigne|truncatewords:25 }}
+                    </p>
+
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--bordure); font-size: 0.8rem; color: var(--texte-secondaire);">
+                        <span>
+                            <i class="ti ti-star"></i> /{{ devoir.note_max }}
+                            {% if devoir.date_limite %}
+                                · <i class="ti ti-calendar"></i> {{ devoir.date_limite|date:"d/m/Y H:i" }}
+                            {% endif %}
+                        </span>
+                        <a href="{% url 'apprentissage:devoir_detail' devoir_id=devoir.pk %}" class="btn" style="font-size: 0.8rem; padding: 0.35rem 0.8rem;">
+                            {% if soumission %}Voir{% else %}Déposer{% endif %}
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endwith %}
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="carte" style="text-align: center; padding: 4rem 2rem; margin-top: 2rem;">
+            <div class="feat-icon" style="margin: 0 auto 1rem;"><i class="ti ti-file-text"></i></div>
+            <h3>Aucun devoir pour le moment</h3>
+            <p class="message-empty">Vos formateurs n'ont pas encore publié de devoirs pour votre niveau.</p>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

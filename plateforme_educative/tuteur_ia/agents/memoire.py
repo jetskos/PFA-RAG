@@ -64,7 +64,7 @@ def memoire_node(state: StudyBuddyState) -> dict[str, Any]:
     - Sauvegarde dans ProfilEtudiantIA (Django/MySQL)
     - Retourne un message PROPRE à l'étudiant (jamais le JSON brut)
     """
-    llm = get_llm(temperature=0.3)
+    llm = get_llm(temperature=0.3, model_name="llama-3.1-8b-instant")
 
     last_eval = state.get("last_evaluation", {})
     mastery   = state.get("mastery_score", 0.0)
@@ -111,7 +111,7 @@ def memoire_node(state: StudyBuddyState) -> dict[str, Any]:
 
     # Action suivante
     next_action = "end" if (
-        mastery >= 0.75 or state.get("iteration", 0) >= 5
+        mastery >= 0.75 or state.get("iteration", 0) >= 15
     ) else "tutor"
 
     # IMPORTANT : message propre affiché à l'étudiant — PAS le JSON brut

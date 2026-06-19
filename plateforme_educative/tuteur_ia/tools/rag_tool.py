@@ -49,12 +49,11 @@ def rag_search(
         )
 
         if not results:
-            # Pas de résultats pour ce filtre → essayer sans filtre
-            if chapitre_id or cours_id:
-                logger.info("Pas de résultats filtrés, tentative sans filtre...")
-                results = search(query=query, n_results=n_results)
-
-        if not results:
+            # Aucun résultat pour ce chapitre — NE PAS faire de recherche sans filtre.
+            # Un fallback non filtré risque de ramener du contenu d'autres cours
+            # (ex: cours Java pour du contenu IoT primaire).
+            if chapitre_id:
+                return "[Aucun document indexé pour ce chapitre. Uploadez un PDF dans ce chapitre.]"
             return "[Aucun contenu pertinent trouvé dans les documents indexés.]"
 
         # Assembler les chunks avec source

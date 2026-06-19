@@ -62,7 +62,7 @@
         </div>
 
         <div class="ia-msgs" id="chat-msgs">
-            <div class="typing" id="init-loader"><span></span><span></span><span></span></div>
+            <!-- Les messages s'affichent ici -->
         </div>
 
         <div class="ia-input-bar">
@@ -108,11 +108,11 @@ function addMsg(texte, role) {
     zone.scrollTop = zone.scrollHeight;
 }
 
-function addTyping() {
-    removeLoader('typing-indicator');
+function addTyping(id='typing-indicator') {
+    removeLoader(id);
     const zone = document.getElementById('chat-msgs');
     const d    = document.createElement('div');
-    d.className = 'typing'; d.id = 'typing-indicator';
+    d.className = 'typing'; d.id = id;
     d.innerHTML = '<span></span><span></span><span></span>';
     zone.appendChild(d);
     zone.scrollTop = zone.scrollHeight;
@@ -189,22 +189,28 @@ function afficherFin(score, mastery) {
 // ── API ───────────────────────────────────────────────────────────────────
 async function demarrer() {
     try {
+        // Afficher le loader de bienvenue
+        addTyping('init-loader');
+
         const r    = await fetch(URL_INIT, {
             method:'POST',
             headers:{'Content-Type':'application/json','X-CSRFToken':CSRF_TOKEN},
             body: JSON.stringify({}),
         });
         const data = await r.json();
-        if (!r.ok) { removeLoader(); addMsg(`❌ ${data.error||'Erreur serveur'}`, 'err'); return; }
+
+        removeLoader('init-loader');
+
+        if (!r.ok) { addMsg(`❌ ${data.error||'Erreur serveur'}`, 'err'); return; }
 
         sessionId = data.session_id;
         maxQuestions = Math.floor(Math.random()*(MAX_QUESTIONS-MIN_QUESTIONS+1))+MIN_QUESTIONS;
 
         addMsg(data.message, 'ai');
         updateStats(data.mastery_score, data.iteration, maxQuestions);
-        setInput(true);
+        setInput(true);  // Activer l'input dès que le message d'accueil est affiché
     } catch(e) {
-        removeLoader();
+        removeLoader('init-loader');
         addMsg(`❌ Erreur réseau : ${e.message}`, 'err');
     }
 }

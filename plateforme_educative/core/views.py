@@ -18,42 +18,16 @@ Utilisateur = get_user_model()
 
 
 def home_view(request):
-    """Affiche la page d'accueil avec la progression de l'étudiant si connecté."""
-    from apprentissage.models import Cours, Chapitre, Document
-
-    context = {
-        'stats': {
-            'cours': Cours.objects.filter(actif=True).count(),
-            'chapitres': Chapitre.objects.filter(actif=True).count(),
-            'documents': Document.objects.filter(actif=True).count(),
-        }
-    }
-    
+    """Affiche la Landing Page publique. Redirige les utilisateurs connectés vers leur dashboard."""
     if request.user.is_authenticated:
-        from apprentissage.models import Progression
-        progressions = Progression.objects.filter(etudiant=request.user).order_by('-date_derniere_consultation')[:3]
-
-        if progressions:
-            context['resume_url'] = reverse('apprentissage:detail_cours', args=[progressions[0].cours.id])
-        else:
-            context['resume_url'] = reverse('apprentissage:liste_cours')
-        
-        cours_en_cours = [
-            {
-                'titre': p.cours.titre,
-                'chapitre_actuel': f"{p.chapitres_valides.count()}/{p.cours.chapitres.count()} chapitres",
-                'progression': p.pourcentage
-                , 'url': reverse('apprentissage:detail_cours', args=[p.cours.id])
-            }
-            for p in progressions
-        ]
-        context['cours_en_cours'] = cours_en_cours
+        return redirect('dashboard')
     
-    return render(request, 'core/home.html', context)
+    return render(request, 'core/home.html')
 
 
-def _admin_dashboard_context():
-    pending_students = Utilisateur.objects.filter(statut_compte='PENDING').select_related('classe__niveau').order_by('date_creation')
+def _admin_dashboard_context(request=None):
+    from django.db.models import Q
+    pending_students = Utilisateur.objects.filter(role='ELEVE', statut_compte='PENDING').order_by('-date_creation')
     pending_rows = [
         {
             'user': student,
@@ -61,21 +35,110 @@ def _admin_dashboard_context():
         }
         for student in pending_students
     ]
+    
+    # Calculate stats for the dashboard counters
+    eleves_actifs_count = Utilisateur.objects.filter(role='ELEVE', is_active=True).count()
+    formateurs_actifs_count = Utilisateur.objects.filter(role='FORMATEUR', is_active=True).count()
+    en_attente_count = pending_students.count()
+    cours_publies_count = Cours.objects.filter(actif=True).count()
+    tickets_gmao_count = DemandeMateriel.objects.filter(statut='PENDING').count()
+    niveaux_actifs_count = Niveau.objects.filter(actif=True).count()
+
+    # Generate a unified timeline from recent objects
+    timeline = []
+    
+    # 1. Recent tickets
+    recent_tickets = DemandeMateriel.objects.select_related('formateur', 'equipement').order_by('-date_creation')[:3]
+    for t in recent_tickets:
+        timeline.append({
+            'date': t.date_creation,
+            'type': 'ticket',
+            'dot_class': 'dot-red',
+            'title': 'Nouveau ticket matériel ouvert',
+            'desc': f"Le formateur {t.formateur.get_full_name()} a signalé un besoin pour {t.equipement.nom if t.equipement else 'du matériel'}."
+        })
+        
+    # 2. Recent courses
+    recent_courses = Cours.objects.select_related('createur', 'niveau').order_by('-date_creation')[:3]
+    for c in recent_courses:
+        timeline.append({
+            'date': c.date_creation,
+            'type': 'cours',
+            'dot_class': 'dot-blue',
+            'title': 'Cours publié',
+            'desc': f"Le module '{c.titre}' a été mis en ligne pour le niveau {c.niveau.nom}."
+        })
+        
+    # 3. Recent users
+    recent_users = Utilisateur.objects.order_by('-date_creation')[:3]
+    for u in recent_users:
+        timeline.append({
+            'date': u.date_creation,
+            'type': 'user',
+            'dot_class': 'dot-green',
+            'title': 'Nouvel utilisateur inscrit',
+            'desc': f"L'utilisateur {u.get_full_name()} a créé son compte."
+        })
+        
+    # Sort timeline by date descending and limit to 5
+    timeline.sort(key=lambda x: x['date'], reverse=True)
+    timeline = timeline[:5]
+
+    # Filtering logic for lists
+    niveaux_qs = Niveau.objects.all().order_by('ordre', 'nom')
+    classes_qs = Classe.objects.select_related('niveau').all().order_by('niveau__ordre', 'nom')
+    pending_students_qs = pending_students
+    pending_demandes_qs = DemandeMateriel.objects.filter(statut='PENDING').select_related('formateur', 'equipement', 'atelier_cible').order_by('-date_creation')
+    
+    if request:
+        q = request.GET.get('q', '').strip()
+        status_filter = request.GET.get('status', '')
+        
+        if q:
+            niveaux_qs = niveaux_qs.filter(Q(nom__icontains=q) | Q(code__icontains=q))
+            classes_qs = classes_qs.filter(Q(nom__icontains=q) | Q(code__icontains=q) | Q(niveau__nom__icontains=q))
+            pending_students_qs = pending_students_qs.filter(Q(email__icontains=q) | Q(first_name__icontains=q) | Q(last_name__icontains=q))
+            pending_demandes_qs = pending_demandes_qs.filter(Q(description__icontains=q) | Q(formateur__email__icontains=q) | Q(equipement__nom__icontains=q))
+            
+        if status_filter == 'actif':
+            niveaux_qs = niveaux_qs.filter(actif=True)
+            classes_qs = classes_qs.filter(actif=True)
+        elif status_filter == 'inactif':
+            niveaux_qs = niveaux_qs.filter(actif=False)
+            classes_qs = classes_qs.filter(actif=False)
+
+    pending_rows = [
+        {
+            'user': student,
+            'form': PendingStudentActivationForm(initial={'student_id': student.id}),
+        }
+        for student in pending_students_qs
+    ]
+
     return {
-        'niveaux': Niveau.objects.all().order_by('ordre', 'nom'),
-        'classes': Classe.objects.select_related('niveau').all().order_by('niveau__ordre', 'nom'),
-        'pending_students': pending_students,
+        'niveaux': niveaux_qs,
+        'classes': classes_qs,
+        'pending_students': pending_students_qs,
         'pending_rows': pending_rows,
-        'pending_demandes': DemandeMateriel.objects.filter(statut='PENDING').select_related('formateur', 'equipement', 'atelier_cible').order_by('-date_creation'),
+        'pending_demandes': pending_demandes_qs,
         'niveau_form': NiveauForm(),
         'classe_form': ClasseForm(),
         'niveau_editor_form': None,
         'niveau_editor_title': '',
+        'stats': {
+            'eleves_actifs': eleves_actifs_count,
+            'formateurs_actifs': formateurs_actifs_count,
+            'en_attente': en_attente_count,
+            'cours_publies': cours_publies_count,
+            'tickets_gmao': tickets_gmao_count,
+            'niveaux_actifs': niveaux_actifs_count,
+        },
+        'timeline': timeline,
     }
 
 
 def _render_admin_structure(request, context=None, status=200, active_tab='niveaux'):
-    render_context = _admin_dashboard_context()
+    render_context = _admin_dashboard_context(request)
     render_context['active_tab'] = active_tab
     if context:
         render_context.update(context)
@@ -145,15 +208,26 @@ def dashboard_router(request):
 
 @role_required('ADMIN')
 def admin_dashboard_view(request):
+    context = {
+        'role': 'ADMIN',
+        'active_tab': 'command_center',
+        **_admin_dashboard_context(request),
+    }
+    # La recherche HTMX sur le dashboard sera gérée spécifiquement plus tard
+    return render(request, 'core/dashboard_admin.html', context)
+
+
+@role_required('ADMIN')
+def admin_structure_page_view(request):
     tab = request.GET.get('tab', 'niveaux')
     context = {
         'role': 'ADMIN',
         'active_tab': tab,
-        **_admin_dashboard_context(),
+        **_admin_dashboard_context(request),
     }
     if request.headers.get('HX-Request'):
         return render(request, 'core/partials/admin_structure.html', context)
-    return render(request, 'core/dashboard_admin.html', context)
+    return render(request, 'core/dashboard_admin_structure.html', context)
 
 
 @role_required('FORMATEUR')
@@ -171,18 +245,44 @@ def formateur_dashboard_view(request):
 
 @role_required('ELEVE')
 def student_dashboard_view(request):
+    import json
+    from apprentissage.models import Progression
+
     classe = getattr(request.user, 'classe', None)
     niveau = getattr(classe, 'niveau', None) if classe else None
+    
+    cours_data = []
+    radar_labels = []
+    radar_data = []
+
     if niveau:
         mes_cours = Cours.objects.filter(niveau=niveau, actif=True).order_by('titre')
-    else:
-        mes_cours = Cours.objects.none()
+        for cours in mes_cours:
+            progression_obj = Progression.objects.filter(etudiant=request.user, cours=cours).first()
+            progression_percent = progression_obj.pourcentage if progression_obj else 0
+            
+            cours_data.append({
+                'id': cours.id,
+                'titre': cours.titre,
+                'description': cours.description,
+                'chapitres_count': cours.chapitres.count(),
+                'progression_percent': progression_percent
+            })
+            
+            radar_labels.append(cours.titre[:15] + '...' if len(cours.titre) > 15 else cours.titre)
+            radar_data.append(progression_percent)
+
+    if not radar_labels:
+        radar_labels = ['Aucun cours']
+        radar_data = [0]
 
     return render(request, 'core/dashboard_student.html', {
         'role': 'ELEVE',
         'classe': classe,
         'niveau': niveau,
-        'mes_cours': mes_cours,
+        'mes_cours': cours_data,
+        'radar_labels_json': json.dumps(radar_labels),
+        'radar_data_json': json.dumps(radar_data),
     })
 
 
@@ -193,10 +293,22 @@ def create_niveau_view(request):
         form = NiveauForm(request.POST)
         if form.is_valid():
             form.save()
-            return _render_admin_structure(request, active_tab='niveaux')
+            response = _render_admin_structure(request, active_tab='niveaux')
+            response['HX-Trigger'] = 'closeModal'
+            response['HX-Retarget'] = '#dashboard-structure'
+            return response
     else:
         form = NiveauForm()
 
+    if request.headers.get('HX-Request'):
+        return render(request, 'core/partials/niveau_form.html', {
+            'niveau_form': form,
+            'submit_label': 'Créer le niveau',
+            'cancel_label': 'Annuler',
+            'action_url': reverse('dashboard_admin_create_niveau'),
+            'is_create': True
+        }, status=400 if request.method == 'POST' else 200)
+    
     return _render_admin_structure(request, {'niveau_form': form}, status=400 if request.method == 'POST' else 200, active_tab='niveaux')
 
 
@@ -209,7 +321,10 @@ def edit_niveau_view(request, niveau_id):
         form = NiveauForm(request.POST, instance=niveau)
         if form.is_valid():
             form.save()
-            return _render_admin_structure(request, active_tab='niveaux')
+            response = _render_admin_structure(request, active_tab='niveaux')
+            response['HX-Trigger'] = 'closeModal'
+            response['HX-Retarget'] = '#dashboard-structure'
+            return response
     else:
         form = NiveauForm(instance=niveau)
 
@@ -229,9 +344,21 @@ def create_classe_view(request):
         form = ClasseForm(request.POST)
         if form.is_valid():
             form.save()
-            return _render_admin_structure(request, active_tab='classes')
+            response = _render_admin_structure(request, active_tab='classes')
+            response['HX-Trigger'] = 'closeModal'
+            response['HX-Retarget'] = '#dashboard-structure'
+            return response
     else:
         form = ClasseForm()
+
+    if request.headers.get('HX-Request'):
+        return render(request, 'core/partials/classe_form.html', {
+            'classe_form': form,
+            'submit_label': 'Créer la classe',
+            'cancel_label': 'Annuler',
+            'action_url': reverse('dashboard_admin_create_classe'),
+            'is_create': True
+        }, status=400 if request.method == 'POST' else 200)
 
     return _render_admin_structure(request, {'classe_form': form}, status=400 if request.method == 'POST' else 200, active_tab='classes')
 
@@ -245,7 +372,10 @@ def edit_classe_view(request, classe_id):
         form = ClasseForm(request.POST, instance=classe)
         if form.is_valid():
             form.save()
-            return _render_admin_structure(request, active_tab='classes')
+            response = _render_admin_structure(request, active_tab='classes')
+            response['HX-Trigger'] = 'closeModal'
+            response['HX-Retarget'] = '#dashboard-structure'
+            return response
     else:
         form = ClasseForm(instance=classe)
 
@@ -282,6 +412,12 @@ def remove_student_from_classe_page_view(request, classe_id, student_id):
 @require_http_methods(['POST'])
 def delete_student_from_classe_page_view(request, classe_id, student_id):
     student = get_object_or_404(Utilisateur, pk=student_id)
+    # Clear registration notifications for this student before deleting
+    from accounts.models import Notification
+    Notification.objects.filter(
+        type='NOUVELLE_INSCRIPTION',
+        message__contains=student.email
+    ).delete()
     student.delete()
     return redirect('dashboard_admin_manage_classe_students', classe_id=classe_id)
 
@@ -296,6 +432,22 @@ def assign_student_to_classe_page_view(request, classe_id):
         student.statut_compte = 'ACTIVE'
         student.is_active = True
         student.save(update_fields=['classe', 'statut_compte', 'is_active'])
+        
+        # Clear registration notifications for this student
+        from accounts.models import Notification
+        Notification.objects.filter(
+            type='NOUVELLE_INSCRIPTION',
+            message__contains=student.email
+        ).delete()
+
+        from accounts.notifications import notifier
+        notifier(
+            destinataire=student,
+            type='COMPTE_ACTIVE',
+            titre="Votre compte a été activé",
+            message=f"Votre inscription a été validée. Vous êtes maintenant affecté à la classe {classe.nom}.",
+            envoyer_email=True
+        )
     return redirect('dashboard_admin_manage_classe_students', classe_id=classe_id)
 
 @role_required('ADMIN')
@@ -304,10 +456,14 @@ def add_student_to_classe_page_view(request, classe_id):
     classe = get_object_or_404(Classe, pk=classe_id)
     email = request.POST.get('email')
     password = request.POST.get('password')
+    first_name = request.POST.get('first_name', '').strip()
+    last_name = request.POST.get('last_name', '').strip()
     if email and password and not Utilisateur.objects.filter(email=email).exists():
         Utilisateur.objects.create_user(
             email=email,
             password=password,
+            first_name=first_name,
+            last_name=last_name,
             role='ELEVE',
             statut_compte='ACTIVE',
             is_active=True,
@@ -331,6 +487,22 @@ def activate_pending_student_view(request):
         if student.role == 'ELEVE':
             student.is_formateur = False
         student.save(update_fields=['classe', 'statut_compte', 'is_active', 'is_formateur'])
+        
+        # Clear registration notifications for this student
+        from accounts.models import Notification
+        Notification.objects.filter(
+            type='NOUVELLE_INSCRIPTION',
+            message__contains=student.email
+        ).delete()
+
+        from accounts.notifications import notifier
+        notifier(
+            destinataire=student,
+            type='COMPTE_ACTIVE',
+            titre="Votre compte a été activé",
+            message=f"Félicitations ! Votre compte est désormais actif. Vous êtes affecté à la classe {student.classe.nom}.",
+            envoyer_email=True
+        )
         return _render_admin_structure(request, active_tab='students')
 
     return _render_admin_structure(request, {
@@ -347,11 +519,14 @@ def create_demande_materiel_view(request):
             demande = form.save(commit=False)
             demande.formateur = request.user
             demande.save()
-            return _render_formateur_structure(request)
+            # On success, close modal and show toast (empty modal container + trigger JS event if needed)
+            return HttpResponse('<div id="modal-container"></div><script>alert("Demande envoyée avec succès !");</script>')
     else:
         form = DemandeMaterielForm()
 
-    return _render_formateur_structure(request, {'demande_form': form}, status=400 if request.method == 'POST' else 200)
+    # If GET or invalid POST, render the modal
+    context = {'demande_form': form}
+    return render(request, 'core/partials/demande_materiel_modal.html', context, status=400 if request.method == 'POST' else 200)
 
 
 @role_required('ADMIN')
@@ -369,6 +544,15 @@ def admin_process_demande_view(request, demande_id):
         return _render_admin_structure(request, {'pending_error': 'Action invalide.'}, status=400, active_tab='logistics')
 
     demande.save(update_fields=['statut'])
+    from accounts.notifications import notifier
+    statut_str = "approuvée" if action == 'approve' else "rejetée"
+    notifier(
+        destinataire=demande.formateur,
+        type='DEMANDE_TRAITEE',
+        titre=f"Demande de matériel {statut_str}",
+        message=f"Votre demande pour l'équipement '{demande.equipement.nom}' a été {statut_str} par l'administrateur.",
+        envoyer_email=True
+    )
     # After processing, re-render the pending demandes section so HTMX can swap it.
     return render(request, 'core/partials/pending_demandes_section.html', {
         'pending_demandes': DemandeMateriel.objects.filter(statut='PENDING').select_related('formateur', 'equipement', 'atelier_cible').order_by('-date_creation')

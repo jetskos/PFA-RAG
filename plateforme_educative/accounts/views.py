@@ -1,12 +1,24 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.urls import reverse
-from .forms import InscriptionForm
+from .forms import InscriptionForm, ProfileForm, PasswordResetRequestForm
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.views.decorators.http import require_http_methods
 from django.http import JsonResponse
-from .models import Utilisateur, Niveau, Classe
-from .forms import ProfileForm
+from .models import Utilisateur, Niveau, Classe, Notification
 from apprentissage.models import Progression, ChapitreVisite, ChapitreComplete, Cours
+import secrets
+import string
+from django.utils import timezone
+from datetime import timedelta
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from django.conf import settings
+from django.contrib import messages
+from django.contrib.auth import login, update_session_auth_hash
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth.views import LoginView
 
 
 def register_view(request):
@@ -14,6 +26,19 @@ def register_view(request):
         form = InscriptionForm(request.POST)
         if form.is_valid():
             user = form.save()
+            if user.role == 'ELEVE':
+                from django.db.models import Q
+                from accounts.notifications import notifier
+                admins = Utilisateur.objects.filter(Q(role='ADMIN') | Q(is_superuser=True))
+                for admin in admins:
+                    notifier(
+                        destinataire=admin,
+                        type='NOUVELLE_INSCRIPTION',
+                        titre="Nouvelle inscription d'élève",
+                        message=f"L'étudiant {user.get_full_name()} s'est inscrit et attend d'être associé à une classe.",
+                        url=reverse('dashboard_admin') + '?tab=students',
+                        envoyer_email=False
+                    )
             if request.headers.get('HX-Request') == 'true':
                 response = HttpResponse(status=204)
                 response['HX-Redirect'] = reverse('accounts:pending')
@@ -47,6 +72,9 @@ def admin_dashboard(request):
             classe_id = request.POST.get('classe_id') or None
             niveau_id = request.POST.get('niveau') or None
             is_formateur = request.POST.get('is_formateur') == 'true'
+
+            first_name = (request.POST.get('first_name') or '').strip()
+            last_name = (request.POST.get('last_name') or '').strip()
 
             if not email or not password:
                 return JsonResponse({'status': 'error', 'message': 'Email et mot de passe sont requis.'}, status=400)
@@ -82,6 +110,8 @@ def admin_dashboard(request):
             user = Utilisateur.objects.create_user(
                 email=email,
                 password=password,
+                first_name=first_name,
+                last_name=last_name,
                 role=role,
                 statut_compte=statut_compte,
                 is_active=is_active,
@@ -93,6 +123,7 @@ def admin_dashboard(request):
                 'user': {
                     'id': str(user.id),
                     'email': user.email,
+                    'full_name': user.get_full_name(),
                     'role': user.role,
                     'statut_compte': user.statut_compte,
                     'niveau': user.niveau,
@@ -286,16 +317,154 @@ def profile_view(request):
 
 @login_required
 def profile_edit_view(request):
-    """Permet à l'utilisateur de mettre à jour son profil de base."""
+    """Met a jour le profil : email + photo (upload / suppression)."""
     if request.method == 'POST':
-        form = ProfileForm(request.POST, instance=request.user)
+        form = ProfileForm(request.POST, request.FILES, instance=request.user)
         if form.is_valid():
+            # Suppression explicite de l'avatar si la case est cochee
+            if form.cleaned_data.get('supprimer_photo') and request.user.photo:
+                request.user.photo.delete(save=False)  # efface le fichier disque
+                form.instance.photo = None
             form.save()
             return redirect('accounts:profile')
     else:
         form = ProfileForm(instance=request.user)
 
     return render(request, 'accounts/profile_edit.html', {
+        'form': form,
+        'profile_user': request.user,
+    })
+
+
+@login_required
+def notifications_list_view(request):
+    """Affiche la liste des notifications de l'utilisateur."""
+    notifications = request.user.notifications.all()
+    return render(request, 'accounts/notifications.html', {
+        'notifications': notifications
+    })
+
+
+@login_required
+@require_http_methods(['POST'])
+def mark_notification_read_view(request, pk):
+    """Marque une notification spécifique comme lue."""
+    notification = get_object_or_404(request.user.notifications, pk=pk)
+    notification.lu = True
+    notification.save(update_fields=['lu'])
+    
+    if request.headers.get('HX-Request') == 'true':
+        return HttpResponse('', status=200)
+    return redirect('accounts:notifications_list')
+
+
+@login_required
+@require_http_methods(['POST'])
+def mark_notifications_read_all_view(request):
+    """Marque toutes les notifications de l'utilisateur comme lues."""
+    request.user.notifications.filter(lu=False).update(lu=True)
+    
+    if request.headers.get('HX-Request') == 'true':
+        return HttpResponse('', status=200)
+    return redirect('accounts:notifications_list')
+
+
+def custom_password_reset_view(request):
+    """
+    Vue personnalisée pour générer et envoyer un mot de passe temporaire
+    valide 10 minutes à l'utilisateur.
+    """
+    if request.method == 'POST':
+        form = PasswordResetRequestForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            users = Utilisateur.objects.filter(email__iexact=email, is_active=True)
+            for user in users:
+                # Génération d'un mot de passe temporaire aléatoire de 8 caractères
+                chars = string.ascii_letters + string.digits
+                temp_pass = ''.join(secrets.choice(chars) for _ in range(8))
+
+                # Mise à jour de l'utilisateur
+                user.set_password(temp_pass)
+                user.is_temp_password = True
+                user.temp_password_created_at = timezone.now()
+                user.save()
+
+                # Envoi du mail (asynchrone via Celery)
+                subject = "Votre mot de passe temporaire - EduTech"
+                context = {
+                    'user': user,
+                    'temp_pass': temp_pass,
+                    'base_url': getattr(settings, 'BASE_URL', 'http://127.0.0.1:8000')
+                }
+                html_content = render_to_string('accounts/emails/temp_password_email.html', context)
+                text_content = strip_tags(html_content)
+
+                from accounts.tasks import envoyer_email_task
+                envoyer_email_task.delay(
+                    subject=subject,
+                    text_content=text_content,
+                    html_content=html_content,
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    to_list=[user.email],
+                )
+
+            return redirect('accounts:password_reset_done')
+    else:
+        form = PasswordResetRequestForm()
+
+    return render(request, 'accounts/password_reset_form.html', {'form': form})
+
+
+
+class CustomLoginView(LoginView):
+    """
+    LoginView personnalisée vérifiant si l'utilisateur se connecte
+    avec un mot de passe temporaire expiré (10 minutes).
+    """
+    template_name = 'accounts/login.html'
+    
+    def form_valid(self, form):
+        user = form.get_user()
+        print("DEBUG LOGIN: email =", user.email, "is_temp =", user.is_temp_password, "created_at =", user.temp_password_created_at)
+        if user.is_temp_password:
+            # Vérification de l'expiration des 10 minutes
+            if not user.temp_password_created_at or timezone.now() - user.temp_password_created_at > timedelta(minutes=10):
+                form.add_error(None, "Ce mot de passe temporaire a expiré (validité de 10 minutes). Veuillez effectuer une nouvelle demande.")
+                return self.form_invalid(form)
+            else:
+                # Connexion de l'utilisateur
+                login(self.request, user)
+                # Notification de sécurité
+                messages.warning(self.request, "Vous êtes connecté avec un mot de passe temporaire. Veuillez le modifier ci-dessous.")
+                return redirect('accounts:change_password')
+                
+        return super().form_valid(form)
+
+
+@login_required
+def change_password_view(request):
+    """
+    Vue permettant à l'utilisateur de modifier son mot de passe
+    depuis l'onglet Sécurité de son profil.
+    """
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            # Nettoyer les drapeaux temporaires
+            user.is_temp_password = False
+            user.temp_password_created_at = None
+            user.save()
+            
+            # Maintenir la session après changement
+            update_session_auth_hash(request, user)
+            messages.success(request, "Votre mot de passe a été mis à jour avec succès.")
+            return redirect('accounts:profile')
+    else:
+        form = PasswordChangeForm(request.user)
+        
+    return render(request, 'accounts/change_password.html', {
         'form': form,
         'profile_user': request.user,
     })

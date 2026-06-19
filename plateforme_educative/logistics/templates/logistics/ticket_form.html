@@ -10,55 +10,57 @@
         <p>Signalez un problème ou une demande de maintenance.</p>
     </div>
 
-    <div class="carte auth-carte">
-        <form method="post">
-            {% csrf_token %}
-            
-            {% if form.non_field_errors %}
-                <div class="messages">
-                    {% for error in form.non_field_errors %}
-                    <p class="message-item">{{ error }}</p>
-                    {% endfor %}
+    <div class="auth-container">
+        <div class="carte auth-carte">
+            <form method="post">
+                {% csrf_token %}
+                
+                {% if form.non_field_errors %}
+                    <div class="messages">
+                        {% for error in form.non_field_errors %}
+                        <p class="message-item">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <p>
+                    <label for="{{ form.titre.id_for_label }}">{{ form.titre.label }}</label>
+                    {{ form.titre }}
+                    {% if form.titre.errors %}
+                        <span class="error-text">{{ form.titre.errors.0 }}</span>
+                    {% endif %}
+                </p>
+
+                <p>
+                    <label for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
+                    {{ form.description }}
+                    {% if form.description.errors %}
+                        <span class="error-text">{{ form.description.errors.0 }}</span>
+                    {% endif %}
+                </p>
+
+                <p>
+                    <label for="{{ form.equipement.id_for_label }}">{{ form.equipement.label }}</label>
+                    {{ form.equipement }}
+                    {% if form.equipement.errors %}
+                        <span class="error-text">{{ form.equipement.errors.0 }}</span>
+                    {% endif %}
+                </p>
+
+                <p>
+                    <label for="{{ form.atelier.id_for_label }}">{{ form.atelier.label }}</label>
+                    {{ form.atelier }}
+                    {% if form.atelier.errors %}
+                        <span class="error-text">{{ form.atelier.errors.0 }}</span>
+                    {% endif %}
+                </p>
+
+                <div class="actions">
+                    <button type="submit" class="btn">Soumettre</button>
+                    <a href="{% url 'logistics:tickets' %}" class="btn btn-ghost">Annuler</a>
                 </div>
-            {% endif %}
-
-            <p>
-                <label for="{{ form.titre.id_for_label }}">{{ form.titre.label }}</label>
-                {{ form.titre }}
-                {% if form.titre.errors %}
-                    <span class="error-text">{{ form.titre.errors.0 }}</span>
-                {% endif %}
-            </p>
-
-            <p>
-                <label for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
-                {{ form.description }}
-                {% if form.description.errors %}
-                    <span class="error-text">{{ form.description.errors.0 }}</span>
-                {% endif %}
-            </p>
-
-            <p>
-                <label for="{{ form.equipement.id_for_label }}">{{ form.equipement.label }}</label>
-                {{ form.equipement }}
-                {% if form.equipement.errors %}
-                    <span class="error-text">{{ form.equipement.errors.0 }}</span>
-                {% endif %}
-            </p>
-
-            <p>
-                <label for="{{ form.atelier.id_for_label }}">{{ form.atelier.label }}</label>
-                {{ form.atelier }}
-                {% if form.atelier.errors %}
-                    <span class="error-text">{{ form.atelier.errors.0 }}</span>
-                {% endif %}
-            </p>
-
-            <div class="actions">
-                <button type="submit" class="btn">Soumettre</button>
-                <a href="{% url 'logistics:tickets' %}" class="btn btn-ghost">Annuler</a>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
 </section>
 {% endblock %}

@@ -4,54 +4,362 @@
 
 {% block content %}
 <style>
-    .profile-edit-form .form-control {
-        width: 100%;
-        padding: 0.75rem 0.9rem;
-        border-radius: 10px;
-        border: 1px solid var(--border);
-        background: var(--surface);
-        color: var(--text-main);
-        font: inherit;
+    /* Styling edit container */
+    .edit-shell {
+        max-width: 600px;
+        margin: 0 auto;
+        animation: fadeIn 0.4s ease-out;
     }
 
-    .profile-edit-form .form-control:focus {
-        outline: none;
-        border-color: var(--brand);
-        box-shadow: 0 0 0 3px rgba(18, 153, 142, 0.12);
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 
-    .profile-edit-form .errorlist {
-        list-style: none;
-        color: #b91c1c;
+    .edit-card {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        padding: 2.25rem;
+        position: relative;
+    }
+
+    .section-meta-title {
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .edit-card h1 {
+        font-size: 1.6rem;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        margin: 0 0 0.5rem 0;
+        color: var(--text-primary);
+    }
+
+    .edit-card-desc {
+        color: var(--text-muted);
         font-size: 0.9rem;
-        margin: 0;
+        line-height: 1.5;
+        margin: 0 0 2rem 0;
+    }
+
+    .edit-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.75rem;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .form-group label {
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: var(--text-primary);
+    }
+
+    /* Style the input form controls */
+    .edit-form input[type="email"] {
+        width: 100%;
+        padding: 12px 16px;
+        border-radius: 10px;
+        border: 1px solid var(--border-default);
+        background: var(--bg-surface);
+        color: var(--text-primary);
+        font-size: 0.92rem;
+        font-family: inherit;
+        transition: var(--transition);
+    }
+
+    .edit-form input[type="email"]:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
+        outline: none;
+    }
+
+    .field-errors {
+        margin-top: 4px;
+        font-size: 0.82rem;
+        color: #ef4444;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    /* Modern dashed upload zone */
+    .avatar-upload-zone {
+        border: 2px dashed var(--border-default);
+        border-radius: var(--radius-md);
+        padding: 1.25rem 1.5rem;
+        background: var(--bg-page);
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        transition: var(--transition);
+        cursor: pointer;
+        position: relative;
+    }
+
+    .avatar-upload-zone:hover {
+        border-color: var(--primary);
+        background: var(--bg-surface);
+    }
+
+    .avatar-preview-wrapper {
+        width: 76px;
+        height: 76px;
+        border-radius: 20px;
+        overflow: hidden;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        border: 3px solid var(--bg-surface);
+        box-shadow: var(--shadow-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: #ffffff;
+        flex-shrink: 0;
+    }
+
+    .avatar-preview-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .upload-info {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        flex: 1;
+    }
+
+    .upload-btn-fake {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--primary);
+        transition: var(--transition);
+    }
+
+    .avatar-upload-zone:hover .upload-btn-fake {
+        color: var(--primary-dark);
+    }
+
+    .upload-details {
+        font-size: 0.76rem;
+        color: var(--text-muted);
+    }
+
+    .filename-label {
+        display: inline-block;
+        margin-top: 4px;
+        padding: 2px 8px;
+        background: var(--primary-light);
+        color: var(--primary-dark);
+        font-size: 0.72rem;
+        font-weight: 600;
+        border-radius: 4px;
+        word-break: break-all;
+    }
+
+    /* Delete photo toggle styling */
+    .delete-toggle-container {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        background: rgba(239, 68, 68, 0.05);
+        border: 1px solid rgba(239, 68, 68, 0.1);
+        border-radius: 8px;
+        color: #ef4444;
+        font-size: 0.84rem;
+        font-weight: 600;
+        cursor: pointer;
+        width: fit-content;
+        transition: var(--transition);
+    }
+
+    .delete-toggle-container:hover {
+        background: rgba(239, 68, 68, 0.1);
+    }
+
+    .delete-toggle-container input[type="checkbox"] {
+        accent-color: #ef4444;
+        cursor: pointer;
+    }
+
+    /* Actions row */
+    .actions-panel {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 0.5rem;
     }
 </style>
-<section class="carte" style="max-width: 760px; margin: 0 auto;">
-    <p class="section-title">Profil</p>
-    <h1 style="margin-bottom: 0.5rem;">Modifier mon profil</h1>
-    <p style="color: var(--text-muted); margin-bottom: 1.25rem;">Mettez à jour votre adresse email et votre niveau d’apprentissage. Le rôle reste géré par l’administration.</p>
 
-    <form method="post" class="profile-edit-form" style="display: grid; gap: 1rem;">
-        {% csrf_token %}
-        {{ form.non_field_errors }}
+<section class="edit-shell">
+    {% include 'accounts/partials/profile_nav.html' with profile_tab='edition' %}
 
-        <div style="display: grid; gap: 0.35rem;">
-            <label for="id_email" style="font-weight: 600;">Email</label>
-            {{ form.email }}
-            {{ form.email.errors }}
-        </div>
+    <div class="edit-card">
+        <span class="section-meta-title">Configuration</span>
+        <h1>Modifier mes informations</h1>
+        <p class="edit-card-desc">
+            Mettez à jour vos identifiants ou importez une nouvelle photo de profil pour personnaliser votre espace.
+        </p>
 
-        <div style="display: grid; gap: 0.35rem;">
-            <label for="id_niveau" style="font-weight: 600;">Niveau</label>
-            {{ form.niveau }}
-            {{ form.niveau.errors }}
-        </div>
+        <form method="post" class="edit-form" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+                <div class="field-errors" style="font-size: 0.9rem; padding: 10px; border-radius:8px; background:rgba(239,68,68,0.05);">
+                    <i class="ti ti-alert-triangle"></i> {{ form.non_field_errors }}
+                </div>
+            {% endif %}
 
-        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 0.25rem;">
-            <button class="btn-primary" type="submit">Enregistrer</button>
-            <a class="btn-ghost" href="{% url 'accounts:profile' %}">Annuler</a>
-        </div>
-    </form>
+            <!-- Interactive upload zone -->
+            <div class="form-group" id="photo-group">
+                <label>Photo de profil</label>
+                
+                <div class="avatar-upload-zone" onclick="document.getElementById('id_photo').click();">
+                    <div id="avatarPreviewContainer" class="avatar-preview-wrapper">
+                        {% if profile_user.photo %}
+                            <img id="avatarPreviewImg" class="avatar-preview-img" src="{{ profile_user.photo.url }}" alt="Aperçu">
+                        {% else %}
+                            <span id="avatarPreviewInitials">
+                                {% if profile_user.first_name %}
+                                    {{ profile_user.first_name|make_list|first|upper }}{% if profile_user.last_name %}{{ profile_user.last_name|make_list|first|upper }}{% endif %}
+                                {% else %}
+                                    {{ profile_user.email|slice:":2"|upper }}
+                                {% endif %}
+                            </span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="upload-info">
+                        <span class="upload-btn-fake">
+                            <i class="ti ti-camera" aria-hidden="true"></i> Choisir une image
+                        </span>
+                        <span class="upload-details">Fichiers autorisés : JPG ou PNG. Format carré recommandé.</span>
+                        <span id="photoFilenameText" class="filename-label" style="display:none;"></span>
+                    </div>
+
+                    <!-- Hidden actual file field -->
+                    <div style="display: none;">
+                        {{ form.photo }}
+                    </div>
+                </div>
+                
+                {% if form.photo.errors %}
+                    <span class="field-errors">
+                        <i class="ti ti-alert-circle"></i> {{ form.photo.errors.0 }}
+                    </span>
+                {% endif %}
+
+                <!-- Option to delete existing photo -->
+                {% if profile_user.photo %}
+                    <div style="margin-top: 0.25rem;">
+                        <label class="delete-toggle-container">
+                            {{ form.supprimer_photo }}
+                            <span><i class="ti ti-trash"></i> Supprimer la photo de profil actuelle</span>
+                        </label>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- First and Last Name field group -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label for="id_first_name">Prénom</label>
+                    {{ form.first_name }}
+                    {% if form.first_name.errors %}
+                        <span class="field-errors">
+                            <i class="ti ti-alert-circle"></i> {{ form.first_name.errors.0 }}
+                        </span>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="id_last_name">Nom</label>
+                    {{ form.last_name }}
+                    {% if form.last_name.errors %}
+                        <span class="field-errors">
+                            <i class="ti ti-alert-circle"></i> {{ form.last_name.errors.0 }}
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+            <!-- Email field group -->
+            <div class="form-group">
+                <label for="id_email">Adresse email</label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <span class="field-errors">
+                        <i class="ti ti-alert-circle"></i> {{ form.email.errors.0 }}
+                    </span>
+                {% endif %}
+            </div>
+
+            <!-- Button panel -->
+            <div class="actions-panel">
+                <button class="btn-primary" type="submit">
+                    Enregistrer les modifications
+                </button>
+                <a class="btn-ghost" href="{% url 'accounts:profile' %}">
+                    Annuler
+                </a>
+            </div>
+        </form>
+    </div>
 </section>
+
+<script>
+    // Handles reading files locally and displaying immediate preview
+    (function() {
+        const fileInput = document.getElementById('id_photo');
+        if (!fileInput) return;
+        
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+
+            // Show filename badge
+            const nameBadge = document.getElementById('photoFilenameText');
+            if (nameBadge) {
+                nameBadge.textContent = file.name;
+                nameBadge.style.display = 'inline-block';
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const previewContainer = document.getElementById('avatarPreviewContainer');
+                if (!previewContainer) return;
+
+                // Clear current container content
+                previewContainer.innerHTML = '';
+
+                // Create image element and insert
+                const img = document.createElement('img');
+                img.id = 'avatarPreviewImg';
+                img.className = 'avatar-preview-img';
+                img.alt = 'Aperçu de la nouvelle image';
+                img.src = event.target.result;
+                previewContainer.appendChild(img);
+            };
+            reader.readAsDataURL(file);
+        });
+    })();
+</script>
 {% endblock %}

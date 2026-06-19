@@ -1,18 +1,363 @@
 {% extends 'base.html' %}
 
-{% block title %}Administration scolaire{% endblock %}
+{% block title %}
+    {% if active_tab == 'command_center' %}Centre de Commandement{% else %}Gestion de la Structure{% endif %} | EduTech Admin
+{% endblock %}
 
 {% block content %}
-<section class="page-shell">
-    <div class="page-header">
-        <p class="eyebrow">School Admin</p>
-        <h1>Tableau de bord administrateur</h1>
-        <p>Gérez les niveaux, les classes et l'activation des étudiants en attente.</p>
-    </div>
+<style>
+    body { background-color: transparent; } /* Override default body background */
+    
+    .admin-bg-wrapper {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        background-image: url('https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=2000&auto=format&fit=crop');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+    }
+    .admin-bg-wrapper::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(248, 250, 252, 0.85) 0%, rgba(226, 232, 240, 0.95) 100%);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+    }
+    
+    .cmd-header {
+        text-align: center;
+        padding: 4rem 0 3rem 0;
+        margin-bottom: 2rem;
+        position: relative;
+        z-index: 1;
+    }
+    .cmd-title {
+        font-size: 3rem;
+        font-weight: 900;
+        color: #0f172a;
+        margin-bottom: 1.5rem;
+        letter-spacing: -0.03em;
+        text-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    
+    /* Spotlight Search */
+    .omnibar-container {
+        max-width: 650px;
+        margin: 0 auto;
+        position: relative;
+    }
+    .omnibar-icon {
+        position: absolute;
+        left: 1.25rem;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 1.5rem;
+        color: #64748b;
+    }
+    .omnibar-input {
+        width: 100%;
+        padding: 1.25rem 1.25rem 1.25rem 3.5rem;
+        font-size: 1.15rem;
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(8px);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+        color: #1e293b;
+        transition: all 0.3s ease;
+    }
+    .omnibar-input:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.15), 0 0 0 3px rgba(59, 130, 246, 0.1);
+        background: #ffffff;
+    }
+    .omnibar-input::placeholder { color: #94a3b8; }
 
-    <div id="dashboard-structure">
-        {% include 'core/partials/dashboard_actions.html' with role='ADMIN' %}
-        {% include 'core/partials/admin_structure.html' %}
+    /* Layout Grid */
+    .cmd-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 2rem;
+        max-width: 1200px;
+        margin: 0 auto 4rem auto;
+    }
+    
+    /* KPI Cards */
+    .kpi-section {
+        grid-column: 1 / -1;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.5rem;
+        margin-bottom: 1rem;
+    }
+    .glass-kpi {
+        background: rgba(255, 255, 255, 0.65);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        border-radius: 20px;
+        padding: 1.75rem;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .glass-kpi:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        background: rgba(255, 255, 255, 0.8);
+        border: 1px solid rgba(255, 255, 255, 1);
+    }
+    .kpi-title { font-size: 0.85rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+    .kpi-value { font-size: 2rem; font-weight: 800; color: #0f172a; margin-bottom: 0.25rem; }
+    .kpi-subtitle { font-size: 0.85rem; font-weight: 500; color: #94a3b8; }
+    
+    .kpi-alert-dot {
+        position: absolute;
+        top: 1.25rem;
+        right: 1.25rem;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background-color: #ef4444;
+        box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.15);
+        animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+        0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+        70% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    }
+
+    /* Main Panels */
+    .cmd-panel {
+        background: rgba(255, 255, 255, 0.65);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        border-radius: 24px;
+        padding: 2rem;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+        display: flex;
+        flex-direction: column;
+    }
+    .panel-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 2rem;
+        border-bottom: 1px solid rgba(226, 232, 240, 0.5);
+        padding-bottom: 1rem;
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: #0f172a;
+    }
+
+    /* Timeline Feed */
+    .timeline {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    .timeline-item {
+        display: flex;
+        gap: 1rem;
+        position: relative;
+    }
+    .timeline-item:not(:last-child)::before {
+        content: '';
+        position: absolute;
+        left: 0.45rem;
+        top: 1.5rem;
+        bottom: -1rem;
+        width: 2px;
+        background: rgba(226, 232, 240, 0.5);
+    }
+    .timeline-dot {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: #cbd5e1;
+        margin-top: 0.25rem;
+        z-index: 1;
+        box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.5);
+    }
+    .dot-blue { background: #3b82f6; }
+    .dot-red { background: #ef4444; }
+    .dot-green { background: #10b981; }
+    .dot-purple { background: #8b5cf6; }
+    
+    .timeline-content {
+        flex: 1;
+    }
+    .timeline-time { font-size: 0.8rem; color: #94a3b8; font-weight: 600; margin-bottom: 0.15rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .timeline-title { font-size: 0.95rem; font-weight: 700; color: #1e293b; margin-bottom: 0.25rem; }
+    .timeline-desc { font-size: 0.9rem; color: #64748b; line-height: 1.4; }
+
+    /* Quick Actions */
+    .action-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    .action-btn {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem 1.25rem;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        color: #334155;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+    .action-btn:hover {
+        background: #ffffff;
+        border-color: #3b82f6;
+        color: #3b82f6;
+        box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.1);
+        transform: translateX(4px);
+    }
+    .action-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.8);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        color: inherit;
+    }
+    
+    /* Responsive */
+    @media (max-width: 1024px) {
+        .kpi-section { grid-template-columns: repeat(2, 1fr); }
+        .cmd-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 640px) {
+        .kpi-section { grid-template-columns: 1fr; }
+    }
+</style>
+
+<div class="admin-bg-wrapper"></div>
+<div class="page-shell" style="padding-top: 1rem; position: relative; z-index: 1;">
+    
+    <!-- ============================================== -->
+    <!-- CENTRE DE COMMANDEMENT (Dashboard Stats)        -->
+    <!-- ============================================== -->
+    
+    <!-- 1. Hero Section & Omnibar -->
+    <header class="cmd-header">
+        <h1 class="cmd-title">Centre de Commandement</h1>
+        <div class="omnibar-container">
+            <i class="ti ti-search omnibar-icon"></i>
+            <input type="search" 
+                   name="q" 
+                   class="omnibar-input" 
+                   placeholder="Rechercher étudiants, tickets, cours..." 
+                   autocomplete="off">
+        </div>
+        <div id="search-results" style="margin-top: 1rem;"></div>
+    </header>
+
+    <!-- 3. KPI Grid -->
+    <section class="kpi-section">
+        <article class="glass-kpi">
+            {% if stats.en_attente > 0 %}
+            <div class="kpi-alert-dot"></div>
+            {% endif %}
+            <span class="kpi-title"><i class="ti ti-user-plus"></i> Inscriptions en attente</span>
+            <span class="kpi-value">{{ stats.en_attente }}</span>
+            <span class="kpi-subtitle">Validation requise immédiatement</span>
+        </article>
+        
+        <article class="glass-kpi">
+            <span class="kpi-title"><i class="ti ti-users"></i> Formateurs Actifs</span>
+            <span class="kpi-value">{{ stats.formateurs_actifs }}</span>
+            <span class="kpi-subtitle">Sur la plateforme</span>
+        </article>
+        
+        <article class="glass-kpi">
+            <span class="kpi-title"><i class="ti ti-tool"></i> Tickets Logistique</span>
+            <span class="kpi-value">{{ stats.tickets_gmao }}</span>
+            <span class="kpi-subtitle" style="{% if stats.tickets_gmao > 0 %}color: #ef4444; font-weight: 600;{% else %}color: #10b981;{% endif %}">
+                {% if stats.tickets_gmao > 0 %}Urgents (GMAO){% else %}Tout est fonctionnel{% endif %}
+            </span>
+        </article>
+        
+        <article class="glass-kpi">
+            <span class="kpi-title"><i class="ti ti-books"></i> Cours Publiés</span>
+            <span class="kpi-value">{{ stats.cours_publies }}</span>
+            <span class="kpi-subtitle" style="color: #10b981; font-weight: 600;">Dans {{ stats.niveaux_actifs }} niveaux actifs</span>
+        </article>
+    </section>
+
+    <!-- Main Layout -->
+    <div class="cmd-grid">
+        <!-- 4. Live Activity Feed (Left Column) -->
+        <section class="cmd-panel">
+            <h2 class="panel-header"><i class="ti ti-activity" style="color: #3b82f6;"></i> Flux d'Activité Système</h2>
+            
+            <div class="timeline">
+                {% if timeline %}
+                    {% for event in timeline %}
+                    <div class="timeline-item">
+                        <div class="timeline-dot {{ event.dot_class }}"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-time">{{ event.date|date:"d M Y, H:i" }}</div>
+                            <div class="timeline-title">{{ event.title }}</div>
+                            <div class="timeline-desc">{{ event.desc|safe }}</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="timeline-item">
+                        <div class="timeline-dot dot-purple"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-time">Maintenant</div>
+                            <div class="timeline-title">Système initialisé</div>
+                            <div class="timeline-desc">Aucune activité récente détectée sur la plateforme.</div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </section>
+
+        <!-- 2. Quick Actions Panel (Right Column) -->
+        <aside class="cmd-panel" style="align-self: start;">
+            <h2 class="panel-header"><i class="ti ti-bolt" style="color: #f59e0b;"></i> Actions Rapides</h2>
+            
+            <div class="action-list">
+                <a href="{% url 'dashboard_admin_structure' %}?tab=students" class="action-btn">
+                    <div class="action-icon" style="color: #ef4444; background: rgba(239,68,68,0.1);"><i class="ti ti-user-check" style="font-size: 1.25rem;"></i></div>
+                    Valider les inscriptions
+                </a>
+                
+                <a href="{% url 'logistics:inventaire' %}" class="action-btn">
+                    <div class="action-icon" style="color: #f59e0b; background: rgba(245,158,11,0.1);"><i class="ti ti-packages" style="font-size: 1.25rem;"></i></div>
+                    Gérer les requêtes de matériel
+                </a>
+                
+                <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 0.5rem 0;">
+                
+                <!-- Lien vers la gestion de structure -->
+                <a href="{% url 'dashboard_admin_structure' %}" class="action-btn" style="background: #ffffff;">
+                    <div class="action-icon" style="color: #475569; background: #f1f5f9;"><i class="ti ti-layers-linked" style="font-size: 1.25rem;"></i></div>
+                    Gestion de la Structure
+                </a>
+            </div>
+        </aside>
     </div>
-</section>
+</div>
 {% endblock %}

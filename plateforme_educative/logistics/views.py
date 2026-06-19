@@ -81,13 +81,21 @@ def nuevo_ticket(request):
 @user_passes_test(lambda u: u.is_staff or getattr(u, 'is_formateur', False))
 @require_http_methods(['GET', 'POST'])
 def ajouter_equipement(request):
-    """Ajouter un équipement via fetch/JS (GET: renvoie le formulaire, POST: sauvegarde et renvoie la liste mise à jour)."""
+    """Ajouter un équipement (GET: renvoie le formulaire, POST: sauvegarde et renvoie la liste mise à jour)."""
     if request.method == 'POST':
         form = EquipmentForm(request.POST)
         if form.is_valid():
             form.save()
             equipements = Equipment.objects.all()
             return render(request, 'logistics/partials/equipements_list.html', {'equipements': equipements})
+        else:
+            response = render(request, 'logistics/partials/equipement_form.html', {
+                'form': form,
+                'action_url': reverse('logistics:ajouter_equipement'),
+                'submit_label': 'Ajouter'
+            })
+            response['HX-Retarget'] = '#form-equipement-container'
+            return response
     else:
         form = EquipmentForm()
 
@@ -111,6 +119,15 @@ def editer_equipement(request, pk):
             form.save()
             equipements = Equipment.objects.all()
             return render(request, 'logistics/partials/equipements_list.html', {'equipements': equipements})
+        else:
+            response = render(request, 'logistics/partials/equipement_form.html', {
+                'form': form,
+                'equipement': equip,
+                'action_url': reverse('logistics:editer_equipement', args=[equip.pk]),
+                'submit_label': 'Enregistrer'
+            })
+            response['HX-Retarget'] = '#form-equipement-container'
+            return response
     else:
         form = EquipmentForm(instance=equip)
 

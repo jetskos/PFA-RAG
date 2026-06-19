@@ -3,41 +3,142 @@
 {% block title %}Espace Formateur{% endblock %}
 
 {% block content %}
-<section class="page-shell">
-    <div class="page-header" style="display: flex; justify-content: space-between; align-items: center;">
+<section class="page-shell formateur-shell">
+    <div class="page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0;">
         <div>
             <p class="eyebrow">Apprentissage</p>
             <h1>Espace Formateur</h1>
-            <p>Gérez vos cours et votre contenu pédagogique.</p>
+            <p>Gérez vos cours, devoirs et évaluations pédagogiques.</p>
         </div>
-        <a href="{% url 'apprentissage:nouveau_cours' %}" class="btn-primary">
-            <i class="ti ti-plus" style="font-size: 18px;"></i> Créer un cours
-        </a>
+        <div style="display: flex; gap: 0.75rem;">
+            <a href="{% url 'apprentissage:formateur_notes' %}" class="btn-outline">
+                <i class="ti ti-chart-bar" style="font-size: 1.1rem;"></i>
+                <span>Notes des étudiants</span>
+            </a>
+            <a href="{% url 'apprentissage:nouveau_cours' %}" class="btn-primary">
+                <i class="ti ti-plus" style="font-size: 18px;"></i> Créer un cours
+            </a>
+        </div>
     </div>
 
-    <div class="grille-cours" style="margin-top: 2rem;">
-        {% for cours in mes_cours %}
-            <div class="carte-cours" style="display: flex; flex-direction: column;">
-                <h3>{{ cours.titre }}</h3>
-                <p class="niveau">{{ cours.get_niveau_display }}</p>
-                
-                <div style="margin: 1rem 0; color: var(--texte-secondaire); font-size: 0.9rem; flex-grow: 1;">
-                    <p><i class="ti ti-calendar"></i> Créé le {{ cours.date_creation|date:'d/m/Y' }}</p>
-                    <p><i class="ti {% if cours.actif %}ti-eye{% else %}ti-eye-off{% endif %}"></i> {% if cours.actif %}Publié et visible{% else %}Brouillon masqué{% endif %}</p>
-                </div>
+    <!-- Onglets de Navigation -->
+    <div class="tabs-container">
+        <button onclick="switchTab('tab-cours', this)" class="tab-btn active">
+            <i class="ti ti-books"></i> Mes Cours
+        </button>
+        <button onclick="switchTab('tab-devoirs', this)" class="tab-btn">
+            <i class="ti ti-clipboard-list"></i> Devoirs reçus
+        </button>
+    </div>
 
-                <div style="display: flex; gap: 0.5rem; border-top: 1px solid var(--bordure); padding-top: 1rem;">
-                    <a href="{% url 'apprentissage:gerer_cours' cours.pk %}" class="btn" style="flex: 1; text-align: center;">Gérer le contenu</a>
-                    <a href="{% url 'apprentissage:editer_cours' cours.pk %}" class="btn btn-ghost" title="Modifier les infos"><i class="ti ti-pencil"></i></a>
+    <!-- Contenu Onglet : Cours -->
+    <div id="tab-cours" class="tab-content" style="display: block;">
+        <div class="courses-grid">
+            {% for cours in mes_cours %}
+                <div class="course-card">
+                    <div class="course-card-header">
+                        <h3 class="course-card-title">{{ cours.titre }}</h3>
+                    </div>
+                    
+                    <p class="badge badge-secondary" style="align-self: flex-start; margin-bottom: 1rem;">
+                        {{ cours.get_niveau_display }}
+                    </p>
+                    
+                    <div class="course-card-meta">
+                        <span style="display: flex; align-items: center; gap: 6px;"><i class="ti ti-calendar" style="font-size: 1.1rem; color: var(--text-muted);"></i> Créé le {{ cours.date_creation|date:'d/m/Y' }}</span>
+                        <span style="display: flex; align-items: center; gap: 6px;">
+                            <i class="ti {% if cours.actif %}ti-eye{% else %}ti-eye-off{% endif %}" style="font-size: 1.1rem; color: {% if cours.actif %}#10b981{% else %}var(--text-muted){% endif %};"></i> 
+                            {% if cours.actif %}Publié et visible{% else %}Brouillon masqué{% endif %}
+                        </span>
+                    </div>
+
+                    <div class="course-card-actions">
+                        <a href="{% url 'apprentissage:gerer_cours' cours.pk %}" class="btn-primary" style="flex: 1; justify-content: center;">Gérer le contenu</a>
+                        <a href="{% url 'apprentissage:editer_cours' cours.pk %}" class="btn-ghost" title="Modifier les infos" style="padding: 0.6rem 0.8rem;"><i class="ti ti-pencil"></i></a>
+                    </div>
                 </div>
+            {% empty %}
+                <div class="empty-state" style="grid-column: 1 / -1;">
+                    <div class="stat-icon icon-primary" style="margin-bottom: 1rem; width: 64px; height: 64px; font-size: 2rem;"><i class="ti ti-school"></i></div>
+                    <h3 style="color: var(--text-primary); margin-bottom: 0.5rem;">Aucun cours pour le moment</h3>
+                    <p>Commencez par créer votre premier cours et partagez votre savoir.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Contenu Onglet : Devoirs -->
+    <div id="tab-devoirs" class="tab-content" style="display: none;">
+        {% if devoirs %}
+            <div class="glass-card" style="padding: 0; overflow: hidden;">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Devoir</th>
+                            <th>Cours / Chapitre</th>
+                            <th style="text-align: center;">Soumissions</th>
+                            <th style="text-align: center;">À corriger</th>
+                            <th style="text-align: right;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for devoir in devoirs %}
+                        <tr>
+                            <td>
+                                <div style="font-weight: 700; color: var(--text-primary);">{{ devoir.titre }}</div>
+                                {% if devoir.date_limite %}
+                                    <div style="font-size: 0.8rem; color: #ef4444; margin-top: 4px; display: flex; align-items: center; gap: 4px;">
+                                        <i class="ti ti-clock"></i> Limite : {{ devoir.date_limite|date:"d/m/Y H:i" }}
+                                    </div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div style="font-size: 0.9rem; font-weight: 600; color: var(--text-primary);">{{ devoir.chapitre.cours.titre }}</div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">{{ devoir.chapitre.titre }}</div>
+                            </td>
+                            <td style="text-align: center;">
+                                <span class="badge badge-primary">
+                                    {{ devoir.total_soumissions }} reçues
+                                </span>
+                            </td>
+                            <td style="text-align: center;">
+                                {% if devoir.soumissions_a_noter > 0 %}
+                                    <span class="badge badge-warning" style="animation: pulse 2s infinite;">
+                                        {{ devoir.soumissions_a_noter }} à noter
+                                    </span>
+                                {% else %}
+                                    <span class="badge badge-success">
+                                        <i class="ti ti-check"></i> À jour
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td style="text-align: right;">
+                                <a href="{% url 'apprentissage:devoir_detail' devoir_id=devoir.pk %}" class="btn-primary">
+                                    <i class="ti ti-eye"></i> Voir les copies
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
-        {% empty %}
-            <div class="carte" style="grid-column: 1 / -1; text-align: center; padding: 3rem;">
-                <div class="feat-icon teal" style="margin: 0 auto 1rem;"><i class="ti ti-school"></i></div>
-                <h3>Aucun cours pour le moment</h3>
-                <p class="message-empty">Commencez par créer votre premier cours.</p>
+        {% else %}
+            <div class="empty-state">
+                <div class="stat-icon icon-warning" style="margin-bottom: 1rem; width: 64px; height: 64px; font-size: 2rem;"><i class="ti ti-clipboard-list"></i></div>
+                <h3 style="color: var(--text-primary); margin-bottom: 0.5rem;">Aucun devoir créé</h3>
+                <p>Pour assigner des devoirs, rendez-vous dans la gestion de l'un de vos cours puis ouvrez un chapitre.</p>
             </div>
-        {% endfor %}
+        {% endif %}
     </div>
 </section>
+
+<script>
+    function switchTab(tabId, btn) {
+        document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+        document.getElementById(tabId).style.display = 'block';
+        
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    }
+</script>
 {% endblock %}

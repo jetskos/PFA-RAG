@@ -30,3 +30,5 @@ class StudyBuddyState(TypedDict):
     iteration: int                           # Nombre d'itérations tutor-evaluate
     student_profile: StudentProfile          # Profil long-terme
     next_action: Literal["tutor", "evaluate", "memory", "end"]  # Action suivante
+    rag_context: Optional[str]               # Contenu RAG mis en cache pour la session
+

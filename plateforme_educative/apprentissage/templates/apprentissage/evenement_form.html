@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ titre_page }}{% endblock %}
+
+{% block content %}
+<section class="page-shell" style="max-width: 600px; margin: 2rem auto; padding: 0 1rem;">
+    <div style="margin-bottom: 1.5rem;">
+        <p class="eyebrow">
+            <a href="{% url 'apprentissage:calendrier' %}" style="color: var(--brand-primary); text-decoration: none;">📅 Calendrier</a> › {{ titre_page }}
+        </p>
+        <h1>{{ titre_page }}</h1>
+    </div>
+
+    <div class="carte" style="padding: 2rem; background: var(--surface); border: 1px solid var(--bordure); border-radius: 12px;">
+        <form method="POST">
+            {% csrf_token %}
+            
+            <div style="display: flex; flex-direction: column; gap: 1.25rem; margin-bottom: 1.5rem;">
+                {% for field in form %}
+                <div style="display: flex; flex-direction: column; gap: 0.35rem;">
+                    <label for="{{ field.id_for_label }}" style="font-weight: 600; font-size: 0.9rem; color: var(--text-primary);">
+                        {{ field.label }} {% if field.field.required %}<span style="color: #ef4444;">*</span>{% endif %}
+                    </label>
+                    {{ field }}
+                    {% if field.help_text %}
+                    <span style="font-size: 0.78rem; color: var(--texte-secondaire);">{{ field.help_text }}</span>
+                    {% endif %}
+                    {% for error in field.errors %}
+                    <span style="font-size: 0.8rem; color: #ef4444; font-weight: 600;">⚠️ {{ error }}</span>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+            </div>
+
+            <div style="display: flex; gap: 0.75rem; justify-content: flex-end; align-items: center; border-top: 1px solid var(--bordure); padding-top: 1.25rem;">
+                <a href="{% url 'apprentissage:calendrier' %}" class="btn btn-ghost" style="text-decoration: none; padding: 0.6rem 1.2rem; border-radius: 6px; border: 1px solid var(--bordure); font-weight: 600;">
+                    Annuler
+                </a>
+                <button type="submit" class="btn" style="background: var(--brand-primary); color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 6px; font-weight: 600; cursor: pointer; transition: background-color 0.2s;">
+                    Enregistrer
+                </button>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}
