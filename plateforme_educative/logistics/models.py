@@ -2,21 +2,15 @@ from django.db import models
 from django.core.exceptions import ValidationError
 
 
-class Equipment(models.Model):
-    ETAT_CHOICES = (
-        ('DISPONIBLE', 'Disponible'),
-        ('EN_PANNE', 'En panne'),
-        ('EN_MAINTENANCE', 'En maintenance'),
-    )
+import uuid
 
+class Equipment(models.Model):
     nom = models.CharField(max_length=255, verbose_name='Nom')
-    numero_serie = models.CharField(max_length=255, unique=True, verbose_name='Numéro de série')
-    etat = models.CharField(
-        max_length=20,
-        choices=ETAT_CHOICES,
-        default='DISPONIBLE',
-        verbose_name='État',
-    )
+    reference = models.CharField(max_length=255, unique=True, default=uuid.uuid4, verbose_name='Référence')
+    stock_total = models.PositiveIntegerField(default=0, verbose_name='Stock total')
+    stock_disponible = models.PositiveIntegerField(default=0, verbose_name='Stock disponible')
+    seuil_alerte = models.PositiveIntegerField(default=5, verbose_name="Seuil d'alerte")
+    est_actif = models.BooleanField(default=True, verbose_name='Est actif')
     note = models.TextField(blank=True, verbose_name='Note')
 
     class Meta:
@@ -25,7 +19,11 @@ class Equipment(models.Model):
         ordering = ['nom']
 
     def __str__(self):
-        return f"{self.nom} ({self.numero_serie})"
+        return f"{self.nom} ({self.reference})"
+
+    @property
+    def en_alerte(self):
+        return self.stock_disponible <= self.seuil_alerte
 
 
 class Workshop(models.Model):
@@ -40,6 +38,15 @@ class Workshop(models.Model):
         verbose_name='Tuteur',
     )
     niveau_cible = models.CharField(max_length=100, verbose_name='Niveau cible')
+    createur = models.ForeignKey(
+        'accounts.Utilisateur',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='ateliers_crees',
+        verbose_name='Créateur',
+    )
+    est_annule = models.BooleanField(default=False, verbose_name='Est annulé')
 
     class Meta:
         verbose_name = 'Atelier'
@@ -48,6 +55,19 @@ class Workshop(models.Model):
 
     def __str__(self):
         return self.titre
+        
+    @property
+    def statut_dynamique(self):
+        from django.utils import timezone
+        if self.est_annule:
+            return "Annulé"
+        now = timezone.now()
+        if self.date_debut > now:
+            return "À venir"
+        elif self.date_debut <= now <= self.date_fin:
+            return "En cours"
+        else:
+            return "Terminé"
     
     def clean(self):
         # Ensure end is after start

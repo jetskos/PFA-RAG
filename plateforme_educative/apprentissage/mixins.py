@@ -149,7 +149,7 @@ class FormateurDevoirRequiredMixin(AccessMixin):
         if self.allow_admin and (request.user.role == 'ADMIN' or request.user.is_superuser):
             return True
             
-        print(f"DEBUG DEVOIR PERM: user={request.user.email}, is_formateur={request.user.is_formateur}, role={request.user.role}, devoir_id={devoir_id}, cours_createur={cours.createur.email}")
+        # [SÉCURITÉ] Log de debug supprimé — ne jamais exposer les emails dans les logs en production.
         return request.user.is_formateur and cours.createur == request.user
 
     def dispatch(self, request, *args, **kwargs):

@@ -3,7 +3,7 @@ from functools import wraps
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import AccessMixin, LoginRequiredMixin, UserPassesTestMixin
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.views.decorators.http import require_http_methods
@@ -11,7 +11,7 @@ from django.views.decorators.http import require_http_methods
 from apprentissage.models import Cours
 from accounts.models import Classe, Niveau
 from logistics.forms import DemandeMaterielForm
-from logistics.models import DemandeMateriel
+from logistics.models import DemandeMateriel, Equipment
 from .forms import NiveauForm, ClasseForm, PendingStudentActivationForm
 
 Utilisateur = get_user_model()
@@ -85,10 +85,11 @@ def _admin_dashboard_context(request=None):
     timeline = timeline[:5]
 
     # Filtering logic for lists
-    niveaux_qs = Niveau.objects.all().order_by('ordre', 'nom')
-    classes_qs = Classe.objects.select_related('niveau').all().order_by('niveau__ordre', 'nom')
-    pending_students_qs = pending_students
+    niveaux_qs = Niveau.objects.all().order_by('ordre')
+    classes_qs = Classe.objects.select_related('niveau').all().order_by('nom')
+    pending_students_qs = Utilisateur.objects.filter(role='ELEVE', statut_compte='PENDING').order_by('-date_creation')
     pending_demandes_qs = DemandeMateriel.objects.filter(statut='PENDING').select_related('formateur', 'equipement', 'atelier_cible').order_by('-date_creation')
+    equipements_qs = Equipment.objects.all().order_by('nom')
     
     if request:
         q = request.GET.get('q', '').strip()
@@ -118,6 +119,7 @@ def _admin_dashboard_context(request=None):
     return {
         'niveaux': niveaux_qs,
         'classes': classes_qs,
+        'equipements': equipements_qs,
         'pending_students': pending_students_qs,
         'pending_rows': pending_rows,
         'pending_demandes': pending_demandes_qs,
@@ -520,7 +522,50 @@ def create_demande_materiel_view(request):
             demande.formateur = request.user
             demande.save()
             # On success, close modal and show toast (empty modal container + trigger JS event if needed)
-            return HttpResponse('<div id="modal-container"></div><script>alert("Demande envoyée avec succès !");</script>')
+            response_html = """
+<div id="modal-container"></div>
+<div id="htmx-toast" style="
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 9999;
+    background: #10b981;
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px -5px rgba(16,185,129,0.4);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    animation: slideInRight 0.3s cubic-bezier(0.16,1,0.3,1);
+    max-width: 380px;">
+    <span style="font-size:1.25rem;">✅</span>
+    <div>
+        <div style="font-weight:700;">Demande envoyée !</div>
+        <div style="font-size:0.85rem;opacity:0.9;font-weight:400;">L'administrateur recevra votre demande de matériel.</div>
+    </div>
+</div>
+<style>
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(100px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+</style>
+<script>
+    setTimeout(() => {
+        const toast = document.getElementById('htmx-toast');
+        if (toast) {
+            toast.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(100px)';
+            setTimeout(() => toast.remove(), 400);
+        }
+    }, 4000);
+</script>
+"""
+            return HttpResponse(response_html)
     else:
         form = DemandeMaterielForm()
 
@@ -529,31 +574,98 @@ def create_demande_materiel_view(request):
     return render(request, 'core/partials/demande_materiel_modal.html', context, status=400 if request.method == 'POST' else 200)
 
 
+from django.db import transaction
+
 @role_required('ADMIN')
 @require_http_methods(['POST'])
+@transaction.atomic
 def admin_process_demande_view(request, demande_id):
-    """Process a DemandeMateriel: approve or reject. Returns refreshed pending demandes section."""
+    """Process a DemandeMateriel: approve, reject or return. Returns refreshed pending/active demandes section."""
     action = request.POST.get('action')
     demande = get_object_or_404(DemandeMateriel, pk=demande_id)
 
-    if action == 'approve':
-        demande.statut = 'APPROVED'
-    elif action == 'reject':
-        demande.statut = 'REJECTED'
-    else:
-        return _render_admin_structure(request, {'pending_error': 'Action invalide.'}, status=400, active_tab='logistics')
+    try:
+        with transaction.atomic():
+            equipement = demande.equipement
+            
+            if action == 'approve':
+                if demande.quantite > equipement.stock_disponible:
+                    return _render_admin_structure(request, {'pending_error': f'Stock insuffisant (Reste: {equipement.stock_disponible}).'}, status=400, active_tab='logistics')
+                equipement.stock_disponible -= demande.quantite
+                equipement.save()
+                demande.statut = 'APPROVED'
+            elif action == 'reject':
+                demande.statut = 'REJECTED'
+            elif action == 'return':
+                if demande.statut == 'APPROVED':
+                    equipement.stock_disponible += demande.quantite
+                    equipement.save()
+                demande.statut = 'RETURNED'
+            else:
+                return _render_admin_structure(request, {'pending_error': 'Action invalide.'}, status=400, active_tab='logistics')
 
-    demande.save(update_fields=['statut'])
+            demande.save(update_fields=['statut'])
+    except Exception as e:
+        return _render_admin_structure(request, {'pending_error': str(e)}, status=400, active_tab='logistics')
+
     from accounts.notifications import notifier
-    statut_str = "approuvée" if action == 'approve' else "rejetée"
-    notifier(
-        destinataire=demande.formateur,
-        type='DEMANDE_TRAITEE',
-        titre=f"Demande de matériel {statut_str}",
-        message=f"Votre demande pour l'équipement '{demande.equipement.nom}' a été {statut_str} par l'administrateur.",
-        envoyer_email=True
-    )
-    # After processing, re-render the pending demandes section so HTMX can swap it.
-    return render(request, 'core/partials/pending_demandes_section.html', {
-        'pending_demandes': DemandeMateriel.objects.filter(statut='PENDING').select_related('formateur', 'equipement', 'atelier_cible').order_by('-date_creation')
-    })
+    if action in ['approve', 'reject']:
+        statut_str = "approuvée" if action == 'approve' else "rejetée"
+        notifier(
+            destinataire=demande.formateur,
+            type='DEMANDE_TRAITEE',
+            titre=f"Demande de matériel {statut_str}",
+            message=f"Votre demande pour l'équipement '{demande.equipement.nom}' a été {statut_str} par l'administrateur.",
+            envoyer_email=True
+        )
+
+    # After processing, re-render the appropriate sections so HTMX can swap them.
+    # Currently it just swapped the pending_demandes_section
+    context = {
+        'pending_demandes': DemandeMateriel.objects.filter(statut='PENDING').select_related('formateur', 'equipement', 'atelier_cible').order_by('-date_creation'),
+        'active_demandes': DemandeMateriel.objects.filter(statut='APPROVED').select_related('formateur', 'equipement', 'atelier_cible').order_by('-date_mise_a_jour'),
+    }
+    return render(request, 'core/partials/pending_demandes_section.html', context)
+
+
+@role_required('ADMIN')
+@require_http_methods(['GET', 'POST'])
+def admin_equipement_create_view(request):
+    from logistics.forms import EquipmentForm
+    if request.method == 'POST':
+        form = EquipmentForm(request.POST)
+        if form.is_valid():
+            form.save()
+            response = _render_admin_structure(request, active_tab='equipements')
+            response['HX-Trigger'] = 'closeModal'
+            response['HX-Retarget'] = '#dashboard-structure'
+            return response
+    else:
+        form = EquipmentForm()
+    return render(request, 'core/partials/equipement_form_modal.html', {'equipement_form': form, 'is_update': False})
+
+
+@role_required('ADMIN')
+@require_http_methods(['GET', 'POST'])
+def admin_equipement_update_view(request, equipement_id):
+    from logistics.models import Equipment
+    from logistics.forms import EquipmentForm
+    equipement = get_object_or_404(Equipment, pk=equipement_id)
+    if request.method == 'POST':
+        form = EquipmentForm(request.POST, instance=equipement)
+        if form.is_valid():
+            form.save()
+            return render(request, 'core/partials/equipement_row.html', {'equipement': equipement})
+    else:
+        form = EquipmentForm(instance=equipement)
+    return render(request, 'core/partials/equipement_form_modal.html', {'equipement_form': form, 'is_update': True, 'equipement': equipement})
+
+
+@role_required('ADMIN')
+@require_http_methods(['POST'])
+def admin_equipement_toggle_active_view(request, equipement_id):
+    from logistics.models import Equipment
+    equipement = get_object_or_404(Equipment, pk=equipement_id)
+    equipement.est_actif = not equipement.est_actif
+    equipement.save()
+    return render(request, 'core/partials/equipement_row.html', {'equipement': equipement})

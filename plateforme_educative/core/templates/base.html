@@ -67,10 +67,6 @@
                     <a href="{% url 'dashboard_admin_structure' %}" class="{% if current_url == 'dashboard_admin_structure' %}active{% endif %}">
                         <i class="ti ti-dashboard"></i> <span>Tableau</span>
                     </a>
-                {% else %}
-                    <a href="{% url 'dashboard' %}" class="{% if current_url == 'dashboard' or current_url == 'dashboard_student' or current_url == 'dashboard_formateur' %}active{% endif %}">
-                        <i class="ti ti-dashboard"></i> <span>Tableau</span>
-                    </a>
                 {% endif %}
             {% endif %}
             {% if user.is_superuser %}
@@ -190,11 +186,6 @@
                         <a href="{% url 'accounts:profile' %}" class="dropdown-item">
                             <i class="ti ti-user-circle"></i>
                             <span>Paramètres du profil</span>
-                        </a>
-                        
-                        <a href="{% url 'dashboard' %}" class="dropdown-item">
-                            <i class="ti ti-arrows-left-right"></i>
-                            <span>Changer de rôle</span>
                         </a>
                         
                         <div class="dropdown-divider"></div>

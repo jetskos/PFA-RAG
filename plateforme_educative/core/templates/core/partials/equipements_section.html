@@ -1,0 +1,165 @@
+<section id="equipements-section">
+    <style>
+        .catalogue-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .btn-add-equipement {
+            background: #0f172a;
+            color: #ffffff;
+            border: none;
+            padding: 0.75rem 1.25rem;
+            border-radius: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.1);
+        }
+        .btn-add-equipement:hover {
+            background: #1e293b;
+            transform: translateY(-1px);
+            box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.15);
+        }
+
+        .catalogue-table-wrapper {
+            background: #ffffff;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .premium-data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .premium-data-table th {
+            background: #f8fafc;
+            padding: 1rem 1.5rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #64748b;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: left;
+        }
+
+        .premium-data-table td {
+            padding: 1.25rem 1.5rem;
+            vertical-align: middle;
+            border-bottom: 1px solid #e2e8f0;
+            color: #334155;
+            transition: background 0.2s;
+        }
+
+        .premium-data-table tbody tr:hover td {
+            background: #f8fafc;
+        }
+
+        .premium-data-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Stock progress bar styles */
+        .stock-progress-container {
+            width: 100%;
+            max-width: 150px;
+            background: #f1f5f9;
+            border-radius: 9999px;
+            height: 8px;
+            overflow: hidden;
+            margin-top: 6px;
+        }
+        .stock-progress-bar {
+            height: 100%;
+            border-radius: 9999px;
+            transition: width 0.5s ease-out;
+        }
+        .stock-safe { background: #10b981; }
+        .stock-warning { background: #f59e0b; }
+        .stock-danger { 
+            background: #ef4444; 
+            animation: pulse-danger 2s infinite;
+        }
+
+        @keyframes pulse-danger {
+            0% { opacity: 1; }
+            50% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+
+        /* Empty state */
+        .catalogue-empty {
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+        .catalogue-empty-icon {
+            width: 80px;
+            height: 80px;
+            background: #f8fafc;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem auto;
+            border: 2px dashed #cbd5e1;
+        }
+    </style>
+
+    <div class="catalogue-header">
+        <div>
+            <h2 style="margin:0; font-size:1.5rem; font-weight:800; color:#0f172a;">Catalogue Matériel</h2>
+            <p style="margin:0.25rem 0 0; color:#64748b;">Gérez l'inventaire complet, les stocks et les alertes GMAO.</p>
+        </div>
+        
+        <button class="btn-add-equipement"
+                hx-get="{% url 'dashboard_admin_create_equipement' %}"
+                hx-target="#modal-container"
+                hx-trigger="click"
+                data-bs-toggle="modal" data-bs-target="#dynamicModal">
+            <i class="ti ti-plus"></i> Nouvel équipement
+        </button>
+    </div>
+
+    <div class="catalogue-table-wrapper">
+        <div class="table-responsive">
+            <table class="premium-data-table">
+                <thead>
+                    <tr>
+                        <th style="width: 30%;">Équipement & Réf.</th>
+                        <th style="width: 25%;">État du Stock</th>
+                        <th style="width: 15%;">Seuil</th>
+                        <th style="width: 15%;">Statut</th>
+                        <th style="width: 15%; text-align: right;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="equipements-tbody">
+                    {% for equipement in equipements %}
+                        {% include 'core/partials/equipement_row.html' %}
+                    {% empty %}
+                        <tr>
+                            <td colspan="5">
+                                <div class="catalogue-empty">
+                                    <div class="catalogue-empty-icon">
+                                        <i class="ti ti-box" style="font-size: 2.5rem; color: #94a3b8;"></i>
+                                    </div>
+                                    <h3 style="font-size: 1.25rem; font-weight: 700; color: #1e293b; margin: 0 0 0.5rem 0;">Catalogue vide</h3>
+                                    <p style="color: #64748b; margin: 0; max-width: 400px; margin: 0 auto;">Commencez à ajouter du matériel pour permettre aux formateurs de faire des demandes.</p>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>

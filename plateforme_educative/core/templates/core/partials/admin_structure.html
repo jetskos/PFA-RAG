@@ -89,6 +89,10 @@
                 class="tab-pill {% if active_tab == 'logistics' %}is-active{% endif %}">
             <i class="ti ti-package"></i> Demandes Logistiques <span class="tab-badge">{{ pending_demandes|length }}</span>
         </button>
+        <button hx-get="{% url 'dashboard_admin_structure' %}?tab=equipements" hx-target="#dashboard-structure" hx-swap="innerHTML" 
+                class="tab-pill {% if active_tab == 'equipements' %}is-active{% endif %}">
+            <i class="ti ti-server"></i> Catalogue Matériel
+        </button>
     </div>
 
     <!-- TAB CONTENTS -->
@@ -105,6 +109,14 @@
         <div style="display: flex; justify-content: center; width: 100%;">
             <div style="width: 100%;">
                 {% include 'core/partials/pending_demandes_section.html' %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if active_tab == 'equipements' %}
+        <div style="display: flex; justify-content: center; width: 100%;">
+            <div style="width: 100%;">
+                {% include 'core/partials/equipements_section.html' %}
             </div>
         </div>
         {% endif %}

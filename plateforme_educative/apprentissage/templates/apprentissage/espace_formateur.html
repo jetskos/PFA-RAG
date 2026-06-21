@@ -55,6 +55,13 @@
                     <div class="course-card-actions">
                         <a href="{% url 'apprentissage:gerer_cours' cours.pk %}" class="btn-primary" style="flex: 1; justify-content: center;">Gérer le contenu</a>
                         <a href="{% url 'apprentissage:editer_cours' cours.pk %}" class="btn-ghost" title="Modifier les infos" style="padding: 0.6rem 0.8rem;"><i class="ti ti-pencil"></i></a>
+                        <form method="post" action="{% url 'apprentissage:supprimer_cours' cours.pk %}" style="display:inline;"
+                              onsubmit="return confirm('⚠️ Supprimer définitivement le cours « {{ cours.titre }} » ?\n\nCette action est irréversible et supprimera tous les chapitres, documents et progressions associés.');">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-ghost" title="Supprimer" style="padding: 0.6rem 0.8rem; color: #ef4444; border-color: #fecaca;">
+                                <i class="ti ti-trash"></i>
+                            </button>
+                        </form>
                     </div>
                 </div>
             {% empty %}

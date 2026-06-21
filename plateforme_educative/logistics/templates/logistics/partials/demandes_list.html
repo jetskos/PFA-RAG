@@ -1,0 +1,95 @@
+{% if demandes.exists %}
+<div class="logi-eq-list">
+    {% for demande in demandes %}
+    <div class="eq-item">
+        <div class="eq-item-indicator 
+            {% if demande.statut == 'PENDING' %}ind-PENDING
+            {% elif demande.statut == 'APPROVED' %}ind-APPROVED
+            {% elif demande.statut == 'REJECTED' %}ind-REJECTED
+            {% else %}ind-RETURNED{% endif %}">
+        </div>
+        <div class="eq-item-main">
+            <div class="eq-item-header">
+                <div>
+                    <h3 class="eq-item-name">{{ demande.equipement.nom }} <span style="color:var(--teal);">x{{ demande.quantite }}</span></h3>
+                    <span class="eq-item-ref"><i class="ti ti-map-pin"></i> {{ demande.atelier_cible.titre|default:"Non spécifié" }}</span>
+                </div>
+                <div class="eq-item-actions">
+                    {% if demande.statut == 'PENDING' %}
+                        {% if user.is_staff or user == demande.formateur %}
+                        <button type="button" class="eq-item-btn" title="Modifier"
+                                hx-get="{% url 'logistics:editer_demande' demande.pk %}"
+                                hx-target="#form-demande-container" hx-swap="innerHTML">
+                            <i class="ti ti-edit"></i>
+                        </button>
+                        <button type="button" class="eq-item-btn" title="Supprimer"
+                                hx-post="{% url 'logistics:supprimer_demande' demande.pk %}"
+                                hx-confirm="Annuler cette demande ?"
+                                hx-target="#demandes-list">
+                            <i class="ti ti-trash"></i>
+                        </button>
+                        {% endif %}
+                        
+                        {% if user.is_staff %}
+                        <button type="button" class="eq-item-btn" title="Approuver"
+                                style="color: var(--emerald);"
+                                hx-post="{% url 'logistics:changer_statut_demande' demande.pk %}"
+                                hx-vals='{"statut": "APPROVED"}'
+                                hx-target="#demandes-list">
+                            <i class="ti ti-check"></i>
+                        </button>
+                        <button type="button" class="eq-item-btn" title="Rejeter"
+                                style="color: var(--red);"
+                                hx-post="{% url 'logistics:changer_statut_demande' demande.pk %}"
+                                hx-vals='{"statut": "REJECTED"}'
+                                hx-target="#demandes-list">
+                            <i class="ti ti-x"></i>
+                        </button>
+                        {% endif %}
+                    {% endif %}
+                    
+                    {% if demande.statut == 'APPROVED' and user.is_staff %}
+                        <button type="button" class="eq-item-btn" title="Marquer comme retourné"
+                                style="color: var(--blue);"
+                                hx-post="{% url 'logistics:changer_statut_demande' demande.pk %}"
+                                hx-vals='{"statut": "RETURNED"}'
+                                hx-target="#demandes-list">
+                            <i class="ti ti-arrow-back-up"></i>
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="eq-item-stats">
+                <div class="eq-stat">
+                    <span class="eq-stat-lbl"><i class="ti ti-user"></i> Formateur</span>
+                    <span class="eq-stat-val">{{ demande.formateur.get_full_name|default:demande.formateur.email }}</span>
+                </div>
+                <div class="eq-stat">
+                    <span class="eq-stat-lbl"><i class="ti ti-activity"></i> Statut</span>
+                    <span class="eq-stat-badge 
+                        {% if demande.statut == 'PENDING' %}st-PENDING
+                        {% elif demande.statut == 'APPROVED' %}st-APPROVED
+                        {% elif demande.statut == 'REJECTED' %}st-REJECTED
+                        {% else %}st-RETURNED{% endif %}">
+                        {% if demande.statut == 'PENDING' %}<i class="ti ti-clock-pause"></i> En attente
+                        {% elif demande.statut == 'APPROVED' %}<i class="ti ti-check"></i> Approuvée
+                        {% elif demande.statut == 'REJECTED' %}<i class="ti ti-ban"></i> Rejetée
+                        {% else %}<i class="ti ti-arrow-back-up"></i> Retournée{% endif %}
+                    </span>
+                </div>
+                <div class="eq-stat" style="grid-column: span 2;">
+                    <span class="eq-stat-lbl"><i class="ti ti-calendar"></i> Date de demande</span>
+                    <span class="eq-stat-val" style="font-size:0.75rem;">{{ demande.date_creation|date:"d M Y, H:i" }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div style="padding: 3rem 1rem; text-align: center; color: var(--ink-muted);">
+    <i class="ti ti-truck-delivery" style="font-size: 2.5rem; opacity: 0.5; margin-bottom: 1rem; display: block;"></i>
+    <p style="font-weight: 600; font-size: 0.95rem;">Aucune demande de matériel trouvée.</p>
+</div>
+{% endif %}

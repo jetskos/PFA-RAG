@@ -2,54 +2,96 @@
     <div class="modal-card-premium glassmorphism" onclick="event.stopPropagation()">
         <div class="modal-header-premium">
             <div>
-                <h2 class="modal-title-premium">Nouvelle Demande Logistique</h2>
-                <p class="modal-subtitle-premium">Sélectionnez le matériel nécessaire pour votre prochain atelier.</p>
+                <h2 class="modal-title-premium">
+                    {% if is_update %}
+                        Modifier l'équipement
+                    {% else %}
+                        Ajouter au Catalogue
+                    {% endif %}
+                </h2>
+                <p class="modal-subtitle-premium">
+                    {% if is_update %}
+                        {{ equipement.nom }}
+                    {% else %}
+                        Saisissez les détails du nouvel équipement.
+                    {% endif %}
+                </p>
             </div>
             <button onclick="closeModal()" class="close-btn-premium"><i class="ti ti-x"></i></button>
         </div>
         
         <form method="post"
-              hx-post="{% url 'dashboard_formateur_create_demande' %}"
-              hx-target="#modal-container"
+              hx-post="{% if is_update %}{% url 'dashboard_admin_edit_equipement' equipement.id %}{% else %}{% url 'dashboard_admin_create_equipement' %}{% endif %}"
+              {% if is_update %}
+                  hx-target="#equipement-row-{{ equipement.id }}" hx-swap="outerHTML"
+              {% else %}
+                  hx-target="#modal-container"
+              {% endif %}
               class="modal-form-premium">
             {% csrf_token %}
             
-            <div class="form-group-premium">
-                <label for="{{ demande_form.equipement.id_for_label }}">
-                    <i class="ti ti-box"></i> Équipement requis
-                </label>
-                {{ demande_form.equipement }}
-                {% if demande_form.equipement.errors %}<span class="error-text-premium"><i class="ti ti-alert-circle"></i> {{ demande_form.equipement.errors.0 }}</span>{% endif %}
-            </div>
-            
             <div class="form-row-premium">
                 <div class="form-group-premium" style="flex: 2;">
-                    <label for="{{ demande_form.atelier_cible.id_for_label }}">
-                        <i class="ti ti-building-community"></i> Atelier cible
+                    <label for="{{ equipement_form.nom.id_for_label }}">
+                        <i class="ti ti-box"></i> Nom de l'équipement
                     </label>
-                    {{ demande_form.atelier_cible }}
-                    {% if demande_form.atelier_cible.errors %}<span class="error-text-premium"><i class="ti ti-alert-circle"></i> {{ demande_form.atelier_cible.errors.0 }}</span>{% endif %}
+                    {{ equipement_form.nom }}
+                    {% if equipement_form.nom.errors %}<span class="error-text-premium"><i class="ti ti-alert-circle"></i> {{ equipement_form.nom.errors.0 }}</span>{% endif %}
                 </div>
                 
                 <div class="form-group-premium" style="flex: 1;">
-                    <label for="{{ demande_form.quantite.id_for_label }}">
-                        <i class="ti ti-123"></i> Quantité
+                    <label for="{{ equipement_form.reference.id_for_label }}">
+                        <i class="ti ti-barcode"></i> Référence
                     </label>
-                    {{ demande_form.quantite }}
-                    {% if demande_form.quantite.errors %}<span class="error-text-premium"><i class="ti ti-alert-circle"></i> {{ demande_form.quantite.errors.0 }}</span>{% endif %}
+                    {{ equipement_form.reference }}
+                    {% if equipement_form.reference.errors %}<span class="error-text-premium"><i class="ti ti-alert-circle"></i> {{ equipement_form.reference.errors.0 }}</span>{% endif %}
                 </div>
             </div>
             
-            {% if demande_form.non_field_errors %}
+            <div class="form-row-premium">
+                <div class="form-group-premium" style="flex: 1;">
+                    <label for="{{ equipement_form.stock_total.id_for_label }}">
+                        <i class="ti ti-packages"></i> Stock total
+                    </label>
+                    {{ equipement_form.stock_total }}
+                    {% if equipement_form.stock_total.errors %}<span class="error-text-premium"><i class="ti ti-alert-circle"></i> {{ equipement_form.stock_total.errors.0 }}</span>{% endif %}
+                </div>
+                
+                <div class="form-group-premium" style="flex: 1;">
+                    <label for="{{ equipement_form.stock_disponible.id_for_label }}">
+                        <i class="ti ti-check"></i> Stock dispo
+                    </label>
+                    {{ equipement_form.stock_disponible }}
+                    {% if equipement_form.stock_disponible.errors %}<span class="error-text-premium"><i class="ti ti-alert-circle"></i> {{ equipement_form.stock_disponible.errors.0 }}</span>{% endif %}
+                </div>
+                
+                <div class="form-group-premium" style="flex: 1;">
+                    <label for="{{ equipement_form.seuil_alerte.id_for_label }}">
+                        <i class="ti ti-bell-ringing"></i> Seuil d'alerte
+                    </label>
+                    {{ equipement_form.seuil_alerte }}
+                    {% if equipement_form.seuil_alerte.errors %}<span class="error-text-premium"><i class="ti ti-alert-circle"></i> {{ equipement_form.seuil_alerte.errors.0 }}</span>{% endif %}
+                </div>
+            </div>
+            
+            <div class="form-group-premium">
+                <label for="{{ equipement_form.note.id_for_label }}">
+                    <i class="ti ti-notes"></i> Note (Optionnelle)
+                </label>
+                {{ equipement_form.note }}
+                {% if equipement_form.note.errors %}<span class="error-text-premium"><i class="ti ti-alert-circle"></i> {{ equipement_form.note.errors.0 }}</span>{% endif %}
+            </div>
+            
+            {% if equipement_form.non_field_errors %}
                 <div class="alert-premium error-alert">
-                    <i class="ti ti-alert-triangle"></i> {{ demande_form.non_field_errors.0 }}
+                    <i class="ti ti-alert-triangle"></i> {{ equipement_form.non_field_errors.0 }}
                 </div>
             {% endif %}
             
             <div class="modal-footer-premium">
                 <button type="button" class="btn-cancel-premium" onclick="closeModal()">Annuler</button>
                 <button type="submit" class="btn-submit-premium">
-                    Envoyer la demande <i class="ti ti-send"></i>
+                    {% if is_update %}Mettre à jour <i class="ti ti-device-floppy"></i>{% else %}Ajouter <i class="ti ti-plus"></i>{% endif %}
                 </button>
             </div>
         </form>
@@ -80,7 +122,7 @@
         border-radius: 20px;
         padding: 2.5rem;
         width: 100%;
-        max-width: 550px;
+        max-width: 600px;
         animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
@@ -152,7 +194,7 @@
         gap: 6px;
     }
 
-    .form-group-premium input, .form-group-premium select {
+    .form-group-premium input, .form-group-premium select, .form-group-premium textarea {
         padding: 0.85rem 1.25rem;
         border: 2px solid #e2e8f0;
         border-radius: 12px;
@@ -160,8 +202,10 @@
         background: #f8fafc;
         color: #1e293b;
         transition: all 0.2s ease;
+        width: 100%;
+        box-sizing: border-box;
     }
-    .form-group-premium input:focus, .form-group-premium select:focus {
+    .form-group-premium input:focus, .form-group-premium select:focus, .form-group-premium textarea:focus {
         outline: none;
         border-color: #3b82f6;
         background: #ffffff;
@@ -245,65 +289,13 @@
     }
 </style>
 
-<!-- TomSelect for searchable dropdowns -->
-<link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.default.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+{% if is_update %}
+<!-- Close modal and swap row -->
 <script>
-    (function() {
-        const initTomSelect = () => {
-            const equipSelect = document.getElementById("{{ demande_form.equipement.id_for_label }}");
-            if (equipSelect && !equipSelect.tomselect) {
-                new TomSelect(equipSelect, {
-                    create: false,
-                    placeholder: "Rechercher un équipement...",
-                    maxOptions: 50
-                });
-            }
-            
-            const atelierSelect = document.getElementById("{{ demande_form.atelier_cible.id_for_label }}");
-            if (atelierSelect && !atelierSelect.tomselect) {
-                new TomSelect(atelierSelect, {
-                    create: false,
-                    placeholder: "Rechercher un atelier...",
-                    maxOptions: 50
-                });
-            }
-        };
-        // Initialize immediately
-        initTomSelect();
-    })();
+    document.body.addEventListener('htmx:afterRequest', function(evt) {
+        if (evt.detail.successful) {
+            closeModal();
+        }
+    });
 </script>
-
-<style>
-  /* Customize TomSelect to match the modal theme */
-  .ts-control {
-        padding: 0.8rem 1rem !important;
-        border: 1.5px solid #e2e8f0 !important;
-        border-radius: 10px !important;
-        background: #f8fafc !important;
-        font-family: 'Inter', system-ui, sans-serif !important;
-        font-size: 0.95rem !important;
-        box-shadow: none !important;
-        transition: all 0.2s !important;
-  }
-  .ts-control.focus {
-        border-color: #3b82f6 !important;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
-        background: #ffffff !important;
-  }
-  .ts-dropdown {
-    border: 1px solid #e2e8f0 !important;
-    border-radius: 10px !important;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.08) !important;
-    font-family: 'Inter', system-ui, sans-serif !important;
-    font-size: 0.95rem !important;
-    z-index: 1060 !important;
-  }
-  .ts-dropdown .option {
-    padding: 0.6rem 1rem !important;
-  }
-  .ts-dropdown .active {
-    background-color: rgba(59, 130, 246, 0.1) !important;
-    color: #3b82f6 !important;
-  }
-</style>
+{% endif %}

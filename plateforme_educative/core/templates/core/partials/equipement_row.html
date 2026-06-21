@@ -1,0 +1,77 @@
+<tr id="equipement-row-{{ equipement.id }}" style="transition: all 0.3s ease;">
+    <td>
+        <div style="font-weight: 700; color: #0f172a; font-size: 1rem;">
+            {{ equipement.nom }}
+        </div>
+        <div style="font-size: 0.8rem; color: #64748b; font-family: monospace; margin-top: 4px;">
+            <i class="ti ti-barcode"></i> {{ equipement.reference }}
+        </div>
+        {% if equipement.note %}
+            <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 4px; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ equipement.note }}">
+                <i class="ti ti-info-circle"></i> {{ equipement.note }}
+            </div>
+        {% endif %}
+    </td>
+    <td>
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; max-width: 150px; font-size: 0.85rem; font-weight: 600;">
+            <span style="color: {% if equipement.en_alerte and equipement.est_actif %}#ef4444{% else %}#10b981{% endif %};">
+                {{ equipement.stock_disponible }}
+            </span>
+            <span style="color: #94a3b8;">/ {{ equipement.stock_total }}</span>
+        </div>
+        <div class="stock-progress-container">
+            <!-- Calcule le pourcentage, limité à 100 -->
+            <div class="stock-progress-bar {% if equipement.en_alerte and equipement.est_actif %}stock-danger{% elif equipement.stock_disponible <= equipement.stock_total|add:"-1" and equipement.stock_disponible > equipement.seuil_alerte %}stock-warning{% else %}stock-safe{% endif %}" 
+                 style="width: {% widthratio equipement.stock_disponible equipement.stock_total 100 %}%;"></div>
+        </div>
+        {% if equipement.en_alerte and equipement.est_actif %}
+            <div style="font-size: 0.7rem; color: #ef4444; font-weight: 700; margin-top: 4px; display: flex; align-items: center; gap: 4px;">
+                <i class="ti ti-alert-triangle"></i> Stock Critique
+            </div>
+        {% endif %}
+    </td>
+    <td>
+        <div style="display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 8px; background: #f8fafc; border: 1px solid #e2e8f0; font-weight: 700; color: #64748b; font-size: 0.85rem;">
+            {{ equipement.seuil_alerte }}
+        </div>
+    </td>
+    <td>
+        {% if equipement.est_actif %}
+            <span style="background: #d1fae5; color: #047857; padding: 4px 10px; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;">
+                <span style="width: 6px; height: 6px; border-radius: 50%; background: #10b981;"></span> Actif
+            </span>
+        {% else %}
+            <span style="background: #f1f5f9; color: #64748b; padding: 4px 10px; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;">
+                <span style="width: 6px; height: 6px; border-radius: 50%; background: #94a3b8;"></span> Archivé
+            </span>
+        {% endif %}
+    </td>
+    <td style="text-align: right;">
+        <div style="display: inline-flex; gap: 6px;">
+            <button style="width: 32px; height: 32px; border-radius: 8px; border: 1px solid #e2e8f0; background: #ffffff; color: #3b82f6; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;"
+                    onmouseover="this.style.background='#eff6ff'; this.style.borderColor='#bfdbfe';"
+                    onmouseout="this.style.background='#ffffff'; this.style.borderColor='#e2e8f0';"
+                    hx-get="{% url 'dashboard_admin_edit_equipement' equipement.id %}"
+                    hx-target="#modal-container"
+                    hx-trigger="click"
+                    data-bs-toggle="modal" data-bs-target="#dynamicModal"
+                    title="Éditer">
+                <i class="ti ti-pencil"></i>
+            </button>
+            <button style="width: 32px; height: 32px; border-radius: 8px; border: 1px solid {% if equipement.est_actif %}#fee2e2{% else %}#d1fae5{% endif %}; background: #ffffff; color: {% if equipement.est_actif %}#ef4444{% else %}#10b981{% endif %}; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;"
+                    onmouseover="this.style.background='{% if equipement.est_actif %}#fef2f2{% else %}#ecfdf5{% endif %}';"
+                    onmouseout="this.style.background='#ffffff';"
+                    hx-post="{% url 'dashboard_admin_toggle_equipement' equipement.id %}"
+                    hx-target="#equipement-row-{{ equipement.id }}"
+                    hx-swap="outerHTML"
+                    hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                    title="{% if equipement.est_actif %}Archiver{% else %}Réactiver{% endif %}">
+                {% if equipement.est_actif %}
+                    <i class="ti ti-archive"></i>
+                {% else %}
+                    <i class="ti ti-archive-off"></i>
+                {% endif %}
+            </button>
+        </div>
+    </td>
+</tr>

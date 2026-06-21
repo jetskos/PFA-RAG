@@ -13,28 +13,53 @@ class TicketForm(forms.ModelForm):
             'atelier': forms.Select(attrs={'class': 'form-input'}),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['equipement'].empty_label = ""
+        self.fields['atelier'].empty_label = ""
+
 
 class EquipmentForm(forms.ModelForm):
     class Meta:
         model = Equipment
-        fields = ['nom', 'numero_serie', 'etat', 'note']
+        fields = ['nom', 'reference', 'stock_total', 'stock_disponible', 'seuil_alerte', 'note']
         widgets = {
             'nom': forms.TextInput(attrs={'placeholder': "Nom de l'équipement", 'class': 'form-input'}),
-            'numero_serie': forms.TextInput(attrs={'placeholder': 'Numéro de série', 'class': 'form-input'}),
-            'etat': forms.Select(attrs={'class': 'form-input'}),
+            'reference': forms.TextInput(attrs={'placeholder': 'Référence (unique)', 'class': 'form-input'}),
+            'stock_total': forms.NumberInput(attrs={'class': 'form-input', 'min': 0}),
+            'stock_disponible': forms.NumberInput(attrs={'class': 'form-input', 'min': 0}),
+            'seuil_alerte': forms.NumberInput(attrs={'class': 'form-input', 'min': 0}),
             'note': forms.Textarea(attrs={'placeholder': 'Note interne (optionnel)', 'rows': 3, 'class': 'form-input'}),
         }
 
-    def clean_numero_serie(self):
-        numero = self.cleaned_data.get('numero_serie')
-        if not numero:
-            return numero
-        qs = Equipment.objects.filter(numero_serie=numero)
+    def clean_reference(self):
+        ref = self.cleaned_data.get('reference')
+        if not ref:
+            return ref
+        qs = Equipment.objects.filter(reference=ref)
         if self.instance and self.instance.pk:
             qs = qs.exclude(pk=self.instance.pk)
         if qs.exists():
-            raise forms.ValidationError('Un équipement avec ce numéro de série existe déjà.')
-        return numero
+            raise forms.ValidationError('Un équipement avec cette référence existe déjà.')
+        return ref
+
+
+class WorkshopForm(forms.ModelForm):
+    class Meta:
+        model = Workshop
+        fields = ['titre', 'date_debut', 'date_fin', 'salle', 'tuteur', 'niveau_cible']
+        widgets = {
+            'titre': forms.TextInput(attrs={'placeholder': "Titre de l'atelier", 'class': 'form-input'}),
+            'date_debut': forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': 'form-input'}),
+            'date_fin': forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': 'form-input'}),
+            'salle': forms.TextInput(attrs={'placeholder': "Salle (ex: Amphi A)", 'class': 'form-input'}),
+            'tuteur': forms.Select(attrs={'class': 'form-input'}),
+            'niveau_cible': forms.TextInput(attrs={'placeholder': "Niveau cible", 'class': 'form-input'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['tuteur'].empty_label = ""
 
 
 class DemandeMaterielForm(forms.ModelForm):
@@ -48,5 +73,24 @@ class DemandeMaterielForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request', None)
         super().__init__(*args, **kwargs)
-        self.fields['atelier_cible'].queryset = Workshop.objects.all().order_by('-date_debut')
+        
+        if self.request and not self.request.user.is_staff:
+            self.fields['atelier_cible'].queryset = Workshop.objects.filter(createur=self.request.user).order_by('-date_debut')
+        else:
+            self.fields['atelier_cible'].queryset = Workshop.objects.all().order_by('-date_debut')
+            
+        self.fields['equipement'].queryset = Equipment.objects.filter(est_actif=True)
+        self.fields['atelier_cible'].empty_label = ""
+        self.fields['equipement'].empty_label = ""
+
+    def clean(self):
+        cleaned_data = super().clean()
+        equipement = cleaned_data.get('equipement')
+        quantite = cleaned_data.get('quantite')
+
+        if equipement and quantite:
+            if quantite > equipement.stock_disponible:
+                self.add_error('quantite', f"Stock insuffisant. Il ne reste que {equipement.stock_disponible} unités.")
+        return cleaned_data

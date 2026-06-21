@@ -1,39 +1,53 @@
 {% if equipements.exists %}
-    <ul class="liste-docs-detaillee">
-        {% for eq in equipements %}
-        <li class="doc-item">
-            <div class="doc-header actions-between gap-sm m-0">
-                <div class="flex-1">
-                    <a class="doc-titre">{{ eq.nom }}</a>
-                    <p class="doc-description mt-2 m-0">S/N: {{ eq.numero_serie }}</p>
-                </div>
-                {% if user.is_staff or user.is_formateur %}
-                <div class="actions gap-xs m-0">
-                    <button class="btn btn-ghost btn-sm"
-                            hx-get="{% url 'logistics:editer_equipement' eq.id %}"
-                            hx-target="#form-equipement-container"
-                            hx-swap="innerHTML">Modifier</button>
-                    <button class="btn btn-ghost btn-sm btn-danger"
-                            hx-post="{% url 'logistics:supprimer_equipement' eq.id %}"
-                            hx-confirm="Supprimer cet équipement ?"
-                            hx-target="#equipements-list"
-                            hx-swap="innerHTML"
-                            hx-on::after-request="document.getElementById('form-equipement-container').innerHTML = document.getElementById('placeholder-template').innerHTML">Supprimer</button>
-                </div>
+    {% for eq in equipements %}
+    <div class="eq-item">
+        <div class="eq-item-indicator 
+            {% if not eq.est_actif %}ind-en_panne
+            {% elif eq.en_alerte %}ind-en_maintenance
+            {% else %}ind-disponible{% endif %}">
+        </div>
+        
+        <div class="eq-item-body">
+            <div class="eq-item-name">{{ eq.nom }}</div>
+            <div class="eq-item-serial">Ref: {{ eq.reference }} | Stock: {{ eq.stock_disponible }}/{{ eq.stock_total }}</div>
+            
+            <div class="eq-item-status 
+                {% if not eq.est_actif %}st-en_panne
+                {% elif eq.en_alerte %}st-en_maintenance
+                {% else %}st-disponible{% endif %}">
+                {% if not eq.est_actif %}
+                    Inactif
+                {% elif eq.en_alerte %}
+                    Alerte stock
+                {% else %}
+                    Actif
                 {% endif %}
             </div>
-            <p class="mt-2 m-0">
-                {% if eq.etat == 'DISPONIBLE' %}
-                    <span class="badge-niveau badge-disponible">Disponible</span>
-                {% elif eq.etat == 'EN_PANNE' %}
-                    <span class="badge-niveau badge-panne">En panne</span>
-                {% else %}
-                    <span class="badge-niveau badge-maintenance">En maintenance</span>
-                {% endif %}
-            </p>
-        </li>
-        {% endfor %}
-    </ul>
+        </div>
+        
+        {% if user.is_staff or user.is_formateur %}
+        <div class="eq-item-actions">
+            <button class="eq-action mod"
+                    hx-get="{% url 'logistics:editer_equipement' eq.id %}"
+                    hx-target="#form-equipement-container"
+                    hx-swap="innerHTML">
+                Modifier
+            </button>
+            <button class="eq-action del"
+                    hx-post="{% url 'logistics:supprimer_equipement' eq.id %}"
+                    hx-confirm="Supprimer cet équipement ?"
+                    hx-target="#equipements-list"
+                    hx-swap="innerHTML"
+                    hx-on::after-request="document.getElementById('form-equipement-container').innerHTML = document.getElementById('placeholder-template').innerHTML">
+                Supprimer
+            </button>
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
 {% else %}
-    <p class="message-empty">Aucun équipement trouvé.</p>
+    <div class="logi-empty" style="min-height: 200px;">
+        <div class="logi-empty-ring" style="width: 50px; height: 50px; font-size: 1.2rem;"><i class="ti ti-package"></i></div>
+        <p style="margin-top: 0;">Aucun équipement trouvé.</p>
+    </div>
 {% endif %}

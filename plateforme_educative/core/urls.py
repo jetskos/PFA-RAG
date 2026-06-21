@@ -37,6 +37,9 @@ from .views import (
     edit_niveau_view,
     create_demande_materiel_view,
     admin_process_demande_view,
+    admin_equipement_create_view,
+    admin_equipement_update_view,
+    admin_equipement_toggle_active_view,
 )
 
 urlpatterns = [
@@ -56,6 +59,9 @@ urlpatterns = [
     path('dashboard/admin/pending/activer/', activate_pending_student_view, name='dashboard_admin_activate_pending_student'),
         path('dashboard/admin/demandes/<uuid:demande_id>/process/',
             admin_process_demande_view, name='dashboard_admin_process_demande'),
+    path('dashboard/admin/equipements/creer/', admin_equipement_create_view, name='dashboard_admin_create_equipement'),
+    path('dashboard/admin/equipements/<int:equipement_id>/editer/', admin_equipement_update_view, name='dashboard_admin_edit_equipement'),
+    path('dashboard/admin/equipements/<int:equipement_id>/toggle/', admin_equipement_toggle_active_view, name='dashboard_admin_toggle_equipement'),
     path('dashboard/formateur/', formateur_dashboard_view, name='dashboard_formateur'),
     path('dashboard/formateur/demandes/creer/', create_demande_materiel_view, name='dashboard_formateur_create_demande'),
     path('dashboard/student/', student_dashboard_view, name='dashboard_student'),
