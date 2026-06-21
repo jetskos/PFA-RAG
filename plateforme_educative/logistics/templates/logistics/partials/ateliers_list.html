@@ -1,0 +1,69 @@
+{% if ateliers.exists %}
+<div class="logi-eq-list">
+    {% for atelier in ateliers %}
+    <div class="eq-item">
+        <div class="eq-item-indicator 
+            {% if atelier.est_annule %}ind-annule
+            {% elif atelier.statut_dynamique == 'En cours' %}ind-en_cours
+            {% elif atelier.statut_dynamique == 'À venir' %}ind-a_venir
+            {% else %}ind-termine{% endif %}">
+        </div>
+        <div class="eq-item-main">
+            <div class="eq-item-header">
+                <div>
+                    <h3 class="eq-item-name">{{ atelier.titre }}</h3>
+                    <span class="eq-item-ref"><i class="ti ti-map-pin"></i> {{ atelier.salle }}</span>
+                </div>
+                {% if user.is_staff or user == atelier.createur %}
+                <div class="eq-item-actions">
+                    <button type="button" class="eq-item-btn" title="Modifier"
+                            hx-get="{% url 'logistics:editer_atelier' atelier.pk %}"
+                            hx-target="#form-atelier-container" hx-swap="innerHTML">
+                        <i class="ti ti-edit"></i>
+                    </button>
+                    {% if not atelier.est_annule %}
+                    <button type="button" class="eq-item-btn" title="Annuler/Supprimer"
+                            hx-post="{% url 'logistics:supprimer_atelier' atelier.pk %}"
+                            hx-confirm="Êtes-vous sûr de vouloir supprimer cet atelier ?"
+                            hx-target="#ateliers-list">
+                        <i class="ti ti-trash"></i>
+                    </button>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="eq-item-stats">
+                <div class="eq-stat">
+                    <span class="eq-stat-lbl"><i class="ti ti-user"></i> Tuteur</span>
+                    <span class="eq-stat-val">{{ atelier.tuteur.get_full_name|default:atelier.tuteur.email }}</span>
+                </div>
+                <div class="eq-stat">
+                    <span class="eq-stat-lbl"><i class="ti ti-activity"></i> Statut</span>
+                    <span class="eq-stat-badge 
+                        {% if atelier.est_annule %}st-annule
+                        {% elif atelier.statut_dynamique == 'En cours' %}st-en_cours
+                        {% elif atelier.statut_dynamique == 'À venir' %}st-a_venir
+                        {% else %}st-termine{% endif %}">
+                        {% if atelier.est_annule %}<i class="ti ti-ban"></i>
+                        {% elif atelier.statut_dynamique == 'En cours' %}<i class="ti ti-player-play"></i>
+                        {% elif atelier.statut_dynamique == 'À venir' %}<i class="ti ti-calendar-event"></i>
+                        {% else %}<i class="ti ti-check"></i>{% endif %}
+                        {{ atelier.statut_dynamique }}
+                    </span>
+                </div>
+                <div class="eq-stat" style="grid-column: span 2;">
+                    <span class="eq-stat-lbl"><i class="ti ti-calendar"></i> Dates</span>
+                    <span class="eq-stat-val" style="font-size:0.75rem;">Du {{ atelier.date_debut|date:"d M Y, H:i" }} au {{ atelier.date_fin|date:"d M Y, H:i" }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div style="padding: 3rem 1rem; text-align: center; color: var(--ink-muted);">
+    <i class="ti ti-building-community" style="font-size: 2.5rem; opacity: 0.5; margin-bottom: 1rem; display: block;"></i>
+    <p style="font-weight: 600; font-size: 0.95rem;">Aucun atelier trouvé.</p>
+</div>
+{% endif %}

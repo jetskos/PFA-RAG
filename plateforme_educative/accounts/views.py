@@ -1,3 +1,4 @@
+from django.db import transaction
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.urls import reverse
@@ -316,6 +317,7 @@ def profile_view(request):
 
 
 @login_required
+@transaction.atomic
 def profile_edit_view(request):
     """Met a jour le profil : email + photo (upload / suppression)."""
     if request.method == 'POST':
@@ -426,7 +428,7 @@ class CustomLoginView(LoginView):
     
     def form_valid(self, form):
         user = form.get_user()
-        print("DEBUG LOGIN: email =", user.email, "is_temp =", user.is_temp_password, "created_at =", user.temp_password_created_at)
+
         if user.is_temp_password:
             # Vérification de l'expiration des 10 minutes
             if not user.temp_password_created_at or timezone.now() - user.temp_password_created_at > timedelta(minutes=10):

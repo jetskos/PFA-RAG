@@ -1,3 +1,4 @@
+from django.db import transaction
 import os
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
@@ -52,7 +53,9 @@ def espace_formateur(request):
 @login_required
 @require_http_methods(['GET', 'POST'])
 def nouveau_cours(request):
-    """Créer un nouveau cours pour le formateur connecté."""
+    """Créer un nouveau cours pour le formateur connecté. Réservé aux FORMATEURS."""
+    if not (request.user.is_formateur or request.user.is_superuser):
+        return HttpResponseForbidden("Accès réservé aux formateurs.")
     if request.method == 'POST':
         form = CoursForm(request.POST, request.FILES)
         if form.is_valid():
@@ -329,10 +332,10 @@ def liste_cours(request):
     q = request.GET.get('q', '').strip()
     
     if request.user.is_superuser:
-        cours_list = Cours.objects.all()
+        cours_list = Cours.objects.select_related('createur', 'niveau').all()
     elif request.user.is_formateur:
         # Formateurs : Leurs propres cours (publiés ou non) + Les autres cours publiés
-        cours_list = Cours.objects.filter(
+        cours_list = Cours.objects.select_related('createur', 'niveau').filter(
             Q(createur=request.user) | Q(actif=True)
         )
     else:
@@ -340,9 +343,9 @@ def liste_cours(request):
         classe = getattr(request.user, 'classe', None)
         niveau = getattr(classe, 'niveau', None)
         if niveau:
-            cours_list = Cours.objects.filter(actif=True, niveau=niveau)
+            cours_list = Cours.objects.select_related('createur', 'niveau').filter(actif=True, niveau=niveau)
         else:
-            cours_list = Cours.objects.filter(actif=True)
+            cours_list = Cours.objects.select_related('createur', 'niveau').filter(actif=True)
             
     # Application de la recherche si présente
     if q:
@@ -401,10 +404,6 @@ def detail_cours(request, cours_id):
                     file_exists = os.path.exists(file_path)
                 except Exception as exc:
                     file_path = f'INDISPONIBLE ({exc})'
-
-                print(
-                    f"[DEBUG PDF] doc_id={doc.id} titre='{doc.titre}' path='{file_path}' exists={file_exists}"
-                )
 
             type_key = doc.get_type_document_display()
             if type_key not in documents_par_type:
@@ -482,6 +481,7 @@ def detail_cours(request, cours_id):
     return render(request, 'apprentissage/detail_cours.html', context)
 
 
+@login_required
 def detail_chapitre(request, cours_id, chapitre_id):
     """Affiche un chapitre avec ses documents regroupés par type."""
     cours = get_object_or_404(Cours, id=cours_id, actif=True)
@@ -568,8 +568,9 @@ def detail_chapitre(request, cours_id, chapitre_id):
 
 
 
+@login_required
 def telecharger_document(request, document_id):
-    """Télécharge le fichier PDF d'un document."""
+    """Télécharge le fichier PDF d'un document. Réservé aux utilisateurs connectés."""
     document = get_object_or_404(Document, id=document_id, actif=True)
     
     if not document.fichier_pdf:
@@ -864,6 +865,7 @@ def devoir_supprimer_view(request, devoir_id):
 @login_required
 @FormateurDevoirRequiredMixin.as_decorator()
 @require_http_methods(['GET', 'POST'])
+@transaction.atomic
 def soumission_noter_view(request, soumission_id):
     """Permet au formateur de noter une soumission d'élève."""
     soumission = get_object_or_404(Soumission, pk=soumission_id)

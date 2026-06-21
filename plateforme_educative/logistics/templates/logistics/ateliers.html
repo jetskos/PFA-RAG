@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Inventaire — Logistics{% endblock %}
+{% block title %}Ateliers — Logistics{% endblock %}
 {% block content %}
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
@@ -155,7 +155,6 @@
     gap: 1.5rem;
     flex-wrap: wrap;
   }
-  .logi-header-left {}
   .logi-eyebrow {
     font-size: 0.7rem;
     font-weight: 700;
@@ -254,7 +253,7 @@
   }
 
   /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-     MAIN GRID: LIST + FORM
+     MAIN GRID
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
   .logi-main-grid {
     display: grid;
@@ -262,9 +261,7 @@
     gap: 1.25rem;
     align-items: start;
   }
-  @media (max-width: 960px) { .logi-main-grid { grid-template-columns: 1fr; } }
 
-  /* ── PANEL base ── */
   .logi-panel {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -290,182 +287,88 @@
     gap: 0.4rem;
   }
   .logi-panel-title i { color: var(--teal); font-size: 1rem; }
-  .logi-panel-count {
-    font-size: 0.72rem;
-    font-weight: 700;
-    background: var(--teal-glow);
-    color: var(--teal);
-    border: 1px solid rgba(15,118,110,0.15);
-    border-radius: 999px;
-    padding: 2px 8px;
-  }
-
-  /* ── FILTER PILLS ── */
-  .logi-filter-row {
-    padding: 0.75rem 1.25rem;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    gap: 0.35rem;
-    flex-wrap: wrap;
-  }
-  .logi-fpill {
-    padding: 0.3rem 0.8rem;
-    border-radius: 999px;
-    border: 1.5px solid var(--border);
-    background: transparent;
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: var(--ink-muted);
-    cursor: pointer;
-    font-family: inherit;
-    transition: all 0.15s;
-    display: flex; align-items: center; gap: 0.3rem;
-  }
-  .logi-fpill:hover { border-color: var(--teal); color: var(--teal); background: var(--teal-pale); }
-  .logi-fpill.is-active { background: var(--teal); border-color: var(--teal); color: #fff; }
-  .logi-fpill .pill-dot {
-    width: 6px; height: 6px; border-radius: 50%;
-    background: currentColor; opacity: 0.7;
-    flex-shrink: 0;
-  }
-
-  /* ── ADD BUTTON AREA ── */
-  .logi-add-row {
-    padding: 0.75rem 1.25rem;
-    border-bottom: 1px solid var(--border);
-  }
-
-  /* ── EQUIPMENT GRID ── */
+  
+  /* ── ATELIER GRID ── */
   .logi-eq-list {
     padding: 1.25rem;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 1rem;
   }
-  .logi-eq-list::-webkit-scrollbar { width: 3px; }
-  .logi-eq-list::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 2px; }
 
-  /* ── EQUIPMENT CARD ── */
+  /* ── ATELIER CARD ── */
   .eq-item {
     border-radius: var(--r-md);
-    border: 1.5px solid var(--border);
     background: var(--surface);
-    padding: 0.85rem 1rem;
-    cursor: pointer;
-    transition: all 0.15s;
-    display: flex;
-    gap: 0.75rem;
-    align-items: center;
-  }
-  .eq-item:hover { border-color: var(--teal); box-shadow: 0 0 0 3px var(--teal-glow); }
-  .eq-item-indicator {
-    width: 3px;
-    border-radius: 2px;
-    align-self: stretch;
-    flex-shrink: 0;
-    min-height: 36px;
-  }
-  .ind-disponible    { background: var(--emerald); }
-  .ind-en_panne      { background: var(--red); }
-  .ind-en_maintenance{ background: var(--amber); }
-  .ind-default       { background: var(--ink-faint); }
-
-  .eq-item-body { flex: 1; min-width: 0; }
-  .eq-item-name {
-    font-size: 0.875rem;
-    font-weight: 700;
-    color: var(--ink);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .eq-item-serial {
-    font-size: 0.75rem;
-    color: var(--ink-muted);
-    font-weight: 500;
-    margin-top: 0.15rem;
-  }
-  .eq-item-status {
-    font-size: 0.7rem;
-    font-weight: 700;
-    padding: 2px 7px;
-    border-radius: 999px;
-    margin-top: 0.35rem;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-    width: fit-content;
-  }
-  .st-disponible     { background: rgba(16,185,129,0.1); color: #059669; }
-  .st-en_panne       { background: rgba(239,68,68,0.1); color: #dc2626; }
-  .st-en_maintenance { background: rgba(245,158,11,0.1); color: #d97706; }
-
-  .eq-item-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
-    flex-shrink: 0;
-  }
-  .eq-action {
-    padding: 0.25rem 0.6rem;
-    border-radius: 6px;
     border: 1px solid var(--border);
-    background: var(--bg);
-    font-size: 0.7rem;
-    font-weight: 700;
-    cursor: pointer;
-    font-family: inherit;
-    transition: all 0.15s;
-    white-space: nowrap;
-  }
-  .eq-action.mod { color: var(--teal); }
-  .eq-action.mod:hover { background: var(--teal-pale); border-color: var(--teal); }
-  .eq-action.del { color: var(--red); }
-  .eq-action.del:hover { background: rgba(239,68,68,0.08); border-color: var(--red); }
-
-  /* Legend footer */
-  .logi-legend {
-    padding: 0.65rem 1.25rem;
-    border-top: 1px solid var(--border);
-    background: var(--bg);
-    display: flex; gap: 1rem; flex-wrap: wrap;
-  }
-  .leg-item { display: flex; align-items: center; gap: 0.35rem; font-size: 0.72rem; font-weight: 600; color: var(--ink-muted); }
-  .leg-dot  { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-
-  /* ── FORM PANEL RIGHT ── */
-  .logi-form-head {
-    padding: 1.25rem 1.5rem;
-    border-bottom: 1px solid var(--border);
-    background: var(--bg);
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .logi-form-title { font-size: 0.95rem; font-weight: 800; color: var(--ink); display: flex; align-items: center; gap: 0.4rem; }
-  .logi-form-title i { color: var(--teal); }
-  .logi-form-hint { font-size: 0.78rem; color: var(--ink-muted); font-weight: 500; }
-  .logi-form-body { padding: 2rem 1.75rem; min-height: 420px; }
-
-  /* Placeholder */
-  .logi-empty {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
     display: flex;
     flex-direction: column;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    overflow: hidden;
+  }
+  .eq-item:hover {
+    box-shadow: 0 10px 24px rgba(0,0,0,0.06);
+    transform: translateY(-2px);
+    border-color: var(--border-strong);
+  }
+  .eq-item-indicator {
+    position: absolute; top: 0; left: 0; bottom: 0; width: 4px;
+    background: var(--border-strong);
+  }
+  .ind-en_cours { background: var(--emerald); }
+  .ind-a_venir { background: var(--blue); }
+  .ind-termine { background: var(--ink-faint); }
+  .ind-annule { background: var(--red); }
+
+  .eq-item-main { padding: 1.2rem 1.2rem 1rem 1.2rem; margin-left: 4px; }
+  .eq-item-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+  .eq-item-name { font-size: 1rem; font-weight: 800; color: var(--ink); margin-bottom: 0.2rem; line-height: 1.3; }
+  .eq-item-ref { font-size: 0.75rem; color: var(--ink-muted); font-family: monospace; letter-spacing: 0.05em; background: var(--bg); padding: 0.15rem 0.4rem; border-radius: 4px; display: inline-block; }
+  
+  .eq-item-actions { display: flex; gap: 0.3rem; }
+  .eq-item-btn {
+    background: transparent; border: none; padding: 0.35rem; color: var(--ink-muted); cursor: pointer; border-radius: 6px; transition: all 0.15s;
+  }
+  .eq-item-btn:hover { background: var(--bg); color: var(--teal); }
+
+  .eq-item-stats {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 1rem;
+    padding-top: 1rem; border-top: 1px dashed var(--border);
+  }
+  .eq-stat { display: flex; flex-direction: column; gap: 0.2rem; }
+  .eq-stat-lbl { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-faint); display: flex; align-items: center; gap: 0.2rem; }
+  .eq-stat-val { font-size: 0.85rem; font-weight: 600; color: var(--ink-mid); }
+  .eq-stat-badge {
+    display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.2rem 0.5rem;
+    border-radius: 999px; font-size: 0.7rem; font-weight: 700;
+  }
+  .st-en_cours { background: rgba(16,185,129,0.1); color: var(--emerald); border: 1px solid rgba(16,185,129,0.2); }
+  .st-a_venir { background: rgba(59,130,246,0.1); color: var(--blue); border: 1px solid rgba(59,130,246,0.2); }
+  .st-termine { background: var(--bg); color: var(--ink-muted); border: 1px solid var(--border); }
+  .st-annule { background: rgba(239,68,68,0.1); color: var(--red); border: 1px solid rgba(239,68,68,0.2); }
+
+  /* ── SEARCH BAR ── */
+  .logi-search {
+    display: flex;
     align-items: center;
-    justify-content: center;
-    min-height: 380px;
-    gap: 1.25rem;
-    text-align: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 999px;
+    width: 300px;
+    transition: all 0.2s;
   }
-  .logi-empty-ring {
-    width: 80px; height: 80px;
-    border-radius: 50%;
-    border: 2px dashed var(--border-strong);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 2rem;
-    color: var(--ink-faint);
-    background: var(--bg);
+  .logi-search:focus-within {
+    border-color: var(--teal);
+    box-shadow: 0 0 0 3px var(--teal-glow);
   }
-  .logi-empty h3 { font-size: 1.05rem; font-weight: 700; color: var(--ink-mid); }
-  .logi-empty p  { font-size: 0.85rem; color: var(--ink-muted); max-width: 240px; line-height: 1.6; }
+  .logi-search i { color: var(--ink-muted); font-size: 1.1rem; }
+  .logi-search input {
+    border: none; background: transparent; width: 100%; outline: none; font-size: 0.85rem; color: var(--ink);
+  }
 
   /* ── BUTTONS ── */
   .btn-primary {
@@ -479,18 +382,6 @@
     white-space: nowrap;
   }
   .btn-primary:hover { background: var(--teal-hover); }
-  .btn-primary i { font-size: 0.95rem; }
-
-  .btn-ghost {
-    display: inline-flex; align-items: center; gap: 0.4rem;
-    padding: 0.55rem 1rem;
-    background: transparent; color: var(--ink-mid);
-    border: 1.5px solid var(--border); border-radius: var(--r-sm);
-    font-size: 0.825rem; font-weight: 700; font-family: inherit;
-    cursor: pointer; text-decoration: none;
-    transition: all 0.15s;
-  }
-  .btn-ghost:hover { border-color: var(--ink-mid); color: var(--ink); background: var(--bg); }
 </style>
 
 <div class="logi-page">
@@ -504,13 +395,15 @@
       </div>
 
       <div class="logi-tabs">
-        <a href="{% url 'logistics:inventaire' %}" class="logi-tab active">
+        {% if user.is_staff %}
+        <a href="{% url 'logistics:inventaire' %}" class="logi-tab">
           <i class="ti ti-package"></i> Inventaire
         </a>
         <a href="{% url 'logistics:tickets' %}" class="logi-tab">
           <i class="ti ti-ticket"></i> Tickets
         </a>
-        <a href="{% url 'logistics:ateliers' %}" class="logi-tab">
+        {% endif %}
+        <a href="{% url 'logistics:ateliers' %}" class="logi-tab active">
           <i class="ti ti-building-community"></i> Ateliers
         </a>
         <a href="{% url 'logistics:demandes' %}" class="logi-tab">
@@ -530,17 +423,24 @@
   <div class="logi-header">
     <div class="logi-header-inner">
       <div class="logi-header-left">
-        <p class="logi-eyebrow">Logistics · Inventaire</p>
-        <h1 class="logi-page-title">Gestion des équipements</h1>
-        <p class="logi-page-sub">Consultez, filtrez et gérez tout le parc matériel.</p>
+        <p class="logi-eyebrow">Logistics · Ateliers</p>
+        <h1 class="logi-page-title">Gestion des ateliers</h1>
+        <p class="logi-page-sub">Planifiez et gérez les ateliers de formation.</p>
       </div>
       <div class="logi-header-actions">
+        <div class="logi-search">
+          <i class="ti ti-search"></i>
+          <input type="text" name="q" placeholder="Rechercher un atelier..."
+                 hx-get="{% url 'logistics:ateliers' %}"
+                 hx-target="#ateliers-list"
+                 hx-trigger="keyup changed delay:300ms">
+        </div>
         {% if user.is_staff or user.is_formateur %}
         <button class="btn-primary" type="button"
-          hx-get="{% url 'logistics:ajouter_equipement' %}"
-          hx-target="#form-equipement-container"
+          hx-get="{% url 'logistics:ajouter_atelier' %}"
+          hx-target="#form-atelier-container"
           hx-swap="innerHTML">
-          <i class="ti ti-plus"></i> Ajouter un équipement
+          <i class="ti ti-plus"></i> Nouvel atelier
         </button>
         {% endif %}
       </div>
@@ -555,114 +455,74 @@
       <div class="stat-tile">
         <div class="stat-tile-top">
           <div class="stat-tile-icon" style="background:rgba(15,118,110,0.1);color:var(--teal);">
-            <i class="ti ti-package"></i>
+            <i class="ti ti-building-community"></i>
           </div>
           <span class="stat-tile-trend" style="background:rgba(15,118,110,0.08);color:var(--teal);">Total</span>
         </div>
         <div>
-          <div class="stat-tile-val">{{ equipements|length }}</div>
-          <div class="stat-tile-lbl">Équipements</div>
+          <div class="stat-tile-val">{{ ateliers_total }}</div>
+          <div class="stat-tile-lbl">Ateliers créés</div>
         </div>
         <div class="stat-tile-bar"><div class="stat-tile-bar-fill" style="width:100%;background:var(--teal);"></div></div>
       </div>
+      
       <div class="stat-tile">
         <div class="stat-tile-top">
           <div class="stat-tile-icon" style="background:rgba(16,185,129,0.1);color:var(--emerald);">
-            <i class="ti ti-circle-check"></i>
+            <i class="ti ti-player-play"></i>
           </div>
-          <span class="stat-tile-trend" style="background:rgba(16,185,129,0.1);color:#059669;">Opérationnel</span>
+          <span class="stat-tile-trend" style="background:rgba(16,185,129,0.1);color:#059669;">Actifs</span>
         </div>
         <div>
-          <div class="stat-tile-val">{{ equipements_disponibles|default:"—" }}</div>
-          <div class="stat-tile-lbl">Disponibles</div>
+          <div class="stat-tile-val">{{ ateliers_en_cours }}</div>
+          <div class="stat-tile-lbl">En cours</div>
         </div>
-        <div class="stat-tile-bar"><div class="stat-tile-bar-fill" style="width:70%;background:var(--emerald);"></div></div>
+        <div class="stat-tile-bar"><div class="stat-tile-bar-fill" style="width:60%;background:var(--emerald);"></div></div>
       </div>
+      
       <div class="stat-tile">
         <div class="stat-tile-top">
-          <div class="stat-tile-icon" style="background:rgba(245,158,11,0.1);color:var(--amber);">
-            <i class="ti ti-tool"></i>
+          <div class="stat-tile-icon" style="background:rgba(59,130,246,0.1);color:var(--blue);">
+            <i class="ti ti-calendar-event"></i>
           </div>
-          <span class="stat-tile-trend" style="background:rgba(245,158,11,0.1);color:#d97706;">En cours</span>
+          <span class="stat-tile-trend" style="background:rgba(59,130,246,0.1);color:var(--blue);">Planifiés</span>
         </div>
         <div>
-          <div class="stat-tile-val">{{ equipements_maintenance|default:"—" }}</div>
-          <div class="stat-tile-lbl">En maintenance</div>
+          <div class="stat-tile-val">{{ ateliers_a_venir }}</div>
+          <div class="stat-tile-lbl">À venir</div>
         </div>
-        <div class="stat-tile-bar"><div class="stat-tile-bar-fill" style="width:40%;background:var(--amber);"></div></div>
+        <div class="stat-tile-bar"><div class="stat-tile-bar-fill" style="width:40%;background:var(--blue);"></div></div>
       </div>
+      
       <div class="stat-tile">
         <div class="stat-tile-top">
           <div class="stat-tile-icon" style="background:rgba(239,68,68,0.1);color:var(--red);">
-            <i class="ti ti-alert-triangle"></i>
+            <i class="ti ti-ban"></i>
           </div>
-          <span class="stat-tile-trend" style="background:rgba(239,68,68,0.08);color:#dc2626;">Alerte</span>
+          <span class="stat-tile-trend" style="background:rgba(239,68,68,0.08);color:#dc2626;">Supprimés</span>
         </div>
         <div>
-          <div class="stat-tile-val">{{ equipements_en_panne|default:"—" }}</div>
-          <div class="stat-tile-lbl">En panne</div>
+          <div class="stat-tile-val">{{ ateliers_annules }}</div>
+          <div class="stat-tile-lbl">Annulés</div>
         </div>
         <div class="stat-tile-bar"><div class="stat-tile-bar-fill" style="width:20%;background:var(--red);"></div></div>
       </div>
     </div>
 
-    <!-- Main 2-col grid -->
+    <!-- Main List -->
     <div class="logi-main-grid">
-
-      <!-- LEFT: Equipment list panel -->
       <div class="logi-panel">
         <div class="logi-panel-head">
-          <span class="logi-panel-title"><i class="ti ti-list-details"></i> Équipements</span>
-          <span class="logi-panel-count">{{ equipements|length }} au total</span>
+          <span class="logi-panel-title"><i class="ti ti-list-details"></i> Liste des ateliers</span>
         </div>
-
-        <!-- Filters & Search Form -->
-        <form id="filter-form" hx-get="{% url 'logistics:inventaire' %}" hx-target="#equipements-list" hx-swap="innerHTML" class="logi-filter-row" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
-          <input type="hidden" name="etat" id="etat-input" value="TOUS">
-          
-          <div style="display: flex; gap: 0.35rem; flex-wrap: wrap;">
-            <button type="button" class="logi-fpill is-active"
-              onclick="document.getElementById('etat-input').value='TOUS'; document.querySelectorAll('.logi-fpill').forEach(b=>b.classList.remove('is-active')); this.classList.add('is-active'); htmx.trigger('#filter-form', 'submit')">
-              Tous
-            </button>
-            <button type="button" class="logi-fpill"
-              onclick="document.getElementById('etat-input').value='DISPONIBLE'; document.querySelectorAll('.logi-fpill').forEach(b=>b.classList.remove('is-active')); this.classList.add('is-active'); htmx.trigger('#filter-form', 'submit')">
-              <span class="pill-dot" style="background:var(--emerald);opacity:1;"></span> Actif
-            </button>
-            <button type="button" class="logi-fpill"
-              onclick="document.getElementById('etat-input').value='EN_PANNE'; document.querySelectorAll('.logi-fpill').forEach(b=>b.classList.remove('is-active')); this.classList.add('is-active'); htmx.trigger('#filter-form', 'submit')">
-              <span class="pill-dot" style="background:var(--red);opacity:1;"></span> Inactif
-            </button>
-          </div>
-          
-          <div style="position: relative; width: 100%; max-width: 250px;">
-            <i class="ti ti-search" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--ink-muted); font-size: 0.9rem;"></i>
-            <input type="text" name="q" placeholder="Rechercher (S/N, Nom...)" 
-                   hx-trigger="keyup changed delay:300ms"
-                   style="width: 100%; padding: 0.4rem 0.5rem 0.4rem 2rem; border-radius: 999px; border: 1px solid var(--border); background: var(--bg); font-size: 0.8rem; outline: none; transition: all 0.15s;"
-                   onfocus="this.style.borderColor='var(--teal)'; this.style.boxShadow='0 0 0 2px var(--teal-glow)';"
-                   onblur="this.style.borderColor='var(--border)'; this.style.boxShadow='none';">
-          </div>
-        </form>
-
-        <!-- Scrollable list -->
-        <div class="logi-eq-list" id="equipements-list">
-          {% include 'logistics/partials/equipements_list.html' with equipements=equipements %}
+        <div id="ateliers-list">
+          {% include 'logistics/partials/ateliers_list.html' %}
         </div>
-
-        <!-- Legend -->
-        <div class="logi-legend">
-          <span class="leg-item"><span class="leg-dot" style="background:var(--emerald);"></span> Actif</span>
-          <span class="leg-item"><span class="leg-dot" style="background:var(--red);"></span> Inactif</span>
-        </div>
-      </div>
-
       </div>
     </div>
   </div>
 </div>
 
 <!-- Modal Container (Empty by default) -->
-<div id="form-equipement-container"></div>
-
+<div id="form-atelier-container"></div>
 {% endblock %}

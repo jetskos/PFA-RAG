@@ -1,27 +1,202 @@
 {% extends 'base.html' %}
-
-{% block title %}Tickets - Logistics{% endblock %}
-
+{% block title %}Tickets — Logistics{% endblock %}
 {% block content %}
-<section class="page-shell">
-    <div class="page-header">
-        <p class="eyebrow">Logistics</p>
-        <h1>Support</h1>
-        <p>Suivi des tickets actifs.</p>
+<style>
+  :root {
+    --teal:       #0f766e;
+    --teal-light: #14b8a6;
+    --teal-glow:  rgba(15,118,110,0.1);
+    --emerald:    #10b981;
+    --amber:      #f59e0b;
+    --red:        #ef4444;
+    --purple:     #8b5cf6;
+    --ink:        #0f172a;
+    --ink-mid:    #334155;
+    --ink-muted:  #64748b;
+    --ink-faint:  #94a3b8;
+    --border:     #e2e8f0;
+    --surface:    #ffffff;
+    --bg:         #f1f5f9;
+    --radius-sm:  8px;
+    --radius-md:  12px;
+    --radius-lg:  18px;
+    --shadow-sm:  0 1px 3px rgba(0,0,0,0.06);
+    --shadow-md:  0 4px 16px rgba(0,0,0,0.08);
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+
+  .tick-shell {
+    min-height: 100vh;
+    background: var(--bg);
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  .tick-topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 1.5rem 2rem 0;
+  }
+  .tick-topbar-inner { max-width: 1320px; margin: 0 auto; }
+  .tick-eyebrow {
+    font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--teal); margin-bottom: 0.3rem;
+  }
+  .tick-title { font-size: 1.9rem; font-weight: 900; color: var(--ink); margin: 0 0 0.2rem; line-height: 1.1; }
+  .tick-subtitle { font-size: 0.875rem; color: var(--ink-muted); margin: 0 0 1.25rem; }
+  .tick-tabs { display: flex; gap: 0; border-bottom: none; margin-bottom: -1px; }
+  .tick-tab {
+    display: inline-flex; align-items: center; gap: 0.45rem;
+    padding: 0.65rem 1.25rem; font-size: 0.875rem; font-weight: 700;
+    color: var(--ink-muted); text-decoration: none;
+    border-bottom: 2px solid transparent; transition: color 0.15s, border-color 0.15s;
+  }
+  .tick-tab:hover { color: var(--ink); border-color: var(--border); }
+  .tick-tab.active { color: var(--teal); border-color: var(--teal); }
+
+  /* Body */
+  .tick-body {
+    max-width: 1320px; margin: 0 auto; padding: 1.75rem 2rem 3rem;
+  }
+
+  /* Summary stats */
+  .tick-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.75rem;
+  }
+  .tick-stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    padding: 1.1rem 1.25rem;
+    display: flex; align-items: center; gap: 0.9rem;
+  }
+  .tick-stat-icon {
+    width: 42px; height: 42px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem; flex-shrink: 0;
+  }
+  .tick-stat-val { font-size: 1.5rem; font-weight: 900; color: var(--ink); line-height: 1; }
+  .tick-stat-lbl { font-size: 0.75rem; font-weight: 600; color: var(--ink-muted); margin-top: 0.15rem; }
+
+  /* Main card */
+  .tick-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+  .tick-card-header {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 1rem; padding: 1.25rem 1.75rem;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+  .tick-card-title {
+    font-size: 1rem; font-weight: 800; color: var(--ink);
+    display: flex; align-items: center; gap: 0.4rem; margin: 0;
+  }
+  .tick-card-title i { color: var(--teal); }
+  .btn-new-ticket {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.55rem 1.15rem;
+    background: var(--teal); color: #fff;
+    border: none; border-radius: var(--radius-sm);
+    font-size: 0.85rem; font-weight: 700;
+    font-family: inherit; cursor: pointer; text-decoration: none;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .btn-new-ticket:hover { background: var(--ink); transform: scale(1.02); }
+
+  /* Tickets list inside card */
+  .tick-list-body { padding: 1rem 1.25rem; }
+  #tickets-list { display: flex; flex-direction: column; gap: 0.75rem; }
+</style>
+
+<div class="tick-shell">
+  <!-- TOP BAR -->
+  <div class="tick-topbar">
+    <div class="tick-topbar-inner">
+      <p class="tick-eyebrow">Logistics</p>
+      <h1 class="tick-title">Support</h1>
+      <p class="tick-subtitle">Suivi des tickets de maintenance et signalements.</p>
+      <nav class="tick-tabs">
+        <a href="{% url 'logistics:inventaire' %}" class="tick-tab">
+          <i class="ti ti-package"></i> Inventaire
+        </a>
+        <a href="{% url 'logistics:tickets' %}" class="tick-tab active">
+          <i class="ti ti-ticket"></i> Tickets
+        </a>
+        <a href="{% url 'logistics:ateliers' %}" class="tick-tab">
+          <i class="ti ti-building-community"></i> Ateliers
+        </a>
+        <a href="{% url 'logistics:demandes' %}" class="tick-tab">
+          <i class="ti ti-truck-delivery"></i> Demandes
+        </a>
+      </nav>
     </div>
+  </div>
 
-    {% include 'logistics/partials/navigation.html' with active_page='tickets' %}
+  <!-- BODY -->
+  <div class="tick-body">
 
-    <div class="apprentissage-shell">
-        <div class="apprentissage-contenu content-card col-span-full">
-            <div class="actions">
-                <h2>Tickets actifs</h2>
-                <a href="{% url 'logistics:nuevo_ticket' %}" class="btn">Nouveau ticket</a>
-            </div>
-            <div id="tickets-list">
-                {% include 'logistics/partials/tickets_list.html' with tickets=tickets resolve_url=resolve_url %}
-            </div>
+    <!-- Stat strip -->
+    <div class="tick-stats">
+      <div class="tick-stat">
+        <div class="tick-stat-icon" style="background:rgba(59,130,246,0.1);color:#3b82f6;">
+          <i class="ti ti-ticket"></i>
         </div>
+        <div>
+          <div class="tick-stat-val">{{ tickets|length }}</div>
+          <div class="tick-stat-lbl">Tickets actifs</div>
+        </div>
+      </div>
+      <div class="tick-stat">
+        <div class="tick-stat-icon" style="background:rgba(245,158,11,0.1);color:#f59e0b;">
+          <i class="ti ti-clock"></i>
+        </div>
+        <div>
+          <div class="tick-stat-val">{{ tickets_en_attente|default:"0" }}</div>
+          <div class="tick-stat-lbl">En attente</div>
+        </div>
+      </div>
+      <div class="tick-stat">
+        <div class="tick-stat-icon" style="background:rgba(139,92,246,0.1);color:#8b5cf6;">
+          <i class="ti ti-settings"></i>
+        </div>
+        <div>
+          <div class="tick-stat-val">{{ tickets_en_cours|default:"0" }}</div>
+          <div class="tick-stat-lbl">En traitement</div>
+        </div>
+      </div>
+      <div class="tick-stat">
+        <div class="tick-stat-icon" style="background:rgba(16,185,129,0.1);color:#10b981;">
+          <i class="ti ti-circle-check"></i>
+        </div>
+        <div>
+          <div class="tick-stat-val">{{ tickets_resolus|default:"0" }}</div>
+          <div class="tick-stat-lbl">Résolus</div>
+        </div>
+      </div>
     </div>
-</section>
+
+    <!-- Tickets card -->
+    <div class="tick-card">
+      <div class="tick-card-header">
+        <h2 class="tick-card-title"><i class="ti ti-list-details"></i> Tickets actifs</h2>
+        <a href="{% url 'logistics:nuevo_ticket' %}" class="btn-new-ticket">
+          <i class="ti ti-plus"></i> Nouveau ticket
+        </a>
+      </div>
+      <div class="tick-list-body">
+        <div id="tickets-list">
+          {% include 'logistics/partials/tickets_list.html' with tickets=tickets resolve_url=resolve_url %}
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
 {% endblock %}

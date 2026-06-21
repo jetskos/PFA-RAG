@@ -4,251 +4,1010 @@
 
 {% block content %}
 <style>
-    body { background-color: #f8fafc; }
-    
-    .quick-access-card {
-        background: #ffffff;
-        border-radius: 12px;
-        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-        padding: 1.5rem;
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+    :root {
+        --teal: #0f766e;
+        --teal-light: #14b8a6;
+        --teal-glow: rgba(15, 118, 110, 0.18);
+        --ink: #0f172a;
+        --ink-mid: #334155;
+        --ink-muted: #64748b;
+        --ink-faint: #94a3b8;
+        --border: #e2e8f0;
+        --surface: #ffffff;
+        --bg: #f1f5f9;
+        --purple: #6366f1;
+        --amber: #f59e0b;
+        --blue: #0369a1;
+        --radius-sm: 8px;
+        --radius-md: 14px;
+        --radius-lg: 20px;
+        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.07), 0 1px 2px rgba(0, 0, 0, 0.04);
+        --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+        --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.12);
+    }
+
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    .db-shell {
+        font-family: 'Inter', sans-serif;
+        background: var(--bg);
+        min-height: 100vh;
+        padding: 2.5rem 2rem 4rem;
+        max-width: 1280px;
+        margin: 0 auto;
+    }
+
+    /* ── HEADER ─────────────────────────────────── */
+    .db-hero {
         display: flex;
-        flex-direction: column;
         align-items: flex-start;
+        justify-content: space-between;
+        gap: 1.5rem;
+        margin-bottom: 2.5rem;
+        flex-wrap: wrap;
+    }
+
+    .db-hero-text .eyebrow {
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--teal);
+        margin-bottom: 0.35rem;
+    }
+
+    .db-hero-text h1 {
+        font-size: 2.4rem;
+        font-weight: 900;
+        color: var(--ink);
+        line-height: 1.1;
+        margin-bottom: 0.4rem;
+    }
+
+    .db-hero-text p {
+        font-size: 1rem;
+        color: var(--ink-muted);
+    }
+
+    .db-hero-badge {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        padding: 0.75rem 1.25rem;
+        box-shadow: var(--shadow-sm);
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .db-hero-badge .dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: #10b981;
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+        animation: pulse-green 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-green {
+
+        0%,
+        100% {
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+        }
+
+        50% {
+            box-shadow: 0 0 0 6px rgba(16, 185, 129, 0.08);
+        }
+    }
+
+    .db-hero-badge span {
+        font-size: 0.875rem;
+        font-weight: 700;
+        color: #059669;
+    }
+
+    /* ── QUICK ACCESS ────────────────────────────── */
+    .quick-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        margin-bottom: 2.5rem;
+    }
+
+    @media (max-width: 900px) {
+        .quick-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 520px) {
+        .quick-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .qa-card {
+        background: var(--surface);
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow-sm);
+        padding: 1.4rem 1.25rem;
         text-decoration: none;
         color: inherit;
-        transition: all 0.2s ease;
-        border: none;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+        position: relative;
+        overflow: hidden;
     }
-    .quick-access-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+
+    .qa-card::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        background: var(--accent, var(--teal));
+        border-radius: 2px 0 0 2px;
+        transform: scaleY(0);
+        transition: transform 0.2s ease;
+        transform-origin: bottom;
     }
-    
-    .dashboard-panel {
-        background: #ffffff;
+
+    .qa-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+        border-color: transparent;
+    }
+
+    .qa-card:hover::after {
+        transform: scaleY(1);
+    }
+
+    .qa-icon {
+        width: 46px;
+        height: 46px;
         border-radius: 12px;
-        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-        padding: 2rem;
-        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.35rem;
+        flex-shrink: 0;
     }
-    
-    .progress-course-card {
-        background: #ffffff;
-        border-radius: 12px;
-        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-        border: none;
+
+    .qa-info h3 {
+        font-size: 0.95rem;
+        font-weight: 800;
+        color: var(--ink);
+        margin-bottom: 0.15rem;
+    }
+
+    .qa-info p {
+        font-size: 0.78rem;
+        color: var(--ink-muted);
+        font-weight: 500;
+    }
+
+    /* ── MIDDLE ROW ──────────────────────────────── */
+    .mid-grid {
+        display: grid;
+        grid-template-columns: 340px 1fr;
+        gap: 1.5rem;
+        margin-bottom: 2.5rem;
+    }
+
+    @media (max-width: 860px) {
+        .mid-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* ── PANELS ──────────────────────────────────── */
+    .panel {
+        background: var(--surface);
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow-sm);
+        padding: 1.75rem;
+    }
+
+    .panel-title {
+        font-size: 1rem;
+        font-weight: 800;
+        color: var(--ink);
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .panel-title i {
+        color: var(--teal);
+        font-size: 1.15rem;
+    }
+
+    /* ── PROFILE ─────────────────────────────────── */
+    .profile-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.85rem 0;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .profile-row:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    .profile-row .label {
+        font-size: 0.875rem;
+        color: var(--ink-muted);
+        font-weight: 500;
+    }
+
+    .profile-row .value {
+        font-size: 0.9rem;
+        font-weight: 800;
+        color: var(--ink);
+    }
+
+    .badge-active {
+        background: rgba(16, 185, 129, 0.12);
+        color: #059669;
+        font-size: 0.78rem;
+        font-weight: 800;
+        padding: 3px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(16, 185, 129, 0.25);
+    }
+
+    /* ── RADAR PANEL ─────────────────────────────── */
+    .radar-panel {
+        background: var(--surface);
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow-sm);
+        padding: 1.75rem;
         display: flex;
         flex-direction: column;
-        gap: 1rem;
-        padding: 1.5rem;
-        transition: all 0.2s ease;
     }
-    .progress-course-card:hover {
+
+    .radar-panel .panel-title {
+        margin-bottom: 1rem;
+    }
+
+    .radar-canvas-wrap {
+        flex: 1;
+        min-height: 280px;
+        position: relative;
+    }
+
+    /* ── SECTION HEADER ──────────────────────────── */
+    .section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.25rem;
+    }
+
+    .section-title {
+        font-size: 1.2rem;
+        font-weight: 900;
+        color: var(--ink);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .section-title i {
+        color: var(--teal);
+    }
+
+    /* ── COURSE CARDS (DARK PREMIUM) ──────────────── */
+    .courses-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+    }
+
+    .course-card {
+        background: #0f172a;
+        border-radius: var(--radius-lg);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        padding: 1rem;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 1.5rem;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        text-decoration: none;
+    }
+
+    @media (max-width: 768px) {
+        .course-card {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 1rem;
+        }
+    }
+
+    .course-card:hover {
         transform: translateY(-3px);
-        box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+        border-color: rgba(255, 255, 255, 0.15);
     }
-    
-    .section-title-bold {
-        font-size: 1.5rem;
+
+    .course-img {
+        width: 160px;
+        height: 120px;
+        border-radius: var(--radius-md);
+        object-fit: cover;
+        background: #1e293b;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: rgba(255,255,255,0.1);
+    }
+
+    @media (max-width: 768px) {
+        .course-img {
+            width: 100%;
+            height: 160px;
+        }
+    }
+
+    .course-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .course-top-dark {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.4rem;
+    }
+
+    .tag-en-cours {
+        font-size: 0.7rem;
         font-weight: 800;
-        color: #0f172a;
-        margin-bottom: 1.5rem;
+        color: #2dd4bf;
+        background: rgba(45, 212, 191, 0.1);
+        padding: 4px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(45, 212, 191, 0.2);
+        white-space: nowrap;
+    }
+
+    .course-info h3 {
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: #f8fafc;
+        margin-bottom: 0.25rem;
+    }
+
+    .course-info p {
+        font-size: 0.85rem;
+        color: #94a3b8;
         display: flex;
         align-items: center;
         gap: 0.5rem;
     }
-    .panel-title-bold {
+
+    .progress-track-dark {
+        width: 100%;
+        height: 6px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 999px;
+        margin-top: 1rem;
+        position: relative;
+    }
+
+    .progress-fill-dark {
+        height: 100%;
+        background: linear-gradient(90deg, #06b6d4, #3b82f6);
+        border-radius: 999px;
+        transition: width 0.8s ease;
+    }
+
+    .progress-text-dark {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #38bdf8;
+        position: absolute;
+        right: 0;
+        top: -1.35rem;
+    }
+
+    .course-action {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        padding-right: 0.5rem;
+    }
+
+    .circular-progress {
+        position: relative;
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: conic-gradient(#0ea5e9 var(--p, 0%), rgba(255, 255, 255, 0.05) 0);
+        box-shadow: 0 0 15px rgba(14, 165, 233, 0.15);
+    }
+
+    .circular-progress::after {
+        content: "";
+        position: absolute;
+        inset: 5px;
+        background: #0f172a;
+        border-radius: 50%;
+    }
+
+    .circular-progress span {
+        position: relative;
+        z-index: 1;
+        font-size: 0.85rem;
+        font-weight: 800;
+        color: #f8fafc;
+    }
+
+    .btn-play {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.05);
+        color: #f8fafc;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         font-size: 1.25rem;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-play:hover {
+        background: #0ea5e9;
+        color: #fff;
+        transform: scale(1.1);
+        border-color: #0ea5e9;
+        box-shadow: 0 0 15px rgba(14, 165, 233, 0.4);
+    }
+
+    /* ── EMPTY STATE ─────────────────────────────── */
+    .empty-state {
+        background: var(--surface);
+        border: 2px dashed #cbd5e1;
+        border-radius: var(--radius-lg);
+        padding: 4rem 2rem;
+        text-align: center;
+    }
+
+    .empty-state .empty-icon {
+        font-size: 3rem;
+        color: var(--ink-faint);
+        margin-bottom: 1rem;
+    }
+
+    .empty-state h3 {
+        font-size: 1.15rem;
         font-weight: 800;
-        color: #0f172a;
-        margin-bottom: 1.5rem;
+        color: var(--ink);
+        margin-bottom: 0.4rem;
+    }
+
+    .empty-state p {
+        font-size: 0.95rem;
+        color: var(--ink-muted);
+    }
+
+    /* ── STAT STRIP ──────────────────────────────── */
+    .stat-strip {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        margin-bottom: 2.5rem;
+    }
+
+    @media (max-width: 600px) {
+        .stat-strip {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .stat-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-sm);
+        padding: 1.25rem 1.4rem;
         display: flex;
         align-items: center;
-        gap: 0.5rem;
+        gap: 1rem;
+    }
+
+    .stat-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        flex-shrink: 0;
+    }
+
+    .stat-body .stat-val {
+        font-size: 1.6rem;
+        font-weight: 900;
+        color: var(--ink);
+        line-height: 1;
+    }
+
+    .stat-body .stat-lbl {
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: var(--ink-muted);
+        margin-top: 0.2rem;
+    }
+
+    /* ── PROGRESSION HERO BANNER ─────────────────── */
+    .prog-hero {
+        position: relative;
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        margin-bottom: 2.5rem;
+        min-height: 210px;
+        display: flex;
+        align-items: stretch;
+    }
+
+    .prog-hero-bg {
+        position: absolute;
+        inset: 0;
+        background-image: url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=1400&q=80&auto=format&fit=crop');
+        background-size: cover;
+        background-position: center 40%;
+        filter: brightness(0.35) saturate(0.5);
+    }
+
+    .prog-hero-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(110deg, rgba(15, 118, 110, 0.78) 0%, rgba(15, 23, 42, 0.92) 55%, rgba(99, 102, 241, 0.5) 100%);
+    }
+
+    .prog-hero-content {
+        position: relative;
+        z-index: 2;
+        width: 100%;
+        padding: 2rem 2.25rem;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 2rem;
+        align-items: center;
+    }
+
+    .prog-hero-eyebrow {
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.5);
+        margin-bottom: 0.45rem;
+    }
+
+    .prog-hero-name {
+        font-size: 2rem;
+        font-weight: 900;
+        color: #ffffff;
+        margin-bottom: 0.35rem;
+        line-height: 1.1;
+    }
+
+    .prog-hero-meta {
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        margin-bottom: 1.6rem;
+        flex-wrap: wrap;
+    }
+
+    .prog-hero-meta .chip {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    .prog-hero-meta .chip i {
+        font-size: 0.9rem;
+        color: #5eead4;
+    }
+
+    .prog-overall-label {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: rgba(255, 255, 255, 0.6);
+        margin-bottom: 0.55rem;
+        max-width: 440px;
+    }
+
+    .prog-overall-label .prog-pct {
+        color: #5eead4;
+        font-size: 1rem;
+        font-weight: 900;
+    }
+
+    .prog-overall-track {
+        width: 100%;
+        max-width: 440px;
+        height: 9px;
+        background: rgba(255, 255, 255, 0.14);
+        border-radius: 999px;
+        overflow: hidden;
+    }
+
+    .prog-overall-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #14b8a6, #818cf8);
+        border-radius: 999px;
+        transition: width 0.9s cubic-bezier(.22, 1, .36, 1);
+    }
+
+    .prog-hero-stats {
+        display: flex;
+        flex-direction: column;
+        gap: 0.85rem;
+        min-width: 200px;
+    }
+
+    .prog-stat-pill {
+        background: rgba(255, 255, 255, 0.07);
+        border: 1px solid rgba(255, 255, 255, 0.13);
+        border-radius: 14px;
+        padding: 0.85rem 1.15rem;
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+    }
+
+    .prog-stat-pill .ps-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+
+    .prog-stat-pill .ps-val {
+        font-size: 1.15rem;
+        font-weight: 900;
+        color: #ffffff;
+        line-height: 1;
+    }
+
+    .prog-stat-pill .ps-lbl {
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.5);
+        margin-top: 0.2rem;
+    }
+
+    @media (max-width: 720px) {
+        .prog-hero-content {
+            grid-template-columns: 1fr;
+        }
+
+        .prog-hero-stats {
+            flex-direction: row;
+            flex-wrap: wrap;
+            min-width: unset;
+        }
+
+        .prog-stat-pill {
+            flex: 1 1 140px;
+        }
     }
 </style>
 
-<section class="page-shell">
-    <div class="page-header" style="border-bottom: 1px solid var(--border-light); padding-bottom: 1.5rem; margin-bottom: 2rem;">
-        <p class="eyebrow" style="color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">Espace Élève</p>
-        <h1 style="font-size: 2.25rem; font-weight: 800; color: #0f172a;">Bienvenue, {{ request.user.first_name|default:request.user.get_username }}</h1>
-        <p style="color: var(--text-muted); font-size: 1.1rem;">Voici un aperçu de votre progression académique et de vos cours.</p>
+<div class="db-shell">
+
+    <!-- HERO -->
+    <div class="db-hero">
+        <div class="db-hero-text">
+            <p class="eyebrow">Espace Élève</p>
+            <h1>Bienvenue, {{ request.user.first_name|default:request.user.get_username }}</h1>
+            <p>Aperçu de votre progression académique et de vos cours.</p>
+        </div>
+        <div class="db-hero-badge">
+            <div class="dot"></div>
+            <span>Inscrit Actif</span>
+        </div>
     </div>
 
-    <!-- 1. Cartes d'accès rapide -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
-        <a href="{% url 'apprentissage:liste_cours' %}" class="quick-access-card">
-            <div style="background: rgba(15, 118, 110, 0.1); color: #0f766e; padding: 0.85rem; border-radius: 50%; margin-bottom: 1rem;">
-                <i class="ti ti-books" style="font-size: 1.6rem;"></i>
+    <!-- QUICK ACCESS -->
+    <div class="quick-grid">
+        <a href="{% url 'apprentissage:liste_cours' %}" class="qa-card" style="--accent:#0f766e;">
+            <div class="qa-icon" style="background:rgba(15,118,110,0.1); color:#0f766e;">
+                <i class="ti ti-books"></i>
             </div>
-            <h3 style="font-size: 1.1rem; font-weight: 800; color: #0f172a; margin: 0 0 0.25rem 0;">Mes cours</h3>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">Parcourir les modules</p>
+            <div class="qa-info">
+                <h3>Mes cours</h3>
+                <p>Parcourir les modules</p>
+            </div>
         </a>
-        <a href="{% url 'apprentissage:mes_notes' %}" class="quick-access-card">
-            <div style="background: rgba(3, 105, 161, 0.1); color: #0369a1; padding: 0.85rem; border-radius: 50%; margin-bottom: 1rem;">
-                <i class="ti ti-report-analytics" style="font-size: 1.6rem;"></i>
+        <a href="{% url 'apprentissage:mes_notes' %}" class="qa-card" style="--accent:#0369a1;">
+            <div class="qa-icon" style="background:rgba(3,105,161,0.1); color:#0369a1;">
+                <i class="ti ti-report-analytics"></i>
             </div>
-            <h3 style="font-size: 1.1rem; font-weight: 800; color: #0f172a; margin: 0 0 0.25rem 0;">Carnet de notes</h3>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">Résultats et QCM</p>
+            <div class="qa-info">
+                <h3>Carnet de notes</h3>
+                <p>Résultats et QCM</p>
+            </div>
         </a>
-        <a href="{% url 'apprentissage:devoirs_liste' %}" class="quick-access-card">
-            <div style="background: rgba(245, 158, 11, 0.1); color: #f59e0b; padding: 0.85rem; border-radius: 50%; margin-bottom: 1rem;">
-                <i class="ti ti-file-pencil" style="font-size: 1.6rem;"></i>
+        <a href="{% url 'apprentissage:devoirs_liste' %}" class="qa-card" style="--accent:#f59e0b;">
+            <div class="qa-icon" style="background:rgba(245,158,11,0.1); color:#f59e0b;">
+                <i class="ti ti-file-pencil"></i>
             </div>
-            <h3 style="font-size: 1.1rem; font-weight: 800; color: #0f172a; margin: 0 0 0.25rem 0;">Mes devoirs</h3>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">Travaux à rendre</p>
+            <div class="qa-info">
+                <h3>Mes devoirs</h3>
+                <p>Travaux à rendre</p>
+            </div>
         </a>
-        <a href="{% url 'apprentissage:calendrier' %}" class="quick-access-card">
-            <div style="background: rgba(99, 102, 241, 0.1); color: #6366f1; padding: 0.85rem; border-radius: 50%; margin-bottom: 1rem;">
-                <i class="ti ti-calendar-event" style="font-size: 1.6rem;"></i>
+        <a href="{% url 'apprentissage:calendrier' %}" class="qa-card" style="--accent:#6366f1;">
+            <div class="qa-icon" style="background:rgba(99,102,241,0.1); color:#6366f1;">
+                <i class="ti ti-calendar-event"></i>
             </div>
-            <h3 style="font-size: 1.1rem; font-weight: 800; color: #0f172a; margin: 0 0 0.25rem 0;">Calendrier</h3>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">Échéances et planning</p>
+            <div class="qa-info">
+                <h3>Calendrier</h3>
+                <p>Échéances et planning</p>
+            </div>
         </a>
     </div>
 
-    <!-- 2. Profil & Radar Chart -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
-        <!-- Infos Profil -->
-        <div class="dashboard-panel">
-            <h2 class="panel-title-bold">
-                <i class="ti ti-user-circle" style="color: #0f766e;"></i> Mon profil scolaire
-            </h2>
-            <div style="display: flex; flex-direction: column; gap: 1.25rem;">
-                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-light); padding-bottom: 0.75rem;">
-                    <span style="color: var(--text-muted); font-weight: 500;">Classe</span>
-                    <strong style="color: #0f172a; font-weight: 800;">{% if classe %}{{ classe.nom }}{% else %}Non assignée{% endif %}</strong>
+    <!-- PROGRESSION HERO BANNER -->
+    <div class="prog-hero">
+        <div class="prog-hero-bg"></div>
+        <div class="prog-hero-overlay"></div>
+        <div class="prog-hero-content">
+
+            <!-- Left: identity + overall progress -->
+            <div class="prog-hero-left">
+                <p class="prog-hero-eyebrow">Progression académique</p>
+                <h2 class="prog-hero-name">{{ request.user.first_name|default:request.user.get_username }}</h2>
+                <div class="prog-hero-meta">
+                    <span class="chip"><i class="ti ti-school"></i> {% if classe %}{{ classe.nom }}{% else %}Classe non
+                        assignée{% endif %}</span>
+                    <span class="chip"><i class="ti ti-certificate"></i> {% if niveau %}{{ niveau.nom }}{% else %}Niveau
+                        non assigné{% endif %}</span>
+                    <span class="chip"><i class="ti ti-circle-check"></i> Inscrit Actif</span>
                 </div>
-                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-light); padding-bottom: 0.75rem;">
-                    <span style="color: var(--text-muted); font-weight: 500;">Niveau d'études</span>
-                    <strong style="color: #0f172a; font-weight: 800;">{% if niveau %}{{ niveau.nom }}{% else %}Non assigné{% endif %}</strong>
+                <div class="prog-overall-label">
+                    <span>Progression globale</span>
+                    <span class="prog-pct" id="overall-pct">—%</span>
                 </div>
-                <div style="display: flex; justify-content: space-between; padding-bottom: 0.5rem;">
-                    <span style="color: var(--text-muted); font-weight: 500;">Statut académique</span>
-                    <span style="background: rgba(16, 185, 129, 0.15); color: #059669; padding: 4px 10px; border-radius: 6px; font-size: 0.85rem; font-weight: 800;">Inscrit Actif</span>
+                <div class="prog-overall-track">
+                    <div class="prog-overall-fill" id="overall-fill" style="width: 0%;"></div>
                 </div>
+            </div>
+
+            <!-- Right: stat pills moved to stat-strip below -->
+
+        </div>
+    </div>
+
+    <!-- STAT STRIP -->
+    <div class="stat-strip">
+        <div class="stat-card">
+            <div class="stat-icon" style="background:rgba(15,118,110,0.1); color:var(--teal);">
+                <i class="ti ti-books"></i>
+            </div>
+            <div class="stat-body">
+                <div class="stat-val">{{ mes_cours|length }}</div>
+                <div class="stat-lbl">Cours en cours</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background:rgba(99,102,241,0.1); color:var(--purple);">
+                <i class="ti ti-school"></i>
+            </div>
+            <div class="stat-body">
+                <div class="stat-val">{% if classe %}{{ classe.nom }}{% else %}—{% endif %}</div>
+                <div class="stat-lbl">Ma classe</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background:rgba(245,158,11,0.1); color:var(--amber);">
+                <i class="ti ti-award"></i>
+            </div>
+            <div class="stat-body">
+                <div class="stat-val">{% if niveau %}{{ niveau.nom }}{% else %}—{% endif %}</div>
+                <div class="stat-lbl">Niveau d'études</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROFILE + RADAR -->
+    <div class="mid-grid">
+        <!-- Profile Panel -->
+        <div class="panel">
+            <div class="panel-title">
+                <i class="ti ti-user-circle"></i> Mon profil scolaire
+            </div>
+            <div class="profile-row">
+                <span class="label">Classe</span>
+                <span class="value">{% if classe %}{{ classe.nom }}{% else %}Non assignée{% endif %}</span>
+            </div>
+            <div class="profile-row">
+                <span class="label">Niveau d'études</span>
+                <span class="value">{% if niveau %}{{ niveau.nom }}{% else %}Non assigné{% endif %}</span>
+            </div>
+            <div class="profile-row">
+                <span class="label">Statut académique</span>
+                <span class="badge-active">Inscrit Actif</span>
             </div>
         </div>
 
-        <!-- Radar Chart -->
-        <div class="dashboard-panel" style="display: flex; flex-direction: column; align-items: center;">
-            <h2 class="panel-title-bold" style="align-self: flex-start;">
-                <i class="ti ti-chart-radar" style="color: #0f766e;"></i> Bilan de progression
-            </h2>
-            <div style="width: 100%; min-height: 320px; position: relative;">
+        <!-- Radar Panel -->
+        <div class="radar-panel">
+            <div class="panel-title">
+                <i class="ti ti-chart-radar"></i> Bilan de progression par matière
+            </div>
+            <div class="radar-canvas-wrap">
                 <canvas id="skillsRadarChart"></canvas>
             </div>
         </div>
     </div>
 
-    <!-- 3. Grille des cours -->
-    <div style="margin-bottom: 2rem;">
-        <h2 class="section-title-bold">
-            <i class="ti ti-books" style="color: #0f766e;"></i> Mes cours en cours
-        </h2>
-        
+    <!-- COURSES SECTION -->
+    <div>
+        <div class="section-header">
+            <div class="section-title">
+                <i class="ti ti-books"></i> Mes cours en cours
+            </div>
+        </div>
+
         {% if mes_cours %}
-            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem;">
-                {% for cours in mes_cours %}
-                <div class="progress-course-card">
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem;">
-                        <h3 style="font-size: 1.15rem; font-weight: 800; margin: 0; color: #0f172a; line-height: 1.4;">{{ cours.titre }}</h3>
-                        <span style="font-size: 0.85rem; font-weight: 800; color: #0f766e; background: rgba(15, 118, 110, 0.1); padding: 4px 10px; border-radius: 6px; white-space: nowrap;">En cours</span>
+        <div class="courses-grid">
+            {% for cours in mes_cours %}
+            <a href="{% url 'apprentissage:detail_cours' cours.id %}" class="course-card">
+                <div class="course-img" style="background: linear-gradient(135deg, #1e293b, #0f172a);">
+                    <i class="ti ti-book-2"></i>
+                </div>
+                
+                <div class="course-info">
+                    <div class="course-top-dark">
+                        <span class="tag-en-cours">En cours</span>
                     </div>
-                    <p style="font-size: 0.95rem; color: var(--text-muted); margin: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">{{ cours.description|default:"Aucune description disponible pour ce cours." }}</p>
+                    <h3>{{ cours.titre }}</h3>
+                    <p><i class="ti ti-file-text"></i> {{ cours.chapitres_count }} chapitres</p>
                     
-                    <div style="margin-top: auto; padding-top: 0.5rem;">
-                        <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 700; color: #0f172a; margin-bottom: 0.5rem;">
-                            <span>Progression</span>
-                            <span style="color: #0f766e;">{{ cours.progression_percent }}%</span>
-                        </div>
-                        <div style="width: 100%; height: 8px; background: #e2e8f0; border-radius: 999px; overflow: hidden;">
-                            <div style="height: 100%; background: #0f766e; width: {{ cours.progression_percent }}%; border-radius: 999px; transition: width 0.5s ease;"></div>
-                        </div>
-                    </div>
-                    
-                    <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-light); padding-top: 1rem; margin-top: 0.5rem;">
-                        <span style="font-size: 0.9rem; font-weight: 600; color: var(--text-muted);"><i class="ti ti-file-text"></i> {{ cours.chapitres_count }} chapitres</span>
-                        <a href="{% url 'apprentissage:detail_cours' cours.id %}" class="btn" style="background: #0f172a; color: #ffffff; padding: 0.5rem 1rem; font-size: 0.9rem; border-radius: 8px; font-weight: 600;">Reprendre</a>
+                    <div class="progress-track-dark">
+                        <div class="progress-fill-dark" style="width: {{ cours.progression_percent }}%;"></div>
+                        <span class="progress-text-dark">{{ cours.progression_percent }}%</span>
                     </div>
                 </div>
-                {% endfor %}
-            </div>
+
+                <div class="course-action">
+                    <div class="circular-progress" style="--p: {{ cours.progression_percent }}%;">
+                        <span>{{ cours.progression_percent }}%</span>
+                    </div>
+                    <div class="btn-play">
+                        <i class="ti ti-player-play-filled"></i>
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
         {% else %}
-            <div style="background: #ffffff; border: 2px dashed #cbd5e1; border-radius: 12px; padding: 4rem 2rem; text-align: center;">
-                <div style="color: #94a3b8; font-size: 3.5rem; margin-bottom: 1rem;"><i class="ti ti-books-off"></i></div>
-                <h3 style="color: #0f172a; font-weight: 800; font-size: 1.25rem; margin-bottom: 0.5rem;">Aucun cours assigné</h3>
-                <p style="color: var(--text-muted); font-size: 1.05rem;">Vous n'avez pas encore de cours assignés pour votre niveau actuel.</p>
-            </div>
+        <div class="empty-state">
+            <div class="empty-icon"><i class="ti ti-books-off"></i></div>
+            <h3>Aucun cours assigné</h3>
+            <p>Vous n'avez pas encore de cours assignés pour votre niveau actuel.</p>
+        </div>
         {% endif %}
     </div>
 
-</section>
+</div>
 
-<!-- Scripts for Chart.js -->
+<!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
+
+        // ── Compute overall progression from radar data ──
+        const radarDataForOverall = {{ radar_data_json|safe }};
+        if (radarDataForOverall && radarDataForOverall.length > 0) {
+            const sum = radarDataForOverall.reduce((a, b) => a + b, 0);
+            const avg = Math.round(sum / radarDataForOverall.length);
+            document.getElementById('overall-pct').textContent = avg + '%';
+            setTimeout(() => {
+                document.getElementById('overall-fill').style.width = avg + '%';
+            }, 200);
+        } else {
+            document.getElementById('overall-pct').textContent = '0%';
+        }
+
         const ctx = document.getElementById('skillsRadarChart').getContext('2d');
-        
-        // Données dynamiques injectées depuis la vue Django
         const labels = {{ radar_labels_json|safe }};
         const dataValues = {{ radar_data_json|safe }};
-        
-        const data = {
+
+    new Chart(ctx, {
+        type: 'radar',
+        data: {
             labels: labels,
             datasets: [{
                 label: 'Progression (%)',
                 data: dataValues,
-                backgroundColor: 'rgba(15, 118, 110, 0.25)', // Teal translucide
-                borderColor: 'rgba(15, 118, 110, 1)',
-                pointBackgroundColor: 'rgba(15, 118, 110, 1)',
+                backgroundColor: 'rgba(15,118,110,0.18)',
+                borderColor: 'rgba(15,118,110,1)',
+                pointBackgroundColor: 'rgba(15,118,110,1)',
                 pointBorderColor: '#ffffff',
                 pointHoverBackgroundColor: '#ffffff',
-                pointHoverBorderColor: 'rgba(15, 118, 110, 1)',
+                pointHoverBorderColor: 'rgba(15,118,110,1)',
                 borderWidth: 2,
                 pointRadius: 4,
                 pointHoverRadius: 6
             }]
-        };
-
-        const config = {
-            type: 'radar',
-            data: data,
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    r: {
-                        angleLines: { color: 'rgba(0, 0, 0, 0.08)' },
-                        grid: { color: 'rgba(0, 0, 0, 0.08)' },
-                        pointLabels: {
-                            font: { family: "'Inter', sans-serif", size: 12, weight: '700' },
-                            color: '#334155' // Slate 700
-                        },
-                        ticks: {
-                            display: false,
-                            min: 0,
-                            max: 100,
-                            stepSize: 20
-                        }
-                    }
-                },
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        backgroundColor: 'rgba(15, 23, 42, 0.95)', // Slate 900
-                        titleFont: { family: "'Inter', sans-serif", size: 14, weight: '800' },
-                        bodyFont: { family: "'Inter', sans-serif", size: 13, weight: '500' },
-                        padding: 12,
-                        cornerRadius: 8,
-                        displayColors: false
-                    }
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                r: {
+                    angleLines: { color: 'rgba(0,0,0,0.07)' },
+                    grid: { color: 'rgba(0,0,0,0.07)' },
+                    pointLabels: {
+                        font: { family: "'Inter', sans-serif", size: 12, weight: '700' },
+                        color: '#334155'
+                    },
+                    ticks: { display: false, min: 0, max: 100, stepSize: 20 }
+                }
+            },
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: 'rgba(15,23,42,0.95)',
+                    titleFont: { family: "'Inter', sans-serif", size: 14, weight: '800' },
+                    bodyFont: { family: "'Inter', sans-serif", size: 13, weight: '500' },
+                    padding: 12,
+                    cornerRadius: 8,
+                    displayColors: false
                 }
             }
-        };
-
-        new Chart(ctx, config);
+        }
     });
+  });
 </script>
 {% endblock %}

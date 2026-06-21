@@ -4,9 +4,9 @@ from .models import Equipment, Workshop, Ticket
 
 @admin.register(Equipment)
 class EquipmentAdmin(admin.ModelAdmin):
-    list_display = ('nom', 'numero_serie', 'etat', 'note')
-    list_filter = ('etat',)
-    search_fields = ('nom', 'numero_serie')
+    list_display = ('nom', 'reference', 'stock_disponible', 'stock_total', 'est_actif')
+    list_filter = ('est_actif',)
+    search_fields = ('nom', 'reference')
     list_per_page = 25
 
 

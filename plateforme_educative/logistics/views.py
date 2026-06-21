@@ -1,37 +1,64 @@
+from django.db import transaction
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.http import require_http_methods
 from django.http import HttpResponseBadRequest, HttpResponseForbidden
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.urls import reverse
 
-from .models import Equipment, Ticket
-from .forms import TicketForm, EquipmentForm
+from .models import Equipment, Ticket, Workshop, DemandeMateriel
+from .forms import TicketForm, EquipmentForm, WorkshopForm, DemandeMaterielForm
 
 
 def _is_htmx(request):
     return request.headers.get('HX-Request') == 'true' or getattr(request, 'htmx', False)
 
 
-@require_http_methods(['GET', 'POST'])
+@login_required
+@user_passes_test(lambda u: u.is_staff)
 def inventaire_view(request):
     """Page inventaire avec HTMX pour filtrer les équipements."""
+    from django.db.models import Sum, F
     equipements = Equipment.objects.all()
 
-    # HTMX GET: filter equipments by state
-    if _is_htmx(request) and request.method == 'GET' and 'etat' in request.GET:
-        etat = request.GET.get('etat')
-        if etat and etat != 'TOUS':
-            equipements = equipements.filter(etat=etat)
+    # Calculate stats based on new model (stock_total, stock_disponible, est_actif)
+    stock_agg = equipements.aggregate(
+        total_dispo=Sum('stock_disponible'),
+        total_physique=Sum('stock_total')
+    )
+    total_dispo = stock_agg['total_dispo'] or 0
+    total_physique = stock_agg['total_physique'] or 0
+    en_maintenance = total_physique - total_dispo
+
+    equipements_en_alerte = sum(1 for e in equipements if e.en_alerte and e.est_actif)
+
+    # HTMX GET: filter equipments by state or search query
+    if _is_htmx(request) and request.method == 'GET' and ('etat' in request.GET or 'q' in request.GET):
+        etat = request.GET.get('etat', 'TOUS')
+        q = request.GET.get('q', '').strip()
+        
+        if etat == 'DISPONIBLE':
+            equipements = equipements.filter(est_actif=True)
+        elif etat == 'EN_PANNE':
+            equipements = equipements.filter(est_actif=False)
+            
+        if q:
+            from django.db.models import Q
+            equipements = equipements.filter(Q(nom__icontains=q) | Q(reference__icontains=q))
+                
         return render(request, 'logistics/partials/equipements_list.html', {
             'equipements': equipements
         })
 
     return render(request, 'logistics/inventaire.html', {
         'equipements': equipements,
+        'equipements_disponibles': total_dispo,
+        'equipements_maintenance': en_maintenance,
+        'equipements_en_panne': equipements_en_alerte,
     })
 
 
 @login_required
+@user_passes_test(lambda u: u.is_staff)
 @require_http_methods(['GET', 'POST'])
 def tickets_view(request):
     """Page support avec la liste des tickets actifs et résolution HTMX."""
@@ -53,13 +80,23 @@ def tickets_view(request):
             'resolve_url': reverse('logistics:tickets'),
         })
 
+    # Stats for UI
+    all_tickets = Ticket.objects.all()
+    tickets_en_attente = all_tickets.filter(statut='OUVERT').count()
+    tickets_en_cours = all_tickets.filter(statut='EN_COURS').count()
+    tickets_resolus = all_tickets.filter(statut='RESOLU').count()
+
     return render(request, 'logistics/tickets.html', {
         'tickets': tickets,
         'resolve_url': reverse('logistics:tickets'),
+        'tickets_en_attente': tickets_en_attente,
+        'tickets_en_cours': tickets_en_cours,
+        'tickets_resolus': tickets_resolus,
     })
 
 
 @login_required
+@user_passes_test(lambda u: u.is_staff)
 @require_http_methods(['GET', 'POST'])
 def nuevo_ticket(request):
     """Create a new ticket. User and status are set server-side."""
@@ -78,7 +115,7 @@ def nuevo_ticket(request):
 
 
 @login_required
-@user_passes_test(lambda u: u.is_staff or getattr(u, 'is_formateur', False))
+@user_passes_test(lambda u: u.is_staff)
 @require_http_methods(['GET', 'POST'])
 def ajouter_equipement(request):
     """Ajouter un équipement (GET: renvoie le formulaire, POST: sauvegarde et renvoie la liste mise à jour)."""
@@ -107,7 +144,7 @@ def ajouter_equipement(request):
 
 
 @login_required
-@user_passes_test(lambda u: u.is_staff or getattr(u, 'is_formateur', False))
+@user_passes_test(lambda u: u.is_staff)
 @require_http_methods(['GET', 'POST'])
 def editer_equipement(request, pk):
     """Editer un équipement (GET: formulaire, POST: sauvegarde et retourne la liste)."""
@@ -140,11 +177,317 @@ def editer_equipement(request, pk):
 
 
 @login_required
-@user_passes_test(lambda u: u.is_staff or getattr(u, 'is_formateur', False))
+@user_passes_test(lambda u: u.is_staff)
 @require_http_methods(['POST'])
 def supprimer_equipement(request, pk):
     """Supprimer un équipement et renvoyer la liste mise à jour."""
     equip = get_object_or_404(Equipment, pk=pk)
-    equip.delete()
+    equip.est_actif = False
+    equip.save()
     equipements = Equipment.objects.all()
     return render(request, 'logistics/partials/equipements_list.html', {'equipements': equipements})
+
+
+@login_required
+@user_passes_test(lambda u: u.is_staff or getattr(u, 'is_formateur', False) or getattr(u, 'role', '') == 'FORMATEUR')
+def ateliers_view(request):
+    from django.utils import timezone
+    if request.user.is_staff:
+        ateliers = Workshop.objects.select_related('createur', 'tuteur').all()
+    else:
+        ateliers = Workshop.objects.select_related('createur', 'tuteur').filter(createur=request.user)
+
+    # Stat computations
+    now = timezone.now()
+    ateliers_total = ateliers.count()
+    ateliers_annules = ateliers.filter(est_annule=True).count()
+    ateliers_en_cours = ateliers.filter(date_debut__lte=now, date_fin__gte=now, est_annule=False).count()
+    ateliers_a_venir = ateliers.filter(date_debut__gt=now, est_annule=False).count()
+
+    if _is_htmx(request) and request.method == 'GET':
+        q = request.GET.get('q', '').strip()
+        if q:
+            from django.db.models import Q
+            ateliers = ateliers.filter(Q(titre__icontains=q) | Q(salle__icontains=q))
+        return render(request, 'logistics/partials/ateliers_list.html', {'ateliers': ateliers})
+
+    return render(request, 'logistics/ateliers.html', {
+        'ateliers': ateliers,
+        'ateliers_total': ateliers_total,
+        'ateliers_en_cours': ateliers_en_cours,
+        'ateliers_a_venir': ateliers_a_venir,
+        'ateliers_annules': ateliers_annules,
+    })
+
+
+@login_required
+@user_passes_test(lambda u: u.is_staff or getattr(u, 'is_formateur', False) or getattr(u, 'role', '') == 'FORMATEUR')
+@require_http_methods(['GET', 'POST'])
+def ajouter_atelier(request):
+    if request.method == 'POST':
+        form = WorkshopForm(request.POST)
+        if form.is_valid():
+            atelier = form.save(commit=False)
+            atelier.createur = request.user
+            atelier.save()
+            if request.user.is_staff:
+                ateliers = Workshop.objects.all()
+            else:
+                ateliers = Workshop.objects.filter(createur=request.user)
+            return render(request, 'logistics/partials/ateliers_list.html', {'ateliers': ateliers})
+        else:
+            response = render(request, 'logistics/partials/atelier_form.html', {
+                'form': form,
+                'action_url': reverse('logistics:ajouter_atelier'),
+                'submit_label': 'Ajouter'
+            })
+            response['HX-Retarget'] = '#form-atelier-container'
+            return response
+    else:
+        form = WorkshopForm()
+
+    return render(request, 'logistics/partials/atelier_form.html', {
+        'form': form,
+        'action_url': reverse('logistics:ajouter_atelier'),
+        'submit_label': 'Ajouter'
+    })
+
+
+@login_required
+@user_passes_test(lambda u: u.is_staff or getattr(u, 'is_formateur', False) or getattr(u, 'role', '') == 'FORMATEUR')
+@require_http_methods(['GET', 'POST'])
+def editer_atelier(request, pk):
+    atelier = get_object_or_404(Workshop, pk=pk)
+
+    if not request.user.is_staff and atelier.createur != request.user:
+        return HttpResponseForbidden("Vous n'êtes pas autorisé à modifier cet atelier.")
+
+    if request.method == 'POST':
+        form = WorkshopForm(request.POST, instance=atelier)
+        if form.is_valid():
+            form.save()
+            if request.user.is_staff:
+                ateliers = Workshop.objects.all()
+            else:
+                ateliers = Workshop.objects.filter(createur=request.user)
+            return render(request, 'logistics/partials/ateliers_list.html', {'ateliers': ateliers})
+        else:
+            response = render(request, 'logistics/partials/atelier_form.html', {
+                'form': form,
+                'atelier': atelier,
+                'action_url': reverse('logistics:editer_atelier', args=[atelier.pk]),
+                'submit_label': 'Enregistrer'
+            })
+            response['HX-Retarget'] = '#form-atelier-container'
+            return response
+    else:
+        form = WorkshopForm(instance=atelier)
+
+    return render(request, 'logistics/partials/atelier_form.html', {
+        'form': form,
+        'atelier': atelier,
+        'action_url': reverse('logistics:editer_atelier', args=[atelier.pk]),
+        'submit_label': 'Enregistrer'
+    })
+
+
+@login_required
+@user_passes_test(lambda u: u.is_staff or getattr(u, 'is_formateur', False) or getattr(u, 'role', '') == 'FORMATEUR')
+@require_http_methods(['POST'])
+def supprimer_atelier(request, pk):
+    atelier = get_object_or_404(Workshop, pk=pk)
+    
+    if not request.user.is_staff and atelier.createur != request.user:
+        return HttpResponseForbidden("Vous n'êtes pas autorisé à supprimer cet atelier.")
+
+    if atelier.demandes_materiel.filter(statut='APPROVED').exists():
+        return HttpResponseBadRequest("Interdiction de supprimer cet atelier, il est lié à une Demande de Matériel validée.")
+
+    if atelier.tickets.exists():
+        return HttpResponseBadRequest("Cet atelier est lié à des tickets et ne peut pas être supprimé.")
+
+    # Soft Delete
+    atelier.est_annule = True
+    atelier.save()
+
+    if request.user.is_staff:
+        ateliers = Workshop.objects.all()
+    else:
+        ateliers = Workshop.objects.filter(createur=request.user)
+    return render(request, 'logistics/partials/ateliers_list.html', {'ateliers': ateliers})
+
+
+@login_required
+@user_passes_test(lambda u: u.is_staff or getattr(u, 'is_formateur', False) or getattr(u, 'role', '') == 'FORMATEUR')
+def demandes_view(request):
+    if request.user.is_staff:
+        demandes = DemandeMateriel.objects.select_related('formateur', 'equipement', 'atelier_cible').all()
+    else:
+        demandes = DemandeMateriel.objects.select_related('formateur', 'equipement', 'atelier_cible').filter(formateur=request.user)
+
+    # Stat computations
+    demandes_total = demandes.count()
+    demandes_en_attente = demandes.filter(statut='PENDING').count()
+    demandes_approuvees = demandes.filter(statut='APPROVED').count()
+    demandes_rejetees = demandes.filter(statut='REJECTED').count()
+
+    if _is_htmx(request) and request.method == 'GET':
+        q = request.GET.get('q', '').strip()
+        statut = request.GET.get('statut', '')
+        
+        if statut:
+            demandes = demandes.filter(statut=statut)
+            
+        if q:
+            from django.db.models import Q
+            demandes = demandes.filter(
+                Q(formateur__first_name__icontains=q) | 
+                Q(formateur__last_name__icontains=q) |
+                Q(equipement__nom__icontains=q) |
+                Q(atelier_cible__titre__icontains=q)
+            )
+        return render(request, 'logistics/partials/demandes_list.html', {'demandes': demandes})
+
+    return render(request, 'logistics/demandes.html', {
+        'demandes': demandes,
+        'demandes_total': demandes_total,
+        'demandes_en_attente': demandes_en_attente,
+        'demandes_approuvees': demandes_approuvees,
+        'demandes_rejetees': demandes_rejetees,
+    })
+
+
+@login_required
+@user_passes_test(lambda u: u.is_staff or getattr(u, 'is_formateur', False) or getattr(u, 'role', '') == 'FORMATEUR')
+@require_http_methods(['GET', 'POST'])
+def ajouter_demande(request):
+    if request.method == 'POST':
+        form = DemandeMaterielForm(request.POST, request=request)
+        if form.is_valid():
+            demande = form.save(commit=False)
+            demande.formateur = request.user
+            demande.statut = 'PENDING'
+            demande.save()
+            
+            if 'dashboard' in request.META.get('HTTP_REFERER', ''):
+                from django.http import HttpResponse
+                response = HttpResponse()
+                response['HX-Redirect'] = reverse('logistics:demandes')
+                return response
+                
+            if request.user.is_staff:
+                demandes = DemandeMateriel.objects.all()
+            else:
+                demandes = DemandeMateriel.objects.filter(formateur=request.user)
+            return render(request, 'logistics/partials/demandes_list.html', {'demandes': demandes})
+        else:
+            response = render(request, 'logistics/partials/demande_form.html', {
+                'form': form,
+                'action_url': reverse('logistics:ajouter_demande'),
+                'submit_label': 'Envoyer la demande'
+            })
+            response['HX-Retarget'] = '#form-demande-container'
+            return response
+    else:
+        form = DemandeMaterielForm(request=request)
+
+    return render(request, 'logistics/partials/demande_form.html', {
+        'form': form,
+        'action_url': reverse('logistics:ajouter_demande'),
+        'submit_label': 'Envoyer la demande'
+    })
+
+
+@login_required
+@user_passes_test(lambda u: u.is_staff or getattr(u, 'is_formateur', False) or getattr(u, 'role', '') == 'FORMATEUR')
+@require_http_methods(['GET', 'POST'])
+def editer_demande(request, pk):
+    demande = get_object_or_404(DemandeMateriel, pk=pk)
+
+    if not request.user.is_staff and demande.formateur != request.user:
+        return HttpResponseForbidden("Vous n'êtes pas autorisé à modifier cette demande.")
+    
+    if demande.statut != 'PENDING':
+        return HttpResponseBadRequest("Impossible de modifier une demande qui n'est plus en attente.")
+
+    if request.method == 'POST':
+        form = DemandeMaterielForm(request.POST, instance=demande, request=request)
+        if form.is_valid():
+            form.save()
+            if request.user.is_staff:
+                demandes = DemandeMateriel.objects.all()
+            else:
+                demandes = DemandeMateriel.objects.filter(formateur=request.user)
+            return render(request, 'logistics/partials/demandes_list.html', {'demandes': demandes})
+        else:
+            response = render(request, 'logistics/partials/demande_form.html', {
+                'form': form,
+                'demande': demande,
+                'action_url': reverse('logistics:editer_demande', args=[demande.pk]),
+                'submit_label': 'Enregistrer'
+            })
+            response['HX-Retarget'] = '#form-demande-container'
+            return response
+    else:
+        form = DemandeMaterielForm(instance=demande, request=request)
+
+    return render(request, 'logistics/partials/demande_form.html', {
+        'form': form,
+        'demande': demande,
+        'action_url': reverse('logistics:editer_demande', args=[demande.pk]),
+        'submit_label': 'Enregistrer'
+    })
+
+
+@login_required
+@user_passes_test(lambda u: u.is_staff or getattr(u, 'is_formateur', False) or getattr(u, 'role', '') == 'FORMATEUR')
+@require_http_methods(['POST'])
+def supprimer_demande(request, pk):
+    demande = get_object_or_404(DemandeMateriel, pk=pk)
+    
+    if not request.user.is_staff and demande.formateur != request.user:
+        return HttpResponseForbidden("Vous n'êtes pas autorisé à supprimer cette demande.")
+
+    if demande.statut != 'PENDING':
+        return HttpResponseBadRequest("Seules les demandes en attente peuvent être supprimées.")
+
+    demande.delete()
+
+    if request.user.is_staff:
+        demandes = DemandeMateriel.objects.all()
+    else:
+        demandes = DemandeMateriel.objects.filter(formateur=request.user)
+    return render(request, 'logistics/partials/demandes_list.html', {'demandes': demandes})
+
+
+@login_required
+@user_passes_test(lambda u: u.is_staff)
+@require_http_methods(['POST'])
+@transaction.atomic
+def changer_statut_demande(request, pk):
+    demande = get_object_or_404(DemandeMateriel, pk=pk)
+    nouveau_statut = request.POST.get('statut')
+    
+    if nouveau_statut not in dict(DemandeMateriel.STATUT_CHOICES).keys():
+        return HttpResponseBadRequest("Statut invalide.")
+
+    # Logic for stock
+    if demande.statut == 'PENDING' and nouveau_statut == 'APPROVED':
+        if demande.equipement.stock_disponible >= demande.quantite:
+            demande.equipement.stock_disponible -= demande.quantite
+            demande.equipement.save()
+        else:
+            return HttpResponseBadRequest("Stock insuffisant pour approuver cette demande.")
+    
+    elif demande.statut == 'APPROVED' and nouveau_statut in ['RETURNED', 'REJECTED']:
+        demande.equipement.stock_disponible += demande.quantite
+        demande.equipement.save()
+        
+    demande.statut = nouveau_statut
+    demande.save()
+    
+    if request.user.is_staff:
+        demandes = DemandeMateriel.objects.all()
+    else:
+        demandes = DemandeMateriel.objects.filter(formateur=request.user)
+    return render(request, 'logistics/partials/demandes_list.html', {'demandes': demandes})

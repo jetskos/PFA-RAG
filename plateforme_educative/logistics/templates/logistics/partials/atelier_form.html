@@ -1,4 +1,4 @@
-<div class="modal-backdrop-premium" id="equipement-modal-backdrop" onclick="document.getElementById('form-equipement-container').innerHTML=''" style="position: fixed; inset: 0; background: rgba(15,23,42,0.5); backdrop-filter: blur(6px); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 1.5rem;">
+<div class="modal-backdrop-premium" id="atelier-modal-backdrop" onclick="document.getElementById('form-atelier-container').innerHTML=''" style="position: fixed; inset: 0; background: rgba(15,23,42,0.5); backdrop-filter: blur(6px); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 1.5rem;">
     <div class="modal-card-premium" onclick="event.stopPropagation()" style="background: var(--surface); width: 100%; max-width: 600px; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.15); overflow: hidden; animation: modalSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); display: flex; flex-direction: column; max-height: 90vh;">
         
         <div style="padding: 1.25rem 1.75rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;">
@@ -6,18 +6,18 @@
                 <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(15,118,110,0.1); color: var(--teal); display: flex; align-items: center; justify-content: center;">
                     <i class="ti ti-edit"></i>
                 </div>
-                Formulaire équipement
+                Formulaire atelier
             </h2>
-            <button type="button" onclick="document.getElementById('form-equipement-container').innerHTML=''" style="background: transparent; border: none; font-size: 1.25rem; color: var(--ink-muted); cursor: pointer; padding: 0.2rem; transition: color 0.15s;" onmouseover="this.style.color='var(--ink)'" onmouseout="this.style.color='var(--ink-muted)'">
+            <button type="button" onclick="document.getElementById('form-atelier-container').innerHTML=''" style="background: transparent; border: none; font-size: 1.25rem; color: var(--ink-muted); cursor: pointer; padding: 0.2rem; transition: color 0.15s;" onmouseover="this.style.color='var(--ink)'" onmouseout="this.style.color='var(--ink-muted)'">
                 <i class="ti ti-x"></i>
             </button>
         </div>
 
-        <form id="equipement-form" method="post" action="{{ action_url }}"
+        <form id="atelier-form" method="post" action="{{ action_url }}"
               hx-post="{{ action_url }}"
-              hx-target="#equipements-list"
+              hx-target="#ateliers-list"
               hx-swap="innerHTML"
-              hx-on::after-request="if(event.detail.target.id === 'equipements-list') document.getElementById('form-equipement-container').innerHTML = ''"
+              hx-on::after-request="if(event.detail.target.id === 'ateliers-list') document.getElementById('form-atelier-container').innerHTML = ''"
               style="display: flex; flex-direction: column; min-height: 0;">
             {% csrf_token %}
 
@@ -44,7 +44,7 @@
             </div>
 
             <div style="padding: 1.25rem 1.75rem; border-top: 1px solid var(--border); background: var(--bg); display: flex; justify-content: flex-end; gap: 0.75rem; flex-shrink: 0;">
-                <button type="button" style="display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.65rem 1.1rem; background: transparent; color: var(--ink-muted); border: 1.5px solid var(--border); border-radius: 8px; font-size: 0.875rem; font-weight: 700; cursor: pointer; transition: all 0.15s;" onclick="document.getElementById('form-equipement-container').innerHTML=''" onmouseover="this.style.borderColor='var(--ink-mid)'; this.style.color='var(--ink)'" onmouseout="this.style.borderColor='var(--border)'; this.style.color='var(--ink-muted)'">
+                <button type="button" style="display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.65rem 1.1rem; background: transparent; color: var(--ink-muted); border: 1.5px solid var(--border); border-radius: 8px; font-size: 0.875rem; font-weight: 700; cursor: pointer; transition: all 0.15s;" onclick="document.getElementById('form-atelier-container').innerHTML=''" onmouseover="this.style.borderColor='var(--ink-mid)'; this.style.color='var(--ink)'" onmouseout="this.style.borderColor='var(--border)'; this.style.color='var(--ink-muted)'">
                     Annuler
                 </button>
                 <button type="submit" style="display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.65rem 1.4rem; background: var(--teal); color: #fff; border: none; border-radius: 8px; font-size: 0.875rem; font-weight: 700; cursor: pointer; transition: background 0.15s;" onmouseover="this.style.background='var(--ink)'" onmouseout="this.style.background='var(--teal)'">
@@ -60,7 +60,7 @@
         from { opacity: 0; transform: translateY(20px) scale(0.98); }
         to { opacity: 1; transform: translateY(0) scale(1); }
     }
-    #equipement-form input, #equipement-form select, #equipement-form textarea {
+    #atelier-form input, #atelier-form select, #atelier-form textarea {
         width: 100%;
         padding: 0.65rem 1rem;
         border-radius: 8px;
@@ -71,12 +71,59 @@
         background: var(--surface);
         transition: all 0.15s;
     }
-    #equipement-form input:focus, #equipement-form select:focus, #equipement-form textarea:focus {
+    #atelier-form input:focus, #atelier-form select:focus, #atelier-form textarea:focus {
         outline: none;
         border-color: var(--teal);
         box-shadow: 0 0 0 3px var(--teal-glow);
     }
-    #equipement-form input[type="checkbox"] {
+    #atelier-form input[type="checkbox"] {
         width: auto;
     }
+</style>
+
+<!-- Add TomSelect for Tuteur if desired -->
+<link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.default.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+<script>
+  (function() {
+      const initTomSelect = () => {
+          const tuteurSelect = document.getElementById("{{ form.tuteur.id_for_label }}");
+          if (tuteurSelect && !tuteurSelect.tomselect) {
+              new TomSelect(tuteurSelect, {
+                  create: false,
+                  placeholder: "Rechercher un tuteur...",
+                  maxOptions: 50
+              });
+          }
+      };
+      initTomSelect();
+  })();
+</script>
+<style>
+  /* Customize TomSelect for the form */
+  .ts-control {
+        padding: 0.65rem 1rem !important;
+        border: 1.5px solid var(--border) !important;
+        border-radius: 8px !important;
+        background: var(--surface) !important;
+        font-family: inherit !important;
+        font-size: 0.9rem !important;
+        box-shadow: none !important;
+        transition: all 0.15s !important;
+  }
+  .ts-control.focus {
+        border-color: var(--teal) !important;
+        box-shadow: 0 0 0 3px var(--teal-glow) !important;
+  }
+  .ts-dropdown {
+    border: 1px solid var(--border) !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08) !important;
+    font-size: 0.9rem !important;
+    z-index: 1060 !important;
+  }
+  .ts-dropdown .active {
+    background-color: var(--teal-glow) !important;
+    color: var(--teal) !important;
+  }
 </style>

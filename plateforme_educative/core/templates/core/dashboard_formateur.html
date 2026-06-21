@@ -25,9 +25,9 @@
             <a href="{% url 'apprentissage:formateur_notes' %}" class="btn-ghost" style="color: #64748b; font-weight: 600; padding: 0.5rem 1rem;">
                 <i class="ti ti-chart-bar" style="margin-right: 6px;"></i> Voir les Notes
             </a>
-            <button class="btn-outline" hx-get="{% url 'dashboard_formateur_create_demande' %}" hx-target="#modal-container" style="color: #0f172a; border-color: #e2e8f0; font-weight: 600; padding: 0.5rem 1rem;">
-                <i class="ti ti-package" style="margin-right: 6px;"></i> Demande Matériel
-            </button>
+            <a href="{% url 'logistics:demandes' %}" class="btn-outline" style="color: #0f172a; border-color: #e2e8f0; font-weight: 600; padding: 0.5rem 1rem; text-decoration: none;">
+                <i class="ti ti-package" style="margin-right: 6px;"></i> Demandes Logistiques
+            </a>
             <a href="{% url 'apprentissage:nouveau_cours' %}" class="btn-primary" style="background: #3b82f6; border-radius: 8px; font-weight: 600; padding: 0.5rem 1rem;">
                 <i class="ti ti-plus" style="margin-right: 6px;"></i> Nouveau Cours
             </a>
@@ -41,7 +41,7 @@
 </section>
 
 <!-- Modal Container for Logistics -->
-<div id="modal-container"></div>
+<div id="form-demande-container"></div>
 
 <style>
     body { background-color: #f8fafc; } /* Premium SaaS background */

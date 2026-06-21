@@ -143,3 +143,148 @@
         </div>
     {% endif %}
 </div>
+
+<!-- SECTION DEMANDES LOGISTIQUES -->
+<div style="margin-top: 3rem;">
+    <h2 style="font-size: 1.5rem; font-weight: 800; color: #0f172a; margin-bottom: 1.5rem;">Suivi Logistique</h2>
+    
+    <style>
+        .logistics-tracking-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        .tracking-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.025);
+            border: 1px solid #e2e8f0;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        .tracking-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+        }
+        .tracking-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+        }
+        .tracking-card.status-PENDING::before { background: #f59e0b; }
+        .tracking-card.status-APPROVED::before { background: #10b981; }
+        .tracking-card.status-REJECTED::before { background: #ef4444; }
+        .tracking-card.status-RETURNED::before { background: #3b82f6; }
+
+        .tracking-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+        .tracking-equipement {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0;
+        }
+        .tracking-date {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+        
+        .tracking-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .badge-PENDING { background: #fef3c7; color: #b45309; }
+        .badge-APPROVED { background: #d1fae5; color: #047857; }
+        .badge-REJECTED { background: #fee2e2; color: #b91c1c; }
+        .badge-RETURNED { background: #dbeafe; color: #1d4ed8; }
+
+        .tracking-details {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px dashed #e2e8f0;
+        }
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .detail-label {
+            font-size: 0.75rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+        }
+        .detail-value {
+            font-size: 0.95rem;
+            color: #334155;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+    </style>
+
+    {% if mes_demandes %}
+        <div class="logistics-tracking-grid">
+            {% for demande in mes_demandes %}
+                <div class="tracking-card status-{{ demande.statut }}">
+                    <div class="tracking-header">
+                        <div>
+                            <h3 class="tracking-equipement">{{ demande.equipement.nom }}</h3>
+                            <span class="tracking-date">Demande du {{ demande.date_creation|date:"d M Y" }}</span>
+                        </div>
+                        <div class="tracking-badge badge-{{ demande.statut }}">
+                            {% if demande.statut == 'PENDING' %}<i class="ti ti-hourglass"></i> En attente
+                            {% elif demande.statut == 'APPROVED' %}<i class="ti ti-check"></i> Approuvée
+                            {% elif demande.statut == 'REJECTED' %}<i class="ti ti-x"></i> Rejetée
+                            {% elif demande.statut == 'RETURNED' %}<i class="ti ti-arrow-back-up"></i> Retournée
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="tracking-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Quantité</span>
+                            <span class="detail-value"><i class="ti ti-box"></i> {{ demande.quantite }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Atelier</span>
+                            <span class="detail-value">
+                                {% if demande.atelier_cible %}
+                                    <i class="ti ti-building-community"></i> {{ demande.atelier_cible.titre }}
+                                {% else %}
+                                    <span style="color: #94a3b8; font-style: italic;">Non spécifié</span>
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state-modern" style="padding: 2rem;">
+            <i class="ti ti-box-off" style="font-size: 3rem; color: #94a3b8; margin-bottom: 1rem;"></i>
+            <h3 style="font-size: 1.1rem;">Aucune demande de matériel</h3>
+            <p style="margin-bottom: 0;">Vous n'avez effectué aucune demande logistique pour le moment.</p>
+        </div>
+    {% endif %}
+</div>

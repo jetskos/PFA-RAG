@@ -1,66 +1,303 @@
 {% extends 'base.html' %}
-
-{% block title %}Nouveau Ticket - Logistics{% endblock %}
-
+{% block title %}Nouveau Ticket — Logistics{% endblock %}
 {% block content %}
-<section class="page-shell">
-    <div class="page-header">
-        <p class="eyebrow">Logistics</p>
-        <h1>Nouveau ticket</h1>
-        <p>Signalez un problème ou une demande de maintenance.</p>
+<style>
+  :root {
+    --teal:       #0f766e;
+    --teal-light: #14b8a6;
+    --teal-glow:  rgba(15,118,110,0.1);
+    --red:        #ef4444;
+    --ink:        #0f172a;
+    --ink-mid:    #334155;
+    --ink-muted:  #64748b;
+    --border:     #e2e8f0;
+    --surface:    #ffffff;
+    --bg:         #f1f5f9;
+    --radius-sm:  8px;
+    --radius-md:  12px;
+    --radius-lg:  18px;
+    --shadow-sm:  0 1px 3px rgba(0,0,0,0.06);
+    --shadow-md:  0 6px 24px rgba(0,0,0,0.09);
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+
+  .nt-shell {
+    min-height: 100vh;
+    background: var(--bg);
+    font-family: 'Inter', system-ui, sans-serif;
+    display: flex;
+    flex-direction: column;
+  }
+  .nt-topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 1.5rem 2rem 1.5rem;
+  }
+  .nt-topbar-inner { max-width: 700px; margin: 0 auto; }
+  .nt-back {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    font-size: 0.82rem; font-weight: 700; color: var(--ink-muted);
+    text-decoration: none; margin-bottom: 1rem;
+    transition: color 0.15s;
+  }
+  .nt-back:hover { color: var(--teal); }
+  .nt-eyebrow {
+    font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--teal); margin-bottom: 0.3rem;
+  }
+  .nt-title { font-size: 1.75rem; font-weight: 900; color: var(--ink); margin: 0 0 0.2rem; }
+  .nt-subtitle { font-size: 0.875rem; color: var(--ink-muted); margin: 0; }
+
+  .nt-body {
+    flex: 1;
+    max-width: 700px;
+    margin: 1.75rem auto 3rem;
+    padding: 0 2rem;
+    width: 100%;
+  }
+
+  /* Form card */
+  .nt-form-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+  }
+  .nt-form-card-header {
+    padding: 1.25rem 1.75rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .nt-form-card-header h2 {
+    font-size: 0.95rem; font-weight: 800; color: var(--ink); margin: 0;
+    display: flex; align-items: center; gap: 0.4rem;
+  }
+  .nt-form-card-header i { color: var(--teal); }
+  .nt-form-body { padding: 1.75rem; }
+
+  /* Field styles */
+  .nt-field { margin-bottom: 1.4rem; }
+  .nt-field:last-of-type { margin-bottom: 0; }
+  .nt-label {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.72rem; 
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--ink-mid);
+    margin-bottom: 0.5rem;
+  }
+  .nt-label i {
+    font-size: 1.05rem;
+    color: var(--ink-muted);
+  }
+  .nt-field input,
+  .nt-field textarea,
+  .nt-field select {
+    width: 100%;
+    padding: 0.7rem 0.9rem;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    font-size: 0.9rem;
+    font-family: inherit;
+    color: var(--ink);
+    transition: border-color 0.15s, box-shadow 0.15s;
+    outline: none;
+    appearance: none;
+  }
+  .nt-field input:focus,
+  .nt-field textarea:focus,
+  .nt-field select:focus {
+    border-color: var(--teal);
+    box-shadow: 0 0 0 3px var(--teal-glow);
+  }
+  .nt-field textarea { resize: vertical; min-height: 110px; }
+  .nt-error {
+    font-size: 0.78rem; font-weight: 600; color: var(--red);
+    margin-top: 0.35rem; display: flex; align-items: center; gap: 0.3rem;
+  }
+  .nt-error::before { content: "⚠"; }
+
+  /* Global errors */
+  .nt-alert {
+    background: rgba(239,68,68,0.08);
+    border: 1px solid rgba(239,68,68,0.2);
+    border-radius: var(--radius-sm);
+    padding: 0.85rem 1rem;
+    margin-bottom: 1.25rem;
+    font-size: 0.85rem; font-weight: 600; color: var(--red);
+  }
+
+  /* Divider before actions */
+  .nt-form-footer {
+    padding: 1.25rem 1.75rem;
+    border-top: 1px solid var(--border);
+    display: flex; gap: 0.75rem; align-items: center;
+    background: var(--bg);
+    flex-wrap: wrap;
+  }
+  .btn-submit {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.65rem 1.4rem;
+    background: var(--teal); color: #fff;
+    border: none; border-radius: var(--radius-sm);
+    font-size: 0.875rem; font-weight: 700; font-family: inherit;
+    cursor: pointer; transition: background 0.15s, transform 0.1s;
+  }
+  .btn-submit:hover { background: var(--ink); transform: scale(1.02); }
+  .btn-cancel {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.65rem 1.1rem;
+    background: transparent; color: var(--ink-muted);
+    border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+    font-size: 0.875rem; font-weight: 700; font-family: inherit;
+    cursor: pointer; text-decoration: none;
+    transition: all 0.15s;
+  }
+  .btn-cancel:hover { border-color: var(--ink-mid); color: var(--ink); }
+
+  /* 2-col grid for smaller fields */
+  .nt-row-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  @media (max-width: 540px) { .nt-row-2 { grid-template-columns: 1fr; } }
+</style>
+
+<div class="nt-shell">
+  <!-- TOP BAR -->
+  <div class="nt-topbar">
+    <div class="nt-topbar-inner">
+      <a href="{% url 'logistics:tickets' %}" class="nt-back">
+        <i class="ti ti-arrow-left"></i> Retour aux tickets
+      </a>
+      <p class="nt-eyebrow">Logistics · Support</p>
+      <h1 class="nt-title">Nouveau ticket</h1>
+      <p class="nt-subtitle">Signalez un problème ou une demande de maintenance.</p>
     </div>
+  </div>
 
-    <div class="auth-container">
-        <div class="carte auth-carte">
-            <form method="post">
-                {% csrf_token %}
-                
-                {% if form.non_field_errors %}
-                    <div class="messages">
-                        {% for error in form.non_field_errors %}
-                        <p class="message-item">{{ error }}</p>
-                        {% endfor %}
-                    </div>
-                {% endif %}
+  <!-- BODY -->
+  <div class="nt-body">
+    <div class="nt-form-card">
+      <div class="nt-form-card-header">
+        <h2><i class="ti ti-file-description"></i> Informations du ticket</h2>
+      </div>
 
-                <p>
-                    <label for="{{ form.titre.id_for_label }}">{{ form.titre.label }}</label>
-                    {{ form.titre }}
-                    {% if form.titre.errors %}
-                        <span class="error-text">{{ form.titre.errors.0 }}</span>
-                    {% endif %}
-                </p>
+      <form method="post">
+        {% csrf_token %}
+        <div class="nt-form-body">
 
-                <p>
-                    <label for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
-                    {{ form.description }}
-                    {% if form.description.errors %}
-                        <span class="error-text">{{ form.description.errors.0 }}</span>
-                    {% endif %}
-                </p>
+          {% if form.non_field_errors %}
+          <div class="nt-alert">
+            {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+          </div>
+          {% endif %}
 
-                <p>
-                    <label for="{{ form.equipement.id_for_label }}">{{ form.equipement.label }}</label>
-                    {{ form.equipement }}
-                    {% if form.equipement.errors %}
-                        <span class="error-text">{{ form.equipement.errors.0 }}</span>
-                    {% endif %}
-                </p>
+          <!-- Titre -->
+          <div class="nt-field">
+            <label class="nt-label" for="{{ form.titre.id_for_label }}"><i class="ti ti-heading"></i> Titre du ticket</label>
+            {{ form.titre }}
+            {% if form.titre.errors %}<p class="nt-error">{{ form.titre.errors.0 }}</p>{% endif %}
+          </div>
 
-                <p>
-                    <label for="{{ form.atelier.id_for_label }}">{{ form.atelier.label }}</label>
-                    {{ form.atelier }}
-                    {% if form.atelier.errors %}
-                        <span class="error-text">{{ form.atelier.errors.0 }}</span>
-                    {% endif %}
-                </p>
+          <!-- Description -->
+          <div class="nt-field">
+            <label class="nt-label" for="{{ form.description.id_for_label }}"><i class="ti ti-align-left"></i> Description</label>
+            {{ form.description }}
+            {% if form.description.errors %}<p class="nt-error">{{ form.description.errors.0 }}</p>{% endif %}
+          </div>
 
-                <div class="actions">
-                    <button type="submit" class="btn">Soumettre</button>
-                    <a href="{% url 'logistics:tickets' %}" class="btn btn-ghost">Annuler</a>
-                </div>
-            </form>
+          <!-- Equipement + Atelier in 2 cols -->
+          <div class="nt-row-2">
+            <div class="nt-field">
+              <label class="nt-label" for="{{ form.equipement.id_for_label }}"><i class="ti ti-package"></i> Équipement concerné</label>
+              {{ form.equipement }}
+              {% if form.equipement.errors %}<p class="nt-error">{{ form.equipement.errors.0 }}</p>{% endif %}
+            </div>
+            <div class="nt-field">
+              <label class="nt-label" for="{{ form.atelier.id_for_label }}"><i class="ti ti-building-community"></i> Atelier cible</label>
+              {{ form.atelier }}
+              {% if form.atelier.errors %}<p class="nt-error">{{ form.atelier.errors.0 }}</p>{% endif %}
+            </div>
+          </div>
+
         </div>
+
+        <div class="nt-form-footer">
+          <button type="submit" class="btn-submit">
+            <i class="ti ti-send"></i> Soumettre le ticket
+          </button>
+          <a href="{% url 'logistics:tickets' %}" class="btn-cancel">
+            <i class="ti ti-x"></i> Annuler
+          </a>
+        </div>
+      </form>
     </div>
-</section>
+  </div>
+</div>
+
+<!-- TomSelect for searchable dropdowns -->
+<link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.default.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const atelierSelect = document.getElementById("{{ form.atelier.id_for_label }}");
+    if (atelierSelect) {
+      new TomSelect(atelierSelect, {
+        create: false,
+        placeholder: "Rechercher un atelier...",
+        maxOptions: 50
+      });
+    }
+
+    const equipementSelect = document.getElementById("{{ form.equipement.id_for_label }}");
+    if (equipementSelect) {
+      new TomSelect(equipementSelect, {
+        create: false,
+        placeholder: "Rechercher un équipement...",
+        maxOptions: 50
+      });
+    }
+  });
+</script>
+
+<style>
+  /* Customize TomSelect to match our theme */
+  .ts-control {
+    padding: 0.7rem 0.9rem !important;
+    border: 1.5px solid var(--border) !important;
+    border-radius: var(--radius-sm) !important;
+    background: var(--surface) !important;
+    font-size: 0.9rem !important;
+    font-family: 'Inter', system-ui, sans-serif !important;
+    color: var(--ink) !important;
+    transition: border-color 0.15s, box-shadow 0.15s !important;
+    box-shadow: none !important;
+  }
+  .ts-control.focus {
+    border-color: var(--teal) !important;
+    box-shadow: 0 0 0 3px var(--teal-glow) !important;
+  }
+  .ts-dropdown {
+    border: 1px solid var(--border) !important;
+    border-radius: var(--radius-sm) !important;
+    box-shadow: var(--shadow-sm) !important;
+    font-family: 'Inter', system-ui, sans-serif !important;
+    font-size: 0.9rem !important;
+  }
+  .ts-dropdown .option {
+    padding: 0.5rem 0.9rem !important;
+  }
+  .ts-dropdown .active {
+    background-color: var(--teal-glow) !important;
+    color: var(--teal) !important;
+  }
+</style>
 {% endblock %}

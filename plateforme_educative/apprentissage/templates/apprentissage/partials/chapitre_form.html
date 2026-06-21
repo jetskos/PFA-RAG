@@ -1,5 +1,5 @@
 <form method="post"
-      hx-post="{{ request.path }}"
+      hx-post="{% if action_url %}{{ action_url }}{% else %}{{ request.path }}{% endif %}"
       hx-target="#chapitres-container"
       hx-swap="innerHTML"
       hx-on::after-request="if(event.detail.successful) document.getElementById('form-modal').style.display='none';">
