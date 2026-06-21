@@ -14,6 +14,7 @@
         <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
             {% for item in devoirs_data %}
             {% with devoir=item.devoir soumission=item.soumission %}
+            {% with app=soumission.appreciation_details %}
             <div class="carte" style="display: flex; flex-direction: column; gap: 0; padding: 0; overflow: hidden; border: 1px solid var(--bordure);">
                 <!-- Statut badge en haut -->
                 <div style="
@@ -21,7 +22,7 @@
                     font-size: 0.78rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
                     {% if soumission %}
                         {% if soumission.est_corrigee %}
-                            background: rgba(76,175,80,0.15); color: #4caf50;
+                            background: {{ app.bg_color }}; color: {{ app.color }};
                         {% else %}
                             background: rgba(33,150,243,0.15); color: #2196f3;
                         {% endif %}
@@ -34,7 +35,7 @@
                     {% endif %}
                 ">
                     {% if soumission %}
-                        {% if soumission.est_corrigee %}✓ Corrigé — {{ soumission.note }}/{{ devoir.note_max }}{% else %}📤 Soumis{% endif %}
+                        {% if soumission.est_corrigee %}✓ {{ app.text }} — {{ soumission.note }}/{{ devoir.note_max }}{% else %}📤 Soumis{% endif %}
                     {% else %}
                         {% if devoir.date_limite and devoir.date_limite < now %}⏰ Délai dépassé{% else %}📋 À rendre{% endif %}
                     {% endif %}
@@ -62,6 +63,7 @@
                     </div>
                 </div>
             </div>
+            {% endwith %}
             {% endwith %}
             {% endfor %}
         </div>

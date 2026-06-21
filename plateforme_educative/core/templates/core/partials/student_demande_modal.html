@@ -1,0 +1,130 @@
+<div class="modal-backdrop" onclick="closeModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <h2>📦 Nouvelle Demande de Matériel</h2>
+            <button onclick="closeModal()" class="close-btn"><i class="ti ti-x"></i></button>
+        </div>
+        
+        <form method="post"
+              hx-post="{% url 'dashboard_student_create_demande' %}"
+              hx-target="#modal-container"
+              style="display:flex; flex-direction:column; gap:1.25rem;">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="{{ demande_form.equipement.id_for_label }}">Équipement requis</label>
+                {{ demande_form.equipement }}
+                {% if demande_form.equipement.errors %}<span class="error-text">{{ demande_form.equipement.errors.0 }}</span>{% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ demande_form.destinataire.id_for_label }}">Destinataire (Admin ou Formateur)</label>
+                {{ demande_form.destinataire }}
+                {% if demande_form.destinataire.errors %}<span class="error-text">{{ demande_form.destinataire.errors.0 }}</span>{% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ demande_form.atelier_cible.id_for_label }}">Atelier cible (Optionnel)</label>
+                {{ demande_form.atelier_cible }}
+                {% if demande_form.atelier_cible.errors %}<span class="error-text">{{ demande_form.atelier_cible.errors.0 }}</span>{% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ demande_form.quantite.id_for_label }}">Quantité souhaitée</label>
+                {{ demande_form.quantite }}
+                {% if demande_form.quantite.errors %}<span class="error-text">{{ demande_form.quantite.errors.0 }}</span>{% endif %}
+            </div>
+            
+            {% if demande_form.non_field_errors %}
+                <div class="messages"><p class="error-text">{{ demande_form.non_field_errors.0 }}</p></div>
+            {% endif %}
+            
+            <div class="modal-actions">
+                <button type="button" class="btn-ghost" onclick="closeModal()">Annuler</button>
+                <button type="submit" class="btn-primary" style="background:#3b82f6;">Envoyer la demande</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.4);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        animation: fadeIn 0.2s ease-out;
+    }
+    .modal-content {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 2rem;
+        width: 100%;
+        max-width: 500px;
+        box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    .modal-header h2 {
+        margin: 0;
+        font-size: 1.25rem;
+        color: #0f172a;
+    }
+    .close-btn {
+        background: transparent;
+        border: none;
+        font-size: 1.25rem;
+        color: #64748b;
+        cursor: pointer;
+        padding: 4px;
+        border-radius: 6px;
+        transition: background 0.2s;
+    }
+    .close-btn:hover { background: #f1f5f9; color: #0f172a; }
+    
+    .form-group { display: flex; flex-direction: column; gap: 0.5rem; }
+    .form-group label { font-size: 0.9rem; font-weight: 600; color: #475569; }
+    .form-group input, .form-group select {
+        padding: 0.75rem 1rem;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        background: #f8fafc;
+        transition: all 0.2s;
+    }
+    .form-group input:focus, .form-group select:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        background: #ffffff;
+    }
+    
+    .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        margin-top: 1rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #e2e8f0;
+    }
+    .error-text { color: #ef4444; font-size: 0.85rem; }
+    
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+
+<script>
+    function closeModal() {
+        document.getElementById('modal-container').innerHTML = '';
+    }
+</script>

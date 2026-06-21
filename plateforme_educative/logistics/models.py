@@ -115,11 +115,19 @@ class DemandeMateriel(models.Model):
         ('RETURNED', 'Retournée'),
     )
 
-    formateur = models.ForeignKey(
+    demandeur = models.ForeignKey(
         'accounts.Utilisateur',
         on_delete=models.CASCADE,
         related_name='demandes_materiel',
-        verbose_name='Formateur',
+        verbose_name='Demandeur',
+    )
+    destinataire = models.ForeignKey(
+        'accounts.Utilisateur',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='demandes_recues',
+        verbose_name='Destinataire',
     )
     equipement = models.ForeignKey(
         Equipment,
@@ -151,4 +159,4 @@ class DemandeMateriel(models.Model):
         ordering = ['-date_creation']
 
     def __str__(self):
-        return f"{self.formateur.get_full_name()} - {self.equipement.nom} x{self.quantite}"
+        return f"{self.demandeur.get_full_name()} - {self.equipement.nom} x{self.quantite}"

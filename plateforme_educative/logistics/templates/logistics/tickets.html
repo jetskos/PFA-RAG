@@ -3,25 +3,199 @@
 {% block title %}Tickets - Logistics{% endblock %}
 
 {% block content %}
-<section class="page-shell">
-    <div class="page-header">
-        <p class="eyebrow">Logistics</p>
-        <h1>Support</h1>
-        <p>Suivi des tickets actifs.</p>
-    </div>
+<style>
+    /* Premium background grid & ambient orbs */
+    .logistics-wrapper {
+        position: relative;
+        width: 100%;
+        overflow: visible;
+    }
+    
 
-    {% include 'logistics/partials/navigation.html' with active_page='tickets' %}
 
-    <div class="apprentissage-shell">
-        <div class="apprentissage-contenu content-card col-span-full">
-            <div class="actions">
-                <h2>Tickets actifs</h2>
-                <a href="{% url 'logistics:nuevo_ticket' %}" class="btn">Nouveau ticket</a>
+    /* Stats Dashboard Grid */
+    .logistics-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.25rem;
+        margin-bottom: 2rem;
+        position: relative;
+        z-index: 2;
+    }
+    
+    .logistics-stat-card {
+        background: var(--bg-surface, #ffffff);
+        border: 1px solid var(--border-light, #e2e8f0);
+        border-radius: 16px;
+        padding: 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        box-shadow: var(--shadow-sm, 0 1px 2px rgba(0,0,0,0.05));
+        transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), 
+                    box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+                    border-color 0.22s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .logistics-stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md, 0 4px 6px rgba(0,0,0,0.05));
+        border-color: var(--border-default);
+    }
+    
+    .logistics-stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+    }
+    
+    .stat-active::before { background: #ef4444; }
+    .stat-resolved::before { background: #10b981; }
+    .stat-total::before { background: var(--primary, #0d9488); }
+    
+    .logistics-stat-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.35rem;
+        flex-shrink: 0;
+    }
+    
+    .stat-active .logistics-stat-icon {
+        background: rgba(239, 68, 68, 0.08);
+        color: #ef4444;
+    }
+    .stat-resolved .logistics-stat-icon {
+        background: rgba(16, 185, 129, 0.08);
+        color: #10b981;
+    }
+    .stat-total .logistics-stat-icon {
+        background: rgba(13, 148, 136, 0.08);
+        color: var(--primary, #0d9488);
+    }
+    
+    .logistics-stat-content {
+        flex: 1;
+        min-width: 0;
+    }
+    
+    .logistics-stat-title {
+        font-size: 0.76rem;
+        font-weight: 750;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        letter-spacing: 0.04em;
+        margin: 0;
+    }
+    
+    .logistics-stat-value {
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: var(--text-primary);
+        line-height: 1.2;
+        margin: 0.1rem 0;
+    }
+    
+    .logistics-stat-desc {
+        font-size: 0.76rem;
+        color: var(--text-secondary);
+        margin: 0;
+    }
+
+    /* Primary button override for Logistics */
+    .logistics-btn-primary {
+        background: linear-gradient(135deg, var(--primary, #0d9488), var(--primary-dark, #0f766e));
+        color: #ffffff !important;
+        border: none;
+        padding: 0.55rem 1.2rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        border-radius: 10px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        box-shadow: 0 4px 8px rgba(13, 148, 136, 0.15);
+        transition: all 0.2s ease;
+    }
+    
+    .logistics-btn-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 12px rgba(13, 148, 136, 0.25);
+        filter: brightness(1.05);
+    }
+</style>
+
+<div class="logistics-wrapper">
+    <!-- Ambient background glows -->
+
+    <section class="page-shell" style="position: relative; z-index: 1;">
+        <!-- Header -->
+        <div class="page-header" style="margin-bottom: 2rem;">
+            <p class="eyebrow">Logistics</p>
+            <h1>Support & Dépannage</h1>
+            <p class="muted" style="margin: 0.25rem 0 0 0;">Suivez et gérez les rapports d'incidents et de pannes du matériel.</p>
+        </div>
+
+        <!-- Navigation Tabs -->
+        {% include 'logistics/partials/navigation.html' with active_page='tickets' %}
+
+        <!-- Stat counter dashboard cards -->
+        <div class="logistics-stats-grid">
+            <div class="logistics-stat-card stat-active">
+                <div class="logistics-stat-icon">
+                    <i class="ti ti-alert-circle"></i>
+                </div>
+                <div class="logistics-stat-content">
+                    <p class="logistics-stat-title">Tickets Actifs</p>
+                    <p class="logistics-stat-value">{{ active_count|default:"0" }}</p>
+                    <p class="logistics-stat-desc">En attente de résolution</p>
+                </div>
             </div>
-            <div id="tickets-list">
-                {% include 'logistics/partials/tickets_list.html' with tickets=tickets resolve_url=resolve_url %}
+            <div class="logistics-stat-card stat-resolved">
+                <div class="logistics-stat-icon">
+                    <i class="ti ti-circle-check"></i>
+                </div>
+                <div class="logistics-stat-content">
+                    <p class="logistics-stat-title">Tickets Résolus</p>
+                    <p class="logistics-stat-value">{{ resolved_count|default:"0" }}</p>
+                    <p class="logistics-stat-desc">Problèmes clôturés</p>
+                </div>
+            </div>
+            <div class="logistics-stat-card stat-total">
+                <div class="logistics-stat-icon">
+                    <i class="ti ti-clipboard-list"></i>
+                </div>
+                <div class="logistics-stat-content">
+                    <p class="logistics-stat-title">Total Signalements</p>
+                    <p class="logistics-stat-value">{{ total_count|default:"0" }}</p>
+                    <p class="logistics-stat-desc">Tickets répertoriés</p>
+                </div>
             </div>
         </div>
-    </div>
-</section>
+
+        <!-- Ticket lists container card -->
+        <div class="apprentissage-shell">
+            <div class="apprentissage-contenu content-card col-span-full" style="padding: 1.75rem; border-radius: 16px; border: 1px solid var(--border-light); background: var(--bg-surface); box-shadow: var(--shadow-sm);">
+                <div class="actions-between" style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                    <h2 style="font-size: 1.2rem; font-weight: 700; color: var(--text-primary); margin: 0;">🎫 Tickets en cours</h2>
+                    <a href="{% url 'logistics:nuevo_ticket' %}" class="logistics-btn-primary">
+                        <i class="ti ti-plus" style="font-size: 14px;"></i> Nouveau ticket
+                    </a>
+                </div>
+                <div id="tickets-list">
+                    {% include 'logistics/partials/tickets_list.html' with tickets=tickets resolve_url=resolve_url %}
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
 {% endblock %}

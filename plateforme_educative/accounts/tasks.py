@@ -24,6 +24,8 @@ def envoyer_email_task(self, subject: str, text_content: str, html_content: str,
     """
     from django.core.mail import EmailMultiAlternatives
 
+    from django.conf import settings
+
     try:
         email = EmailMultiAlternatives(
             subject=subject,
@@ -36,4 +38,8 @@ def envoyer_email_task(self, subject: str, text_content: str, html_content: str,
         logger.info(f"[Email] E-mail envoyé avec succès à {to_list}")
     except Exception as exc:
         logger.error(f"[Email] Erreur d'envoi à {to_list} : {exc}", exc_info=True)
+        if getattr(self.request, 'is_eager', False) or getattr(settings, 'CELERY_TASK_ALWAYS_EAGER', False):
+            logger.warning("[Email] Envoi d'e-mail échoué en mode eager (développement). Pas de retry.")
+            return
         raise self.retry(exc=exc)
+

@@ -159,7 +159,19 @@ function afficherFin(score, mastery) {
 
     panel.style.display = 'block';
 
-    if (mastery >= 0.75) {
+    if (mastery >= 1.0) {
+        badge.className = 'role-badge';
+        badge.style.backgroundColor = 'var(--accent-emerald-light)';
+        badge.style.color = 'var(--accent-emerald)';
+        badge.style.borderColor = 'rgba(16, 185, 129, 0.2)';
+        badge.textContent = '✓ Validé';
+        
+        titre.textContent = `🎉 Chapitre Validé ! Score : ${pct}%`;
+        msg.textContent   = 'Félicitations ! Tu as atteint 100% de maîtrise. Le chapitre est validé !';
+        actions.innerHTML = `
+            <a href="${QCM_URL}" class="btn btn-success">📝 Tester tes connaissances (QCM)</a>
+            <a href="${COURS_URL}" class="btn btn-outline">Retour au cours</a>`;
+    } else if (mastery >= 0.75) {
         badge.className = 'role-badge';
         badge.style.backgroundColor = 'var(--accent-emerald-light)';
         badge.style.color = 'var(--accent-emerald)';
@@ -167,9 +179,9 @@ function afficherFin(score, mastery) {
         badge.textContent = '✓ Maîtrisé';
         
         titre.textContent = `🎉 Félicitations ! Score : ${pct}%`;
-        msg.textContent   = 'Tu maîtrises bien ce chapitre ! Teste tes connaissances avec le QCM.';
+        msg.textContent   = 'Tu maîtrises bien ce chapitre ! Termine le QCM pour valider ce chapitre.';
         actions.innerHTML = `
-            <a href="${QCM_URL}" class="btn btn-success">📝 Faire le QCM</a>
+            <a href="${QCM_URL}" class="btn btn-success">📝 Faire le QCM pour valider</a>
             <a href="${COURS_URL}" class="btn btn-outline">Retour au cours</a>`;
     } else {
         badge.className = 'role-badge';
@@ -179,7 +191,7 @@ function afficherFin(score, mastery) {
         badge.textContent = '↺ À revoir';
         
         titre.textContent = `Score : ${pct}% — Continue !`;
-        msg.textContent   = 'Tu n\'as pas encore atteint 75%. Relis le chapitre et recommence la session.';
+        msg.textContent   = 'Tu n\'as pas encore atteint le score de maîtrise requis de 75%.';
         actions.innerHTML = `
             <a href="/apprentissage/cours/${COURS_ID}/" class="btn btn-danger">📖 Réviser le chapitre</a>
             <a href="/tuteur/session/${CHAPITRE_ID}/" class="btn btn-outline">Recommencer</a>`;
@@ -242,7 +254,7 @@ async function envoyer() {
 
         const mastery = data.mastery_score || 0;
         const iter    = data.iteration || 0;
-        if (data.session_terminee || mastery >= 0.75 || iter >= maxQuestions) {
+        if (data.session_terminee || iter >= maxQuestions) {
             afficherFin(mastery, mastery);
         } else {
             setInput(true);

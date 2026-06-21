@@ -4,186 +4,396 @@
 
 {% block content %}
 <style>
-    body { background-color: #f8fafc; }
-    
+    /* Premium SaaS Style Block for Student Dashboard */
+    .admin-header-card {
+        background: var(--bg-glass);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--border-glass);
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        box-shadow: var(--shadow-md);
+        margin-bottom: 2rem;
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
+    }
+    .admin-header-card:hover {
+        border-color: rgba(var(--brand-primary-rgb), 0.2);
+        box-shadow: var(--shadow-lg);
+    }
+    .admin-header-title {
+        font-size: 2.25rem;
+        font-weight: 800;
+        background: var(--brand-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.03em;
+    }
+    .admin-header-desc {
+        color: var(--text-secondary);
+        font-size: 1.05rem;
+        margin: 0;
+    }
+    [data-theme="dark"] .admin-header-title {
+        background: linear-gradient(135deg, #ffffff 40%, var(--brand-primary) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    /* Quick Access Cards */
+    .quick-access-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+    }
     .quick-access-card {
-        background: #ffffff;
-        border-radius: 12px;
-        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-        padding: 1.5rem;
+        background: var(--bg-glass);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--border-glass) !important;
+        border-radius: var(--radius-lg);
+        padding: 1.75rem;
         display: flex;
         flex-direction: column;
         align-items: flex-start;
         text-decoration: none;
-        color: inherit;
-        transition: all 0.2s ease;
-        border: none;
+        color: var(--text-primary);
+        transition: var(--transition);
+        box-shadow: var(--shadow-sm);
     }
     .quick-access-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        transform: translateY(-4px);
+        border-color: rgba(var(--brand-primary-rgb), 0.35) !important;
+        box-shadow: var(--shadow-md), 0 8px 20px rgba(var(--brand-primary-rgb), 0.1);
     }
-    
+    .quick-access-icon {
+        padding: 0.85rem;
+        border-radius: var(--radius-md);
+        margin-bottom: 1.25rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: var(--transition);
+    }
+    .quick-access-card:hover .quick-access-icon {
+        transform: scale(1.1) rotate(2deg);
+    }
+    .quick-access-title {
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: var(--text-primary);
+        margin: 0 0 0.35rem 0;
+    }
+    .quick-access-desc {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin: 0;
+    }
+
+    /* Panels */
+    .panels-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+    @media (max-width: 768px) {
+        .panels-grid {
+            grid-template-columns: 1fr;
+        }
+    }
     .dashboard-panel {
-        background: #ffffff;
-        border-radius: 12px;
-        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        background: var(--bg-glass);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--border-glass);
+        border-radius: var(--radius-lg);
         padding: 2rem;
-        border: none;
+        box-shadow: var(--shadow-md);
+        transition: var(--transition);
     }
-    
-    .progress-course-card {
-        background: #ffffff;
-        border-radius: 12px;
-        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-        border: none;
+    .dashboard-panel:hover {
+        box-shadow: var(--shadow-lg);
+        border-color: var(--border-color-hover);
+    }
+    .panel-title-bold {
+        font-size: 1.35rem;
+        font-weight: 800;
+        color: var(--text-primary);
+        margin-bottom: 1.75rem;
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        letter-spacing: -0.01em;
+    }
+
+    /* Profile List */
+    .profile-list {
         display: flex;
         flex-direction: column;
-        gap: 1rem;
-        padding: 1.5rem;
-        transition: all 0.2s ease;
+        gap: 1.25rem;
     }
-    .progress-course-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    .profile-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid var(--border-light);
+        padding-bottom: 1rem;
+        transition: var(--transition);
     }
-    
+    .profile-item:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+    .profile-item-label {
+        color: var(--text-secondary);
+        font-weight: 600;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .profile-item-val {
+        color: var(--text-primary);
+        font-weight: 700;
+        font-size: 0.95rem;
+    }
+    .badge-academic {
+        background: var(--accent-emerald-light);
+        color: var(--accent-emerald);
+        border: 1px solid rgba(16, 185, 129, 0.15);
+        padding: 4px 12px;
+        border-radius: var(--radius-full);
+        font-size: 0.82rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    /* Course Cards */
     .section-title-bold {
         font-size: 1.5rem;
         font-weight: 800;
-        color: #0f172a;
+        color: var(--text-primary);
         margin-bottom: 1.5rem;
         display: flex;
         align-items: center;
-        gap: 0.5rem;
+        gap: 0.65rem;
+        letter-spacing: -0.02em;
     }
-    .panel-title-bold {
-        font-size: 1.25rem;
-        font-weight: 800;
-        color: #0f172a;
-        margin-bottom: 1.5rem;
+    .courses-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 1.5rem;
+    }
+    .progress-course-card {
+        background: var(--bg-glass);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--border-glass) !important;
+        border-radius: var(--radius-lg);
         display: flex;
-        align-items: center;
-        gap: 0.5rem;
+        flex-direction: column;
+        gap: 1.25rem;
+        padding: 1.75rem;
+        transition: var(--transition);
+        box-shadow: var(--shadow-sm);
+    }
+    .progress-course-card:hover {
+        transform: translateY(-4px);
+        border-color: rgba(var(--brand-primary-rgb), 0.25) !important;
+        box-shadow: var(--shadow-lg), 0 8px 20px rgba(var(--brand-primary-rgb), 0.08);
+    }
+    .course-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    .course-card-title {
+        font-size: 1.2rem;
+        font-weight: 800;
+        margin: 0;
+        color: var(--text-primary);
+        line-height: 1.3;
+        letter-spacing: -0.01em;
+    }
+    .badge-course-status {
+        font-size: 0.78rem;
+        font-weight: 800;
+        color: var(--brand-primary);
+        background: var(--brand-light);
+        border: 1px solid rgba(var(--brand-primary-rgb), 0.15);
+        padding: 4px 10px;
+        border-radius: var(--radius-full);
+        white-space: nowrap;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+    .course-card-desc {
+        font-size: 0.92rem;
+        color: var(--text-secondary);
+        margin: 0;
+        line-height: 1.5;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    .progress-bar-container {
+        width: 100%;
+        height: 8px;
+        background: var(--border-light);
+        border-radius: var(--radius-full);
+        overflow: hidden;
+    }
+    .progress-bar-fill-gradient {
+        height: 100%;
+        background: linear-gradient(90deg, var(--brand-primary) 0%, var(--accent-teal) 100%);
+        border-radius: var(--radius-full);
+        transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
     }
 </style>
 
-<section class="page-shell">
-    <div class="page-header" style="border-bottom: 1px solid var(--border-light); padding-bottom: 1.5rem; margin-bottom: 2rem;">
-        <p class="eyebrow" style="color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">Espace Élève</p>
-        <h1 style="font-size: 2.25rem; font-weight: 800; color: #0f172a;">Bienvenue, {{ request.user.first_name|default:request.user.get_username }}</h1>
-        <p style="color: var(--text-muted); font-size: 1.1rem;">Voici un aperçu de votre progression académique et de vos cours.</p>
-    </div>
+<section class="page-shell" style="padding-top: 1rem; position: relative; z-index: 1;">
+    <!-- Glass Header Card -->
+    <header class="admin-header-card">
+        <p class="eyebrow" style="color: var(--brand-primary); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.5rem;">Espace Élève</p>
+        <h1 class="admin-header-title">Bienvenue, {{ request.user.first_name|default:request.user.get_short_name }}</h1>
+        <p class="admin-header-desc">Voici un aperçu de votre progression académique et de vos cours.</p>
+    </header>
 
-    <!-- 1. Cartes d'accès rapide -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
+    <!-- 1. Quick Access Grid -->
+    <div class="quick-access-grid">
         <a href="{% url 'apprentissage:liste_cours' %}" class="quick-access-card">
-            <div style="background: rgba(15, 118, 110, 0.1); color: #0f766e; padding: 0.85rem; border-radius: 50%; margin-bottom: 1rem;">
+            <div class="quick-access-icon" style="background: rgba(13, 148, 136, 0.1); color: var(--accent-teal);">
                 <i class="ti ti-books" style="font-size: 1.6rem;"></i>
             </div>
-            <h3 style="font-size: 1.1rem; font-weight: 800; color: #0f172a; margin: 0 0 0.25rem 0;">Mes cours</h3>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">Parcourir les modules</p>
+            <h3 class="quick-access-title">Mes cours</h3>
+            <p class="quick-access-desc">Parcourir les modules</p>
         </a>
         <a href="{% url 'apprentissage:mes_notes' %}" class="quick-access-card">
-            <div style="background: rgba(3, 105, 161, 0.1); color: #0369a1; padding: 0.85rem; border-radius: 50%; margin-bottom: 1rem;">
+            <div class="quick-access-icon" style="background: rgba(79, 70, 229, 0.1); color: var(--brand-primary);">
                 <i class="ti ti-report-analytics" style="font-size: 1.6rem;"></i>
             </div>
-            <h3 style="font-size: 1.1rem; font-weight: 800; color: #0f172a; margin: 0 0 0.25rem 0;">Carnet de notes</h3>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">Résultats et QCM</p>
+            <h3 class="quick-access-title">Carnet de notes</h3>
+            <p class="quick-access-desc">Résultats et QCM</p>
         </a>
         <a href="{% url 'apprentissage:devoirs_liste' %}" class="quick-access-card">
-            <div style="background: rgba(245, 158, 11, 0.1); color: #f59e0b; padding: 0.85rem; border-radius: 50%; margin-bottom: 1rem;">
+            <div class="quick-access-icon" style="background: rgba(245, 158, 11, 0.1); color: var(--accent-warning);">
                 <i class="ti ti-file-pencil" style="font-size: 1.6rem;"></i>
             </div>
-            <h3 style="font-size: 1.1rem; font-weight: 800; color: #0f172a; margin: 0 0 0.25rem 0;">Mes devoirs</h3>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">Travaux à rendre</p>
+            <h3 class="quick-access-title">Mes devoirs</h3>
+            <p class="quick-access-desc">Travaux à rendre</p>
         </a>
         <a href="{% url 'apprentissage:calendrier' %}" class="quick-access-card">
-            <div style="background: rgba(99, 102, 241, 0.1); color: #6366f1; padding: 0.85rem; border-radius: 50%; margin-bottom: 1rem;">
+            <div class="quick-access-icon" style="background: rgba(6, 182, 212, 0.1); color: var(--accent-cyan);">
                 <i class="ti ti-calendar-event" style="font-size: 1.6rem;"></i>
             </div>
-            <h3 style="font-size: 1.1rem; font-weight: 800; color: #0f172a; margin: 0 0 0.25rem 0;">Calendrier</h3>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">Échéances et planning</p>
+            <h3 class="quick-access-title">Calendrier</h3>
+            <p class="quick-access-desc">Échéances et planning</p>
         </a>
+        <button hx-get="{% url 'dashboard_student_create_demande' %}" hx-target="#modal-container" class="quick-access-card" style="background: none; text-align: left; cursor: pointer; width: 100%; border: 1px solid var(--border-glass) !important;">
+            <div class="quick-access-icon" style="background: rgba(239, 68, 68, 0.1); color: var(--accent-danger);">
+                <i class="ti ti-package" style="font-size: 1.6rem;"></i>
+            </div>
+            <h3 class="quick-access-title">Demande Matériel</h3>
+            <p class="quick-access-desc">Emprunter un équipement</p>
+        </button>
     </div>
 
-    <!-- 2. Profil & Radar Chart -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
-        <!-- Infos Profil -->
+    <!-- 2. Profile & Radar Chart Panels -->
+    <div class="panels-grid">
+        <!-- School Profile Panel -->
         <div class="dashboard-panel">
             <h2 class="panel-title-bold">
-                <i class="ti ti-user-circle" style="color: #0f766e;"></i> Mon profil scolaire
+                <i class="ti ti-user-circle" style="color: var(--brand-primary); font-size: 1.6rem;"></i> Mon profil scolaire
             </h2>
-            <div style="display: flex; flex-direction: column; gap: 1.25rem;">
-                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-light); padding-bottom: 0.75rem;">
-                    <span style="color: var(--text-muted); font-weight: 500;">Classe</span>
-                    <strong style="color: #0f172a; font-weight: 800;">{% if classe %}{{ classe.nom }}{% else %}Non assignée{% endif %}</strong>
+            <div class="profile-list">
+                <div class="profile-item">
+                    <span class="profile-item-label"><i class="ti ti-users" style="opacity:0.7;"></i> Classe</span>
+                    <span class="profile-item-val">{% if classe %}{{ classe.nom }}{% else %}Non assignée{% endif %}</span>
                 </div>
-                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-light); padding-bottom: 0.75rem;">
-                    <span style="color: var(--text-muted); font-weight: 500;">Niveau d'études</span>
-                    <strong style="color: #0f172a; font-weight: 800;">{% if niveau %}{{ niveau.nom }}{% else %}Non assigné{% endif %}</strong>
+                <div class="profile-item">
+                    <span class="profile-item-label"><i class="ti ti-school" style="opacity:0.7;"></i> Niveau d'études</span>
+                    <span class="profile-item-val">{% if niveau %}{{ niveau.nom }}{% else %}Non assigné{% endif %}</span>
                 </div>
-                <div style="display: flex; justify-content: space-between; padding-bottom: 0.5rem;">
-                    <span style="color: var(--text-muted); font-weight: 500;">Statut académique</span>
-                    <span style="background: rgba(16, 185, 129, 0.15); color: #059669; padding: 4px 10px; border-radius: 6px; font-size: 0.85rem; font-weight: 800;">Inscrit Actif</span>
+                <div class="profile-item">
+                    <span class="profile-item-label"><i class="ti ti-shield-check" style="opacity:0.7;"></i> Statut académique</span>
+                    <span class="badge-academic">Inscrit Actif</span>
                 </div>
             </div>
         </div>
 
-        <!-- Radar Chart -->
+        <!-- Radar Progression Panel -->
         <div class="dashboard-panel" style="display: flex; flex-direction: column; align-items: center;">
-            <h2 class="panel-title-bold" style="align-self: flex-start;">
-                <i class="ti ti-chart-radar" style="color: #0f766e;"></i> Bilan de progression
+            <h2 class="panel-title-bold" style="align-self: flex-start; width: 100%;">
+                <i class="ti ti-chart-radar" style="color: var(--brand-primary); font-size: 1.6rem;"></i> Bilan de progression
             </h2>
-            <div style="width: 100%; min-height: 320px; position: relative;">
+            <div style="width: 100%; min-height: 320px; height: 320px; position: relative;">
                 <canvas id="skillsRadarChart"></canvas>
             </div>
         </div>
     </div>
 
-    <!-- 3. Grille des cours -->
+    <!-- 3. Current Courses Grid -->
     <div style="margin-bottom: 2rem;">
         <h2 class="section-title-bold">
-            <i class="ti ti-books" style="color: #0f766e;"></i> Mes cours en cours
+            <i class="ti ti-books" style="color: var(--brand-primary); font-size: 1.75rem;"></i> Mes cours en cours
         </h2>
         
         {% if mes_cours %}
-            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem;">
+            <div class="courses-grid">
                 {% for cours in mes_cours %}
                 <div class="progress-course-card">
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem;">
-                        <h3 style="font-size: 1.15rem; font-weight: 800; margin: 0; color: #0f172a; line-height: 1.4;">{{ cours.titre }}</h3>
-                        <span style="font-size: 0.85rem; font-weight: 800; color: #0f766e; background: rgba(15, 118, 110, 0.1); padding: 4px 10px; border-radius: 6px; white-space: nowrap;">En cours</span>
+                    <div class="course-card-header">
+                        <h3 class="course-card-title">{{ cours.titre }}</h3>
+                        <span class="badge-course-status">En cours</span>
                     </div>
-                    <p style="font-size: 0.95rem; color: var(--text-muted); margin: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">{{ cours.description|default:"Aucune description disponible pour ce cours." }}</p>
+                    <p class="course-card-desc">{{ cours.description|default:"Aucune description disponible pour ce cours." }}</p>
                     
                     <div style="margin-top: auto; padding-top: 0.5rem;">
-                        <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 700; color: #0f172a; margin-bottom: 0.5rem;">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.5rem;">
                             <span>Progression</span>
-                            <span style="color: #0f766e;">{{ cours.progression_percent }}%</span>
+                            <span style="color: var(--brand-primary);">{{ cours.progression_percent }}%</span>
                         </div>
-                        <div style="width: 100%; height: 8px; background: #e2e8f0; border-radius: 999px; overflow: hidden;">
-                            <div style="height: 100%; background: #0f766e; width: {{ cours.progression_percent }}%; border-radius: 999px; transition: width 0.5s ease;"></div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill-gradient" style="width: {{ cours.progression_percent }}%;"></div>
                         </div>
                     </div>
                     
-                    <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-light); padding-top: 1rem; margin-top: 0.5rem;">
-                        <span style="font-size: 0.9rem; font-weight: 600; color: var(--text-muted);"><i class="ti ti-file-text"></i> {{ cours.chapitres_count }} chapitres</span>
-                        <a href="{% url 'apprentissage:detail_cours' cours.id %}" class="btn" style="background: #0f172a; color: #ffffff; padding: 0.5rem 1rem; font-size: 0.9rem; border-radius: 8px; font-weight: 600;">Reprendre</a>
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-light); padding-top: 1.25rem; margin-top: 0.5rem;">
+                        <span style="font-size: 0.88rem; font-weight: 600; color: var(--text-muted); display: inline-flex; align-items: center; gap: 4px;">
+                            <i class="ti ti-file-text"></i> {{ cours.chapitres_count }} chapitre{{ cours.chapitres_count|pluralize }}
+                        </span>
+                        <a href="{% url 'apprentissage:detail_cours' cours.id %}" class="btn btn-primary" style="border-radius: var(--radius-md); padding: 0.55rem 1.1rem; font-size: 0.88rem; font-weight: 700;">
+                            Reprendre
+                        </a>
                     </div>
                 </div>
                 {% endfor %}
             </div>
         {% else %}
-            <div style="background: #ffffff; border: 2px dashed #cbd5e1; border-radius: 12px; padding: 4rem 2rem; text-align: center;">
-                <div style="color: #94a3b8; font-size: 3.5rem; margin-bottom: 1rem;"><i class="ti ti-books-off"></i></div>
-                <h3 style="color: #0f172a; font-weight: 800; font-size: 1.25rem; margin-bottom: 0.5rem;">Aucun cours assigné</h3>
-                <p style="color: var(--text-muted); font-size: 1.05rem;">Vous n'avez pas encore de cours assignés pour votre niveau actuel.</p>
+            <div style="background: var(--bg-glass); border: 2px dashed var(--border-color); border-radius: var(--radius-lg); padding: 5rem 2rem; text-align: center;">
+                <div style="color: var(--text-light); font-size: 3.5rem; margin-bottom: 1.25rem; opacity: 0.6;"><i class="ti ti-books-off"></i></div>
+                <h3 style="color: var(--text-primary); font-weight: 800; font-size: 1.35rem; margin-bottom: 0.5rem;">Aucun cours disponible</h3>
+                <p style="color: var(--text-muted); font-size: 1.05rem; max-width: 500px; margin: 0 auto;">Vous n'avez pas encore de cours assignés pour votre niveau d'études actuel.</p>
             </div>
         {% endif %}
     </div>
 
+    <!-- 4. Equipment Demands -->
+    <div style="margin-bottom: 2rem;" id="student-demandes-section">
+        {% include 'core/partials/student_demandes_section.html' %}
+    </div>
+
 </section>
+
+<!-- Modal Container for Logistics -->
+<div id="modal-container"></div>
 
 <!-- Scripts for Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -195,17 +405,21 @@
         const labels = {{ radar_labels_json|safe }};
         const dataValues = {{ radar_data_json|safe }};
         
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        const gridColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)';
+        const textColor = isDark ? '#94A3B8' : '#334155';
+
         const data = {
             labels: labels,
             datasets: [{
                 label: 'Progression (%)',
                 data: dataValues,
-                backgroundColor: 'rgba(15, 118, 110, 0.25)', // Teal translucide
-                borderColor: 'rgba(15, 118, 110, 1)',
-                pointBackgroundColor: 'rgba(15, 118, 110, 1)',
+                backgroundColor: 'rgba(79, 70, 229, 0.15)', // Indigo translucide
+                borderColor: 'rgba(79, 70, 229, 0.85)',
+                pointBackgroundColor: 'rgba(79, 70, 229, 1)',
                 pointBorderColor: '#ffffff',
                 pointHoverBackgroundColor: '#ffffff',
-                pointHoverBorderColor: 'rgba(15, 118, 110, 1)',
+                pointHoverBorderColor: 'rgba(79, 70, 229, 1)',
                 borderWidth: 2,
                 pointRadius: 4,
                 pointHoverRadius: 6
@@ -220,11 +434,11 @@
                 maintainAspectRatio: false,
                 scales: {
                     r: {
-                        angleLines: { color: 'rgba(0, 0, 0, 0.08)' },
-                        grid: { color: 'rgba(0, 0, 0, 0.08)' },
+                        angleLines: { color: gridColor },
+                        grid: { color: gridColor },
                         pointLabels: {
-                            font: { family: "'Inter', sans-serif", size: 12, weight: '700' },
-                            color: '#334155' // Slate 700
+                            font: { family: "'Plus Jakarta Sans', sans-serif", size: 12, weight: '700' },
+                            color: textColor
                         },
                         ticks: {
                             display: false,
@@ -238,8 +452,8 @@
                     legend: { display: false },
                     tooltip: {
                         backgroundColor: 'rgba(15, 23, 42, 0.95)', // Slate 900
-                        titleFont: { family: "'Inter', sans-serif", size: 14, weight: '800' },
-                        bodyFont: { family: "'Inter', sans-serif", size: 13, weight: '500' },
+                        titleFont: { family: "'Plus Jakarta Sans', sans-serif", size: 14, weight: '800' },
+                        bodyFont: { family: "'Plus Jakarta Sans', sans-serif", size: 13, weight: '500' },
                         padding: 12,
                         cornerRadius: 8,
                         displayColors: false
@@ -248,7 +462,24 @@
             }
         };
 
-        new Chart(ctx, config);
+        const chart = new Chart(ctx, config);
+
+        // MutationObserver pour actualiser dynamiquement les couleurs du graphique lors du basculement de thème
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.attributeName === "data-theme") {
+                    const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+                    const newGrid = dark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)';
+                    const newText = dark ? '#94A3B8' : '#334155';
+                    
+                    chart.options.scales.r.angleLines.color = newGrid;
+                    chart.options.scales.r.grid.color = newGrid;
+                    chart.options.scales.r.pointLabels.color = newText;
+                    chart.update();
+                }
+            });
+        });
+        observer.observe(document.documentElement, { attributes: true });
     });
 </script>
 {% endblock %}

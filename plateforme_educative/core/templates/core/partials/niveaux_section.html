@@ -33,44 +33,52 @@
         left: 1rem;
         top: 50%;
         transform: translateY(-50%);
-        color: #64748b;
+        color: var(--text-muted);
+        transition: var(--transition);
     }
     
     .control-search input {
         width: 100%;
         padding: 0.75rem 1rem 0.75rem 2.5rem;
-        border-radius: 10px;
-        border: 1px solid #cbd5e1;
-        background: #ffffff;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border-color);
+        background: var(--bg-surface);
+        color: var(--text-primary);
         font-size: 0.95rem;
-        transition: all 0.2s;
+        transition: var(--transition);
     }
     
     .control-search input:focus {
         outline: none;
-        border-color: #0f766e;
-        box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.1);
+        border-color: var(--brand-primary);
+        box-shadow: 0 0 0 3px rgba(var(--brand-primary-rgb), 0.15);
+        transform: scale(1.01);
+    }
+    
+    .control-search:focus-within i {
+        color: var(--brand-primary);
     }
     
     .control-filter select {
         padding: 0.75rem 2.5rem 0.75rem 1rem;
-        border-radius: 10px;
-        border: 1px solid #cbd5e1;
-        background: #ffffff;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border-color);
+        background: var(--bg-surface);
         font-size: 0.95rem;
-        color: #334155;
+        color: var(--text-secondary);
         font-weight: 500;
         cursor: pointer;
         appearance: none;
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
         background-repeat: no-repeat;
         background-position: right 0.75rem center;
-        transition: all 0.2s;
+        transition: var(--transition);
     }
     
     .control-filter select:focus {
         outline: none;
-        border-color: #0f766e;
+        border-color: var(--brand-primary);
+        box-shadow: 0 0 0 3px rgba(var(--brand-primary-rgb), 0.15);
     }
 
     .btn-create {
@@ -78,20 +86,20 @@
         align-items: center;
         gap: 8px;
         padding: 10px 20px;
-        background: #0f766e;
+        background: var(--brand-gradient);
         color: white;
         font-weight: 600;
-        border-radius: 8px;
+        border-radius: var(--radius-sm);
         border: none;
         cursor: pointer;
-        transition: all 0.2s ease;
-        box-shadow: 0 4px 6px -1px rgba(15, 118, 110, 0.2);
+        transition: var(--transition);
+        box-shadow: var(--shadow-glow);
     }
 
     .btn-create:hover {
-        background: #0d9488;
+        filter: brightness(1.1);
         transform: translateY(-1px);
-        box-shadow: 0 6px 8px -1px rgba(15, 118, 110, 0.3);
+        box-shadow: 0 0 20px rgba(var(--brand-primary-rgb), 0.35);
     }
 
     /* Wide Level Row - Glass Card Premium */
@@ -100,34 +108,35 @@
         align-items: center;
         justify-content: space-between;
         padding: 1.25rem 1.5rem;
-        background: rgba(255, 255, 255, 0.8);
+        background: var(--bg-glass);
         backdrop-filter: blur(12px);
-        border: 1px solid rgba(226, 232, 240, 0.8);
-        border-left: 4px solid #0f766e;
-        border-radius: 16px;
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--border-glass);
+        border-left: 4px solid var(--brand-primary);
+        border-radius: var(--radius-lg);
         gap: 1.5rem;
-        transition: all 0.3s ease;
+        transition: var(--transition);
         margin-bottom: 1rem;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+        box-shadow: var(--shadow-sm);
     }
 
     .level-item-row:hover {
         transform: translateY(-2px);
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
-        border-color: #cbd5e1;
+        box-shadow: var(--shadow-md);
+        border-color: var(--border-color-hover);
     }
 
     .level-item-row.is-inactive {
-        border-left-color: #94a3b8;
-        opacity: 0.8;
+        border-left-color: var(--text-light);
+        opacity: 0.7;
     }
 
     .level-avatar-circle {
         width: 48px;
         height: 48px;
-        border-radius: 12px;
-        background: rgba(15, 118, 110, 0.1);
-        color: #0f766e;
+        border-radius: var(--radius-md);
+        background: rgba(var(--brand-primary-rgb), 0.1);
+        color: var(--brand-primary);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -137,8 +146,8 @@
     }
 
     .level-item-row.is-inactive .level-avatar-circle {
-        background: #f1f5f9;
-        color: #64748b;
+        background: var(--bg-surface-alt);
+        color: var(--text-light);
     }
 
     .level-details-col {
@@ -151,16 +160,25 @@
     .level-title-text {
         font-size: 1.1rem;
         font-weight: 700;
-        color: #0f172a;
+        color: var(--text-primary);
         margin: 0;
     }
 
     .level-meta-row {
         font-size: 0.85rem;
-        color: #64748b;
+        color: var(--text-secondary);
         display: flex;
         align-items: center;
         gap: 12px;
+    }
+
+    .premium-code {
+        background: var(--bg-surface-alt);
+        padding: 2px 6px;
+        border-radius: var(--radius-sm);
+        color: var(--brand-primary);
+        font-weight: 600;
+        font-family: monospace;
     }
 
     .status-indicator-badge {
@@ -170,19 +188,21 @@
         font-size: 0.75rem;
         font-weight: 800;
         padding: 4px 10px;
-        border-radius: 9999px;
+        border-radius: var(--radius-full);
         text-transform: uppercase;
         letter-spacing: 0.05em;
     }
 
     .status-indicator-badge.active {
-        background: #d1fae5;
-        color: #065f46;
+        background: var(--accent-emerald-light);
+        color: var(--accent-emerald);
+        border: 1px solid rgba(16, 185, 129, 0.15);
     }
 
     .status-indicator-badge.inactive {
-        background: #f1f5f9;
-        color: #64748b;
+        background: var(--bg-surface-alt);
+        color: var(--text-muted);
+        border: 1px solid var(--border-color);
     }
 
     .classes-count-col {
@@ -191,7 +211,7 @@
         gap: 8px;
         font-size: 0.9rem;
         font-weight: 600;
-        color: #475569;
+        color: var(--text-secondary);
         width: 120px;
         flex-shrink: 0;
     }
@@ -200,16 +220,25 @@
         padding: 8px 16px;
         font-size: 0.85rem;
         font-weight: 600;
-        color: #3b82f6;
-        background: rgba(59, 130, 246, 0.1);
+        color: var(--brand-primary);
+        background: rgba(var(--brand-primary-rgb), 0.1);
         border: none;
-        border-radius: 8px;
+        border-radius: var(--radius-sm);
         cursor: pointer;
-        transition: all 0.2s;
+        transition: var(--transition);
     }
 
     .btn-edit:hover {
-        background: rgba(59, 130, 246, 0.2);
+        background: rgba(var(--brand-primary-rgb), 0.2);
+    }
+
+    .empty-state-box {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: var(--bg-surface-alt);
+        border-radius: var(--radius-lg);
+        border: 2px dashed var(--border-color);
+        transition: var(--transition);
     }
 </style>
 
@@ -267,13 +296,13 @@
                                 <div class="level-meta-row">
                                     <span><i class="ti ti-sort-ascending" aria-hidden="true"></i> Ordre: {{ niveau.ordre }}</span>
                                     <span>&bull;</span>
-                                    <span>Code unique: <code style="background: #f1f5f9; padding: 2px 6px; border-radius: 4px; color: #475569;">{{ niveau.code }}</code></span>
+                                    <span>Code unique: <code class="premium-code">{{ niveau.code }}</code></span>
                                 </div>
                             </div>
 
                             <!-- Classes counter badge -->
                             <div class="classes-count-col">
-                                <i class="ti ti-users-group" aria-hidden="true" style="color: #94a3b8;"></i>
+                                <i class="ti ti-users-group" aria-hidden="true" style="color: var(--text-light);"></i>
                                 <span>{{ niveau.classes.count }} classe{{ niveau.classes.count|pluralize }}</span>
                             </div>
 
@@ -298,9 +327,9 @@
                     {% endfor %}
                 </div>
             {% else %}
-                <div style="text-align:center; padding: 4rem 2rem; background: #f8fafc; border-radius: 16px; border: 1px dashed #cbd5e1;">
-                    <i class="ti ti-layers-linked" style="font-size: 3rem; color: #94a3b8; margin-bottom: 1rem; display: block;"></i>
-                    <p style="margin:0; color: #475569; font-size: 1.1rem; font-weight: 600;">Aucun niveau configuré dans la plateforme.</p>
+                <div class="empty-state-box">
+                    <i class="ti ti-layers-linked" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem; display: block;"></i>
+                    <p style="margin:0; color: var(--text-secondary); font-size: 1.1rem; font-weight: 600;">Aucun niveau configuré dans la plateforme.</p>
                 </div>
             {% endif %}
         </div>

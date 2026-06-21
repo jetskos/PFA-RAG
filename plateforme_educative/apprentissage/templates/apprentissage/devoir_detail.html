@@ -83,11 +83,13 @@
                     {% if soumission %}📤 Modifier ma soumission{% else %}📤 Déposer mon travail{% endif %}
                 </h2>
                 {% if soumission and soumission.est_corrigee %}
-                    <div class="alert" style="background: rgba(76,175,80,0.1); border-left: 4px solid #4caf50; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem;">
-                        <strong>Devoir corrigé !</strong><br>
-                        Note obtenue : <strong>{{ soumission.note }}/{{ devoir.note_max }}</strong><br>
-                        {% if soumission.feedback %}<em>{{ soumission.feedback }}</em>{% endif %}
+                    {% with app=soumission.appreciation_details %}
+                    <div class="alert" style="background: {{ app.bg_color }}; border-left: 4px solid {{ app.color }}; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem; color: var(--text-primary);">
+                        <strong style="color: {{ app.color }}; font-size: 1.05rem;">{{ app.text }} !</strong><br>
+                        Note obtenue : <strong style="font-size: 1.1rem; color: {{ app.color }};">{{ soumission.note }}/{{ devoir.note_max }}</strong><br>
+                        {% if soumission.feedback %}<div style="margin-top: 0.5rem; font-style: italic; color: var(--text-secondary);">Feedback du formateur : "{{ soumission.feedback }}"</div>{% endif %}
                     </div>
+                    {% endwith %}
                 {% endif %}
                 <form method="post" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 1rem;">
                     {% csrf_token %}
@@ -102,7 +104,7 @@
                         <label class="form-label">{{ form.commentaire_eleve.label }}</label>
                         {{ form.commentaire_eleve }}
                     </div>
-                    <button type="submit" class="btn-primary" style="align-self: flex-start;">
+                    <button type="submit" class="btn-primary" style="align-self: flex-start; {% if soumission and soumission.est_corrigee %}opacity: 0.6; cursor: not-allowed;{% endif %}" {% if soumission and soumission.est_corrigee %}disabled{% endif %}>
                         <i class="ti ti-upload"></i> {% if soumission %}Remplacer ma soumission{% else %}Envoyer{% endif %}
                     </button>
                 </form>
@@ -131,9 +133,10 @@
             </div>
 
             {% if soumission %}
-            <div class="carte" style="padding: 1.25rem; border: 1px solid {% if soumission.est_corrigee %}#4caf5055{% else %}#2196f355{% endif %};">
-                <h3 style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; color: {% if soumission.est_corrigee %}#4caf50{% else %}#2196f3{% endif %}; margin-bottom: 1rem;">
-                    {% if soumission.est_corrigee %}✓ Corrigé{% else %}📤 Soumis{% endif %}
+            {% with app=soumission.appreciation_details %}
+            <div class="carte" style="padding: 1.25rem; border: 1px solid {% if soumission.est_corrigee %}{{ app.color }}55{% else %}#2196f355{% endif %};">
+                <h3 style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; color: {% if soumission.est_corrigee %}{{ app.color }}{% else %}#2196f3{% endif %}; margin-bottom: 1rem;">
+                    {% if soumission.est_corrigee %}✓ {{ app.text }}{% else %}📤 Soumis{% endif %}
                 </h3>
                 <div style="font-size: 0.85rem; color: var(--texte-secondaire);">
                     Envoyé le {{ soumission.date_soumission|date:"d/m/Y à H:i" }}<br>
@@ -142,6 +145,7 @@
                     </a>
                 </div>
             </div>
+            {% endwith %}
             {% endif %}
         </div>
     </div>

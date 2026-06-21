@@ -1,0 +1,113 @@
+<style>
+    .status-badge-demande {
+        font-size: 0.78rem;
+        font-weight: 800;
+        padding: 4px 12px;
+        border-radius: var(--radius-full);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        display: inline-block;
+    }
+    .status-pending {
+        background: rgba(245, 158, 11, 0.1);
+        color: var(--accent-warning);
+        border: 1px solid rgba(245, 158, 11, 0.2);
+    }
+    .status-approved {
+        background: rgba(16, 185, 129, 0.1);
+        color: var(--accent-emerald);
+        border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+    .status-rejected {
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--accent-danger);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+    .status-returned {
+        background: rgba(59, 130, 246, 0.1);
+        color: var(--brand-primary);
+        border: 1px solid rgba(59, 130, 246, 0.2);
+    }
+</style>
+
+<h2 class="section-title-bold">
+    <i class="ti ti-package" style="color: var(--brand-primary); font-size: 1.75rem;"></i> Mes demandes de matériel
+</h2>
+
+<div class="table-container-card">
+    {% if mes_demandes %}
+        <table class="premium-table">
+            <thead>
+                <tr>
+                    <th>Date de demande</th>
+                    <th>Équipement requis</th>
+                    <th>Destinataire</th>
+                    <th>Atelier cible</th>
+                    <th style="text-align: center;">Quantité</th>
+                    <th style="text-align: right;">État de la demande</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for demande in mes_demandes %}
+                    <tr>
+                        <td>
+                            <div style="display:flex; align-items:center; gap:6px;">
+                                <i class="ti ti-calendar-event" aria-hidden="true" style="color:var(--text-muted);"></i>
+                                <span>{{ demande.date_creation|date:"d/m/Y à H:i" }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div style="font-weight: 700; color: var(--text-primary);">
+                                {{ demande.equipement.nom }}
+                            </div>
+                        </td>
+                        <td>
+                            {% if demande.destinataire %}
+                                <div style="display:flex; align-items:center; gap:6px;">
+                                    <i class="ti ti-user-check" style="color: var(--brand-primary);"></i>
+                                    <span>{{ demande.destinataire.get_full_name }}</span>
+                                </div>
+                            {% else %}
+                                <div style="display:flex; align-items:center; gap:6px; color: var(--text-muted);">
+                                    <i class="ti ti-settings"></i>
+                                    <span>Administration</span>
+                                </div>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if demande.atelier_cible %}
+                                <span style="color: var(--secondary); font-weight: 600;">{{ demande.atelier_cible.titre }}</span>
+                            {% else %}
+                                <span style="color: var(--text-muted); font-style: italic;">Aucun</span>
+                            {% endif %}
+                        </td>
+                        <td style="text-align: center;">
+                            <span class="qty-tag">{{ demande.quantite }}</span>
+                        </td>
+                        <td style="text-align: right;">
+                            {% if demande.statut == 'PENDING' %}
+                                <span class="status-badge-demande status-pending">En attente</span>
+                            {% elif demande.statut == 'APPROVED' %}
+                                <span class="status-badge-demande status-approved">Approuvée</span>
+                            {% elif demande.statut == 'REJECTED' %}
+                                <span class="status-badge-demande status-rejected">Rejetée</span>
+                            {% elif demande.statut == 'RETURNED' %}
+                                <span class="status-badge-demande status-returned">Retournée</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="empty-state-box">
+            <i class="ti ti-package" aria-hidden="true" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem; display: block;"></i>
+            <p style="margin:0; color: var(--text-secondary); font-size: 1.1rem; font-weight: 600;">
+                Vous n'avez soumis aucune demande de matériel.
+            </p>
+            <p style="margin:0.25rem 0 0; color: var(--text-muted); font-size: 0.9rem;">
+                Utilisez le bouton "Demande Matériel" ci-dessus pour effectuer votre premier emprunt.
+            </p>
+        </div>
+    {% endif %}
+</div>

@@ -3,96 +3,1007 @@
 {% block title %}Mes Notifications | EduTech{% endblock %}
 
 {% block content %}
-<div style="max-width: 800px; margin: 0 auto;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-        <div>
-            <h1 style="font-size: 1.75rem; font-weight: 800; color: var(--text-primary);">Mes Notifications</h1>
-            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.25rem;">Consultez vos alertes et l'activité de votre compte.</p>
-        </div>
-        
-        {% if unread_notifications_count > 0 %}
-            <form action="{% url 'accounts:mark_notifications_read_all' %}" method="POST" style="margin: 0;">
-                {% csrf_token %}
-                <button type="submit" class="btn-ghost" style="font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
-                    <i class="ti ti-mail-opened"></i> Tout marquer comme lu
-                </button>
-            </form>
-        {% endif %}
+<section class="page-shell">
+    <!-- Header -->
+    <div class="page-header">
+        <span class="eyebrow">Compte</span>
+        <h1>Mes Notifications</h1>
+        <p>Consultez vos alertes, l'activité de votre compte et les mises à jour en temps réel.</p>
     </div>
 
-    {% if notifications %}
-        <div style="display: flex; flex-direction: column; gap: 12px;">
-            {% for notif in notifications %}
-                <div class="notification-item {% if not notif.lu %}unread{% endif %}" id="notif-{{ notif.id }}" 
-                     style="background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: 12px; padding: 16px 20px; display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; position: relative; transition: var(--transition); {% if not notif.lu %}border-left: 4px solid var(--primary); padding-left: 16px;{% endif %}">
-                    
-                    <div style="display: flex; gap: 14px; align-items: flex-start;">
-                        <div class="notif-icon-wrapper" style="width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-                            {% if notif.type == 'COMPTE_ACTIVE' %}background: #ECFDF5; color: #10B981;
-                            {% elif notif.type == 'QCM_CORRIGE' %}background: #EEF2FF; color: #4F46E5;
-                            {% elif notif.type == 'NOUVEAU_COURS' %}background: #EFF6FF; color: #3B82F6;
-                            {% else %}background: #FFFBEB; color: #F59E0B;{% endif %}">
-                            
-                            {% if notif.type == 'COMPTE_ACTIVE' %}
-                                <i class="ti ti-user-check" style="font-size: 20px;"></i>
-                            {% elif notif.type == 'QCM_CORRIGE' %}
-                                <i class="ti ti-checkbox" style="font-size: 20px;"></i>
-                            {% elif notif.type == 'NOUVEAU_COURS' %}
-                                <i class="ti ti-book" style="font-size: 20px;"></i>
-                            {% else %}
-                                <i class="ti ti-settings" style="font-size: 20px;"></i>
-                            {% endif %}
-                        </div>
-
-                        <div>
-                            <h3 style="font-size: 14px; font-weight: 700; color: var(--text-primary); margin: 0 0 4px 0;">
-                                {{ notif.titre }}
-                            </h3>
-                            <p style="font-size: 13px; color: var(--text-secondary); margin: 0 0 8px 0; line-height: 1.4;">
-                                {{ notif.message }}
-                            </p>
-                            <span style="font-size: 11px; color: var(--text-muted);">
-                                {{ notif.date_creation|date:"d/m/Y H:i" }}
-                            </span>
-                            
-                            {% if notif.url %}
-                                <div style="margin-top: 10px;">
-                                    <a href="{{ notif.url }}" class="btn-ghost" style="padding: 4px 10px; font-size: 11px; display: inline-flex; align-items: center; gap: 4px; border-radius: 6px; text-decoration: none;">
-                                        Voir les détails <i class="ti ti-arrow-right" style="font-size: 12px;"></i>
-                                    </a>
-                                </div>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    {% if not notif.lu %}
-                        <form action="{% url 'accounts:mark_notification_read' notif.id %}" method="POST" style="margin: 0; flex-shrink: 0;"
-                              hx-post="{% url 'accounts:mark_notification_read' notif.id %}"
-                              hx-swap="none"
-                              hx-on::after-request="document.getElementById('notif-{{ notif.id }}').style.borderLeft='1px solid var(--border-light)'; document.getElementById('notif-{{ notif.id }}').style.paddingLeft='20px'; this.remove();">
-                            {% csrf_token %}
-                            <button type="submit" class="btn-ghost" style="padding: 6px; border-radius: 50%; width: 28px; height: 28px; justify-content: center; border: none; background: transparent; cursor: pointer;" title="Marquer comme lu">
-                                <i class="ti ti-check" style="font-size: 16px;"></i>
-                            </button>
-                        </form>
-                    {% endif %}
+    <!-- Main Layout Grid -->
+    <div class="notifications-layout">
+        <!-- Main Panel: List & Tabs -->
+        <div class="notifications-main-col">
+            <!-- Filter Tabs & Actions -->
+            <div class="filter-bar-card glass-card">
+                <div class="filter-tabs">
+                    <button class="filter-tab active" data-filter="all" onclick="setFilter('all')">
+                        <i class="ti ti-list" aria-hidden="true"></i> <span>Toutes</span>
+                        <span class="count-badge" id="count-all">0</span>
+                    </button>
+                    <button class="filter-tab" data-filter="unread" onclick="setFilter('unread')">
+                        <i class="ti ti-mail" aria-hidden="true"></i> <span>Non lues</span>
+                        <span class="count-badge count-unread-badge" id="count-unread">0</span>
+                    </button>
+                    <button class="filter-tab" data-filter="read" onclick="setFilter('read')">
+                        <i class="ti ti-mail-opened" aria-hidden="true"></i> <span>Lues</span>
+                        <span class="count-badge count-read-badge" id="count-read">0</span>
+                    </button>
                 </div>
-            {% endfor %}
-        </div>
-    {% else %}
-        <div style="text-align: center; padding: 4rem 2rem; background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: 12px; box-shadow: var(--shadow-sm);">
-            <div style="font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem;">
-                <i class="ti ti-bell-off"></i>
+                
+                <div class="filter-actions" id="mark-all-container">
+                    <form action="{% url 'accounts:mark_notifications_read_all' %}" method="POST" style="margin: 0;"
+                          hx-post="{% url 'accounts:mark_notifications_read_all' %}"
+                          hx-swap="none"
+                          hx-on::after-request="handleMarkAllReadSuccess();">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-mark-all" id="btn-mark-all-read" {% if unread_notifications_count == 0 %}disabled style="opacity: 0.5; cursor: not-allowed;"{% endif %}>
+                            <i class="ti ti-mail-opened" aria-hidden="true"></i> Tout marquer comme lu
+                        </button>
+                    </form>
+                </div>
             </div>
-            <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary); margin: 0 0 0.5rem 0;">Aucune notification</h3>
-            <p style="color: var(--text-secondary); font-size: 0.85rem; max-width: 35ch; margin: 0 auto;">Vous êtes à jour ! Vos nouvelles alertes apparaîtront ici.</p>
-        </div>
-    {% endif %}
-</div>
 
+            <!-- List Container -->
+            <div class="notification-list" id="notifications-list">
+                {% if notifications %}
+                    {% for notif in notifications %}
+                        <div class="notification-card {% if not notif.lu %}unread{% else %}read{% endif %}" 
+                             id="notif-{{ notif.id }}"
+                             data-status="{% if not notif.lu %}unread{% else %}read{% endif %}"
+                             data-type="{{ notif.type }}">
+                            
+                            <div class="notif-accent-line"></div>
+                            
+                            <div class="notif-body">
+                                <!-- Type Icon -->
+                                <div class="notif-icon-wrapper type-{{ notif.type|lower }}">
+                                    {% if notif.type == 'COMPTE_ACTIVE' %}
+                                        <i class="ti ti-user-check" aria-hidden="true"></i>
+                                    {% elif notif.type == 'QCM_CORRIGE' %}
+                                        <i class="ti ti-award" aria-hidden="true"></i>
+                                    {% elif notif.type == 'NOUVEAU_COURS' %}
+                                        <i class="ti ti-book" aria-hidden="true"></i>
+                                    {% elif notif.type == 'DEMANDE_TRAITEE' %}
+                                        <i class="ti ti-message-circle" aria-hidden="true"></i>
+                                    {% elif notif.type == 'NOUVELLE_INSCRIPTION' %}
+                                        <i class="ti ti-user-plus" aria-hidden="true"></i>
+                                    {% else %}
+                                        <i class="ti ti-bell" aria-hidden="true"></i>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Text Content -->
+                                <div class="notif-content">
+                                    <div class="notif-meta">
+                                        <span class="notif-badge-tag type-{{ notif.type|lower }}">
+                                            {% if notif.type == 'COMPTE_ACTIVE' %}Système
+                                            {% elif notif.type == 'QCM_CORRIGE' %}Évaluation
+                                            {% elif notif.type == 'NOUVEAU_COURS' %}Cours
+                                            {% elif notif.type == 'DEMANDE_TRAITEE' %}Support
+                                            {% elif notif.type == 'NOUVELLE_INSCRIPTION' %}Inscription
+                                            {% else %}Alerte{% endif %}
+                                        </span>
+                                        <span class="notif-time-ago" title="{{ notif.date_creation|date:'d/m/Y H:i' }}">
+                                            <i class="ti ti-clock" aria-hidden="true"></i> {{ notif.age_humanise }}
+                                        </span>
+                                    </div>
+                                    
+                                    <h3 class="notif-title">
+                                        {{ notif.titre }}
+                                        {% if not notif.lu %}
+                                            <span class="unread-pulse-dot" title="Notification non lue"></span>
+                                        {% endif %}
+                                    </h3>
+                                    
+                                    <p class="notif-message-text">{{ notif.message }}</p>
+                                    
+                                    {% if notif.url %}
+                                        <div class="notif-details-link-box">
+                                            <a href="{% url 'accounts:read_and_redirect_notification' notif.id %}" class="notif-details-link">
+                                                Voir les détails <i class="ti ti-arrow-right" aria-hidden="true"></i>
+                                            </a>
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Card Actions -->
+                                <div class="notif-actions-panel">
+                                    <!-- Mark Read Action Form -->
+                                    <form action="{% url 'accounts:mark_notification_read' notif.id %}" method="POST" class="mark-read-form" 
+                                          style="margin: 0; display: {% if notif.lu %}none{% else %}inline-flex{% endif %};"
+                                          hx-post="{% url 'accounts:mark_notification_read' notif.id %}"
+                                          hx-swap="none"
+                                          hx-on::after-request="handleMarkSingleReadSuccess('{{ notif.id }}');">
+                                        {% csrf_token %}
+                                        <button type="submit" class="action-circle-btn btn-success-hover" title="Marquer comme lu">
+                                            <i class="ti ti-check" aria-hidden="true"></i>
+                                        </button>
+                                    </form>
+
+                                    <!-- Read Status Badge (Tick icon) -->
+                                    <span class="read-status-icon" style="display: {% if notif.lu %}inline-flex{% else %}none{% endif %};" id="read-indicator-{{ notif.id }}" title="Déjà lue">
+                                        <i class="ti ti-checks" aria-hidden="true"></i>
+                                    </span>
+
+                                    <!-- Delete Action Form -->
+                                    <form action="{% url 'accounts:delete_notification' notif.id %}" method="POST" class="delete-form" style="margin: 0; display: inline-flex;"
+                                          hx-post="{% url 'accounts:delete_notification' notif.id %}"
+                                          hx-swap="none"
+                                          hx-on::after-request="handleDeleteSuccess('{{ notif.id }}');">
+                                        {% csrf_token %}
+                                        <button type="submit" class="action-circle-btn btn-danger-hover" title="Supprimer">
+                                            <i class="ti ti-trash" aria-hidden="true"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <!-- Database Empty State -->
+                    <div class="empty-state-container glass-card" id="empty-state-db">
+                        <div class="empty-state-icon">
+                            <i class="ti ti-bell-off" aria-hidden="true"></i>
+                        </div>
+                        <h3>Aucune notification</h3>
+                        <p>Vous êtes à jour ! Vos nouvelles alertes et informations importantes s'afficheront ici.</p>
+                    </div>
+                {% endif %}
+
+                <!-- Client-side Filter Empty State -->
+                <div class="empty-state-container glass-card" id="empty-state-filter" style="display: none;">
+                    <div class="empty-state-icon">
+                        <i class="ti ti-filter-off" aria-hidden="true"></i>
+                    </div>
+                    <h3>Aucun résultat</h3>
+                    <p>Aucune notification ne correspond à ce filtre pour le moment.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar: Statistics & Info -->
+        <div class="notifications-sidebar-col">
+            <!-- Stats -->
+            <div class="glass-card sidebar-widget">
+                <h2 class="sidebar-widget-title"><i class="ti ti-chart-bar" aria-hidden="true"></i> Statistiques</h2>
+                <div class="stats-row-grid">
+                    <div class="stat-card-box total">
+                        <div class="stat-num" id="stats-total">0</div>
+                        <div class="stat-txt">Total</div>
+                    </div>
+                    <div class="stat-card-box unread">
+                        <div class="stat-num text-danger" id="stats-unread">0</div>
+                        <div class="stat-txt">Non lues</div>
+                    </div>
+                    <div class="stat-card-box read">
+                        <div class="stat-num text-success" id="stats-read">0</div>
+                        <div class="stat-txt">Lues</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Categories Info -->
+            <div class="glass-card sidebar-widget">
+                <h2 class="sidebar-widget-title"><i class="ti ti-tag" aria-hidden="true"></i> Catégories</h2>
+                <div class="cat-legend-list">
+                    <div class="cat-legend-item">
+                        <span class="cat-color-dot type-compte_active"></span>
+                        <span class="cat-label-name">Système & Compte</span>
+                    </div>
+                    <div class="cat-legend-item">
+                        <span class="cat-color-dot type-qcm_corrige"></span>
+                        <span class="cat-label-name">Évaluations & QCM</span>
+                    </div>
+                    <div class="cat-legend-item">
+                        <span class="cat-color-dot type-nouveau_cours"></span>
+                        <span class="cat-label-name">Nouveau Cours</span>
+                    </div>
+                    <div class="cat-legend-item">
+                        <span class="cat-color-dot type-demande_traitee"></span>
+                        <span class="cat-label-name">Demandes Support</span>
+                    </div>
+                    <div class="cat-legend-item">
+                        <span class="cat-color-dot type-nouvelle_inscription"></span>
+                        <span class="cat-label-name">Inscriptions</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Scoped Styling -->
 <style>
-    .notification-item.unread:hover {
-        background: var(--bg-elevated) !important;
+    /* Layout Grid */
+    .notifications-layout {
+        display: grid;
+        grid-template-columns: 3fr 1fr;
+        gap: 1.75rem;
+        align-items: start;
+        width: 100%;
+    }
+
+    @media (max-width: 992px) {
+        .notifications-layout {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+        .notifications-sidebar-col {
+            order: 2;
+        }
+    }
+
+    /* Filter Bar Card */
+    .filter-bar-card {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.85rem 1.25rem;
+        margin-bottom: 1.25rem;
+        border-radius: var(--radius-md);
+        gap: 1.25rem;
+        flex-wrap: wrap;
+    }
+
+    .filter-tabs {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .filter-tab {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.55rem 0.95rem;
+        font-family: var(--font-sans);
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+        background: transparent;
+        border: none;
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .filter-tab:hover {
+        background-color: var(--bg-surface-alt);
+        color: var(--text-primary);
+    }
+
+    .filter-tab.active {
+        background-color: var(--brand-light);
+        color: var(--brand-primary);
+    }
+
+    .count-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 20px;
+        height: 20px;
+        padding: 0 6px;
+        border-radius: 9999px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        background-color: var(--border-color);
+        color: var(--text-secondary);
+        transition: var(--transition);
+    }
+
+    .filter-tab.active .count-badge {
+        background-color: var(--brand-primary);
+        color: #ffffff;
+    }
+
+    .filter-tab.active .count-unread-badge {
+        background-color: var(--accent-danger);
+        color: #ffffff;
+    }
+
+    .btn-mark-all {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-family: var(--font-sans);
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+        background: transparent;
+        border: 1px solid var(--border-color);
+        padding: 0.5rem 0.85rem;
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .btn-mark-all:hover {
+        background-color: var(--bg-surface-alt);
+        color: var(--text-primary);
+        border-color: var(--border-color-hover);
+        transform: translateY(-1px);
+    }
+
+    /* Notification Cards */
+    .notification-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .notification-card {
+        position: relative;
+        display: flex;
+        background-color: var(--bg-surface);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        transition: opacity 0.35s ease, transform 0.35s ease, max-height 0.35s ease, padding 0.35s ease, margin 0.35s ease, border-width 0.35s ease, box-shadow 0.25s ease;
+        animation: cardAppear 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes cardAppear {
+        from { opacity: 0; transform: translateY(15px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .notification-card:hover {
+        border-color: var(--border-color-hover);
+        box-shadow: var(--shadow-md);
+        transform: translateY(-2px);
+    }
+
+    .notif-accent-line {
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        background-color: transparent;
+        transition: var(--transition);
+    }
+
+    .notification-card.unread .notif-accent-line {
+        background-color: var(--brand-primary);
+    }
+
+    .notif-body {
+        display: flex;
+        padding: 1.25rem 1.5rem;
+        width: 100%;
+        gap: 1.25rem;
+        align-items: flex-start;
+    }
+
+    /* Icon wrappers */
+    .notif-icon-wrapper {
+        width: 44px;
+        height: 44px;
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        flex-shrink: 0;
+        transition: var(--transition);
+        box-shadow: var(--shadow-sm);
+    }
+
+    /* Type Specific Styles */
+    .notif-icon-wrapper.type-compte_active {
+        background-color: var(--accent-emerald-light);
+        color: var(--accent-emerald);
+    }
+    .notif-icon-wrapper.type-qcm_corrige {
+        background-color: var(--accent-violet-light);
+        color: var(--accent-violet);
+    }
+    .notif-icon-wrapper.type-nouveau_cours {
+        background-color: var(--brand-light);
+        color: var(--brand-primary);
+    }
+    .notif-icon-wrapper.type-demande_traitee {
+        background-color: var(--accent-teal-light);
+        color: var(--accent-teal);
+    }
+    .notif-icon-wrapper.type-nouvelle_inscription {
+        background-color: var(--accent-warning-light);
+        color: var(--accent-warning);
+    }
+
+    /* Meta tags */
+    .notif-content {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .notif-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.35rem;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .notif-badge-tag {
+        display: inline-flex;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 0.2rem 0.6rem;
+        border-radius: var(--radius-full);
+    }
+
+    .notif-badge-tag.type-compte_active {
+        background-color: var(--accent-emerald-light);
+        color: var(--accent-emerald);
+    }
+    .notif-badge-tag.type-qcm_corrige {
+        background-color: var(--accent-violet-light);
+        color: var(--accent-violet);
+    }
+    .notif-badge-tag.type-nouveau_cours {
+        background-color: var(--brand-light);
+        color: var(--brand-primary);
+    }
+    .notif-badge-tag.type-demande_traitee {
+        background-color: var(--accent-teal-light);
+        color: var(--accent-teal);
+    }
+    .notif-badge-tag.type-nouvelle_inscription {
+        background-color: var(--accent-warning-light);
+        color: var(--accent-warning);
+    }
+
+    .notif-time-ago {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .notif-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin: 0 0 0.4rem 0;
+        display: flex;
+        align-items: center;
+        line-height: 1.3;
+    }
+
+    /* Pulsating unread indicator */
+    .unread-pulse-dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        background-color: var(--accent-danger);
+        border-radius: 50%;
+        margin-left: 8px;
+        position: relative;
+        flex-shrink: 0;
+    }
+
+    .unread-pulse-dot::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background-color: var(--accent-danger);
+        animation: pulse-glow 1.5s cubic-bezier(0.215, 0.610, 0.355, 1) infinite;
+    }
+
+    @keyframes pulse-glow {
+        0% { transform: scale(0.5); opacity: 1; }
+        80%, 100% { transform: scale(2.5); opacity: 0; }
+    }
+
+    .notif-message-text {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        margin: 0 0 0.75rem 0;
+        line-height: 1.5;
+    }
+
+    .notif-details-link-box {
+        margin-top: 0.2rem;
+    }
+
+    .notif-details-link {
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--brand-primary);
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        transition: var(--transition);
+    }
+
+    .notif-details-link:hover {
+        gap: 8px;
+        color: var(--brand-hover);
+    }
+
+    /* Actions Panel */
+    .notif-actions-panel {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-left: 0.5rem;
+        flex-shrink: 0;
+    }
+
+    .action-circle-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        border: 1px solid var(--border-color);
+        background-color: var(--bg-surface);
+        color: var(--text-secondary);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .action-circle-btn:hover {
+        transform: scale(1.08);
+        color: var(--text-primary);
+    }
+
+    .action-circle-btn.btn-success-hover:hover {
+        border-color: var(--accent-emerald);
+        color: var(--accent-emerald);
+        background-color: var(--accent-emerald-light);
+    }
+
+    .action-circle-btn.btn-danger-hover:hover {
+        border-color: var(--accent-danger);
+        color: var(--accent-danger);
+        background-color: var(--accent-danger-light);
+    }
+
+    .read-status-icon {
+        width: 32px;
+        height: 32px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--accent-emerald);
+        font-size: 1.1rem;
+    }
+
+    /* Sidebar Widgets */
+    .notifications-sidebar-col {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .sidebar-widget {
+        padding: 1.25rem 1.5rem;
+        border-radius: var(--radius-lg);
+    }
+
+    .sidebar-widget-title {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin: 0 0 1rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 0.5rem;
+    }
+
+    .stats-row-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.6rem;
+        text-align: center;
+    }
+
+    .stat-card-box {
+        padding: 0.75rem 0.4rem;
+        background-color: var(--bg-surface-alt);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        transition: var(--transition);
+    }
+
+    .stat-num {
+        font-size: 1.35rem;
+        font-weight: 800;
+        color: var(--text-primary);
+        line-height: 1.2;
+    }
+
+    .stat-txt {
+        font-size: 0.68rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        margin-top: 0.25rem;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+    }
+
+    .stat-card-box.unread .stat-num {
+        color: var(--accent-danger);
+    }
+
+    .stat-card-box.read .stat-num {
+        color: var(--accent-emerald);
+    }
+
+    /* Legend info */
+    .cat-legend-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .cat-legend-item {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+    }
+
+    .cat-color-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
+    .cat-color-dot.type-compte_active { background-color: var(--accent-emerald); }
+    .cat-color-dot.type-qcm_corrige { background-color: var(--accent-violet); }
+    .cat-color-dot.type-nouveau_cours { background-color: var(--brand-primary); }
+    .cat-color-dot.type-demande_traitee { background-color: var(--accent-teal); }
+    .cat-color-dot.type-nouvelle_inscription { background-color: var(--accent-warning); }
+
+    /* Empty States */
+    .empty-state-container {
+        text-align: center;
+        padding: 4rem 2rem;
+        border-radius: var(--radius-lg);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        animation: cardAppear 0.4s ease-out;
+    }
+
+    .empty-state-icon {
+        font-size: 3rem;
+        color: var(--text-muted);
+        margin-bottom: 1.25rem;
+        width: 72px;
+        height: 72px;
+        background-color: var(--bg-surface-alt);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .empty-state-container h3 {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin: 0 0 0.5rem 0;
+    }
+
+    .empty-state-container p {
+        color: var(--text-secondary);
+        font-size: 0.88rem;
+        max-width: 38ch;
+        margin: 0 auto;
+        line-height: 1.5;
+    }
+
+    /* Animation transition states */
+    .notification-card.removing {
+        opacity: 0;
+        transform: translateX(30px);
+        max-height: 0 !important;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+        border-width: 0 !important;
+        overflow: hidden;
+    }
+
+    .notification-card.removing-filter {
+        opacity: 0;
+        transform: scale(0.95);
+        max-height: 0 !important;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+        border-width: 0 !important;
+        overflow: hidden;
     }
 </style>
+
+<!-- Page Logic (Client-side interactive filters & animations) -->
+<script>
+    let currentFilter = 'all';
+
+    function setFilter(filterType) {
+        currentFilter = filterType;
+        
+        // Update active tab styles
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            if (tab.getAttribute('data-filter') === filterType) {
+                tab.classList.add('active');
+            } else {
+                tab.classList.remove('active');
+            }
+        });
+        
+        applyFilter();
+    }
+
+    function applyFilter() {
+        const cards = document.querySelectorAll('.notification-card');
+        let visibleCount = 0;
+
+        cards.forEach(card => {
+            // If already removing, skip
+            if (card.classList.contains('removing') || card.classList.contains('removing-filter')) {
+                return;
+            }
+
+            const status = card.getAttribute('data-status');
+            
+            if (currentFilter === 'all') {
+                card.style.display = 'flex';
+                visibleCount++;
+            } else if (currentFilter === 'unread' && status === 'unread') {
+                card.style.display = 'flex';
+                visibleCount++;
+            } else if (currentFilter === 'read' && status === 'read') {
+                card.style.display = 'flex';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+
+        updateEmptyStates(visibleCount);
+    }
+
+    function updateEmptyStates(visibleCount) {
+        if (visibleCount === undefined) {
+            const cards = document.querySelectorAll('.notification-card:not(.removing):not(.removing-filter)');
+            let count = 0;
+            cards.forEach(card => {
+                const status = card.getAttribute('data-status');
+                if (currentFilter === 'all') count++;
+                else if (currentFilter === 'unread' && status === 'unread') count++;
+                else if (currentFilter === 'read' && status === 'read') count++;
+            });
+            visibleCount = count;
+        }
+
+        const totalCards = document.querySelectorAll('.notification-card:not(.removing)').length;
+        const dbEmptyState = document.getElementById('empty-state-db');
+        const filterEmptyState = document.getElementById('empty-state-filter');
+
+        if (totalCards === 0) {
+            // Show DB empty state, hide filter empty state
+            if (dbEmptyState) dbEmptyState.style.display = 'flex';
+            if (filterEmptyState) filterEmptyState.style.display = 'none';
+        } else {
+            if (dbEmptyState) dbEmptyState.style.display = 'none';
+            
+            if (visibleCount === 0) {
+                if (filterEmptyState) filterEmptyState.style.display = 'flex';
+            } else {
+                if (filterEmptyState) filterEmptyState.style.display = 'none';
+            }
+        }
+    }
+
+    function updateCounters() {
+        const totalCards = document.querySelectorAll('.notification-card:not(.removing)');
+        let totalCount = totalCards.length;
+        let unreadCount = 0;
+        let readCount = 0;
+
+        totalCards.forEach(card => {
+            if (card.getAttribute('data-status') === 'unread') {
+                unreadCount++;
+            } else {
+                readCount++;
+            }
+        });
+
+        // Update badge counters on tabs
+        const countAllEl = document.getElementById('count-all');
+        const countUnreadEl = document.getElementById('count-unread');
+        const countReadEl = document.getElementById('count-read');
+
+        if (countAllEl) countAllEl.textContent = totalCount;
+        if (countUnreadEl) countUnreadEl.textContent = unreadCount;
+        if (countReadEl) countReadEl.textContent = readCount;
+
+        // Update sidebar widgets
+        const statsTotalEl = document.getElementById('stats-total');
+        const statsUnreadEl = document.getElementById('stats-unread');
+        const statsReadEl = document.getElementById('stats-read');
+
+        if (statsTotalEl) statsTotalEl.textContent = totalCount;
+        if (statsUnreadEl) statsUnreadEl.textContent = unreadCount;
+        if (statsReadEl) statsReadEl.textContent = readCount;
+
+        // If no unread remaining, disable "Tout marquer comme lu" button
+        const btnMarkAll = document.getElementById('btn-mark-all-read');
+        if (btnMarkAll) {
+            if (unreadCount === 0) {
+                btnMarkAll.setAttribute('disabled', 'true');
+                btnMarkAll.style.opacity = '0.5';
+                btnMarkAll.style.cursor = 'not-allowed';
+            } else {
+                btnMarkAll.removeAttribute('disabled');
+                btnMarkAll.style.opacity = '1';
+                btnMarkAll.style.cursor = 'pointer';
+            }
+        }
+    }
+
+    // Success handlers for HTMX
+    function handleMarkSingleReadSuccess(notifId) {
+        const card = document.getElementById(`notif-${notifId}`);
+        if (!card) return;
+
+        // Update classes and data attributes
+        card.classList.remove('unread');
+        card.classList.add('read');
+        card.setAttribute('data-status', 'read');
+
+        // Hide mark-read button form
+        const form = card.querySelector('.mark-read-form');
+        if (form) form.style.display = 'none';
+
+        // Show read status indicator ticks
+        const indicator = document.getElementById(`read-indicator-${notifId}`);
+        if (indicator) indicator.style.display = 'inline-flex';
+
+        // Remove pulsating dot
+        const dot = card.querySelector('.unread-pulse-dot');
+        if (dot) dot.remove();
+
+        // Sync with base navbar dropdown item if it exists
+        const dropdownWrapper = document.getElementById(`dropdown-notif-wrapper-${notifId}`);
+        if (dropdownWrapper) {
+            const dropdownItem = dropdownWrapper.querySelector('.notifications-dropdown-item');
+            if (dropdownItem) dropdownItem.classList.remove('unread');
+            dropdownWrapper.style.background = 'transparent';
+            const dropdownMarkForm = dropdownWrapper.querySelector('form[action*=\'marquer-lu\']');
+            if (dropdownMarkForm) dropdownMarkForm.style.display = 'none';
+            const dropdownReadStatus = dropdownWrapper.querySelector('[id^=\'dropdown-notif-read-status-\']');
+            if (dropdownReadStatus) dropdownReadStatus.style.display = 'inline-flex';
+        }
+
+        // Trigger navbar unread count badge update
+        document.body.dispatchEvent(new Event('update-notifications'));
+
+        // Recalculate stats
+        updateCounters();
+
+        // If in "unread" filter tab, animate-remove this card from current view
+        if (currentFilter === 'unread') {
+            card.classList.add('removing-filter');
+            setTimeout(() => {
+                card.style.display = 'none';
+                card.classList.remove('removing-filter');
+                applyFilter();
+            }, 350);
+        } else {
+            applyFilter();
+        }
+    }
+
+    function handleDeleteSuccess(notifId) {
+        const card = document.getElementById(`notif-${notifId}`);
+        if (!card) return;
+
+        // Animate remove
+        card.classList.add('removing');
+        
+        // Sync with base navbar dropdown item if it exists
+        const dropdownWrapper = document.getElementById(`dropdown-notif-wrapper-${notifId}`);
+        if (dropdownWrapper) {
+            dropdownWrapper.remove();
+        }
+
+        // Trigger navbar unread count badge update
+        document.body.dispatchEvent(new Event('update-notifications'));
+
+        setTimeout(() => {
+            card.remove();
+            updateCounters();
+            applyFilter();
+        }, 350);
+    }
+
+    function handleMarkAllReadSuccess() {
+        const unreadCards = document.querySelectorAll('.notification-card.unread');
+        unreadCards.forEach(card => {
+            card.classList.remove('unread');
+            card.classList.add('read');
+            card.setAttribute('data-status', 'read');
+
+            const form = card.querySelector('.mark-read-form');
+            if (form) form.style.display = 'none';
+
+            const notifId = card.id.replace('notif-', '');
+            const indicator = document.getElementById(`read-indicator-${notifId}`);
+            if (indicator) indicator.style.display = 'inline-flex';
+
+            const dot = card.querySelector('.unread-pulse-dot');
+            if (dot) dot.remove();
+        });
+
+        // Sync all navbar dropdown items if they exist
+        document.querySelectorAll('.notifications-dropdown-item.unread').forEach(item => {
+            item.classList.remove('unread');
+            const wrapper = item.closest('.notifications-dropdown-item-wrapper');
+            if (wrapper) wrapper.style.background = 'transparent';
+        });
+        document.querySelectorAll('.dropdown-mark-read-btn').forEach(btn => {
+            const form = btn.closest('form');
+            if (form) form.remove();
+        });
+        const dropdownMarkAll = document.querySelector('.mark-all-read-btn');
+        if (dropdownMarkAll) {
+            const form = dropdownMarkAll.closest('form');
+            if (form) form.remove();
+        }
+
+        // Trigger navbar unread count badge update
+        document.body.dispatchEvent(new Event('update-notifications'));
+
+        // Recalculate stats
+        updateCounters();
+
+        if (currentFilter === 'unread') {
+            unreadCards.forEach(card => {
+                card.classList.add('removing-filter');
+            });
+            setTimeout(() => {
+                unreadCards.forEach(card => {
+                    card.style.display = 'none';
+                    card.classList.remove('removing-filter');
+                });
+                applyFilter();
+            }, 350);
+        } else {
+            applyFilter();
+        }
+    }
+
+    // Initialize stats when page loads
+    document.addEventListener('DOMContentLoaded', () => {
+        updateCounters();
+        applyFilter();
+    });
+</script>
 {% endblock %}

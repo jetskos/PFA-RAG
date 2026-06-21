@@ -53,10 +53,18 @@ def tickets_view(request):
             'resolve_url': reverse('logistics:tickets'),
         })
 
+    active_count = Ticket.objects.exclude(statut='RESOLU').count()
+    resolved_count = Ticket.objects.filter(statut='RESOLU').count()
+    total_count = Ticket.objects.count()
+
     return render(request, 'logistics/tickets.html', {
         'tickets': tickets,
         'resolve_url': reverse('logistics:tickets'),
+        'active_count': active_count,
+        'resolved_count': resolved_count,
+        'total_count': total_count,
     })
+
 
 
 @login_required

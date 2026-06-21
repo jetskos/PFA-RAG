@@ -125,7 +125,6 @@ class Document(models.Model):
         ('TP', 'TP (Travaux Pratiques)'),
         ('ATELIER', 'Atelier'),
         ('PROJET', 'Projet'),
-        ('QCM', 'QCM (Questionnaire)'),
         ('COURS', 'Cours'),
         ('RESSOURCE', 'Ressource'),
     )
@@ -406,6 +405,42 @@ class Soumission(models.Model):
     def est_corrigee(self):
         return self.note is not None
 
+    @property
+    def appreciation_details(self):
+        """Retourne l'appréciation et la couleur associée à la note."""
+        if self.note is None:
+            return None
+        
+        note = float(self.note)
+        if note < 10:
+            return {
+                'text': "Passable",
+                'color': "#ef4444",
+                'bg_color': "rgba(239, 68, 68, 0.15)",
+                'border_color': "#ef4444"
+            }
+        elif note < 14:
+            return {
+                'text': "Bien, tu peux faire mieux",
+                'color': "#f59e0b",
+                'bg_color': "rgba(245, 158, 11, 0.15)",
+                'border_color': "#f59e0b"
+            }
+        elif note < 17:
+            return {
+                'text': "Bravo, bonne note",
+                'color': "#3b82f6",
+                'bg_color': "rgba(59, 130, 246, 0.15)",
+                'border_color': "#3b82f6"
+            }
+        else:
+            return {
+                'text': "Excellent ! Bravo",
+                'color': "#10b981",
+                'bg_color': "rgba(16, 185, 129, 0.15)",
+                'border_color': "#10b981"
+            }
+
 
 class Evenement(models.Model):
     TYPE_EVENEMENT_CHOICES = (
@@ -458,6 +493,18 @@ class Evenement(models.Model):
 
     def __str__(self):
         return f"{self.titre} ({self.get_type_display()})"
+
+    @property
+    def titre_affiche(self):
+        if self.type == 'ECHEANCE_DEVOIR' and self.titre.startswith("Échéance : "):
+            return self.titre[len("Échéance : "):]
+        return self.titre
+
+    @property
+    def description_affichee(self):
+        import re
+        return re.sub(r'\[Devoir\s+ID:\s*[a-f0-9\-]+\]', '', self.description).strip()
+
 
 
 from django.db.models.signals import post_save, post_delete

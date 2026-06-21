@@ -269,8 +269,7 @@ async function soumettre() {
         const data = await r.json();
         if (!r.ok) throw new Error(data.error || 'Erreur serveur');
 
-        afficherCorrections(data.details);
-        afficherResultats(data);
+        window.location.href = `/tuteur/qcm/${data.session_id}/resultats/`;
 
     } catch (e) {
         soumis = false;

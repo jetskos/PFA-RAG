@@ -104,9 +104,9 @@ DATABASES = {
         'ENGINE': db_engine,
         'NAME': os.getenv('DB_NAME', 'rag_platform1'),
         'USER': os.getenv('DB_USER', 'root'),
-        'PASSWORD': os.getenv('DB_PASSWORD', 'jatski'),
+        'PASSWORD': os.getenv('DB_PASSWORD', ''),
         'HOST': os.getenv('DB_HOST', '127.0.0.1'),
-        'PORT': os.getenv('DB_PORT', '3307'),
+        'PORT': os.getenv('DB_PORT', '3306'),
     }
 }
 
@@ -174,7 +174,9 @@ EMAIL_PORT = int(os.getenv('EMAIL_PORT', 25))
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
 EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'False').lower() in {'1', 'true', 'yes', 'on'}
+EMAIL_TIMEOUT = 5
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'webmaster@localhost')
+
 
 GROQ_API_KEY = os.getenv('GROQ_API_KEY', '')
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY', '')

@@ -11,24 +11,26 @@
         align-items: center;
         justify-content: space-between;
         padding: 1.25rem 1.5rem;
-        background: var(--bg-surface);
-        border: 1px solid var(--border-light);
+        background: var(--bg-glass);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--border-glass);
         border-left: 4px solid var(--accent); /* Orange border for pending status */
-        border-radius: 12px;
+        border-radius: var(--radius-lg);
         gap: 1.5rem;
         transition: var(--transition);
     }
 
     .pending-row-item:hover {
-        transform: translateY(-1px);
-        box-shadow: var(--shadow-sm);
-        border-color: var(--border-default);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+        border-color: var(--border-color-hover);
     }
 
     .pending-avatar-circle {
         width: 44px;
         height: 44px;
-        border-radius: 10px;
+        border-radius: var(--radius-md);
         background: rgba(245, 158, 11, 0.1);
         color: var(--accent);
         display: flex;
@@ -55,8 +57,8 @@
     }
 
     .pending-meta-row {
-        font-size: 0.78rem;
-        color: var(--text-muted);
+        font-size: 0.8rem;
+        color: var(--text-secondary);
         display: flex;
         align-items: center;
         gap: 8px;
@@ -86,20 +88,25 @@
     }
 
     .assign-select-field select {
-        padding: 6px 10px;
-        border-radius: 6px;
-        border: 1px solid var(--border-default);
+        padding: 6px 30px 6px 10px;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--border-color);
         background: var(--bg-surface);
         color: var(--text-primary);
         font-size: 0.85rem;
         font-family: inherit;
         outline: none;
         height: 34px;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
         transition: var(--transition);
     }
 
     .assign-select-field select:focus {
-        border-color: var(--primary);
+        border-color: var(--brand-primary);
+        box-shadow: 0 0 0 2px rgba(var(--brand-primary-rgb), 0.15);
     }
 
     .assign-submit-btn {
@@ -107,19 +114,22 @@
         padding: 0 14px;
         font-size: 12px;
         font-weight: 700;
-        background: var(--primary);
+        background: var(--brand-gradient);
         color: white;
         border: none;
-        border-radius: 6px;
+        border-radius: var(--radius-sm);
         cursor: pointer;
         display: inline-flex;
         align-items: center;
         gap: 4px;
         transition: var(--transition);
+        box-shadow: var(--shadow-glow);
     }
 
     .assign-submit-btn:hover {
-        background: var(--primary-dark);
+        filter: brightness(1.1);
+        transform: translateY(-1px);
+        box-shadow: 0 0 12px rgba(var(--brand-primary-rgb), 0.25);
     }
 
     @media (max-width: 680px) {
@@ -136,11 +146,8 @@
             flex: 1;
         }
     }
-</style>
 
-<section id="pending-section" class="carte" style="background:transparent; border:none; box-shadow:none; padding:0;">
-    <!-- Control Bar Styles needed here if not loaded from others -->
-    <style>
+    /* Control Bar Styles */
     .control-bar {
         display: flex;
         justify-content: space-between;
@@ -164,23 +171,38 @@
         left: 1rem;
         top: 50%;
         transform: translateY(-50%);
-        color: #64748b;
+        color: var(--text-muted);
+        transition: var(--transition);
     }
     .control-search input {
         width: 100%;
         padding: 0.75rem 1rem 0.75rem 2.5rem;
-        border-radius: 10px;
-        border: 1px solid #cbd5e1;
-        background: #ffffff;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border-color);
+        background: var(--bg-surface);
+        color: var(--text-primary);
         font-size: 0.95rem;
-        transition: all 0.2s;
+        transition: var(--transition);
     }
     .control-search input:focus {
         outline: none;
-        border-color: #f59e0b;
-        box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+        border-color: var(--brand-primary);
+        box-shadow: 0 0 0 3px rgba(var(--brand-primary-rgb), 0.15);
+        transform: scale(1.01);
     }
-    </style>
+    .control-search:focus-within i {
+        color: var(--brand-primary);
+    }
+
+    .empty-state-box {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: var(--bg-surface-alt);
+        border-radius: var(--radius-lg);
+        border: 2px dashed var(--border-color);
+        transition: var(--transition);
+    }
+</style>
 
     <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:1.5rem; flex-wrap:wrap; gap:1rem;">
         <div>
@@ -214,12 +236,16 @@
         <div class="pending-shell-container">
             {% for row in pending_rows %}
                 <article class="pending-row-item">
-                    <!-- Initials representation -->
-                    <div class="pending-avatar-circle" aria-hidden="true">
-                        {% if row.user.first_name %}
-                            {{ row.user.first_name|make_list|first|upper }}{% if row.user.last_name %}{{ row.user.last_name|make_list|first|upper }}{% endif %}
+                    <!-- Avatar/Initials representation -->
+                    <div class="pending-avatar-circle" aria-hidden="true" style="overflow: hidden;">
+                        {% if row.user.photo %}
+                            <img src="{{ row.user.photo.url }}" alt="" style="width: 100%; height: 100%; object-fit: cover;">
                         {% else %}
-                            {{ row.user.email|slice:":2"|upper }}
+                            {% if row.user.first_name %}
+                                {{ row.user.first_name|make_list|first|upper }}{% if row.user.last_name %}{{ row.user.last_name|make_list|first|upper }}{% endif %}
+                            {% else %}
+                                {{ row.user.email|slice:":2"|upper }}
+                            {% endif %}
                         {% endif %}
                     </div>
                     
@@ -264,8 +290,9 @@
             {% endfor %}
         </div>
     {% else %}
-        <div class="glass-card" style="text-align:center; padding: 3rem 1.5rem;">
-            <p class="message-empty" style="margin:0; color:var(--text-muted);">
+        <div class="empty-state-box">
+            <i class="ti ti-user-plus" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem; display: block;"></i>
+            <p style="margin:0; color: var(--text-secondary); font-size: 1.1rem; font-weight: 600;">
                 Aucune demande d'inscription d'étudiant en attente actuellement.
             </p>
         </div>

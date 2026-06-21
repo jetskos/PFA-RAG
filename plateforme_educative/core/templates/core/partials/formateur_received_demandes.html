@@ -1,0 +1,102 @@
+<div id="formateur-received-demandes-section">
+<div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:1.5rem; flex-wrap:wrap; gap:1rem;">
+    <div>
+        <h2 style="margin:0; font-size:1.2rem; font-weight:700;">Demandes de matériel reçues</h2>
+        <p style="margin:0.25rem 0 0; color:var(--text-muted); font-size:0.85rem;">Validez ou rejetez les demandes de matériel envoyées par vos élèves.</p>
+    </div>
+</div>
+
+<div class="table-container-card">
+    {% if demandes_recues %}
+        <table class="premium-table">
+            <thead>
+                <tr>
+                    <th>Date de demande</th>
+                    <th>Élève</th>
+                    <th>Équipement demandé</th>
+                    <th>Atelier cible</th>
+                    <th style="text-align: center;">Quantité</th>
+                    <th style="text-align: right;">Décision</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for demande in demandes_recues %}
+                    <tr>
+                        <td>
+                            <div style="display:flex; align-items:center; gap:6px;">
+                                <i class="ti ti-calendar-event" aria-hidden="true" style="color:var(--text-muted);"></i>
+                                <span>{{ demande.date_creation|date:"d/m/Y à H:i" }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div class="student-avatar" style="width: 32px; height: 32px; border-radius: 50%; overflow: hidden; background: rgba(var(--brand-primary-rgb), 0.1); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 11px; color: var(--brand-primary); flex-shrink: 0; border: 1px solid var(--border-glass);">
+                                    {% if demande.demandeur.photo %}
+                                        <img src="{{ demande.demandeur.photo.url }}" alt="" style="width: 100%; height: 100%; object-fit: cover;">
+                                    {% else %}
+                                        {% if demande.demandeur.first_name %}
+                                            {{ demande.demandeur.first_name|slice:":1"|upper }}{{ demande.demandeur.last_name|slice:":1"|upper }}
+                                        {% else %}
+                                            {{ demande.demandeur.email|slice:":2"|upper }}
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+                                <div style="font-weight: 600; color: var(--text-primary);">
+                                    {{ demande.demandeur.get_full_name|default:demande.demandeur.email }}
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div style="font-weight: 700;">
+                                {{ demande.equipement.nom }}
+                            </div>
+                        </td>
+                        <td>
+                            {% if demande.atelier_cible %}
+                                <span style="color: var(--secondary); font-weight: 600;">{{ demande.atelier_cible.titre }}</span>
+                            {% else %}
+                                <span style="color: var(--text-muted); font-style: italic;">Aucun</span>
+                            {% endif %}
+                        </td>
+                        <td style="text-align: center;">
+                            <span class="qty-tag">{{ demande.quantite }}</span>
+                        </td>
+                        <td style="text-align: right; white-space: nowrap;">
+                            {% if demande.statut == 'PENDING' %}
+                                <form hx-post="{% url 'dashboard_admin_process_demande' demande.id %}" hx-target="#formateur-received-demandes-section" hx-swap="outerHTML" method="post" style="display:inline;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="approve" />
+                                    <button type="submit" class="btn-approve">
+                                        <i class="ti ti-check" aria-hidden="true"></i> Approuver
+                                    </button>
+                                </form>
+                                <form hx-post="{% url 'dashboard_admin_process_demande' demande.id %}" hx-target="#formateur-received-demandes-section" hx-swap="outerHTML" method="post" style="display:inline; margin-left:6px;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="reject" />
+                                    <button type="submit" class="btn-reject">
+                                        <i class="ti ti-x" aria-hidden="true"></i> Rejeter
+                                    </button>
+                                </form>
+                            {% else %}
+                                {% if demande.statut == 'APPROVED' %}
+                                    <span class="status-badge-demande status-approved">Approuvée</span>
+                                {% elif demande.statut == 'REJECTED' %}
+                                    <span class="status-badge-demande status-rejected">Rejetée</span>
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="empty-state-box" style="text-align: center; padding: 4rem 2rem; background: var(--bg-surface-alt); border-radius: var(--radius-lg); border: 2px dashed var(--border-color);">
+            <i class="ti ti-package" aria-hidden="true" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem; display: block;"></i>
+            <p style="margin:0; color: var(--text-secondary); font-size: 1.1rem; font-weight: 600;">
+                Aucune demande logistique reçue de vos élèves.
+            </p>
+        </div>
+    {% endif %}
+</div>
+</div>
+

@@ -5,7 +5,7 @@
             <h2>{{ cours.titre }}</h2>
             <p class="sidebar-meta">{{ cours.get_niveau_display }}</p>
             <p class="sidebar-text">{{ cours.resume|default:cours.description|truncatewords:28 }}</p>
-            <a class="btn btn-secondary btn-full" href="{% url 'apprentissage:liste_cours' %}" hx-get="{% url 'apprentissage:liste_cours' %}" hx-target="#zone-principale" hx-swap="outerHTML" hx-push-url="true">← Tous les cours</a>
+            <a class="btn btn-secondary btn-full" href="{% url 'apprentissage:liste_cours' %}" hx-get="{% url 'apprentissage:liste_cours' %}" hx-target="#zone-principale" hx-select="#zone-principale" hx-swap="outerHTML" hx-push-url="true">← Tous les cours</a>
         </div>
 
         <nav class="sidebar-nav" aria-label="Chapitres du cours">
@@ -40,7 +40,7 @@
     <main class="apprentissage-contenu" id="contenu-cours">
         {% with chapitres_data.0 as chapitre_initial %}
             {% if chapitre_initial %}
-                {% include 'apprentissage/partials/detail_chapitre.html' with cours=cours chapitre=chapitre_initial.chapitre documents_par_type=chapitre_initial.documents_par_type session_assistant=chapitre_initial_assistant is_direct_video=chapitre_initial_is_direct_video is_youtube=chapitre_initial_is_youtube is_vimeo=chapitre_initial_is_vimeo vimeo_embed_url=chapitre_initial_vimeo_embed_url chapitre_precedent=chapitre_initial_precedent chapitre_suivant=chapitre_initial_suivant %}
+                {% include 'apprentissage/partials/detail_chapitre.html' with cours=cours chapitre=chapitre_initial.chapitre documents_par_type=chapitre_initial.documents_par_type session_assistant=chapitre_initial_assistant is_direct_video=chapitre_initial_is_direct_video is_youtube=chapitre_initial_is_youtube is_vimeo=chapitre_initial_is_vimeo vimeo_embed_url=chapitre_initial_vimeo_embed_url chapitre_precedent=chapitre_initial_precedent chapitre_suivant=chapitre_initial_suivant is_complete=chapitre_initial_is_complete %}
             {% else %}
                 <article class="content-card course-empty">
                     <p class="eyebrow">Aperçu du cours</p>

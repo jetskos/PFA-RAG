@@ -3,7 +3,7 @@ from functools import wraps
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import AccessMixin, LoginRequiredMixin, UserPassesTestMixin
-from django.http import HttpResponseForbidden
+from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.views.decorators.http import require_http_methods
@@ -18,10 +18,7 @@ Utilisateur = get_user_model()
 
 
 def home_view(request):
-    """Affiche la Landing Page publique. Redirige les utilisateurs connectés vers leur dashboard."""
-    if request.user.is_authenticated:
-        return redirect('dashboard')
-    
+    """Affiche la Landing Page publique."""
     return render(request, 'core/home.html')
 
 
@@ -48,14 +45,15 @@ def _admin_dashboard_context(request=None):
     timeline = []
     
     # 1. Recent tickets
-    recent_tickets = DemandeMateriel.objects.select_related('formateur', 'equipement').order_by('-date_creation')[:3]
+    recent_tickets = DemandeMateriel.objects.select_related('demandeur', 'equipement').order_by('-date_creation')[:3]
     for t in recent_tickets:
+        role_str = "L'élève" if t.demandeur.role == 'ELEVE' else "Le formateur"
         timeline.append({
             'date': t.date_creation,
             'type': 'ticket',
             'dot_class': 'dot-red',
             'title': 'Nouveau ticket matériel ouvert',
-            'desc': f"Le formateur {t.formateur.get_full_name()} a signalé un besoin pour {t.equipement.nom if t.equipement else 'du matériel'}."
+            'desc': f"{role_str} {t.demandeur.get_full_name()} a signalé un besoin pour {t.equipement.nom if t.equipement else 'du matériel'}."
         })
         
     # 2. Recent courses
@@ -88,7 +86,7 @@ def _admin_dashboard_context(request=None):
     niveaux_qs = Niveau.objects.all().order_by('ordre', 'nom')
     classes_qs = Classe.objects.select_related('niveau').all().order_by('niveau__ordre', 'nom')
     pending_students_qs = pending_students
-    pending_demandes_qs = DemandeMateriel.objects.filter(statut='PENDING').select_related('formateur', 'equipement', 'atelier_cible').order_by('-date_creation')
+    pending_demandes_qs = DemandeMateriel.objects.filter(statut='PENDING').select_related('demandeur', 'equipement', 'atelier_cible').order_by('-date_creation')
     
     if request:
         q = request.GET.get('q', '').strip()
@@ -98,7 +96,7 @@ def _admin_dashboard_context(request=None):
             niveaux_qs = niveaux_qs.filter(Q(nom__icontains=q) | Q(code__icontains=q))
             classes_qs = classes_qs.filter(Q(nom__icontains=q) | Q(code__icontains=q) | Q(niveau__nom__icontains=q))
             pending_students_qs = pending_students_qs.filter(Q(email__icontains=q) | Q(first_name__icontains=q) | Q(last_name__icontains=q))
-            pending_demandes_qs = pending_demandes_qs.filter(Q(description__icontains=q) | Q(formateur__email__icontains=q) | Q(equipement__nom__icontains=q))
+            pending_demandes_qs = pending_demandes_qs.filter(Q(demandeur__email__icontains=q) | Q(equipement__nom__icontains=q))
             
         if status_filter == 'actif':
             niveaux_qs = niveaux_qs.filter(actif=True)
@@ -147,13 +145,22 @@ def _render_admin_structure(request, context=None, status=200, active_tab='nivea
 
 def _formateur_dashboard_context(request):
     mes_cours = Cours.objects.filter(createur=request.user).select_related('niveau').order_by('-date_creation')
-    mes_demandes = DemandeMateriel.objects.filter(formateur=request.user).select_related(
+    mes_demandes = DemandeMateriel.objects.filter(demandeur=request.user).select_related(
         'equipement',
         'atelier_cible',
     ).order_by('-date_creation')
+    
+    # Received demands from students directed to this formateur
+    demandes_recues = DemandeMateriel.objects.filter(destinataire=request.user).select_related(
+        'demandeur',
+        'equipement',
+        'atelier_cible'
+    ).order_by('-date_creation')
+    
     return {
         'mes_cours': mes_cours,
         'mes_demandes': mes_demandes,
+        'demandes_recues': demandes_recues,
         'demande_form': DemandeMaterielForm(),
     }
 
@@ -247,6 +254,7 @@ def formateur_dashboard_view(request):
 def student_dashboard_view(request):
     import json
     from apprentissage.models import Progression
+    from logistics.forms import StudentDemandeMaterielForm
 
     classe = getattr(request.user, 'classe', None)
     niveau = getattr(classe, 'niveau', None) if classe else None
@@ -276,6 +284,12 @@ def student_dashboard_view(request):
         radar_labels = ['Aucun cours']
         radar_data = [0]
 
+    mes_demandes = DemandeMateriel.objects.filter(demandeur=request.user).select_related(
+        'equipement',
+        'destinataire',
+        'atelier_cible'
+    ).order_by('-date_creation')
+
     return render(request, 'core/dashboard_student.html', {
         'role': 'ELEVE',
         'classe': classe,
@@ -283,6 +297,8 @@ def student_dashboard_view(request):
         'mes_cours': cours_data,
         'radar_labels_json': json.dumps(radar_labels),
         'radar_data_json': json.dumps(radar_data),
+        'mes_demandes': mes_demandes,
+        'demande_form': StudentDemandeMaterielForm(),
     })
 
 
@@ -401,6 +417,120 @@ def manage_classe_students_view(request, classe_id):
     })
 
 @role_required('ADMIN')
+@require_http_methods(['GET'])
+def export_classe_students_excel_view(request, classe_id):
+    import openpyxl
+    from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
+    from openpyxl.utils import get_column_letter
+    from django.http import HttpResponse
+
+    classe = get_object_or_404(Classe, pk=classe_id)
+    eleves = Utilisateur.objects.filter(classe=classe, role='ELEVE').order_by('last_name', 'first_name', 'email')
+
+    # Create workbook
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Élèves"
+
+    # Show gridlines explicitly
+    ws.views.sheetView[0].showGridLines = True
+
+    # Title block
+    ws.merge_cells('A1:E1')
+    ws['A1'] = f"Liste des élèves - Classe : {classe.nom}"
+    title_font = Font(name="Calibri", size=16, bold=True, color="FFFFFF")
+    title_fill = PatternFill(start_color="0D9488", end_color="0D9488", fill_type="solid") # Teal brand
+    ws['A1'].font = title_font
+    ws['A1'].fill = title_fill
+    ws['A1'].alignment = Alignment(horizontal="center", vertical="center")
+    ws.row_dimensions[1].height = 40
+
+    # Metadata
+    ws['A2'] = "Niveau :"
+    ws['B2'] = classe.niveau.nom
+    ws['A3'] = "Année Scolaire :"
+    ws['B3'] = classe.annee_scolaire
+    ws['A4'] = "Effectif :"
+    ws['B4'] = f"{eleves.count()} élève(s)"
+
+    meta_label_font = Font(name="Calibri", size=11, bold=True, color="334155")
+    meta_val_font = Font(name="Calibri", size=11, color="334155")
+    for row in range(2, 5):
+        ws.cell(row=row, column=1).font = meta_label_font
+        ws.cell(row=row, column=2).font = meta_val_font
+    
+    ws.row_dimensions[5].height = 15
+
+    # Headers
+    headers = ["Nom", "Prénom", "Email", "Statut Compte", "Date d'Inscription"]
+    header_row = 6
+    ws.row_dimensions[header_row].height = 25
+    header_fill = PatternFill(start_color="4F46E5", end_color="4F46E5", fill_type="solid") # Indigo secondary
+    header_font = Font(name="Calibri", size=11, bold=True, color="FFFFFF")
+    header_align = Alignment(horizontal="center", vertical="center")
+    
+    thin_border = Border(
+        left=Side(style='thin', color='CBD5E1'),
+        right=Side(style='thin', color='CBD5E1'),
+        top=Side(style='thin', color='CBD5E1'),
+        bottom=Side(style='thin', color='CBD5E1')
+    )
+
+    for col_idx, text in enumerate(headers, 1):
+        cell = ws.cell(row=header_row, column=col_idx, value=text)
+        cell.font = header_font
+        cell.fill = header_fill
+        cell.alignment = header_align
+        cell.border = thin_border
+
+    # Data
+    row_idx = 7
+    data_font = Font(name="Calibri", size=11)
+    align_left = Alignment(horizontal="left", vertical="center")
+    align_center = Alignment(horizontal="center", vertical="center")
+
+    for student in eleves:
+        ws.row_dimensions[row_idx].height = 20
+        status = student.get_statut_compte_display() if hasattr(student, 'get_statut_compte_display') else ("Actif" if student.is_active else "Inactif")
+        date_str = student.date_creation.strftime("%d/%m/%Y %H:%M") if student.date_creation else ""
+
+        row_data = [
+            student.last_name or "-",
+            student.first_name or "-",
+            student.email,
+            status,
+            date_str
+        ]
+
+        for col_idx, val in enumerate(row_data, 1):
+            cell = ws.cell(row=row_idx, column=col_idx, value=val)
+            cell.font = data_font
+            cell.border = thin_border
+            if col_idx in [3, 4, 5]:
+                cell.alignment = align_center if col_idx != 3 else align_left
+            else:
+                cell.alignment = align_left
+            
+            # Zebra
+            if row_idx % 2 == 0:
+                cell.fill = PatternFill(start_color="F8FAFC", end_color="F8FAFC", fill_type="solid")
+        row_idx += 1
+
+    # Widths
+    for col in ws.columns:
+        max_len = 0
+        col_letter = get_column_letter(col[0].column)
+        for cell in col:
+            if cell.row > 1 and cell.value:
+                max_len = max(max_len, len(str(cell.value)))
+        ws.column_dimensions[col_letter].width = max(max_len + 4, 15)
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = f'attachment; filename="eleves_{classe.nom}.xlsx"'
+    wb.save(response)
+    return response
+
+@role_required('ADMIN')
 @require_http_methods(['POST'])
 def remove_student_from_classe_page_view(request, classe_id, student_id):
     student = get_object_or_404(Utilisateur, pk=student_id)
@@ -517,10 +647,26 @@ def create_demande_materiel_view(request):
         form = DemandeMaterielForm(request.POST)
         if form.is_valid():
             demande = form.save(commit=False)
-            demande.formateur = request.user
+            demande.demandeur = request.user
             demande.save()
-            # On success, close modal and show toast (empty modal container + trigger JS event if needed)
-            return HttpResponse('<div id="modal-container"></div><script>alert("Demande envoyée avec succès !");</script>')
+            
+            # Notify admins of a new request
+            from accounts.notifications import notifier
+            admins = Utilisateur.objects.filter(role='ADMIN', is_active=True)
+            for admin in admins:
+                notifier(
+                    destinataire=admin,
+                    type='NOUVELLE_DEMANDE',
+                    titre="Nouvelle demande logistique (Formateur)",
+                    message=f"Le formateur {request.user.get_full_name()} a demandé '{demande.equipement.nom}' (Qté: {demande.quantite}).",
+                    envoyer_email=True
+                )
+            
+            from django.contrib import messages
+            messages.success(request, "Demande envoyée avec succès !")
+            response = HttpResponse('<div id="modal-container"></div>')
+            response['HX-Refresh'] = 'true'
+            return response
     else:
         form = DemandeMaterielForm()
 
@@ -529,31 +675,78 @@ def create_demande_materiel_view(request):
     return render(request, 'core/partials/demande_materiel_modal.html', context, status=400 if request.method == 'POST' else 200)
 
 
-@role_required('ADMIN')
+@role_required('ELEVE')
+@require_http_methods(['GET', 'POST'])
+def student_create_demande_view(request):
+    from logistics.forms import StudentDemandeMaterielForm
+    if request.method == 'POST':
+        form = StudentDemandeMaterielForm(request.POST)
+        if form.is_valid():
+            demande = form.save(commit=False)
+            demande.demandeur = request.user
+            demande.save()
+            
+            # Notify the destinataire (the selected admin or formateur)
+            from accounts.notifications import notifier
+            role_label = "l'administration" if demande.destinataire.role == 'ADMIN' else "le formateur"
+            notifier(
+                destinataire=demande.destinataire,
+                type='NOUVELLE_DEMANDE',
+                titre="Nouvelle demande de matériel (Élève)",
+                message=f"L'élève {request.user.get_full_name()} a formulé une demande pour '{demande.equipement.nom}' (Qté: {demande.quantite}).",
+                envoyer_email=True
+            )
+            
+            from django.contrib import messages
+            messages.success(request, "Demande envoyée avec succès !")
+            response = HttpResponse('<div id="modal-container"></div>')
+            response['HX-Refresh'] = 'true'
+            return response
+    else:
+        form = StudentDemandeMaterielForm()
+
+    context = {'demande_form': form}
+    return render(request, 'core/partials/student_demande_modal.html', context, status=400 if request.method == 'POST' else 200)
+
+
+@role_required('ADMIN', 'FORMATEUR')
 @require_http_methods(['POST'])
-def admin_process_demande_view(request, demande_id):
-    """Process a DemandeMateriel: approve or reject. Returns refreshed pending demandes section."""
+def process_demande_view(request, demande_id):
+    """Process a DemandeMateriel: approve or reject. Returns refreshed pending/received demandes section."""
     action = request.POST.get('action')
     demande = get_object_or_404(DemandeMateriel, pk=demande_id)
+
+    # Permission check: formateurs can only process demands addressed to them
+    if request.user.role == 'FORMATEUR' and demande.destinataire != request.user:
+        return HttpResponseForbidden("Vous n'êtes pas autorisé à traiter cette demande.")
 
     if action == 'approve':
         demande.statut = 'APPROVED'
     elif action == 'reject':
         demande.statut = 'REJECTED'
     else:
-        return _render_admin_structure(request, {'pending_error': 'Action invalide.'}, status=400, active_tab='logistics')
+        return render(request, 'core/partials/pending_demandes_section.html', {'pending_error': 'Action invalide.'}, status=400)
 
     demande.save(update_fields=['statut'])
+    
     from accounts.notifications import notifier
     statut_str = "approuvée" if action == 'approve' else "rejetée"
     notifier(
-        destinataire=demande.formateur,
+        destinataire=demande.demandeur,
         type='DEMANDE_TRAITEE',
         titre=f"Demande de matériel {statut_str}",
-        message=f"Votre demande pour l'équipement '{demande.equipement.nom}' a été {statut_str} par l'administrateur.",
+        message=f"Votre demande pour l'équipement '{demande.equipement.nom}' a été {statut_str} par {request.user.get_full_name()}.",
         envoyer_email=True
     )
-    # After processing, re-render the pending demandes section so HTMX can swap it.
-    return render(request, 'core/partials/pending_demandes_section.html', {
-        'pending_demandes': DemandeMateriel.objects.filter(statut='PENDING').select_related('formateur', 'equipement', 'atelier_cible').order_by('-date_creation')
-    })
+    
+    if request.user.role == 'ADMIN':
+        return render(request, 'core/partials/pending_demandes_section.html', {
+            'pending_demandes': DemandeMateriel.objects.filter(statut='PENDING').select_related('demandeur', 'equipement', 'atelier_cible').order_by('-date_creation')
+        })
+    else:
+        demandes_recues = DemandeMateriel.objects.filter(destinataire=request.user).select_related(
+            'demandeur', 'equipement', 'atelier_cible'
+        ).order_by('-date_creation')
+        return render(request, 'core/partials/formateur_received_demandes.html', {
+            'demandes_recues': demandes_recues
+        })

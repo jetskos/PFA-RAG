@@ -39,17 +39,10 @@
                 {% if form.fichier_consigne.errors %}<div class="form-error">{{ form.fichier_consigne.errors }}</div>{% endif %}
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                <div class="form-group">
-                    <label class="form-label">{{ form.date_limite.label }} <span style="color: var(--texte-secondaire); font-size: 0.8rem;">(facultatif)</span></label>
-                    {{ form.date_limite }}
-                    {% if form.date_limite.errors %}<div class="form-error">{{ form.date_limite.errors }}</div>{% endif %}
-                </div>
-                <div class="form-group">
-                    <label class="form-label">{{ form.note_max.label }}</label>
-                    {{ form.note_max }}
-                    {% if form.note_max.errors %}<div class="form-error">{{ form.note_max.errors }}</div>{% endif %}
-                </div>
+            <div class="form-group">
+                <label class="form-label">{{ form.date_limite.label }} <span style="color: var(--texte-secondaire); font-size: 0.8rem;">(facultatif)</span></label>
+                {{ form.date_limite }}
+                {% if form.date_limite.errors %}<div class="form-error">{{ form.date_limite.errors }}</div>{% endif %}
             </div>
 
             <div class="form-group" style="display: flex; align-items: center; gap: 0.5rem;">

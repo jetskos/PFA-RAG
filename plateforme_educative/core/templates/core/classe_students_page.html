@@ -3,115 +3,498 @@
 {% block title %}Élèves - {{ classe.nom }}{% endblock %}
 
 {% block content %}
-<section class="page-shell">
-    <div class="page-header" style="display:flex; justify-content:space-between; align-items:center;">
+<style>
+    /* Premium SaaS Style Block for Class Students Management */
+    .admin-header-card {
+        background: var(--bg-glass);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--border-glass);
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        box-shadow: var(--shadow-md);
+        margin-bottom: 1.5rem;
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+    }
+    .admin-header-card:hover {
+        border-color: rgba(var(--brand-primary-rgb), 0.2);
+        box-shadow: var(--shadow-lg);
+    }
+    .admin-header-title {
+        font-size: 2.25rem;
+        font-weight: 800;
+        background: var(--brand-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.03em;
+    }
+    .admin-header-desc {
+        color: var(--text-secondary);
+        font-size: 1.05rem;
+        margin: 0;
+    }
+    [data-theme="dark"] .admin-header-title {
+        background: linear-gradient(135deg, #ffffff 40%, var(--brand-primary) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .main-grid {
+        display: grid;
+        grid-template-columns: 1fr 360px;
+        gap: 2rem;
+        align-items: start;
+    }
+    @media (max-width: 992px) {
+        .main-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* Glass Cards */
+    .glass-card {
+        background: var(--bg-glass);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--border-glass);
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        box-shadow: var(--shadow-md);
+        transition: var(--transition);
+    }
+    .glass-card:hover {
+        box-shadow: var(--shadow-lg);
+        border-color: var(--border-color-hover);
+    }
+
+    /* Table Design */
+    .table-container {
+        overflow-x: auto;
+    }
+    .premium-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+    }
+    .premium-table th {
+        text-align: left;
+        padding: 12px 16px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--text-muted);
+        border-bottom: 1px solid var(--border-color);
+    }
+    .premium-table td {
+        padding: 16px;
+        border-bottom: 1px solid var(--border-color);
+        vertical-align: middle;
+    }
+    .premium-table tr {
+        transition: var(--transition);
+    }
+    .premium-table tr:hover {
+        background: rgba(var(--brand-primary-rgb), 0.02);
+    }
+    [data-theme="dark"] .premium-table tr:hover {
+        background: rgba(255, 255, 255, 0.01);
+    }
+
+    /* User details cells */
+    .user-info-cell {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .user-avatar-mini {
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 0.9rem;
+        box-shadow: var(--shadow-sm);
+        overflow: hidden;
+        position: relative;
+        flex-shrink: 0;
+    }
+    .avatar-img-mini {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    .avatar-eleve {
+        background: linear-gradient(135deg, #3b82f6, #4f46e5);
+    }
+    .user-details {
+        display: flex;
+        flex-direction: column;
+    }
+    .user-name {
+        font-weight: 700;
+        color: var(--text-primary);
+        font-size: 0.95rem;
+    }
+    .user-email-text {
+        font-size: 0.82rem;
+        color: var(--text-muted);
+    }
+
+    /* Badges */
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        padding: 4px 10px;
+        border-radius: var(--radius-full);
+    }
+    .status-badge.status-active {
+        background: var(--accent-emerald-light);
+        color: var(--accent-emerald);
+        border: 1px solid rgba(16, 185, 129, 0.15);
+    }
+    .status-badge.status-pending {
+        background: var(--accent-warning-light);
+        color: var(--accent-warning);
+        border: 1px solid rgba(245, 158, 11, 0.15);
+    }
+
+    /* Actions buttons */
+    .action-group {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: flex-end;
+    }
+    .btn-action-remove {
+        background: rgba(239, 68, 68, 0.08);
+        color: var(--accent-danger);
+        border: 1px solid rgba(239, 68, 68, 0.15);
+        border-radius: var(--radius-sm);
+        padding: 6px 12px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .btn-action-remove:hover {
+        background: var(--accent-danger);
+        color: #ffffff;
+        box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
+    }
+    .btn-action-delete {
+        background: rgba(100, 116, 139, 0.08);
+        color: var(--text-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        padding: 6px 10px;
+        cursor: pointer;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .btn-action-delete:hover {
+        background: var(--accent-danger);
+        color: #ffffff;
+        border-color: var(--accent-danger);
+        box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
+    }
+
+    /* Excel Export Button */
+    .btn-excel-export {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0.65rem 1.25rem;
+        border-radius: var(--radius-md);
+        background: rgba(16, 185, 129, 0.1);
+        color: #10b981;
+        border: 1px solid rgba(16, 185, 129, 0.2);
+        font-weight: 600;
+        font-size: 0.88rem;
+        text-decoration: none;
+        transition: var(--transition);
+        cursor: pointer;
+    }
+    .btn-excel-export:hover {
+        background: #10b981;
+        color: #ffffff;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+        transform: translateY(-1px);
+    }
+    [data-theme="dark"] .btn-excel-export {
+        background: rgba(16, 185, 129, 0.15);
+        border-color: rgba(16, 185, 129, 0.3);
+    }
+
+    /* Forms */
+    .form-box {
+        display: grid;
+        gap: 1.25rem;
+    }
+    .form-group-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+    .form-group-label {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+    }
+    .form-input {
+        width: 100%;
+        padding: 10px 14px;
+        background-color: var(--bg-surface);
+        color: var(--text-primary);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        font-size: 0.9rem;
+        outline: none;
+        transition: var(--transition);
+    }
+    .form-input:focus {
+        border-color: var(--brand-primary);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+    }
+
+    /* Select Wrapper */
+    .select-wrapper {
+        position: relative;
+        display: block;
+        width: 100%;
+        margin-top: 6px;
+    }
+    .select-wrapper select {
+        width: 100%;
+        padding: 10px 14px;
+        background-color: var(--bg-surface);
+        color: var(--text-primary);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        font-size: 0.9rem;
+        outline: none;
+        cursor: pointer;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        transition: var(--transition);
+        padding-right: 40px;
+    }
+    .select-wrapper select:focus {
+        border-color: var(--brand-primary);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+    }
+    .select-wrapper::after {
+        content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        position: absolute;
+        right: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        pointer-events: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0.75;
+        transition: var(--transition);
+    }
+
+    .card-title-premium {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: var(--text-primary);
+        margin: 0 0 1.25rem 0;
+        letter-spacing: -0.01em;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .badge-count {
+        font-size: 0.8rem;
+        font-weight: 700;
+        background: rgba(var(--brand-primary-rgb), 0.1);
+        color: var(--brand-primary);
+        padding: 2px 10px;
+        border-radius: var(--radius-full);
+    }
+</style>
+
+<div class="page-shell" style="padding-top: 1rem; position: relative; z-index: 1;">
+    <header class="admin-header-card">
         <div>
             <p class="eyebrow">Gestion de Classe</p>
-            <h1>Élèves : {{ classe.nom }}</h1>
-            <p>Niveau : {{ classe.niveau.nom }} | Année : {{ classe.annee_scolaire }}</p>
+            <h1 class="admin-header-title">Élèves : {{ classe.nom }}</h1>
+            <p class="admin-header-desc">Niveau : {{ classe.niveau.nom }} | Année : {{ classe.annee_scolaire }}</p>
         </div>
-        <div>
-            <a href="{% url 'dashboard_admin' %}?tab=classes" class="btn btn-ghost"><i class="ti ti-arrow-left"></i> Retour aux classes</a>
+        <div style="display:flex; gap:0.75rem; align-items:center;">
+            <a href="{% url 'dashboard_admin' %}?tab=classes" class="btn btn-secondary">
+                <i class="ti ti-arrow-left"></i> Retour aux classes
+            </a>
         </div>
-    </div>
+    </header>
 
-    <div style="display:grid; grid-template-columns: 1fr 320px; gap:1.5rem; align-items:start;">
-        <div class="carte">
-            <h2 style="margin-top:0;">Liste des élèves ({{ eleves.count }})</h2>
+    <div class="main-grid">
+        <!-- Student List Container -->
+        <div class="glass-card">
+            <div class="card-title-premium">
+                <span>Liste des élèves</span>
+                <div style="display:flex; gap:0.75rem; align-items:center;">
+                    <span class="badge-count">{{ eleves.count }} élève(s)</span>
+                    {% if eleves %}
+                        <a href="{% url 'dashboard_admin_export_classe_students' classe.id %}" class="btn-excel-export" title="Exporter vers Excel">
+                            <i class="ti ti-file-spreadsheet"></i> Exporter
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+
             {% if eleves %}
-                <table style="width:100%; border-collapse: collapse;">
-                    <thead>
-                        <tr>
-                            <th style="text-align:left; padding:8px; border-bottom:1px solid var(--border);">Email</th>
-                            <th style="padding:8px; border-bottom:1px solid var(--border);">Statut</th>
-                            <th style="text-align:right; padding:8px; border-bottom:1px solid var(--border);">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for eleve in eleves %}
-                        <tr>
-                            <td style="padding:12px 8px; border-bottom:1px solid var(--border);">
-                                <strong>{% if eleve.first_name and eleve.last_name %}{{ eleve.first_name }} {{ eleve.last_name }}{% else %}{{ eleve.email }}{% endif %}</strong>
-                                {% if eleve.first_name %}
-                                    <div style="font-size: 0.85rem; color: #64748b;">{{ eleve.email }}</div>
-                                {% endif %}
-                            </td>
-                            <td style="padding:12px 8px; border-bottom:1px solid var(--border); text-align:center;">
-                                <span class="role-badge" style="background:{% if eleve.is_active %}#d1fae5; color:#065f46{% else %}#fef3c7; color:#92400e{% endif %};">
-                                    {{ eleve.get_statut_compte_display }}
-                                </span>
-                            </td>
-                            <td style="padding:12px 8px; border-bottom:1px solid var(--border); text-align:right;">
-                                <div style="display:flex; gap:0.5rem; justify-content:flex-end;">
-                                    <form method="post" action="{% url 'dashboard_admin_remove_student_page' classe.id eleve.id %}">
-                                        {% csrf_token %}
-                                        <button type="submit" class="btn btn-ghost" style="color: #ef4444; padding:6px 12px;" onclick="return confirm('Retirer cet élève de la classe ?')">Retirer</button>
-                                    </form>
-                                    <form method="post" action="{% url 'dashboard_admin_delete_student_page' classe.id eleve.id %}">
-                                        {% csrf_token %}
-                                        <button type="submit" class="btn btn-ghost" style="color: #ef4444; padding:6px 12px;" onclick="return confirm('Supprimer DEFINITIVEMENT cet utilisateur ?')"><i class="ti ti-trash"></i></button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                <div class="table-container">
+                    <table class="premium-table">
+                        <thead>
+                            <tr>
+                                <th>Élève</th>
+                                <th>Statut</th>
+                                <th class="text-right" style="text-align:right;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for eleve in eleves %}
+                            <tr>
+                                <td>
+                                    <div class="user-info-cell">
+                                        <div class="user-avatar-mini avatar-eleve">
+                                            {% if eleve.photo %}
+                                                <img src="{{ eleve.photo.url }}" class="avatar-img-mini" alt="{{ eleve.get_full_name }}">
+                                            {% else %}
+                                                {% if eleve.first_name %}
+                                                    {{ eleve.first_name|make_list|first|upper }}{% if eleve.last_name %}{{ eleve.last_name|make_list|first|upper }}{% endif %}
+                                                {% else %}
+                                                    {{ eleve.email|slice:":2"|upper }}
+                                                {% endif %}
+                                            {% endif %}
+                                        </div>
+                                        <div class="user-details">
+                                            <span class="user-name">{% if eleve.first_name or eleve.last_name %}{{ eleve.get_full_name }}{% else %}{{ eleve.email|slice:":12" }}...{% endif %}</span>
+                                            <span class="user-email-text">{{ eleve.email }}</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="status-badge {% if eleve.is_active %}status-active{% else %}status-pending{% endif %}">
+                                        {{ eleve.get_statut_compte_display }}
+                                    </span>
+                                </td>
+                                <td style="text-align:right;">
+                                    <div class="action-group">
+                                        <form method="post" action="{% url 'dashboard_admin_remove_student_page' classe.id eleve.id %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn-action-remove" onclick="return confirm('Retirer cet élève de la classe ?')">
+                                                Retirer
+                                            </button>
+                                        </form>
+                                        <form method="post" action="{% url 'dashboard_admin_delete_student_page' classe.id eleve.id %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn-action-delete" title="Supprimer définitivement" onclick="return confirm('Supprimer DEFINITIVEMENT cet utilisateur ?')">
+                                                <i class="ti ti-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             {% else %}
-                <p class="message-empty">Aucun élève dans cette classe.</p>
+                <div style="text-align: center; padding: 3rem 1rem;">
+                    <i class="ti ti-users" style="font-size: 3rem; color: var(--text-light); opacity: 0.5; margin-bottom: 1rem; display: block;"></i>
+                    <p style="color: var(--text-secondary); font-weight: 500;">Aucun élève affecté à cette classe pour le moment.</p>
+                </div>
             {% endif %}
         </div>
 
-        <div style="display:grid; gap:1.5rem;">
-            <div class="carte">
-                <h3 style="margin-top:0;">Créer un nouvel élève</h3>
-                <form method="post" action="{% url 'dashboard_admin_add_student_page' classe.id %}" style="display:grid; gap:0.8rem;">
+        <!-- Sidebar forms -->
+        <div style="display:grid; gap:2rem;">
+            <!-- Create student form -->
+            <div class="glass-card">
+                <h3 class="card-title-premium" style="margin-bottom:1.5rem; font-size:1.15rem;">Créer un nouvel élève</h3>
+                <form method="post" action="{% url 'dashboard_admin_add_student_page' classe.id %}" class="form-box">
                     {% csrf_token %}
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.8rem;">
-                        <label>
+                    <div class="form-group-row">
+                        <label class="form-group-label">
                             Prénom
-                            <input type="text" name="first_name" placeholder="Prénom" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px; margin-top:4px;">
+                            <input type="text" name="first_name" placeholder="Prénom" class="form-input">
                         </label>
-                        <label>
+                        <label class="form-group-label">
                             Nom
-                            <input type="text" name="last_name" placeholder="Nom" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px; margin-top:4px;">
+                            <input type="text" name="last_name" placeholder="Nom" class="form-input">
                         </label>
                     </div>
-                    <label>
-                        Email
-                        <input type="email" name="email" required placeholder="eleve@exemple.com" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px; margin-top:4px;">
+                    <label class="form-group-label">
+                        Adresse Email
+                        <input type="email" name="email" required placeholder="eleve@exemple.com" class="form-input">
                     </label>
-                    <label>
+                    <label class="form-group-label">
                         Mot de passe
-                        <input type="password" name="password" required placeholder="********" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px; margin-top:4px;">
+                        <input type="password" name="password" required placeholder="••••••••" class="form-input">
                     </label>
-                    <button type="submit" class="btn btn-primary" style="justify-content:center;">Créer et Ajouter</button>
+                    <button type="submit" class="btn btn-primary btn-full" style="margin-top:0.5rem;">
+                        <i class="ti ti-user-plus"></i> Créer & Ajouter
+                    </button>
                 </form>
             </div>
 
-            <div class="carte">
-                <h3 style="margin-top:0;">Assigner un élève existant</h3>
-                <form method="post" action="{% url 'dashboard_admin_assign_student_page' classe.id %}" style="display:grid; gap:0.8rem;">
+            <!-- Assign existing student form -->
+            <div class="glass-card">
+                <h3 class="card-title-premium" style="margin-bottom:1.5rem; font-size:1.15rem;">Assigner un élève</h3>
+                <form method="post" action="{% url 'dashboard_admin_assign_student_page' classe.id %}" class="form-box">
                     {% csrf_token %}
-                    <label>
-                        Élèves sans classe / En attente
-                        <select name="student_id" required style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px; margin-top:4px;">
-                            <option value="">Sélectionner un élève...</option>
-                            {% for p_student in pending_students %}
-                                <option value="{{ p_student.id }}">
-                                    {% if p_student.first_name and p_student.last_name %}
-                                        {{ p_student.first_name }} {{ p_student.last_name }} ({{ p_student.email }})
-                                    {% else %}
-                                        {{ p_student.email }}
-                                    {% endif %}
-                                </option>
-                            {% endfor %}
-                        </select>
+                    <label class="form-group-label">
+                        Élève en attente / sans classe
+                        <div class="select-wrapper">
+                            <select name="student_id" required>
+                                <option value="">Choisir un élève...</option>
+                                {% for p_student in pending_students %}
+                                    <option value="{{ p_student.id }}">
+                                        {% if p_student.first_name or p_student.last_name %}
+                                            {{ p_student.get_full_name }} ({{ p_student.email }})
+                                        {% else %}
+                                            {{ p_student.email }}
+                                        {% endif %}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
                     </label>
-                    <button type="submit" class="btn" style="justify-content:center;">Assigner</button>
+                    <button type="submit" class="btn btn-secondary btn-full" style="margin-top:0.5rem;">
+                        <i class="ti ti-link"></i> Assigner à la classe
+                    </button>
                 </form>
             </div>
         </div>
     </div>
-</section>
+</div>
 {% endblock %}

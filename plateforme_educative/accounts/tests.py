@@ -211,6 +211,190 @@ class RegistrationNotificationTests(TestCase):
         self.assertEqual(admin_notifs.count(), 0)
 
 
+class NotificationHTMXTests(TestCase):
+    def setUp(self):
+        self.user = Utilisateur.objects.create_user(
+            email="notif_test@example.com",
+            password="Password123!",
+            role="ELEVE",
+            statut_compte="ACTIVE",
+            is_active=True
+        )
+        self.notif1 = Notification.objects.create(
+            destinataire=self.user,
+            type="COMPTE_ACTIVE",
+            titre="Test Notif 1",
+            message="Msg 1"
+        )
+        self.notif2 = Notification.objects.create(
+            destinataire=self.user,
+            type="COMPTE_ACTIVE",
+            titre="Test Notif 2",
+            message="Msg 2"
+        )
+
+    def test_unread_notifications_count_view(self):
+        self.client.login(email="notif_test@example.com", password="Password123!")
+        
+        # Initial check (2 unread)
+        response = self.client.get(reverse('accounts:unread_notifications_count'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'notifications-badge')
+        self.assertContains(response, '2')
+
+        # Mark one as read
+        self.notif1.lu = True
+        self.notif1.save()
+
+        # Check count is updated to 1
+        response = self.client.get(reverse('accounts:unread_notifications_count'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '1')
+
+        # Mark second as read
+        self.notif2.lu = True
+        self.notif2.save()
+
+        # Check count is 0 (returns empty response, no badge)
+        response = self.client.get(reverse('accounts:unread_notifications_count'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content.decode(), '')
+
+    def test_mark_notification_read_view_htmx(self):
+        self.client.login(email="notif_test@example.com", password="Password123!")
+        
+        # Test marking one notification read via HTMX
+        response = self.client.post(
+            reverse('accounts:mark_notification_read', args=[self.notif1.id]),
+            headers={'hx-request': 'true'}
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['HX-Trigger'], 'update-notifications')
+        
+        self.notif1.refresh_from_db()
+        self.assertTrue(self.notif1.lu)
+
+    def test_mark_notifications_read_all_view_htmx(self):
+        self.client.login(email="notif_test@example.com", password="Password123!")
+        
+        # Test marking all notifications read via HTMX
+        response = self.client.post(
+            reverse('accounts:mark_notifications_read_all'),
+            headers={'hx-request': 'true'}
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['HX-Trigger'], 'update-notifications')
+        
+        self.notif1.refresh_from_db()
+        self.notif2.refresh_from_db()
+        self.assertTrue(self.notif1.lu)
+        self.assertTrue(self.notif2.lu)
+
+    def test_read_and_redirect_notification_view(self):
+        self.client.login(email="notif_test@example.com", password="Password123!")
+        self.notif1.url = "/some-target-url/"
+        self.notif1.lu = False
+        self.notif1.save()
+
+        response = self.client.get(reverse('accounts:read_and_redirect_notification', args=[self.notif1.id]))
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, "/some-target-url/")
+
+        self.notif1.refresh_from_db()
+        self.assertTrue(self.notif1.lu)
+
+    def test_delete_notification_view(self):
+        self.client.login(email="notif_test@example.com", password="Password123!")
+        notif_id = self.notif1.id
+        
+        response = self.client.post(
+            reverse('accounts:delete_notification', args=[notif_id]),
+            headers={'hx-request': 'true'}
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['HX-Trigger'], 'update-notifications')
+        
+        # Verify notification is deleted
+        self.assertFalse(Notification.objects.filter(id=notif_id).exists())
+
+
+from accounts.models import Niveau, Classe
+
+class ClassStudentsManagementTests(TestCase):
+    def setUp(self):
+        # Setup Admin
+        self.admin = Utilisateur.objects.create_user(
+            email="admin_class_test@example.com",
+            password="AdminPassword123!",
+            role="ADMIN",
+            statut_compte="ACTIVE",
+            is_active=True
+        )
+        # Setup Niveau and Classe
+        self.niveau = Niveau.objects.create(code="nv_test", nom="Niveau Test", ordre=1)
+        self.classe = Classe.objects.create(niveau=self.niveau, code="cls_test", nom="Classe Test", annee_scolaire="2025-2026", capacite=30)
+        
+        # Setup Student in Classe
+        self.student_in_class = Utilisateur.objects.create_user(
+            email="in_class@example.com",
+            password="StudentPass123!",
+            role="ELEVE",
+            statut_compte="ACTIVE",
+            is_active=True,
+            classe=self.classe
+        )
+        
+        # Setup Pending Student (no class)
+        self.pending_student = Utilisateur.objects.create_user(
+            email="pending_stu@example.com",
+            password="StudentPass123!",
+            role="ELEVE",
+            statut_compte="PENDING",
+            is_active=False
+        )
+
+    def test_manage_classe_students_view_unauthenticated(self):
+        """Unauthenticated user is redirected to login."""
+        response = self.client.get(reverse('dashboard_admin_manage_classe_students', args=[self.classe.id]))
+        self.assertEqual(response.status_code, 302)
+
+    def test_manage_classe_students_view_forbidden_for_student(self):
+        """A student cannot access class management."""
+        self.client.login(email="in_class@example.com", password="StudentPass123!")
+        response = self.client.get(reverse('dashboard_admin_manage_classe_students', args=[self.classe.id]))
+        self.assertEqual(response.status_code, 403)
+
+    def test_manage_classe_students_view_ok_for_admin(self):
+        """Admin can access the class students page."""
+        self.client.login(email="admin_class_test@example.com", password="AdminPassword123!")
+        response = self.client.get(reverse('dashboard_admin_manage_classe_students', args=[self.classe.id]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.classe.nom)
+        self.assertContains(response, "in_class@example.com")
+        self.assertContains(response, "pending_stu@example.com")
+
+    def test_export_classe_students_excel(self):
+        """Admin can export class students list to excel."""
+        self.client.login(email="admin_class_test@example.com", password="AdminPassword123!")
+        response = self.client.get(reverse('dashboard_admin_export_classe_students', args=[self.classe.id]))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        self.assertIn(f'attachment; filename="eleves_{self.classe.nom}.xlsx"', response['Content-Disposition'])
+        
+        # Verify it is a valid openpyxl workbook
+        import io
+        import openpyxl
+        wb = openpyxl.load_workbook(io.BytesIO(response.content))
+        self.assertIn("Élèves", wb.sheetnames)
+        ws = wb["Élèves"]
+        # Check title in A1
+        self.assertEqual(ws['A1'].value, f"Liste des élèves - Classe : {self.classe.nom}")
+
+
+
+
+
+
 
 
 

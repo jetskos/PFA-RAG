@@ -6,17 +6,53 @@
 
 {% block content %}
 <style>
-    body { background-color: #f1f5f9; }
+    .admin-header-card {
+        background: var(--bg-glass);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--border-glass);
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        box-shadow: var(--shadow-md);
+        margin-bottom: 1.5rem;
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
+    }
+    .admin-header-card:hover {
+        border-color: rgba(var(--brand-primary-rgb), 0.2);
+        box-shadow: var(--shadow-lg);
+    }
+    .admin-header-title {
+        font-size: 2.25rem;
+        font-weight: 800;
+        background: var(--brand-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.03em;
+    }
+    .admin-header-desc {
+        color: var(--text-secondary);
+        font-size: 1.05rem;
+        margin: 0;
+    }
+    
+    [data-theme="dark"] .admin-header-title {
+        background: linear-gradient(135deg, #ffffff 40%, var(--brand-primary) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
 </style>
 
-<div class="page-shell" style="padding-top: 1rem;">
+<div class="page-shell" style="padding-top: 1rem; position: relative; z-index: 1;">
     <!-- ============================================== -->
     <!-- GESTION DE LA STRUCTURE                        -->
     <!-- ============================================== -->
     <div class="admin-shell">
-        <header class="admin-header" style="margin-bottom: 1rem; background: #ffffff; padding: 1.5rem 2rem; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
-            <h1 style="font-size: 1.75rem; font-weight: 800; color: #0f172a; margin-bottom: 0.25rem;">Gestion de la structure</h1>
-            <p style="color: #64748b; font-size: 1rem; margin: 0;">Vue globale — inscriptions, cours, logistique et structure scolaire.</p>
+        <header class="admin-header-card">
+            <h1 class="admin-header-title">Gestion de la structure</h1>
+            <p class="admin-header-desc">Vue globale — inscriptions, cours, logistique et structure scolaire.</p>
         </header>
 
         <div id="dashboard-structure">

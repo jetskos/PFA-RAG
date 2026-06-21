@@ -99,47 +99,207 @@
     }
 </style>
 
-<div class="courses-grid-modern">
-    {% if mes_cours %}
-        {% for cours in mes_cours %}
-            <div class="course-glass-row">
-                <div class="c-row-left">
-                    <div class="c-icon" style="overflow: hidden; padding: 0; {% if cours.image_couverture %}background: url('{{ cours.image_couverture.url }}') center/cover;{% else %}background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);{% endif %}">
-                        {% if not cours.image_couverture %}
-                            <i class="ti ti-book-2" style="color: #3b82f6;"></i>
-                        {% endif %}
-                    </div>
-                    <div class="c-details">
-                        <h3>{{ cours.titre }}</h3>
-                        <div class="c-meta">
-                            <span><i class="ti ti-bookmark" style="margin-right:4px;"></i>{{ cours.niveau.nom }}</span>
-                            <span><i class="ti ti-calendar" style="margin-right:4px;"></i>Modifié le {{ cours.date_creation|date:'d/m/Y' }}</span>
-                            {% if cours.actif %}
-                                <span class="c-status status-publie">Publié</span>
-                            {% else %}
-                                <span class="c-status status-brouillon">Brouillon</span>
+<style>
+    /* Tab Navigation Styles */
+    .formateur-tab-nav {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 2rem;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 0.75rem;
+    }
+    .formateur-tab-btn {
+        background: transparent;
+        border: none;
+        padding: 0.6rem 1.2rem;
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: var(--text-muted);
+        cursor: pointer;
+        border-radius: var(--radius-md);
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .formateur-tab-btn:hover {
+        background: var(--bg-surface-alt);
+        color: var(--text-primary);
+    }
+    .formateur-tab-btn.active {
+        background: var(--brand-light);
+        color: var(--brand-primary);
+    }
+    .tab-badge {
+        font-size: 0.75rem;
+        background: var(--brand-primary);
+        color: white;
+        padding: 2px 6px;
+        border-radius: var(--radius-sm);
+        font-weight: 800;
+    }
+    
+    .status-badge-demande {
+        font-size: 0.78rem;
+        font-weight: 800;
+        padding: 4px 12px;
+        border-radius: var(--radius-full);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        display: inline-block;
+    }
+    .status-pending {
+        background: rgba(245, 158, 11, 0.1);
+        color: var(--accent-warning);
+        border: 1px solid rgba(245, 158, 11, 0.2);
+    }
+    .status-approved {
+        background: rgba(16, 185, 129, 0.1);
+        color: var(--accent-emerald);
+        border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+    .status-rejected {
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--accent-danger);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+    .status-returned {
+        background: rgba(59, 130, 246, 0.1);
+        color: var(--brand-primary);
+        border: 1px solid rgba(59, 130, 246, 0.2);
+    }
+</style>
+
+<div class="formateur-tab-nav">
+    <button class="formateur-tab-btn {% if active_tab == 'all' or active_tab == 'mes_cours' %}active{% endif %}" 
+            hx-get="{% url 'dashboard_formateur' %}?tab=mes_cours" hx-target="#dashboard-formateur-structure">
+        <i class="ti ti-books"></i> Mes Cours
+    </button>
+    <button class="formateur-tab-btn {% if active_tab == 'demandes_recues' %}active{% endif %}" 
+            hx-get="{% url 'dashboard_formateur' %}?tab=demandes_recues" hx-target="#dashboard-formateur-structure">
+        <i class="ti ti-mail-opened"></i> Demandes Reçues 
+        {% if demandes_recues %}
+            <span class="tab-badge">{{ demandes_recues|length }}</span>
+        {% endif %}
+    </button>
+    <button class="formateur-tab-btn {% if active_tab == 'mes_demandes' %}active{% endif %}" 
+            hx-get="{% url 'dashboard_formateur' %}?tab=mes_demandes" hx-target="#dashboard-formateur-structure">
+        <i class="ti ti-package"></i> Mes Demandes Matériel
+    </button>
+</div>
+
+{% if active_tab == 'mes_demandes' %}
+    <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:1.5rem; flex-wrap:wrap; gap:1rem;">
+        <div>
+            <h2 style="margin:0; font-size:1.2rem; font-weight:700;">Mes demandes logistiques</h2>
+            <p style="margin:0.25rem 0 0; color:var(--text-muted); font-size:0.85rem;">Suivez l'état de vos demandes de matériel soumises à l'administration.</p>
+        </div>
+    </div>
+    <div class="table-container-card">
+        {% if mes_demandes %}
+            <table class="premium-table">
+                <thead>
+                    <tr>
+                        <th>Date de demande</th>
+                        <th>Équipement requis</th>
+                        <th>Atelier cible</th>
+                        <th style="text-align: center;">Quantité</th>
+                        <th style="text-align: right;">État de la demande</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for demande in mes_demandes %}
+                        <tr>
+                            <td>
+                                <div style="display:flex; align-items:center; gap:6px;">
+                                    <i class="ti ti-calendar-event" aria-hidden="true" style="color:var(--text-muted);"></i>
+                                    <span>{{ demande.date_creation|date:"d/m/Y à H:i" }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div style="font-weight: 700; color: var(--text-primary);">
+                                    {{ demande.equipement.nom }}
+                                </div>
+                            </td>
+                            <td>
+                                {% if demande.atelier_cible %}
+                                    <span style="color: var(--secondary); font-weight: 600;">{{ demande.atelier_cible.titre }}</span>
+                                {% else %}
+                                    <span style="color: var(--text-muted); font-style: italic;">Aucun</span>
+                                {% endif %}
+                            </td>
+                            <td style="text-align: center;">
+                                <span class="qty-tag">{{ demande.quantite }}</span>
+                            </td>
+                            <td style="text-align: right;">
+                                {% if demande.statut == 'PENDING' %}
+                                    <span class="status-badge-demande status-pending">En attente</span>
+                                {% elif demande.statut == 'APPROVED' %}
+                                    <span class="status-badge-demande status-approved">Approuvée</span>
+                                {% elif demande.statut == 'REJECTED' %}
+                                    <span class="status-badge-demande status-rejected">Rejetée</span>
+                                {% elif demande.statut == 'RETURNED' %}
+                                    <span class="status-badge-demande status-returned">Retournée</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="empty-state-box" style="text-align: center; padding: 4rem 2rem; background: var(--bg-surface-alt); border-radius: var(--radius-lg); border: 2px dashed var(--border-color);">
+                <i class="ti ti-package" aria-hidden="true" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem; display: block;"></i>
+                <p style="margin:0; color: var(--text-secondary); font-size: 1.1rem; font-weight: 600;">
+                    Vous n'avez soumis aucune demande logistique.
+                </p>
+            </div>
+        {% endif %}
+    </div>
+{% elif active_tab == 'demandes_recues' %}
+    {% include 'core/partials/formateur_received_demandes.html' %}
+{% else %}
+    <div class="courses-grid-modern">
+        {% if mes_cours %}
+            {% for cours in mes_cours %}
+                <div class="course-glass-row">
+                    <div class="c-row-left">
+                        <div class="c-icon" style="overflow: hidden; padding: 0; {% if cours.image_couverture %}background: url('{{ cours.image_couverture.url }}') center/cover;{% else %}background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);{% endif %}">
+                            {% if not cours.image_couverture %}
+                                <i class="ti ti-book-2" style="color: #3b82f6;"></i>
                             {% endif %}
                         </div>
+                        <div class="c-details">
+                            <h3>{{ cours.titre }}</h3>
+                            <div class="c-meta">
+                                <span><i class="ti ti-bookmark" style="margin-right:4px;"></i>{{ cours.niveau.nom }}</span>
+                                <span><i class="ti ti-calendar" style="margin-right:4px;"></i>Modifié le {{ cours.date_creation|date:'d/m/Y' }}</span>
+                                {% if cours.actif %}
+                                    <span class="c-status status-publie">Publié</span>
+                                {% else %}
+                                    <span class="c-status status-brouillon">Brouillon</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="c-row-right">
+                        <a href="{% url 'apprentissage:gerer_cours' cours.id %}" class="btn-primary" style="padding: 0.5rem 1rem; background: #0f172a; color: white; border-radius: 8px;">
+                            Gérer le contenu
+                        </a>
+                        <a href="{% url 'apprentissage:editer_cours' cours.id %}" class="btn-outline" style="padding: 0.5rem; color: #64748b;">
+                            <i class="ti ti-dots-vertical"></i>
+                        </a>
                     </div>
                 </div>
-                <div class="c-row-right">
-                    <a href="{% url 'apprentissage:gerer_cours' cours.id %}" class="btn-primary" style="padding: 0.5rem 1rem; background: #0f172a; color: white;">
-                        Gérer le contenu
-                    </a>
-                    <a href="{% url 'apprentissage:editer_cours' cours.id %}" class="btn-outline" style="padding: 0.5rem; color: #64748b;">
-                        <i class="ti ti-dots-vertical"></i>
-                    </a>
-                </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state-modern">
+                <i class="ti ti-notebook" style="font-size: 4rem; color: #94a3b8; margin-bottom: 1rem;"></i>
+                <h3>Votre espace de travail est prêt</h3>
+                <p>Vous n'avez pas encore de cours. Créez votre premier module pour commencer à enseigner.</p>
+                <a href="{% url 'apprentissage:nouveau_cours' %}" class="btn-primary" style="background: #3b82f6;">
+                    <i class="ti ti-plus" style="margin-right: 6px;"></i> Créer mon premier cours
+                </a>
             </div>
-        {% endfor %}
-    {% else %}
-        <div class="empty-state-modern">
-            <i class="ti ti-notebook" style="font-size: 4rem; color: #94a3b8; margin-bottom: 1rem;"></i>
-            <h3>Votre espace de travail est prêt</h3>
-            <p>Vous n'avez pas encore de cours. Créez votre premier module pour commencer à enseigner.</p>
-            <a href="{% url 'apprentissage:nouveau_cours' %}" class="btn-primary" style="background: #3b82f6;">
-                <i class="ti ti-plus" style="margin-right: 6px;"></i> Créer mon premier cours
-            </a>
-        </div>
-    {% endif %}
-</div>
+        {% endif %}
+    </div>
+{% endif %}

@@ -394,3 +394,212 @@ class RagAssistantTests(TestCase):
         response = self.client.post(url, json.dumps({"question": ""}), content_type="application/json")
         self.assertEqual(response.status_code, 400)
 
+
+class ChapterValidationTests(TestCase):
+    def setUp(self):
+        self.niveau = Niveau.objects.create(code="NV_VAL", nom="Niveau Val", ordre=10)
+        self.classe = Classe.objects.create(
+            niveau=self.niveau,
+            code="CLS_VAL",
+            nom="Classe Val",
+            annee_scolaire="2026",
+            capacite=20
+        )
+        self.student = Utilisateur.objects.create_user(
+            email="student_val@example.com",
+            password="Password123!",
+            role="ELEVE",
+            classe=self.classe,
+            is_active=True,
+            statut_compte="ACTIVE"
+        )
+        self.formateur = Utilisateur.objects.create_user(
+            email="formateur_val@example.com",
+            password="Password123!",
+            role="FORMATEUR",
+            is_active=True,
+            statut_compte="ACTIVE"
+        )
+        self.cours = Cours.objects.create(
+            titre="Cours Val",
+            description="Desc Val",
+            niveau=self.niveau,
+            createur=self.formateur,
+            actif=True
+        )
+        self.chapitre1 = Chapitre.objects.create(
+            cours=self.cours,
+            titre="Chapitre 1",
+            description="Description 1",
+            ordre=1,
+            actif=True
+        )
+        self.chapitre2 = Chapitre.objects.create(
+            cours=self.cours,
+            titre="Chapitre 2",
+            description="Description 2",
+            ordre=2,
+            actif=True
+        )
+
+    def test_validation_fails_without_passing_qcm(self):
+        """La validation doit échouer si aucun QCM n'a été réussi (score >= 80%)."""
+        self.client.login(email="student_val@example.com", password="Password123!")
+        url = reverse("apprentissage:valider_chapitre", args=[self.chapitre1.id])
+        
+        # Cas 1: Aucun QCM passé
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Validation requise")
+        self.assertContains(response, "Passer le QCM")
+        
+        # Cas 2: QCM échoué (score < 80)
+        SessionQCM.objects.create(
+            etudiant=self.student,
+            chapitre=self.chapitre1,
+            score=70,
+            statut="ECHOUEE"
+        )
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Validation requise")
+        self.assertContains(response, "Passer le QCM")
+
+    def test_validation_succeeds_with_passing_qcm(self):
+        """La validation réussit s'il y a un QCM réussi (score >= 80%)."""
+        self.client.login(email="student_val@example.com", password="Password123!")
+        url = reverse("apprentissage:valider_chapitre", args=[self.chapitre1.id])
+        
+        # Création d'une session QCM réussie
+        SessionQCM.objects.create(
+            etudiant=self.student,
+            chapitre=self.chapitre1,
+            score=90,
+            statut="TERMINEE"
+        )
+        
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 200)
+        # Vérification qu'il propose de passer au chapitre suivant
+        self.assertContains(response, "Passer au chapitre suivant")
+        
+        # Vérifier en BDD
+        from apprentissage.models import ChapitreComplete, Progression
+        self.assertTrue(ChapitreComplete.objects.filter(etudiant=self.student, chapitre=self.chapitre1).exists())
+        
+        progression = Progression.objects.get(etudiant=self.student, cours=self.cours)
+        self.assertIn(self.chapitre1, progression.chapitres_valides.all())
+
+
+from logistics.models import Equipment, DemandeMateriel
+
+class EquipmentRequestTests(TestCase):
+    def setUp(self):
+        self.student = Utilisateur.objects.create_user(
+            email="st_req@example.com", password="Password123!", role="ELEVE", is_active=True, statut_compte="ACTIVE"
+        )
+        self.formateur1 = Utilisateur.objects.create_user(
+            email="f_req1@example.com", password="Password123!", role="FORMATEUR", is_active=True, statut_compte="ACTIVE"
+        )
+        self.formateur2 = Utilisateur.objects.create_user(
+            email="f_req2@example.com", password="Password123!", role="FORMATEUR", is_active=True, statut_compte="ACTIVE"
+        )
+        self.equipement = Equipment.objects.create(
+            nom="Oscilloscope",
+            numero_serie="OSC-12345",
+            etat="DISPONIBLE"
+        )
+
+    def test_student_can_create_request(self):
+        """Un élève peut formuler une demande de matériel et le destinataire est notifié."""
+        self.client.login(email="st_req@example.com", password="Password123!")
+        
+        # Soumettre une demande adressée à formateur1
+        response = self.client.post(
+            reverse("dashboard_student_create_demande"),
+            {
+                "equipement": str(self.equipement.id),
+                "destinataire": str(self.formateur1.id),
+                "quantite": 2,
+                "atelier_cible": ""
+            }
+        )
+        self.assertEqual(response.status_code, 200)
+        from django.contrib.messages import get_messages
+        messages = list(get_messages(response.wsgi_request))
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(str(messages[0]), "Demande envoyée avec succès !")
+        
+        # Vérifier en BDD
+        demande = DemandeMateriel.objects.filter(demandeur=self.student, equipement=self.equipement).first()
+        self.assertIsNotNone(demande)
+        self.assertEqual(demande.quantite, 2)
+        self.assertEqual(demande.destinataire, self.formateur1)
+        self.assertEqual(demande.statut, "PENDING")
+        
+        # Vérifier la notification reçue par le formateur1
+        notif = Notification.objects.filter(destinataire=self.formateur1, type="NOUVELLE_DEMANDE").first()
+        self.assertIsNotNone(notif)
+        self.assertIn("Oscilloscope", notif.message)
+
+    def test_processing_permissions(self):
+        """Seul l'admin ou le formateur destinataire peut traiter la demande."""
+        demande = DemandeMateriel.objects.create(
+            demandeur=self.student,
+            destinataire=self.formateur1,
+            equipement=self.equipement,
+            quantite=1
+        )
+        
+        # Cas 1: Le mauvais formateur (formateur2) essaie de traiter -> 403
+        self.client.login(email="f_req2@example.com", password="Password123!")
+        url = reverse("dashboard_admin_process_demande", args=[demande.id])
+        response = self.client.post(url, {"action": "approve"})
+        self.assertEqual(response.status_code, 403)
+        
+        # Cas 2: Le bon formateur (formateur1) traite -> 200 (re-rend le partiel)
+        self.client.login(email="f_req1@example.com", password="Password123!")
+        response = self.client.post(url, {"action": "approve"})
+        self.assertEqual(response.status_code, 200)
+        
+        demande.refresh_from_db()
+        self.assertEqual(demande.statut, "APPROVED")
+        
+        # L'élève reçoit une notification
+        notif = Notification.objects.filter(destinataire=self.student, type="DEMANDE_TRAITEE").first()
+        self.assertIsNotNone(notif)
+        self.assertIn("approuvée", notif.message)
+
+    def test_student_cannot_request_quantity_outside_limits(self):
+        """Un élève ne peut pas demander une quantité inférieure à 1 ou supérieure à 2."""
+        self.client.login(email="st_req@example.com", password="Password123!")
+        
+        # Cas 1: Quantité = 0 -> Devrait échouer
+        response = self.client.post(
+            reverse("dashboard_student_create_demande"),
+            {
+                "equipement": str(self.equipement.id),
+                "destinataire": str(self.formateur1.id),
+                "quantite": 0,
+                "atelier_cible": ""
+            }
+        )
+        # S'il y a des erreurs, la vue réaffiche le formulaire avec les erreurs (ou renvoie les erreurs dans le modal)
+        # Vérifions que la demande n'a pas été créée en BDD
+        self.assertFalse(DemandeMateriel.objects.filter(demandeur=self.student, quantite=0).exists())
+
+        # Cas 2: Quantité = 3 -> Devrait échouer
+        response = self.client.post(
+            reverse("dashboard_student_create_demande"),
+            {
+                "equipement": str(self.equipement.id),
+                "destinataire": str(self.formateur1.id),
+                "quantite": 3,
+                "atelier_cible": ""
+            }
+        )
+        self.assertFalse(DemandeMateriel.objects.filter(demandeur=self.student, quantite=3).exists())
+
+
+
+

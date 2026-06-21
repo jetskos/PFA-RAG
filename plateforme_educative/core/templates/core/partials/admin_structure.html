@@ -3,13 +3,14 @@
     .tabs-container {
         display: flex;
         gap: 0.5rem;
-        margin-bottom: 1rem;
+        margin-bottom: 1.5rem;
         flex-wrap: wrap;
         padding: 0.5rem;
-        background: #f8fafc;
-        border-radius: 12px;
-        border: 1px solid #e2e8f0;
+        background: var(--bg-surface-alt);
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border-color);
         width: fit-content;
+        transition: var(--transition);
     }
 
     .tab-pill {
@@ -17,26 +18,26 @@
         align-items: center;
         gap: 8px;
         padding: 10px 24px;
-        border-radius: 8px;
+        border-radius: var(--radius-sm);
         font-size: 0.95rem;
         font-weight: 600;
-        color: #475569;
+        color: var(--text-secondary);
         background: transparent;
         border: none;
         cursor: pointer;
-        transition: all 0.2s ease;
+        transition: var(--transition);
         outline: none;
     }
 
     .tab-pill:hover {
-        color: #0f172a;
-        background: rgba(15, 23, 42, 0.05);
+        color: var(--text-primary);
+        background: rgba(var(--brand-primary-rgb), 0.08);
     }
 
     .tab-pill.is-active {
-        background: #ffffff;
-        color: #0f172a !important;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        background: var(--bg-surface);
+        color: var(--brand-primary) !important;
+        box-shadow: var(--shadow-sm);
         font-weight: 700;
     }
 
@@ -44,28 +45,38 @@
         font-size: 0.75rem;
         font-weight: 800;
         padding: 2px 8px;
-        border-radius: 9999px;
-        background: #e2e8f0;
-        color: #475569;
-        transition: all 0.2s ease;
-    }
-
-    [data-theme="dark"] .tab-badge {
-        background: var(--gray-700);
-        color: var(--text-muted);
+        border-radius: var(--radius-full);
+        background: var(--border-color);
+        color: var(--text-secondary);
+        transition: var(--transition);
     }
 
     .tab-pill.is-active .tab-badge {
-        background: #0f766e;
+        background: var(--brand-primary);
         color: #ffffff;
     }
     
     .structure-content-card {
-        background: #ffffff;
-        border-radius: 16px;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.025);
-        border: 1px solid #e2e8f0;
+        background: var(--bg-glass);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        border: 1px solid var(--border-glass);
         padding: 2rem;
+        transition: var(--transition);
+    }
+
+    [data-theme="dark"] .tabs-container {
+        background: rgba(15, 23, 42, 0.3);
+        border-color: rgba(255, 255, 255, 0.06);
+    }
+    [data-theme="dark"] .tab-pill.is-active {
+        background: var(--bg-surface-alt);
+        color: var(--brand-primary) !important;
+    }
+    [data-theme="dark"] .tab-pill:hover {
+        background: rgba(255, 255, 255, 0.05);
     }
 </style>
 

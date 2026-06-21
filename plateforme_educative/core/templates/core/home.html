@@ -15,14 +15,25 @@
             soutenus par une IA d'assistance locale et un système de gestion d'atelier performant.
         </p>
         <div class="home-actions">
-            <a class="btn btn-primary" href="{% url 'accounts:register' %}">
-                <i class="ti ti-rocket" aria-hidden="true"></i>
-                Commencer maintenant
-            </a>
-            <a class="btn btn-ghost" href="{% url 'accounts:login' %}">
-                <i class="ti ti-login" aria-hidden="true"></i>
-                Se connecter
-            </a>
+            {% if request.user.is_authenticated %}
+                <a class="btn btn-primary" href="{% url 'dashboard' %}">
+                    <i class="ti ti-dashboard" aria-hidden="true"></i>
+                    Mon Tableau de bord
+                </a>
+                <a class="btn btn-ghost" href="{% url 'apprentissage:liste_cours' %}">
+                    <i class="ti ti-book" aria-hidden="true"></i>
+                    Voir les cours
+                </a>
+            {% else %}
+                <a class="btn btn-primary" href="{% url 'accounts:register' %}">
+                    <i class="ti ti-rocket" aria-hidden="true"></i>
+                    Commencer maintenant
+                </a>
+                <a class="btn btn-ghost" href="{% url 'accounts:login' %}">
+                    <i class="ti ti-login" aria-hidden="true"></i>
+                    Se connecter
+                </a>
+            {% endif %}
         </div>
     </div>
 
@@ -107,11 +118,19 @@
         <p>Bénéficiez d'une interface d'édition type Notion et d'un tableau de bord de suivi académique extrêmement clair.</p>
     </div>
     <div class="home-bottom__card home-bottom__card--accent">
-        <p class="section-title section-title--light">Prêt à démarrer ?</p>
-        <h2>Rejoignez l'aventure technologique.</h2>
-        <a class="btn btn-primary" href="{% url 'accounts:register' %}">
-            Créer un compte
-        </a>
+        {% if request.user.is_authenticated %}
+            <p class="section-title section-title--light">Déjà connecté</p>
+            <h2>Reprenez votre parcours.</h2>
+            <a class="btn btn-primary" href="{% url 'dashboard' %}">
+                <i class="ti ti-dashboard" aria-hidden="true"></i> Mon Tableau de bord
+            </a>
+        {% else %}
+            <p class="section-title section-title--light">Prêt à démarrer ?</p>
+            <h2>Rejoignez l'aventure technologique.</h2>
+            <a class="btn btn-primary" href="{% url 'accounts:register' %}">
+                Créer un compte
+            </a>
+        {% endif %}
     </div>
 </section>
 {% endblock %}

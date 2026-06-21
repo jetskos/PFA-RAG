@@ -1,22 +1,244 @@
+<style>
+    .logistics-tickets-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .logistics-ticket-card {
+        background: var(--bg-surface, #ffffff);
+        border: 1px solid var(--border-light, #e2e8f0);
+        border-radius: 16px;
+        padding: 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        position: relative;
+        transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.01);
+    }
+    
+    .logistics-ticket-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md, 0 4px 6px rgba(0,0,0,0.04));
+        border-color: var(--border-default, #cbd5e1);
+    }
+    
+    /* Status vertical indicators */
+    .ticket-status-ouvert {
+        border-left: 5px solid #ef4444;
+    }
+    .ticket-status-en_cours {
+        border-left: 5px solid #f59e0b;
+    }
+    .ticket-status-resolu {
+        border-left: 5px solid #10b981;
+    }
+    
+    .ticket-main {
+        flex: 1;
+        min-width: 280px;
+    }
+    
+    .ticket-title {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin: 0 0 0.5rem 0;
+        letter-spacing: -0.01em;
+    }
+    
+    .ticket-meta-row {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        margin-bottom: 0.75rem;
+    }
+    
+    .ticket-badge {
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        padding: 0.2rem 0.5rem;
+        border-radius: 6px;
+        letter-spacing: 0.03em;
+        display: inline-flex;
+        align-items: center;
+    }
+    .badge-ouvert {
+        background: rgba(239, 68, 68, 0.08);
+        color: #ef4444;
+        border: 1px solid rgba(239, 68, 68, 0.15);
+    }
+    .badge-en_cours {
+        background: rgba(245, 158, 11, 0.08);
+        color: #f59e0b;
+        border: 1px solid rgba(245, 158, 11, 0.15);
+    }
+    
+    .ticket-author {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+    
+    .ticket-desc {
+        font-size: 0.92rem;
+        color: var(--text-secondary);
+        line-height: 1.5;
+        margin: 0 0 1rem 0;
+    }
+    
+    .ticket-chips-row {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+    
+    .ticket-chip {
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+        background: var(--bg-page, #f8fafc);
+        border: 1px solid var(--border-light, #e2e8f0);
+        padding: 0.2rem 0.65rem;
+        border-radius: 20px;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        transition: all 0.2s ease;
+    }
+    .ticket-chip:hover {
+        background: var(--border-light);
+        color: var(--text-primary);
+    }
+    
+    .ticket-btn-resolve {
+        background: rgba(16, 185, 129, 0.05);
+        border: 1px solid rgba(16, 185, 129, 0.15);
+        color: #10b981;
+        padding: 0.5rem 1rem;
+        font-size: 0.82rem;
+        font-weight: 600;
+        border-radius: 8px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    
+    .ticket-btn-resolve:hover {
+        background: #10b981 !important;
+        color: #ffffff !important;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(16, 185, 129, 0.25);
+    }
+
+    /* Empty state styling */
+    .logistics-empty-state {
+        padding: 4.5rem 2rem;
+        text-align: center;
+        background: var(--bg-surface, #ffffff);
+        border: 2px dashed var(--border-light, #e2e8f0);
+        border-radius: 16px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1.25rem;
+        position: relative;
+        z-index: 2;
+    }
+    
+    .empty-illustration {
+        width: 72px;
+        height: 72px;
+        background: rgba(16, 185, 129, 0.08);
+        color: #10b981;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.2rem;
+        box-shadow: 0 0 20px rgba(16, 185, 129, 0.15);
+        animation: pulse-glow 3s infinite ease-in-out;
+    }
+    
+    @keyframes pulse-glow {
+        0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.25); }
+        70% { transform: scale(1.04); box-shadow: 0 0 0 12px rgba(16, 185, 129, 0); }
+        100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+</style>
+
 {% if tickets.exists %}
-    <ul class="liste-docs-detaillee">
+    <div class="logistics-tickets-container">
         {% for ticket in tickets %}
-        <li class="doc-item">
-            <div class="doc-header">
-                <a class="doc-titre">{{ ticket.titre }}</a>
+        <div class="logistics-ticket-card {% if ticket.statut == 'OUVERT' %}ticket-status-ouvert{% else %}ticket-status-en_cours{% endif %}">
+            <div class="ticket-main">
+                <div class="ticket-meta-row">
+                    <span class="ticket-badge {% if ticket.statut == 'OUVERT' %}badge-ouvert{% else %}badge-en_cours{% endif %}">
+                        {{ ticket.get_statut_display }}
+                    </span>
+                    <span class="ticket-author">
+                        <i class="ti ti-user" style="font-size: 14px; color: var(--text-muted);"></i> 
+                        {{ ticket.ouvert_par.get_full_name|default:ticket.ouvert_par.email }}
+                    </span>
+                </div>
+                <h3 class="ticket-title">{{ ticket.titre }}</h3>
+                <p class="ticket-desc">{{ ticket.description }}</p>
+                
+                <div class="ticket-chips-row">
+                    {% if ticket.equipement %}
+                    <span class="ticket-chip">
+                        <i class="ti ti-package" style="color: var(--primary);"></i> {{ ticket.equipement }}
+                    </span>
+                    {% endif %}
+                    {% if ticket.atelier %}
+                    <span class="ticket-chip">
+                        <i class="ti ti-tool" style="color: var(--secondary);"></i> {{ ticket.atelier }}
+                    </span>
+                    {% endif %}
+                </div>
             </div>
-            <p class="doc-description">{{ ticket.description }}</p>
-            <p class="mt-2 text-muted m-0">Équipement: {{ ticket.equipement }} {% if ticket.atelier %}| Atelier: {{ ticket.atelier }}{% endif %}</p>
+            
             {% if user.is_staff or user.is_formateur %}
-            <form hx-post="{{ resolve_url }}" hx-target="#tickets-list" hx-swap="innerHTML" class="mt-2">
-                {% csrf_token %}
-                <input type="hidden" name="ticket_id" value="{{ ticket.id }}">
-                <button class="btn btn-ghost btn-sm" type="submit">Marquer Résolu</button>
-            </form>
+            <div class="ticket-actions" style="flex-shrink: 0;">
+                <form hx-post="{{ resolve_url }}" hx-target="#tickets-list" hx-swap="innerHTML" style="margin: 0;">
+                    {% csrf_token %}
+                    <input type="hidden" name="ticket_id" value="{{ ticket.id }}">
+                    <button class="ticket-btn-resolve" type="submit">
+                        <i class="ti ti-check" style="font-size: 15px;"></i> Résoudre
+                    </button>
+                </form>
+            </div>
             {% endif %}
-        </li>
+        </div>
         {% endfor %}
-    </ul>
+    </div>
 {% else %}
-    <p class="message-empty">Aucun ticket actif.</p>
+    <div class="logistics-empty-state">
+        <div class="empty-illustration">
+            <i class="ti ti-circle-check"></i>
+        </div>
+        <div>
+            <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--text-primary); margin: 0 0 0.35rem 0;">Tous les systèmes opérationnels</h3>
+            <p style="font-size: 0.9rem; color: var(--text-secondary); max-width: 380px; margin: 0 auto; line-height: 1.5;">Aucun ticket d'incident ou d'assistance n'est actuellement ouvert. Bon travail !</p>
+        </div>
+        <a href="{% url 'logistics:nuevo_ticket' %}" class="logistics-btn-primary" style="margin-top: 0.5rem; text-decoration: none;">
+            <i class="ti ti-plus" style="font-size: 14px;"></i> Signaler un problème
+        </a>
+    </div>
 {% endif %}
+

@@ -180,7 +180,9 @@ def gerer_chapitre(request, chapitre_id):
         'can_edit_documents': True,
     }
 
-    return render(request, 'apprentissage/partials/chapitre_detail.html', context)
+    if request.headers.get('HX-Request') == 'true':
+        return render(request, 'apprentissage/partials/chapitre_detail.html', context)
+    return render(request, 'apprentissage/gerer_chapitre.html', context)
 
 
 @login_required
@@ -361,7 +363,7 @@ def liste_cours(request):
         'q': q
     }
     
-    if request.headers.get('HX-Request') == 'true':
+    if request.headers.get('HX-Request') == 'true' and request.headers.get('HX-Target') == 'catalog-grid':
         return render(request, 'apprentissage/partials/liste_cours.html', context)
     
     return render(request, 'apprentissage/liste_cours.html', context)
@@ -427,6 +429,7 @@ def detail_cours(request, cours_id):
     vimeo_embed_url = ""
     chapitre_precedent = None
     chapitre_suivant = None
+    chapitre_initial_is_complete = False
 
     if chapitres.exists():
         chapitre_initial = chapitres.first()
@@ -456,12 +459,17 @@ def detail_cours(request, cours_id):
             except Exception:
                 vimeo_embed_url = url
 
+        chapitre_initial_is_complete = False
         if request.user.is_authenticated:
             from tuteur_ia.models import SessionAssistant
             session_assistant, _ = SessionAssistant.objects.get_or_create(
                 etudiant=request.user,
                 chapitre=chapitre_initial
             )
+            chapitre_initial_is_complete = ChapitreComplete.objects.filter(
+                etudiant=request.user,
+                chapitre=chapitre_initial
+            ).exists()
             
     context = {
         'cours': cours,
@@ -474,10 +482,8 @@ def detail_cours(request, cours_id):
         'chapitre_initial_vimeo_embed_url': vimeo_embed_url,
         'chapitre_initial_precedent': chapitre_precedent,
         'chapitre_initial_suivant': chapitre_suivant,
+        'chapitre_initial_is_complete': chapitre_initial_is_complete,
     }
-    
-    if request.headers.get('HX-Request') == 'true':
-        return render(request, 'apprentissage/partials/detail_cours.html', context)
     
     return render(request, 'apprentissage/detail_cours.html', context)
 
@@ -540,12 +546,17 @@ def detail_chapitre(request, cours_id, chapitre_id):
 
     # Charger/Créer la session RAG Assistant
     session_assistant = None
+    is_complete = False
     if request.user.is_authenticated:
         from tuteur_ia.models import SessionAssistant
         session_assistant, _ = SessionAssistant.objects.get_or_create(
             etudiant=request.user,
             chapitre=chapitre
         )
+        is_complete = ChapitreComplete.objects.filter(
+            etudiant=request.user,
+            chapitre=chapitre
+        ).exists()
     
     context = {
         'cours': cours,
@@ -559,6 +570,7 @@ def detail_chapitre(request, cours_id, chapitre_id):
         'is_vimeo': is_vimeo,
         'vimeo_embed_url': vimeo_embed_url,
         'session_assistant': session_assistant,
+        'is_complete': is_complete,
     }
     
     if request.headers.get('HX-Request') == 'true':
@@ -586,8 +598,35 @@ def telecharger_document(request, document_id):
 @login_required
 @require_http_methods(['POST'])
 def valider_chapitre(request, chapitre_id):
-    """Marque un chapitre comme validé pour l'étudiant connecté."""
+    """Marque un chapitre comme validé pour l'étudiant connecté si le QCM est réussi (score >= 80%)."""
     chapitre = get_object_or_404(Chapitre, pk=chapitre_id, actif=True)
+    
+    # Vérifier que le QCM est validé (score >= 80)
+    from tuteur_ia.models import SessionQCM
+    qcm_valide = SessionQCM.objects.filter(
+        etudiant=request.user,
+        chapitre=chapitre,
+        score__gte=80
+    ).exists()
+    
+    if not qcm_valide:
+        qcm_url = reverse('tuteur_ia:demarrer_qcm', args=[chapitre.id])
+        return HttpResponse(
+            f'''
+            <div class="glass-card" style="padding: 1.5rem; border: 1px solid rgba(239,68,68,0.25); background: rgba(239,68,68,0.05); border-radius: var(--radius-md); margin-top: 1rem; display: flex; flex-direction: column; gap: 0.75rem; animation: fadeIn 0.3s ease;">
+                <div style="display:flex; align-items:center; gap: 8px; color: var(--accent-danger);">
+                    <i class="ti ti-alert-triangle" style="font-size: 1.25rem;"></i>
+                    <strong style="font-weight:700;">Validation requise</strong>
+                </div>
+                <p style="font-size:0.9rem; color: var(--text-secondary); margin:0; line-height:1.5;">
+                    Vous devez d'abord réussir le QCM de ce chapitre avec un score d'au moins <strong>80%</strong> avant de pouvoir le marquer comme terminé et passer au chapitre suivant.
+                </p>
+                <a href="{qcm_url}" class="btn btn-danger" style="width:fit-content; padding: 0.5rem 1rem; font-size: 0.85rem; border-radius: 8px; font-weight:600; text-decoration:none; display: inline-flex; align-items:center; gap:4px;">
+                    <i class="ti ti-checkbox"></i> Passer le QCM
+                </a>
+            </div>
+            '''
+        )
     
     # Récupère ou crée la progression pour cet étudiant et ce cours
     progression, created = Progression.objects.get_or_create(
@@ -602,9 +641,30 @@ def valider_chapitre(request, chapitre_id):
         chapitre=chapitre,
     )
     
-    # Retourne un fragment HTML simple
+    # Bouton pour le chapitre suivant
+    chapitres_cours = Chapitre.objects.filter(cours=chapitre.cours, actif=True)
+    chapitre_suivant = chapitres_cours.filter(ordre__gt=chapitre.ordre).order_by('ordre').first()
+    
+    next_html = ""
+    if chapitre_suivant:
+        next_url = reverse('apprentissage:detail_chapitre', args=[chapitre.cours.id, chapitre_suivant.id])
+        next_html = f'''
+            <div style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.75rem;">
+                <a href="{next_url}" hx-get="{next_url}" hx-target="#contenu-cours" hx-swap="innerHTML" hx-push-url="true" class="btn btn-primary" style="padding: 0.65rem 1.25rem; font-size: 0.9rem; border-radius: 8px; font-weight: 600; text-decoration:none; display:inline-flex; align-items:center; gap:4px;">
+                    Passer au chapitre suivant <i class="ti ti-arrow-right"></i>
+                </a>
+            </div>
+        '''
+    
     return HttpResponse(
-        '<button class="btn" disabled style="background:#4caf50; color:#fff;">✓ Chapitre terminé</button>'
+        f'''
+        <div style="display: flex; flex-direction: column; gap: 0.5rem; animation: fadeIn 0.3s ease;">
+            <button class="btn" disabled style="background:var(--accent-emerald); color:#fff; cursor: not-allowed; border:none; opacity: 0.9; display:inline-flex; align-items:center; gap:4px; justify-content:center;">
+                <i class="ti ti-circle-check"></i> ✓ Chapitre terminé
+            </button>
+            {next_html}
+        </div>
+        '''
     )
 
 
@@ -669,7 +729,13 @@ def formateur_notes_view(request):
     classe_id = request.GET.get('classe')
     
     etudiants = Utilisateur.objects.filter(
-        progressions__cours__in=mes_cours
+        Q(progressions__cours__in=mes_cours) |
+        Q(sessions_qcm__chapitre__cours__in=mes_cours) |
+        Q(sessions_tuteur__chapitre__cours__in=mes_cours) |
+        Q(chapitres_visites__chapitre__cours__in=mes_cours) |
+        Q(soumissions__devoir__chapitre__cours__in=mes_cours) |
+        Q(classe__niveau__in=mes_cours.values_list('niveau', flat=True)),
+        role='ELEVE'
     ).distinct()
 
     if classe_id:
@@ -735,7 +801,13 @@ def exporter_notes_classe_csv(request):
     cours_ids = set(str(c.id) for c in mes_cours)
 
     etudiants = Utilisateur.objects.filter(
-        progressions__cours__in=mes_cours
+        Q(progressions__cours__in=mes_cours) |
+        Q(sessions_qcm__chapitre__cours__in=mes_cours) |
+        Q(sessions_tuteur__chapitre__cours__in=mes_cours) |
+        Q(chapitres_visites__chapitre__cours__in=mes_cours) |
+        Q(soumissions__devoir__chapitre__cours__in=mes_cours) |
+        Q(classe__niveau__in=mes_cours.values_list('niveau', flat=True)),
+        role='ELEVE'
     ).distinct()
 
     classe_id = request.GET.get('classe')
@@ -968,7 +1040,7 @@ def devoir_detail_view(request, devoir_id):
             soumission = None
 
         from .forms import SoumissionForm
-        if request.method == 'POST':
+        if request.method == 'POST' and not (soumission and soumission.est_corrigee):
             if soumission:
                 # Remplacement
                 form = SoumissionForm(request.POST, request.FILES, instance=soumission)
@@ -979,9 +1051,27 @@ def devoir_detail_view(request, devoir_id):
                 s.devoir = devoir
                 s.etudiant = request.user
                 s.save()
+
+                # Notifier le formateur créateur du devoir
+                if devoir.createur:
+                    try:
+                        from accounts.notifications import notifier
+                        notifier(
+                            destinataire=devoir.createur,
+                            type='NOUVELLE_INSCRIPTION',
+                            titre=f"Devoir soumis : {devoir.titre}",
+                            message=f"L'étudiant {request.user.get_full_name()} a soumis son devoir '{devoir.titre}'.",
+                            url=reverse('apprentissage:devoir_detail', args=[devoir.pk])
+                        )
+                    except Exception:
+                        pass
+
                 return redirect('apprentissage:devoir_detail', devoir_id=devoir.pk)
         else:
             form = SoumissionForm(instance=soumission) if soumission else SoumissionForm()
+            if soumission and soumission.est_corrigee:
+                for field in form.fields.values():
+                    field.disabled = True
 
     return render(request, 'apprentissage/devoir_detail.html', {
         'devoir': devoir,

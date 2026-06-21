@@ -174,9 +174,9 @@ def repondre(request, session_id):
             iteration      = final_state.get("iteration", 0)
             next_action    = final_state.get("next_action", "tutor")
 
-        # Terminer la session si score atteint ou nb max de questions
+        # Terminer la session si score atteint 100% (1.0) ou nb max de questions (15)
         session_terminee = (
-            mastery_score >= 0.75 or
+            mastery_score >= 1.0 or
             iteration >= MAX_QUESTIONS or
             next_action == "end"
         )
@@ -184,6 +184,23 @@ def repondre(request, session_id):
         session.mastery_score_final = mastery_score
         if session_terminee:
             session.statut = 'TERMINEE'
+            
+            # Valider automatiquement le chapitre si l'étudiant atteint 100% de maîtrise
+            if mastery_score >= 1.0:
+                try:
+                    from apprentissage.models import Progression, ChapitreComplete
+                    progression, _ = Progression.objects.get_or_create(
+                        etudiant=request.user,
+                        cours=session.chapitre.cours
+                    )
+                    progression.chapitres_valides.add(session.chapitre)
+                    ChapitreComplete.objects.update_or_create(
+                        etudiant=request.user,
+                        chapitre=session.chapitre,
+                    )
+                    logger.info(f"Chapitre {session.chapitre.id} validé automatiquement par Study Buddy 100% pour {request.user.email}")
+                except Exception as e:
+                    logger.error(f"Erreur validation chapitre Study Buddy 100%: {e}", exc_info=True)
         session.save()
 
         return JsonResponse({

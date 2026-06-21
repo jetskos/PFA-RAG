@@ -6,29 +6,7 @@
 
 {% block content %}
 <style>
-    body { background-color: transparent; } /* Override default body background */
-    
-    .admin-bg-wrapper {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: -1;
-        background-image: url('https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=2000&auto=format&fit=crop');
-        background-size: cover;
-        background-position: center;
-        background-attachment: fixed;
-    }
-    .admin-bg-wrapper::after {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(135deg, rgba(248, 250, 252, 0.85) 0%, rgba(226, 232, 240, 0.95) 100%);
-        backdrop-filter: blur(15px);
-        -webkit-backdrop-filter: blur(15px);
-    }
-    
+    /* Premium aesthetics with responsive layouts & dark mode support */
     .cmd-header {
         text-align: center;
         padding: 4rem 0 3rem 0;
@@ -38,11 +16,13 @@
     }
     .cmd-title {
         font-size: 3rem;
-        font-weight: 900;
-        color: #0f172a;
-        margin-bottom: 1.5rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, var(--text-primary) 30%, var(--primary) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 1rem;
         letter-spacing: -0.03em;
-        text-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        transition: var(--transition);
     }
     
     /* Spotlight Search */
@@ -58,6 +38,8 @@
         transform: translateY(-50%);
         font-size: 1.5rem;
         color: #64748b;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        pointer-events: none;
     }
     .omnibar-input {
         width: 100%;
@@ -69,13 +51,18 @@
         backdrop-filter: blur(8px);
         box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
         color: #1e293b;
-        transition: all 0.3s ease;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .omnibar-input:focus {
         outline: none;
-        border-color: #3b82f6;
-        box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.15), 0 0 0 3px rgba(59, 130, 246, 0.1);
+        border-color: var(--primary);
+        box-shadow: 0 12px 30px rgba(13, 148, 136, 0.15);
+        transform: scale(1.01);
         background: #ffffff;
+    }
+    .omnibar-container:focus-within .omnibar-icon {
+        color: var(--primary);
+        transform: translateY(-50%) scale(1.1);
     }
     .omnibar-input::placeholder { color: #94a3b8; }
 
@@ -97,6 +84,8 @@
         margin-bottom: 1rem;
     }
     .glass-kpi {
+        text-decoration: none;
+        color: inherit;
         background: rgba(255, 255, 255, 0.65);
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
@@ -109,14 +98,16 @@
         position: relative;
         overflow: hidden;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
     }
     .glass-kpi:hover {
         transform: translateY(-5px);
         box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        background: rgba(255, 255, 255, 0.8);
-        border: 1px solid rgba(255, 255, 255, 1);
+        background: rgba(255, 255, 255, 0.85);
+        border-color: var(--primary);
     }
-    .kpi-title { font-size: 0.85rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+    .kpi-title { font-size: 0.85rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 6px; }
+    .kpi-title i { font-size: 1.1rem; color: var(--primary); }
     .kpi-value { font-size: 2rem; font-weight: 800; color: #0f172a; margin-bottom: 0.25rem; }
     .kpi-subtitle { font-size: 0.85rem; font-weight: 500; color: #94a3b8; }
     
@@ -139,15 +130,20 @@
 
     /* Main Panels */
     .cmd-panel {
-        background: rgba(255, 255, 255, 0.65);
+        background: rgba(255, 255, 255, 0.6);
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.7);
         border-radius: 24px;
         padding: 2rem;
-        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+        box-shadow: var(--shadow-md);
         display: flex;
         flex-direction: column;
+        transition: var(--transition);
+    }
+    .cmd-panel:hover {
+        border-color: rgba(13, 148, 136, 0.2);
+        box-shadow: var(--shadow-lg);
     }
     .panel-header {
         display: flex;
@@ -169,31 +165,41 @@
     }
     .timeline-item {
         display: flex;
-        gap: 1rem;
+        gap: 1.25rem;
         position: relative;
+        padding: 0.75rem 1rem;
+        border-radius: 12px;
+        transition: all 0.2s ease;
+        border: 1px solid transparent;
+    }
+    .timeline-item:hover {
+        background: rgba(13, 148, 136, 0.02);
+        border-color: var(--border-light);
+        transform: translateX(2px);
     }
     .timeline-item:not(:last-child)::before {
         content: '';
         position: absolute;
-        left: 0.45rem;
-        top: 1.5rem;
-        bottom: -1rem;
+        left: 1.35rem;
+        top: 1.75rem;
+        bottom: -0.75rem;
         width: 2px;
-        background: rgba(226, 232, 240, 0.5);
+        background: linear-gradient(to bottom, var(--border-light) 50%, transparent 100%);
     }
     .timeline-dot {
-        width: 16px;
-        height: 16px;
+        width: 12px;
+        height: 12px;
         border-radius: 50%;
         background: #cbd5e1;
-        margin-top: 0.25rem;
+        margin-top: 0.4rem;
         z-index: 1;
-        box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.5);
+        box-shadow: 0 0 0 4px var(--bg-surface);
+        position: relative;
     }
-    .dot-blue { background: #3b82f6; }
-    .dot-red { background: #ef4444; }
-    .dot-green { background: #10b981; }
-    .dot-purple { background: #8b5cf6; }
+    .dot-blue { background: #3b82f6; box-shadow: 0 0 8px #3b82f6, 0 0 0 4px var(--bg-surface); }
+    .dot-red { background: #ef4444; box-shadow: 0 0 8px #ef4444, 0 0 0 4px var(--bg-surface); }
+    .dot-green { background: #10b981; box-shadow: 0 0 8px #10b981, 0 0 0 4px var(--bg-surface); }
+    .dot-purple { background: #8b5cf6; box-shadow: 0 0 8px #8b5cf6, 0 0 0 4px var(--bg-surface); }
     
     .timeline-content {
         flex: 1;
@@ -223,10 +229,14 @@
     }
     .action-btn:hover {
         background: #ffffff;
-        border-color: #3b82f6;
-        color: #3b82f6;
-        box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.1);
+        border-color: var(--primary);
+        color: var(--primary);
+        box-shadow: 0 4px 6px -1px rgba(13, 148, 136, 0.1);
         transform: translateX(4px);
+    }
+    .action-btn:hover .action-chevron {
+        transform: translateX(3px);
+        color: var(--primary);
     }
     .action-icon {
         display: flex;
@@ -248,9 +258,103 @@
     @media (max-width: 640px) {
         .kpi-section { grid-template-columns: 1fr; }
     }
+
+    /* Dark theme compatible rules */
+    [data-theme="dark"] .cmd-title {
+        background: linear-gradient(135deg, #ffffff 40%, #2dd4bf 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    
+    [data-theme="dark"] .glass-kpi {
+        background: rgba(30, 41, 59, 0.45);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        color: var(--text-primary);
+    }
+
+    [data-theme="dark"] .glass-kpi:hover {
+        background: rgba(30, 41, 59, 0.70);
+        border-color: var(--primary);
+    }
+
+    [data-theme="dark"] .kpi-value {
+        color: var(--text-primary);
+    }
+
+    [data-theme="dark"] .kpi-title {
+        color: var(--text-secondary);
+    }
+
+    [data-theme="dark"] .cmd-panel {
+        background: rgba(30, 41, 59, 0.45);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        color: var(--text-primary);
+    }
+
+    [data-theme="dark"] .cmd-panel:hover {
+        border-color: rgba(13, 148, 136, 0.3);
+    }
+
+    [data-theme="dark"] .panel-header {
+        color: var(--text-primary);
+        border-bottom-color: rgba(255, 255, 255, 0.1);
+    }
+
+    [data-theme="dark"] .timeline-item:hover {
+        background: rgba(255, 255, 255, 0.02);
+        border-color: rgba(255, 255, 255, 0.05);
+    }
+
+    [data-theme="dark"] .timeline-dot {
+        box-shadow: 0 0 0 4px var(--bg-surface);
+    }
+    [data-theme="dark"] .dot-blue { box-shadow: 0 0 8px #3b82f6, 0 0 0 4px var(--bg-surface); }
+    [data-theme="dark"] .dot-red { box-shadow: 0 0 8px #ef4444, 0 0 0 4px var(--bg-surface); }
+    [data-theme="dark"] .dot-green { box-shadow: 0 0 8px #10b981, 0 0 0 4px var(--bg-surface); }
+    [data-theme="dark"] .dot-purple { box-shadow: 0 0 8px #8b5cf6, 0 0 0 4px var(--bg-surface); }
+
+    [data-theme="dark"] .action-btn {
+        background: rgba(15, 23, 42, 0.3);
+        border-color: rgba(255, 255, 255, 0.06);
+        color: var(--text-secondary);
+    }
+
+    [data-theme="dark"] .action-btn:hover {
+        background: rgba(15, 23, 42, 0.6);
+        border-color: var(--primary);
+        color: var(--primary);
+    }
+    
+    [data-theme="dark"] .action-btn:hover .action-chevron {
+        color: var(--primary);
+    }
+
+    [data-theme="dark"] .action-icon {
+        background: rgba(15, 23, 42, 0.5);
+        box-shadow: none;
+    }
+
+    [data-theme="dark"] .timeline-title {
+        color: var(--text-primary);
+    }
+
+    [data-theme="dark"] .timeline-desc {
+        color: var(--text-muted);
+    }
+
+    [data-theme="dark"] .omnibar-input {
+        background: rgba(30, 41, 59, 0.65);
+        border-color: rgba(255, 255, 255, 0.08);
+        color: var(--text-primary);
+    }
+
+    [data-theme="dark"] .omnibar-input:focus {
+        border-color: var(--primary);
+        background: var(--bg-surface);
+    }
 </style>
 
-<div class="admin-bg-wrapper"></div>
+
 <div class="page-shell" style="padding-top: 1rem; position: relative; z-index: 1;">
     
     <!-- ============================================== -->
@@ -271,36 +375,36 @@
         <div id="search-results" style="margin-top: 1rem;"></div>
     </header>
 
-    <!-- 3. KPI Grid -->
+    <!-- 3. KPI Grid as buttons linked to their flows -->
     <section class="kpi-section">
-        <article class="glass-kpi">
+        <a href="{% url 'dashboard_admin_structure' %}?tab=students" class="glass-kpi">
             {% if stats.en_attente > 0 %}
             <div class="kpi-alert-dot"></div>
             {% endif %}
             <span class="kpi-title"><i class="ti ti-user-plus"></i> Inscriptions en attente</span>
             <span class="kpi-value">{{ stats.en_attente }}</span>
             <span class="kpi-subtitle">Validation requise immédiatement</span>
-        </article>
+        </a>
         
-        <article class="glass-kpi">
+        <a href="{% url 'accounts:admin_dashboard' %}" class="glass-kpi">
             <span class="kpi-title"><i class="ti ti-users"></i> Formateurs Actifs</span>
             <span class="kpi-value">{{ stats.formateurs_actifs }}</span>
             <span class="kpi-subtitle">Sur la plateforme</span>
-        </article>
+        </a>
         
-        <article class="glass-kpi">
+        <a href="{% url 'logistics:tickets' %}" class="glass-kpi">
             <span class="kpi-title"><i class="ti ti-tool"></i> Tickets Logistique</span>
             <span class="kpi-value">{{ stats.tickets_gmao }}</span>
             <span class="kpi-subtitle" style="{% if stats.tickets_gmao > 0 %}color: #ef4444; font-weight: 600;{% else %}color: #10b981;{% endif %}">
                 {% if stats.tickets_gmao > 0 %}Urgents (GMAO){% else %}Tout est fonctionnel{% endif %}
             </span>
-        </article>
+        </a>
         
-        <article class="glass-kpi">
+        <a href="{% url 'apprentissage:liste_cours' %}" class="glass-kpi">
             <span class="kpi-title"><i class="ti ti-books"></i> Cours Publiés</span>
             <span class="kpi-value">{{ stats.cours_publies }}</span>
             <span class="kpi-subtitle" style="color: #10b981; font-weight: 600;">Dans {{ stats.niveaux_actifs }} niveaux actifs</span>
-        </article>
+        </a>
     </section>
 
     <!-- Main Layout -->
@@ -341,12 +445,14 @@
             <div class="action-list">
                 <a href="{% url 'dashboard_admin_structure' %}?tab=students" class="action-btn">
                     <div class="action-icon" style="color: #ef4444; background: rgba(239,68,68,0.1);"><i class="ti ti-user-check" style="font-size: 1.25rem;"></i></div>
-                    Valider les inscriptions
+                    <span>Valider les inscriptions</span>
+                    <i class="ti ti-chevron-right action-chevron" style="margin-left:auto; transition: transform 0.2s ease, color 0.2s ease; color: var(--text-muted);"></i>
                 </a>
                 
                 <a href="{% url 'logistics:inventaire' %}" class="action-btn">
                     <div class="action-icon" style="color: #f59e0b; background: rgba(245,158,11,0.1);"><i class="ti ti-packages" style="font-size: 1.25rem;"></i></div>
-                    Gérer les requêtes de matériel
+                    <span>Gérer les requêtes de matériel</span>
+                    <i class="ti ti-chevron-right action-chevron" style="margin-left:auto; transition: transform 0.2s ease, color 0.2s ease; color: var(--text-muted);"></i>
                 </a>
                 
                 <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 0.5rem 0;">
@@ -354,7 +460,8 @@
                 <!-- Lien vers la gestion de structure -->
                 <a href="{% url 'dashboard_admin_structure' %}" class="action-btn" style="background: #ffffff;">
                     <div class="action-icon" style="color: #475569; background: #f1f5f9;"><i class="ti ti-layers-linked" style="font-size: 1.25rem;"></i></div>
-                    Gestion de la Structure
+                    <span>Gestion de la Structure</span>
+                    <i class="ti ti-chevron-right action-chevron" style="margin-left:auto; transition: transform 0.2s ease, color 0.2s ease; color: var(--text-muted);"></i>
                 </a>
             </div>
         </aside>

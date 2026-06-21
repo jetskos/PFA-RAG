@@ -130,6 +130,7 @@ def admin_dashboard(request):
                     'classe': str(user.classe) if user.classe else '',
                     'is_formateur': user.is_formateur,
                     'is_superuser': user.is_superuser,
+                    'photo_url': user.photo.url if user.photo else '',
                 }
             })
 
@@ -189,13 +190,24 @@ def admin_dashboard(request):
 
     # GET
     users = Utilisateur.objects.all().order_by('-date_creation')
+    
+    total_users = users.count()
+    student_count = users.filter(role='ELEVE').count()
+    formateur_count = users.filter(role='FORMATEUR').count()
+    admin_count = users.filter(role='ADMIN').count()
+
     return render(request, 'accounts/admin_dashboard.html', {
         'users': users,
         'role_choices': Utilisateur.ROLE_CHOICES,
         'niveau_choices': [(str(niveau.id), niveau.nom) for niveau in Niveau.objects.order_by('ordre', 'nom')],
         'niveaux': Niveau.objects.prefetch_related('classes').order_by('ordre', 'nom'),
         'classes': Classe.objects.select_related('niveau').order_by('niveau__ordre', 'nom'),
+        'total_users': total_users,
+        'student_count': student_count,
+        'formateur_count': formateur_count,
+        'admin_count': admin_count,
     })
+
 
 
 @login_required
@@ -211,7 +223,11 @@ def user_details(request, user_id):
         'user': {
             'id': str(user.id),
             'email': user.email,
+            'first_name': user.first_name or '',
+            'last_name': user.last_name or '',
+            'full_name': user.get_full_name(),
             'role': user.get_role_display(),
+            'role_code': user.role,
             'niveau': user.classe.niveau.nom if user.classe and user.classe.niveau else '',
             'classe': str(user.classe) if user.classe else '',
             'statut_compte': user.get_statut_compte_display(),
@@ -219,6 +235,7 @@ def user_details(request, user_id):
             'is_staff': user.is_staff,
             'is_superuser': user.is_superuser,
             'is_active': user.is_active,
+            'photo_url': user.photo.url if user.photo else '',
             'date_creation': user.date_creation.strftime('%d/%m/%Y %H:%M'),
             'last_login': user.last_login.strftime('%d/%m/%Y %H:%M') if user.last_login else 'Jamais',
         }
@@ -354,8 +371,36 @@ def mark_notification_read_view(request, pk):
     notification.save(update_fields=['lu'])
     
     if request.headers.get('HX-Request') == 'true':
-        return HttpResponse('', status=200)
+        response = HttpResponse('', status=200)
+        response['HX-Trigger'] = 'update-notifications'
+        return response
     return redirect('accounts:notifications_list')
+
+
+@login_required
+def read_and_redirect_notification_view(request, pk):
+    """Marque une notification comme lue et redirige vers son URL."""
+    notification = get_object_or_404(request.user.notifications, pk=pk)
+    notification.lu = True
+    notification.save(update_fields=['lu'])
+    
+    target_url = notification.url if notification.url else reverse('accounts:notifications_list')
+    return redirect(target_url)
+
+
+@login_required
+@require_http_methods(['POST'])
+def delete_notification_view(request, pk):
+    """Supprime une notification de l'utilisateur."""
+    notification = get_object_or_404(request.user.notifications, pk=pk)
+    notification.delete()
+    
+    if request.headers.get('HX-Request') == 'true':
+        response = HttpResponse('', status=200)
+        response['HX-Trigger'] = 'update-notifications'
+        return response
+    return redirect('accounts:notifications_list')
+
 
 
 @login_required
@@ -365,8 +410,22 @@ def mark_notifications_read_all_view(request):
     request.user.notifications.filter(lu=False).update(lu=True)
     
     if request.headers.get('HX-Request') == 'true':
-        return HttpResponse('', status=200)
+        response = HttpResponse('', status=200)
+        response['HX-Trigger'] = 'update-notifications'
+        return response
     return redirect('accounts:notifications_list')
+
+
+@login_required
+def unread_notifications_count_view(request):
+    """Retourne le code HTML du badge des notifications non lues."""
+    count = request.user.notifications.filter(lu=False).count()
+    if count > 0:
+        return HttpResponse(
+            f'<span class="notifications-badge" style="position: absolute; top: -2px; right: -2px; background: #ef4444; color: white; font-size: 9px; font-weight: bold; border-radius: 50%; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;">{count}</span>'
+        )
+    return HttpResponse('')
+
 
 
 def custom_password_reset_view(request):

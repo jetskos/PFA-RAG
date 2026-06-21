@@ -23,13 +23,36 @@ def calculer_bulletin(etudiant):
               * 'moyenne_cours'   : moyenne des meilleurs scores du cours (ou None)
               * 'nb_tentes'       : nb chapitres pour lesquels un QCM a été tenté
     """
-    from apprentissage.models import Cours, Chapitre, Progression
-    from tuteur_ia.models import SessionQCM
+    from apprentissage.models import Cours, Chapitre, Progression, ChapitreVisite
+    from tuteur_ia.models import SessionQCM, SessionTuteur
 
-    # 1. Récupérer tous les cours que cet étudiant a commencés
-    progressions = Progression.objects.filter(
-        etudiant=etudiant
-    ).select_related('cours', 'cours__niveau')
+    # 1. Récupérer tous les cours associés à cet étudiant (par niveau, progression ou activités)
+    cours_set = set()
+    
+    # Progressions
+    progressions = Progression.objects.filter(etudiant=etudiant).select_related('cours')
+    progressions_map = {prog.cours.id: prog for prog in progressions}
+    for cours_id in progressions_map.keys():
+        cours_set.add(progressions_map[cours_id].cours)
+        
+    # Classe / Niveau
+    classe = getattr(etudiant, 'classe', None)
+    niveau = getattr(classe, 'niveau', None)
+    if niveau:
+        for c in Cours.objects.filter(niveau=niveau, actif=True):
+            cours_set.add(c)
+            
+    # Activités (Visites de chapitres)
+    for visit in ChapitreVisite.objects.filter(etudiant=etudiant).select_related('chapitre__cours'):
+        cours_set.add(visit.chapitre.cours)
+        
+    # Activités (Sessions QCM)
+    for qcm in SessionQCM.objects.filter(etudiant=etudiant).select_related('chapitre__cours'):
+        cours_set.add(qcm.chapitre.cours)
+        
+    # Activités (Sessions Study Buddy)
+    for tut in SessionTuteur.objects.filter(etudiant=etudiant).select_related('chapitre__cours'):
+        cours_set.add(tut.chapitre.cours)
 
     # 2. Récupérer les meilleurs scores QCM par chapitre pour cet étudiant
     meilleurs_scores = (
@@ -46,8 +69,10 @@ def calculer_bulletin(etudiant):
     bulletin_cours = []
     toutes_moyennes = []
 
-    for progression in progressions:
-        cours = progression.cours
+    # Trier la liste des cours par titre
+    sorted_cours = sorted(list(cours_set), key=lambda x: x.titre)
+
+    for cours in sorted_cours:
         chapitres = list(
             cours.chapitres.filter(actif=True).order_by('ordre')
         )
@@ -77,9 +102,13 @@ def calculer_bulletin(etudiant):
         if moyenne_cours is not None:
             toutes_moyennes.append(moyenne_cours)
 
+        # Progression
+        progression = progressions_map.get(cours.id)
+        prog_pourcentage = progression.pourcentage if progression else 0
+
         bulletin_cours.append({
             'cours': cours,
-            'progression': progression.pourcentage,
+            'progression': prog_pourcentage,
             'chapitres': chapitres_data,
             'moyenne_cours': round(moyenne_cours, 1) if moyenne_cours is not None else None,
             'nb_tentes': nb_tentes,

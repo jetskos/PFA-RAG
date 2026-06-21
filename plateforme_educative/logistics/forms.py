@@ -50,3 +50,34 @@ class DemandeMaterielForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['atelier_cible'].queryset = Workshop.objects.all().order_by('-date_debut')
+
+
+class StudentDemandeMaterielForm(forms.ModelForm):
+    class Meta:
+        model = DemandeMateriel
+        fields = ('equipement', 'atelier_cible', 'quantite', 'destinataire')
+        widgets = {
+            'equipement': forms.Select(attrs={'class': 'form-control'}),
+            'atelier_cible': forms.Select(attrs={'class': 'form-control'}),
+            'quantite': forms.NumberInput(attrs={'class': 'form-control', 'min': 1, 'max': 2}),
+            'destinataire': forms.Select(attrs={'class': 'form-control'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['atelier_cible'].queryset = Workshop.objects.all().order_by('-date_debut')
+        # Only list active formateurs and admins as possible recipients
+        from accounts.models import Utilisateur
+        self.fields['destinataire'].queryset = Utilisateur.objects.filter(
+            role__in=['ADMIN', 'FORMATEUR'], is_active=True
+        ).order_by('role', 'first_name')
+        self.fields['destinataire'].label = "Destinataire (Admin ou Formateur)"
+        self.fields['destinataire'].required = True
+
+    def clean_quantite(self):
+        quantite = self.cleaned_data.get('quantite')
+        if quantite is not None:
+            if quantite < 1 or quantite > 2:
+                raise forms.ValidationError("La quantité demandée doit être comprise entre 1 et 2.")
+        return quantite
+

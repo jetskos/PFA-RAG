@@ -42,9 +42,13 @@
 
                 <!-- Identity Details -->
                 <div class="user-ident">
-                    <h2 style="margin: 0; font-size: 1.5rem; font-weight: 800; color: #0f172a;">{{ profile_user.get_full_name }}</h2>
-                    <div class="user-email" style="margin-top: 4px; font-size: 0.95rem;" title="{{ profile_user.email }}">{{ profile_user.email }}</div>
-                    <div style="margin-top: 8px;">
+                    {% if profile_user.first_name or profile_user.last_name %}
+                        <h2 style="margin: 0; font-size: 1.4rem; font-weight: 800; color: var(--text-primary); text-transform: capitalize; word-break: break-word;">{{ profile_user.first_name }} {{ profile_user.last_name }}</h2>
+                    {% else %}
+                        <h2 style="margin: 0; font-size: 1.4rem; font-weight: 800; color: var(--text-primary); word-break: break-all;">{{ profile_user.get_short_name }}</h2>
+                    {% endif %}
+                    <div class="user-email" style="margin-top: 4px; font-size: 0.9rem;" title="{{ profile_user.email }}">{{ profile_user.email }}</div>
+                    <div style="margin-top: 6px;">
                         <span class="user-role-badge {% if profile_user.is_superuser %}badge-secondary{% endif %}">
                             <i class="ti ti-shield-check" aria-hidden="true"></i> {{ profile_user.get_role_display }}
                         </span>

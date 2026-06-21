@@ -1,12 +1,15 @@
 <style>
     /* Table styling */
     .table-container-card {
-        background: var(--bg-surface);
-        border: 1px solid var(--border-light);
+        background: var(--bg-glass);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--border-glass);
         border-radius: var(--radius-lg);
-        box-shadow: var(--shadow-sm);
+        box-shadow: var(--shadow-md);
         padding: 1.5rem;
         overflow-x: auto;
+        transition: var(--transition);
     }
 
     .premium-table {
@@ -23,18 +26,18 @@
         letter-spacing: 0.08em;
         color: var(--text-muted);
         padding: 0.75rem 1rem;
-        border-bottom: 2px solid var(--border-light);
+        border-bottom: 2px solid var(--border-color);
     }
 
     .premium-table td {
         padding: 1rem;
         vertical-align: middle;
-        border-bottom: 1px solid var(--border-light);
+        border-bottom: 1px solid var(--border-color);
         color: var(--text-secondary);
     }
 
     .premium-table tr:hover td {
-        background: var(--bg-page);
+        background: var(--bg-surface-alt);
         color: var(--text-primary);
     }
 
@@ -46,9 +49,9 @@
     .qty-tag {
         display: inline-block;
         padding: 2px 8px;
-        background: var(--primary-light);
-        color: var(--primary-dark);
-        border-radius: 4px;
+        background: var(--brand-light);
+        color: var(--brand-primary);
+        border-radius: var(--radius-sm);
         font-weight: 700;
         font-size: 0.8rem;
     }
@@ -57,10 +60,10 @@
         padding: 6px 12px;
         font-size: 11.5px;
         font-weight: 700;
-        background: var(--primary);
-        color: white;
-        border: none;
-        border-radius: 6px;
+        background: var(--accent-emerald-light);
+        color: var(--accent-emerald);
+        border: 1px solid rgba(16, 185, 129, 0.15);
+        border-radius: var(--radius-sm);
         cursor: pointer;
         transition: var(--transition);
         display: inline-flex;
@@ -69,17 +72,20 @@
     }
 
     .btn-approve:hover {
-        background: var(--primary-dark);
+        background: var(--accent-emerald);
+        color: white;
+        box-shadow: 0 0 12px rgba(16, 185, 129, 0.25);
+        transform: translateY(-1px);
     }
 
     .btn-reject {
         padding: 6px 12px;
         font-size: 11.5px;
         font-weight: 700;
-        background: transparent;
-        color: #ef4444;
-        border: 1px solid rgba(239, 68, 68, 0.2);
-        border-radius: 6px;
+        background: var(--accent-danger-light);
+        color: var(--accent-danger);
+        border: 1px solid rgba(239, 68, 68, 0.15);
+        border-radius: var(--radius-sm);
         cursor: pointer;
         transition: var(--transition);
         display: inline-flex;
@@ -88,14 +94,13 @@
     }
 
     .btn-reject:hover {
-        background: rgba(239, 68, 68, 0.05);
-        border-color: #ef4444;
+        background: var(--accent-danger);
+        color: white;
+        box-shadow: 0 0 12px rgba(239, 68, 68, 0.25);
+        transform: translateY(-1px);
     }
-</style>
 
-<section id="pending-demandes-section" class="carte" style="background:transparent; border:none; box-shadow:none; padding:0;">
-    <!-- Control Bar Styles needed here if not loaded from others -->
-    <style>
+    /* Control Bar Styles */
     .control-bar {
         display: flex;
         justify-content: space-between;
@@ -119,28 +124,43 @@
         left: 1rem;
         top: 50%;
         transform: translateY(-50%);
-        color: #64748b;
+        color: var(--text-muted);
+        transition: var(--transition);
     }
     .control-search input {
         width: 100%;
         padding: 0.75rem 1rem 0.75rem 2.5rem;
-        border-radius: 10px;
-        border: 1px solid #cbd5e1;
-        background: #ffffff;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border-color);
+        background: var(--bg-surface);
+        color: var(--text-primary);
         font-size: 0.95rem;
-        transition: all 0.2s;
+        transition: var(--transition);
     }
     .control-search input:focus {
         outline: none;
-        border-color: #f59e0b;
-        box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+        border-color: var(--brand-primary);
+        box-shadow: 0 0 0 3px rgba(var(--brand-primary-rgb), 0.15);
+        transform: scale(1.01);
     }
-    </style>
+    .control-search:focus-within i {
+        color: var(--brand-primary);
+    }
 
+    .empty-state-box {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: var(--bg-surface-alt);
+        border-radius: var(--radius-lg);
+        border: 2px dashed var(--border-color);
+        transition: var(--transition);
+    }
+</style>
+<section id="pending-demandes-section">
     <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:1.5rem; flex-wrap:wrap; gap:1rem;">
         <div>
             <h2 style="margin:0; font-size:1.2rem; font-weight:700;">Demandes logistiques en attente</h2>
-            <p style="margin:0.25rem 0 0; color:var(--text-muted); font-size:0.85rem;">Validez ou rejetez les demandes de matériel envoyées par les formateurs.</p>
+            <p style="margin:0.25rem 0 0; color:var(--text-muted); font-size:0.85rem;">Validez ou rejetez les demandes de matériel envoyées par les utilisateurs.</p>
         </div>
         
         <div class="control-bar" style="margin-bottom:0; flex:1; justify-content:flex-end;">
@@ -149,7 +169,7 @@
                     <i class="ti ti-search"></i>
                     <input type="search" 
                            name="q" 
-                           placeholder="Rechercher équipement, formateur..." 
+                           placeholder="Rechercher équipement, demandeur..." 
                            hx-get="{% url 'dashboard_admin_structure' %}?tab=logistics" 
                            hx-trigger="keyup changed delay:300ms" 
                            hx-target="#dashboard-structure"
@@ -165,7 +185,7 @@
                 <thead>
                     <tr>
                         <th>Date de création</th>
-                        <th>Formateur</th>
+                        <th>Demandeur</th>
                         <th>Équipement demandé</th>
                         <th>Atelier cible</th>
                         <th style="text-align: center;">Quantité</th>
@@ -182,8 +202,21 @@
                                 </div>
                             </td>
                             <td>
-                                <div style="font-weight: 600; color: var(--text-primary);">
-                                    {{ demande.formateur.get_full_name|default:demande.formateur.email }}
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <div class="demandeur-avatar" style="width: 32px; height: 32px; border-radius: 50%; overflow: hidden; background: rgba(var(--brand-primary-rgb), 0.1); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 11px; color: var(--brand-primary); flex-shrink: 0; border: 1px solid var(--border-glass);">
+                                        {% if demande.demandeur.photo %}
+                                            <img src="{{ demande.demandeur.photo.url }}" alt="" style="width: 100%; height: 100%; object-fit: cover;">
+                                        {% else %}
+                                            {% if demande.demandeur.first_name %}
+                                                {{ demande.demandeur.first_name|slice:":1"|upper }}{{ demande.demandeur.last_name|slice:":1"|upper }}
+                                            {% else %}
+                                                {{ demande.demandeur.email|slice:":2"|upper }}
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
+                                    <div style="font-weight: 600; color: var(--text-primary);">
+                                        {{ demande.demandeur.get_full_name|default:demande.demandeur.email }}
+                                    </div>
                                 </div>
                             </td>
                             <td>
@@ -222,9 +255,11 @@
                 </tbody>
             </table>
         {% else %}
-            <div style="text-align:center; padding: 2.5rem 1.5rem; color:var(--text-muted);">
-                <i class="ti ti-package" aria-hidden="true" style="font-size:2rem; color:var(--text-muted); margin-bottom: 0.5rem; display:block;"></i>
-                <span>Aucune demande logistique en attente.</span>
+            <div class="empty-state-box">
+                <i class="ti ti-package" aria-hidden="true" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem; display: block;"></i>
+                <p style="margin:0; color: var(--text-secondary); font-size: 1.1rem; font-weight: 600;">
+                    Aucune demande logistique en attente.
+                </p>
             </div>
         {% endif %}
     </div>

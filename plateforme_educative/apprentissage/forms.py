@@ -53,13 +53,12 @@ class DevoirForm(forms.ModelForm):
 
     class Meta:
         model = Devoir
-        fields = ('titre', 'consigne', 'fichier_consigne', 'date_limite', 'note_max', 'actif')
+        fields = ('titre', 'consigne', 'fichier_consigne', 'date_limite', 'actif')
         widgets = {
             'titre': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Titre du devoir'}),
             'consigne': forms.Textarea(attrs={'class': 'form-control', 'rows': 5, 'placeholder': 'Décrivez la consigne...'}),
             'fichier_consigne': forms.FileInput(attrs={'class': 'form-control', 'accept': '.pdf,.doc,.docx,.jpg,.jpeg,.png'}),
             'date_limite': forms.DateTimeInput(attrs={'class': 'form-control', 'type': 'datetime-local'}, format='%Y-%m-%dT%H:%M'),
-            'note_max': forms.NumberInput(attrs={'class': 'form-control', 'min': 1, 'max': 100}),
             'actif': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
 
@@ -72,6 +71,11 @@ class DevoirForm(forms.ModelForm):
         # Format pour datetime-local
         if self.instance and self.instance.date_limite:
             self.initial['date_limite'] = self.instance.date_limite.strftime('%Y-%m-%dT%H:%M')
+
+        # Griser les dates passées
+        from django.utils import timezone
+        now_str = timezone.localtime(timezone.now()).strftime('%Y-%m-%dT%H:%M')
+        self.fields['date_limite'].widget.attrs['min'] = now_str
 
 
 class SoumissionForm(forms.ModelForm):
@@ -99,9 +103,16 @@ class NotationSoumissionForm(forms.ModelForm):
         model = Soumission
         fields = ('note', 'feedback')
         widgets = {
-            'note': forms.NumberInput(attrs={'class': 'form-control', 'min': 0, 'step': '0.25', 'placeholder': 'Ex: 16.5'}),
+            'note': forms.NumberInput(attrs={'class': 'form-control', 'min': 0, 'max': 20, 'step': '0.25', 'placeholder': 'Ex: 16.5'}),
             'feedback': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Commentaire et retour pour l\'élève...'}),
         }
+
+    def clean_note(self):
+        note = self.cleaned_data.get('note')
+        if note is not None:
+            if note < 0 or note > 20:
+                raise forms.ValidationError("La note doit être comprise entre 0 et 20.")
+        return note
 
 
 from .models import Evenement
@@ -129,5 +140,11 @@ class EvenementForm(forms.ModelForm):
             self.initial['date_debut'] = self.instance.date_debut.strftime('%Y-%m-%dT%H:%M')
         if self.instance and self.instance.date_fin:
             self.initial['date_fin'] = self.instance.date_fin.strftime('%Y-%m-%dT%H:%M')
+
+        # Griser les dates passées
+        from django.utils import timezone
+        now_str = timezone.localtime(timezone.now()).strftime('%Y-%m-%dT%H:%M')
+        self.fields['date_debut'].widget.attrs['min'] = now_str
+        self.fields['date_fin'].widget.attrs['min'] = now_str
 
 

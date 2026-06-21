@@ -1,28 +1,130 @@
+<style>
+    .logistics-eq-card {
+        background: var(--bg-surface, #ffffff);
+        border: 1px solid var(--border-light, #e2e8f0);
+        border-radius: 12px;
+        padding: 1.1rem;
+        margin-bottom: 0.75rem;
+        transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+        position: relative;
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 0.65rem;
+    }
+    .logistics-eq-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-sm);
+        border-color: var(--border-default, #cbd5e1);
+    }
+    
+    /* Border status indicators */
+    .eq-status-disponible { border-left: 4px solid #10b981; }
+    .eq-status-panne { border-left: 4px solid #ef4444; }
+    .eq-status-maintenance { border-left: 4px solid #f59e0b; }
+    
+    .eq-title {
+        font-size: 0.98rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        text-decoration: none;
+        margin: 0;
+    }
+    .eq-sn {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        margin: 0.15rem 0 0 0;
+    }
+    
+    .eq-btn-edit {
+        background: rgba(13, 148, 136, 0.05);
+        border: 1px solid rgba(13, 148, 136, 0.15);
+        color: var(--primary, #0D9488);
+        padding: 0.35rem 0.7rem;
+        font-size: 0.76rem;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        transition: all 0.2s ease;
+        text-decoration: none;
+    }
+    .eq-btn-edit:hover {
+        background: var(--primary, #0D9488) !important;
+        color: white !important;
+    }
+    
+    .eq-btn-delete {
+        background: rgba(239, 68, 68, 0.05);
+        border: 1px solid rgba(239, 68, 68, 0.15);
+        color: #ef4444;
+        padding: 0.35rem 0.7rem;
+        font-size: 0.76rem;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        transition: all 0.2s ease;
+    }
+    .eq-btn-delete:hover {
+        background: #ef4444 !important;
+        color: white !important;
+    }
+
+    .badge-disponible {
+        background: rgba(16, 185, 129, 0.07) !important;
+        color: #10b981 !important;
+        border: 1px solid rgba(16, 185, 129, 0.15);
+    }
+    .badge-panne {
+        background: rgba(239, 68, 68, 0.07) !important;
+        color: #ef4444 !important;
+        border: 1px solid rgba(239, 68, 68, 0.15);
+    }
+    .badge-maintenance {
+        background: rgba(245, 158, 11, 0.07) !important;
+        color: #f59e0b !important;
+        border: 1px solid rgba(245, 158, 11, 0.15);
+    }
+</style>
+
 {% if equipements.exists %}
-    <ul class="liste-docs-detaillee">
+    <div style="padding: 0; margin: 0; display: flex; flex-direction: column;">
         {% for eq in equipements %}
-        <li class="doc-item">
-            <div class="doc-header actions-between gap-sm m-0">
-                <div class="flex-1">
-                    <a class="doc-titre">{{ eq.nom }}</a>
-                    <p class="doc-description mt-2 m-0">S/N: {{ eq.numero_serie }}</p>
+        <div class="logistics-eq-card {% if eq.etat == 'DISPONIBLE' %}eq-status-disponible{% elif eq.etat == 'EN_PANNE' %}eq-status-panne{% else %}eq-status-maintenance{% endif %}">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem;">
+                <div style="flex: 1; min-width: 0;">
+                    <h3 class="eq-title">{{ eq.nom }}</h3>
+                    <p class="eq-sn">S/N: {{ eq.numero_serie }}</p>
                 </div>
+                
                 {% if user.is_staff or user.is_formateur %}
-                <div class="actions gap-xs m-0">
-                    <button class="btn btn-ghost btn-sm"
+                <div style="display: flex; gap: 4px; align-items: center; flex-shrink: 0;">
+                    <button class="eq-btn-edit"
+                            type="button"
                             hx-get="{% url 'logistics:editer_equipement' eq.id %}"
                             hx-target="#form-equipement-container"
-                            hx-swap="innerHTML">Modifier</button>
-                    <button class="btn btn-ghost btn-sm btn-danger"
+                            hx-swap="innerHTML">
+                        <i class="ti ti-edit"></i>
+                    </button>
+                    <button class="eq-btn-delete"
+                            type="button"
                             hx-post="{% url 'logistics:supprimer_equipement' eq.id %}"
                             hx-confirm="Supprimer cet équipement ?"
                             hx-target="#equipements-list"
                             hx-swap="innerHTML"
-                            hx-on::after-request="document.getElementById('form-equipement-container').innerHTML = document.getElementById('placeholder-template').innerHTML">Supprimer</button>
+                            hx-on::after-request="document.getElementById('form-equipement-container').innerHTML = document.getElementById('placeholder-template').innerHTML">
+                        <i class="ti ti-trash"></i>
+                    </button>
                 </div>
                 {% endif %}
             </div>
-            <p class="mt-2 m-0">
+            
+            <div style="margin-top: 2px;">
                 {% if eq.etat == 'DISPONIBLE' %}
                     <span class="badge-niveau badge-disponible">Disponible</span>
                 {% elif eq.etat == 'EN_PANNE' %}
@@ -30,10 +132,11 @@
                 {% else %}
                     <span class="badge-niveau badge-maintenance">En maintenance</span>
                 {% endif %}
-            </p>
-        </li>
+            </div>
+        </div>
         {% endfor %}
-    </ul>
+    </div>
 {% else %}
-    <p class="message-empty">Aucun équipement trouvé.</p>
+    <p class="message-empty" style="text-align: center; padding: 2rem; color: var(--text-muted); border: 1px dashed var(--border-light); border-radius: 12px; font-size: 0.9rem;">Aucun équipement trouvé.</p>
 {% endif %}
+

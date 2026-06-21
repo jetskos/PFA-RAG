@@ -21,8 +21,13 @@
     <script src="https://unpkg.com/htmx.org@1.9.12" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js" defer></script>
 
-</head>
 <body>
+
+<div class="global-ambient-backdrop" aria-hidden="true">
+    <div class="global-orb global-orb-1"></div>
+    <div class="global-orb global-orb-2"></div>
+    <div class="global-orb global-orb-3"></div>
+</div>
 
 <header class="site-header">
     <div class="header-inner">
@@ -38,15 +43,9 @@
 
         {% with current_url=request.resolver_match.url_name %}
         <nav class="main-nav">
-            {% if user.is_authenticated and user.role == 'ADMIN' %}
-                <a href="{% url 'dashboard_admin' %}" class="{% if current_url == 'dashboard_admin' %}active{% endif %}">
-                    <i class="ti ti-home"></i> <span>Accueil</span>
-                </a>
-            {% else %}
-                <a href="{% url 'accueil' %}" class="{% if current_url == 'accueil' %}active{% endif %}">
-                    <i class="ti ti-home"></i> <span>Accueil</span>
-                </a>
-            {% endif %}
+            <a href="{% url 'accueil' %}" class="{% if current_url == 'accueil' %}active{% endif %}">
+                <i class="ti ti-home"></i> <span>Accueil</span>
+            </a>
             
             <a href="{% url 'apprentissage:liste_cours' %}" class="{% if current_url == 'liste_cours' or current_url == 'detail_cours' or current_url == 'detail_chapitre' %}active{% endif %}">
                 <i class="ti ti-book"></i> <span>Apprentissage</span>
@@ -90,49 +89,189 @@
                 <div class="notifications-dropdown-container">
                     <button class="btn-ghost" id="notifications-dropdown-btn" aria-haspopup="true" aria-expanded="false" style="padding: 8px; border-radius: 50%; width: 36px; height: 36px; justify-content: center; position: relative; display: inline-flex; cursor: pointer; color: var(--text-secondary); background: transparent;" title="Notifications">
                         <i class="ti ti-bell" style="font-size: 18px;"></i>
-                        {% if unread_notifications_count > 0 %}
-                            <span class="notifications-badge" style="position: absolute; top: -2px; right: -2px; background: #ef4444; color: white; font-size: 9px; font-weight: bold; border-radius: 50%; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;">
-                                {{ unread_notifications_count }}
-                            </span>
-                        {% endif %}
+                        <span id="unread-badge-container"
+                              hx-get="{% url 'accounts:unread_notifications_count' %}"
+                              hx-trigger="update-notifications from:body"
+                              hx-swap="innerHTML">
+                            {% if unread_notifications_count > 0 %}
+                                <span class="notifications-badge" style="position: absolute; top: -2px; right: -2px; background: #ef4444; color: white; font-size: 9px; font-weight: bold; border-radius: 50%; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;">
+                                    {{ unread_notifications_count }}
+                                </span>
+                            {% endif %}
+                        </span>
                     </button>
                     
                     <div class="notifications-dropdown-menu" id="notifications-dropdown-menu">
                         <div class="notifications-dropdown-header">
                             <h3>Notifications</h3>
-                            {% if unread_notifications_count > 0 %}
-                                <form action="{% url 'accounts:mark_notifications_read_all' %}" method="POST" style="margin: 0;">
-                                    {% csrf_token %}
-                                    <button type="submit" class="mark-all-read-btn">Tout marquer comme lu</button>
-                                </form>
-                            {% endif %}
+                            <form action="{% url 'accounts:mark_notifications_read_all' %}" method="POST" style="margin: 0;"
+                                  hx-post="{% url 'accounts:mark_notifications_read_all' %}"
+                                  hx-swap="none"
+                                  id="dropdown-mark-all-form"
+                                  hx-on::after-request="
+                                      document.querySelectorAll('.notifications-dropdown-item.unread').forEach(item => {
+                                          item.classList.remove('unread');
+                                          const wrapper = item.closest('.notifications-dropdown-item-wrapper');
+                                          if (wrapper) wrapper.style.background = 'transparent';
+                                      });
+                                      document.querySelectorAll('.dropdown-mark-read-btn').forEach(btn => {
+                                          const f = btn.closest('form');
+                                          if (f) f.remove();
+                                      });
+                                      
+                                      // Si la page de notifs est également affichée, tout marquer comme lu
+                                      document.querySelectorAll('.notification-card.unread, .notification-item.unread').forEach(item => {
+                                          item.classList.remove('unread');
+                                          item.classList.add('read');
+                                          item.setAttribute('data-status', 'read');
+                                          item.style.borderLeft = '1px solid var(--border-light)';
+                                          item.style.paddingLeft = '20px';
+                                          
+                                          const forms = item.querySelectorAll('.mark-read-form, form[action*=\'marquer-lu\']');
+                                          forms.forEach(form => form.style.display = 'none');
+                                          
+                                          const indicators = item.querySelectorAll('.read-status-icon, .read-status-indicator');
+                                          indicators.forEach(indicator => indicator.style.display = 'inline-flex');
+                                          
+                                          const dot = item.querySelector('.unread-pulse-dot');
+                                          if (dot) dot.remove();
+                                      });
+                                      
+                                      const btn = this.querySelector('button');
+                                      if (btn) {
+                                          btn.setAttribute('disabled', 'true');
+                                          btn.style.opacity = '0.5';
+                                          btn.style.cursor = 'not-allowed';
+                                      }
+                                      
+                                      if (typeof updateCounters === 'function') {
+                                          updateCounters();
+                                          if (typeof applyFilter === 'function') {
+                                              applyFilter();
+                                          }
+                                      }
+                                  ">
+                                {% csrf_token %}
+                                <button type="submit" class="mark-all-read-btn" id="dropdown-mark-all-btn" {% if unread_notifications_count == 0 %}disabled style="opacity: 0.5; cursor: not-allowed;"{% endif %}>Tout marquer comme lu</button>
+                            </form>
                         </div>
                         
                         <div class="notifications-dropdown-list">
                             {% if recent_notifications %}
                                 {% for notif in recent_notifications %}
-                                    <a href="{% if notif.url %}{{ notif.url }}{% else %}{% url 'accounts:notifications_list' %}{% endif %}" class="notifications-dropdown-item {% if not notif.lu %}unread{% endif %}">
-                                        <div class="notif-dropdown-icon {% if notif.type == 'COMPTE_ACTIVE' %}icon-active{% elif notif.type == 'QCM_CORRIGE' %}icon-qcm{% elif notif.type == 'NOUVEAU_COURS' %}icon-cours{% elif notif.type == 'NOUVELLE_INSCRIPTION' %}icon-signup{% else %}icon-default{% endif %}">
-                                            {% if notif.type == 'COMPTE_ACTIVE' %}
-                                                <i class="ti ti-user-check"></i>
-                                            {% elif notif.type == 'QCM_CORRIGE' %}
-                                                <i class="ti ti-checkbox"></i>
-                                            {% elif notif.type == 'NOUVEAU_COURS' %}
-                                                <i class="ti ti-book"></i>
-                                            {% elif notif.type == 'NOUVELLE_INSCRIPTION' %}
-                                                <i class="ti ti-user-plus"></i>
-                                            {% else %}
-                                                <i class="ti ti-settings"></i>
-                                            {% endif %}
-                                        </div>
-                                        <div class="notif-dropdown-content">
-                                            <div class="notif-dropdown-title-row">
-                                                <span class="notif-dropdown-title">{{ notif.titre }}</span>
-                                                <span class="notif-dropdown-age">{{ notif.age_humanise }}</span>
+                                    <div class="notifications-dropdown-item-wrapper" id="dropdown-notif-wrapper-{{ notif.id }}" style="position: relative; display: flex; align-items: center; border-bottom: 1px solid var(--border-light); {% if not notif.lu %}background: rgba(13, 148, 136, 0.02);{% endif %}">
+                                        <a href="{% url 'accounts:read_and_redirect_notification' notif.id %}" class="notifications-dropdown-item {% if not notif.lu %}unread{% endif %}" style="flex: 1; border-bottom: none; padding-right: 8px;">
+                                            <div class="notif-dropdown-icon {% if notif.type == 'COMPTE_ACTIVE' %}icon-active{% elif notif.type == 'QCM_CORRIGE' %}icon-qcm{% elif notif.type == 'NOUVEAU_COURS' %}icon-cours{% elif notif.type == 'NOUVELLE_INSCRIPTION' %}icon-signup{% else %}icon-default{% endif %}">
+                                                {% if notif.type == 'COMPTE_ACTIVE' %}
+                                                    <i class="ti ti-user-check"></i>
+                                                {% elif notif.type == 'QCM_CORRIGE' %}
+                                                    <i class="ti ti-checkbox"></i>
+                                                {% elif notif.type == 'NOUVEAU_COURS' %}
+                                                    <i class="ti ti-book"></i>
+                                                {% elif notif.type == 'NOUVELLE_INSCRIPTION' %}
+                                                    <i class="ti ti-user-plus"></i>
+                                                {% else %}
+                                                    <i class="ti ti-settings"></i>
+                                                {% endif %}
                                             </div>
-                                            <p class="notif-dropdown-text">{{ notif.message }}</p>
+                                            <div class="notif-dropdown-content">
+                                                <div class="notif-dropdown-title-row">
+                                                    <span class="notif-dropdown-title">{{ notif.titre }}</span>
+                                                    <span class="notif-dropdown-age">{{ notif.age_humanise }}</span>
+                                                </div>
+                                                <p class="notif-dropdown-text">{{ notif.message }}</p>
+                                            </div>
+                                        </a>
+                                        <div class="notif-actions" id="dropdown-notif-actions-{{ notif.id }}" style="display: flex; gap: 4px; align-items: center; padding-right: 12px; z-index: 10;">
+                                            {% if not notif.lu %}
+                                                <!-- Formulaire Marquer comme lu -->
+                                                <form action="{% url 'accounts:mark_notification_read' notif.id %}" method="POST" style="margin: 0; display: inline-flex;"
+                                                      hx-post="{% url 'accounts:mark_notification_read' notif.id %}"
+                                                      hx-swap="none"
+                                                      hx-on::after-request="
+                                                          const wrapper = document.getElementById('dropdown-notif-wrapper-{{ notif.id }}');
+                                                          const link = wrapper.querySelector('.notifications-dropdown-item');
+                                                          link.classList.remove('unread');
+                                                          wrapper.style.background = 'transparent';
+                                                          
+                                                          // Cacher ce formulaire
+                                                          this.style.display = 'none';
+                                                          
+                                                          // Montrer l'indicateur Lu
+                                                          const readIndicator = document.getElementById('dropdown-notif-read-status-{{ notif.id }}');
+                                                          if (readIndicator) readIndicator.style.display = 'inline-flex';
+                                                          
+                                                          // Si la page de notifs est également affichée, marquer comme lu là-bas aussi
+                                                          const pageNotif = document.getElementById('notif-{{ notif.id }}');
+                                                          if (pageNotif) {
+                                                              pageNotif.classList.remove('unread');
+                                                              pageNotif.classList.add('read');
+                                                              pageNotif.setAttribute('data-status', 'read');
+                                                              pageNotif.style.borderLeft = '1px solid var(--border-light)';
+                                                              pageNotif.style.paddingLeft = '20px';
+                                                              
+                                                              const pageForm = pageNotif.querySelector('.mark-read-form, form[action*=\'marquer-lu\']');
+                                                              if (pageForm) pageForm.style.display = 'none';
+                                                              
+                                                              const pageReadStatus = pageNotif.querySelectorAll('.read-status-icon, .read-status-indicator');
+                                                              pageReadStatus.forEach(el => el.style.display = 'inline-flex');
+                                                              
+                                                              const dot = pageNotif.querySelector('.unread-pulse-dot');
+                                                              if (dot) dot.remove();
+                                                              
+                                                              if (typeof updateCounters === 'function') {
+                                                                  updateCounters();
+                                                                  if (typeof applyFilter === 'function') {
+                                                                      applyFilter();
+                                                                  }
+                                                              }
+                                                          }
+                                                      ">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn-ghost dropdown-mark-read-btn" style="padding: 4px; border-radius: 50%; width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; border: none; background: transparent; cursor: pointer; color: var(--text-muted); transition: var(--transition);" title="Marquer comme lu"
+                                                            onmouseover="this.style.background='var(--border-light)'; this.style.color='var(--primary)';"
+                                                            onmouseout="this.style.background='transparent'; this.style.color='var(--text-muted)';">
+                                                        <i class="ti ti-check" style="font-size: 14px; pointer-events: none;"></i>
+                                                    </button>
+                                                </form>
+                                            {% endif %}
+
+                                            <!-- Indicateur "Lu" -->
+                                            <span id="dropdown-notif-read-status-{{ notif.id }}" style="{% if not notif.lu %}display: none;{% endif %} padding: 4px; color: var(--text-muted); display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px;" title="Lue">
+                                                <i class="ti ti-checks" style="font-size: 14px; color: #10b981;"></i>
+                                            </span>
+
+                                            <!-- Formulaire Supprimer -->
+                                            <form action="{% url 'accounts:delete_notification' notif.id %}" method="POST" style="margin: 0; display: inline-flex;"
+                                                  hx-post="{% url 'accounts:delete_notification' notif.id %}"
+                                                  hx-swap="none"
+                                                  hx-on::after-request="
+                                                      const wrapper = document.getElementById('dropdown-notif-wrapper-{{ notif.id }}');
+                                                      if (wrapper) wrapper.remove();
+                                                      
+                                                      const pageNotif = document.getElementById('notif-{{ notif.id }}');
+                                                      if (pageNotif) {
+                                                          pageNotif.classList.add('removing');
+                                                          setTimeout(() => {
+                                                              pageNotif.remove();
+                                                              if (typeof updateCounters === 'function') {
+                                                                  updateCounters();
+                                                                  if (typeof applyFilter === 'function') {
+                                                                      applyFilter();
+                                                                  }
+                                                              }
+                                                          }, 350);
+                                                      }
+                                                  ">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn-ghost dropdown-delete-btn" style="padding: 4px; border-radius: 50%; width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; border: none; background: transparent; cursor: pointer; color: var(--text-muted); transition: var(--transition);" title="Supprimer"
+                                                        onmouseover="this.style.background='var(--border-light)'; this.style.color='#ef4444';"
+                                                        onmouseout="this.style.background='transparent'; this.style.color='var(--text-muted)';">
+                                                    <i class="ti ti-trash" style="font-size: 14px; pointer-events: none;"></i>
+                                                </button>
+                                            </form>
                                         </div>
-                                    </a>
+                                    </div>
                                 {% endfor %}
                             {% else %}
                                 <div class="notifications-dropdown-empty">
@@ -192,11 +331,6 @@
                             <span>Paramètres du profil</span>
                         </a>
                         
-                        <a href="{% url 'dashboard' %}" class="dropdown-item">
-                            <i class="ti ti-arrows-left-right"></i>
-                            <span>Changer de rôle</span>
-                        </a>
-                        
                         <div class="dropdown-divider"></div>
                         
                         <form action="{% url 'accounts:logout' %}" method="post" id="logout-form-dropdown" style="margin: 0;">
@@ -224,7 +358,7 @@
 {% if messages %}
     <div class="messages-zone">
         {% for message in messages %}
-            <div class="message-item">
+            <div class="message-item" onclick="this.style.opacity='0'; this.style.transform='translateX(100%)'; setTimeout(() => this.remove(), 300);" style="cursor: pointer;">
                 <i class="ti ti-info-circle" style="color: var(--primary);"></i>
                 {{ message }}
             </div>
@@ -273,7 +407,7 @@
     // TomSelect
     function initSelects() {
         if (typeof TomSelect !== 'undefined') {
-            document.querySelectorAll('select').forEach(el => {
+            document.querySelectorAll('select:not(.no-tomselect):not(.inline-select)').forEach(el => {
                 if (!el.classList.contains('tomselected')) {
                     new TomSelect(el, { create: false });
                 }

@@ -30,6 +30,12 @@
                                         hx-target="#modal-body"
                                         hx-swap="innerHTML"
                                         onclick="document.getElementById('form-modal').style.display='flex'">Modifier</button>
+                                <button type="button"
+                                        class="btn btn-ghost"
+                                        style="padding:0.45rem 0.7rem; font-size:0.85rem; color:#ef4444;"
+                                        hx-post="{% url 'apprentissage:supprimer_document' document.id %}"
+                                        hx-target="#docs-chapitre-{{ document.chapitre.id }}"
+                                        hx-confirm="Confirmer la suppression de ce document ?">Supprimer</button>
                             </div>
                         {% endif %}
                     </div>
@@ -68,6 +74,12 @@
                                 hx-target="#modal-body"
                                 hx-swap="innerHTML"
                                 onclick="document.getElementById('form-modal').style.display='flex'">Modifier</button>
+                        <button type="button"
+                                class="btn btn-ghost"
+                                style="padding:0.45rem 0.7rem; font-size:0.85rem; color:#ef4444;"
+                                hx-post="{% url 'apprentissage:supprimer_document' document.id %}"
+                                hx-target="#docs-chapitre-{{ document.chapitre.id }}"
+                                hx-confirm="Confirmer la suppression de ce document ?">Supprimer</button>
                     </div>
                 {% endif %}
             </div>

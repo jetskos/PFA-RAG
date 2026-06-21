@@ -80,9 +80,139 @@
 
     .grille-cours {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 1.5rem;
-        margin-top: 1rem;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 2rem;
+        margin-top: 1.5rem;
+    }
+
+    .course-cover-card {
+        background: var(--bg-surface, #ffffff);
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid var(--border-light, #e2e8f0);
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .course-cover-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 10px 10px -5px rgba(0, 0, 0, 0.03);
+        border-color: var(--primary, #0D9488);
+    }
+
+    .course-cover-card .cover-image {
+        height: 160px;
+        position: relative;
+        padding: 1.25rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        background-color: var(--bg-surface-alt, #f8fafc);
+    }
+
+    .course-cover-card .card-content {
+        padding: 1.5rem;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .course-cover-card .course-title {
+        margin: 0;
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: var(--text-primary, #0f172a);
+        line-height: 1.4;
+    }
+
+    .course-cover-card .course-resume {
+        color: var(--text-secondary, #475569);
+        font-size: 0.88rem;
+        line-height: 1.6;
+        margin: 0;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .course-cover-card .course-meta-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid var(--border-light, #f1f5f9);
+        padding-top: 1rem;
+        margin-top: auto;
+        font-size: 0.8rem;
+        color: var(--text-muted, #64748b);
+    }
+
+    .course-cover-card .course-creator {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-weight: 600;
+        color: var(--text-secondary, #334155);
+    }
+
+    .course-cover-card .course-chapters {
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        background-color: var(--bg-surface-alt, #f1f5f9);
+        padding: 0.25rem 0.6rem;
+        border-radius: 99px;
+        font-weight: 500;
+    }
+
+    .course-cover-card .card-actions {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        border-top: 1px solid var(--border-light, #f1f5f9);
+        padding-top: 1rem;
+    }
+
+    .course-cover-card .btn-consult {
+        flex: 1;
+        text-align: center;
+        background: linear-gradient(135deg, var(--primary, #0D9488) 0%, var(--primary-dark, #0F766E) 100%) !important;
+        color: white !important;
+        padding: 0.6rem;
+        border-radius: 8px;
+        font-weight: 600;
+        text-decoration: none;
+        font-size: 0.9rem;
+        box-shadow: 0 4px 12px rgba(13, 148, 136, 0.15);
+        transition: all 0.2s ease;
+        border: none;
+    }
+
+    .course-cover-card .btn-consult:hover {
+        filter: brightness(1.1);
+        box-shadow: 0 6px 16px rgba(13, 148, 136, 0.25);
+        transform: translateY(-1px);
+    }
+
+    .course-cover-card .btn-edit {
+        padding: 0.6rem;
+        border: 1px solid var(--border-default, #cbd5e1);
+        border-radius: 8px;
+        color: var(--text-secondary, #475569);
+        background: var(--bg-surface, white);
+        text-align: center;
+        display: inline-flex;
+        transition: all 0.2s ease;
+    }
+
+    .course-cover-card .btn-edit:hover {
+        background-color: var(--bg-surface-alt, #f8fafc);
+        color: var(--primary, #0D9488);
+        border-color: var(--primary, #0D9488);
     }
 </style>
 
@@ -97,12 +227,12 @@
             <i class="ti ti-search"></i>
             <input type="search" name="q" placeholder="Rechercher par titre, matière ou formateur..."
                 hx-get="{% url 'apprentissage:liste_cours' %}" hx-trigger="keyup changed delay:300ms, search"
-                hx-target="#zone-principale" autocomplete="off" value="{{ q }}">
+                hx-target="#catalog-grid" hx-swap="innerHTML" autocomplete="off" value="{{ q }}">
         </div>
     </div>
 
     <!-- MAIN GRID -->
-    <div id="zone-principale" class="grille-cours">
+    <div id="catalog-grid" class="grille-cours">
         {% include 'apprentissage/partials/liste_cours.html' %}
     </div>
 </div>

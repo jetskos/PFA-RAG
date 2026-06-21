@@ -3,55 +3,186 @@
 {% block title %}Inventaire - Logistics{% endblock %}
 
 {% block content %}
-<section class="page-shell">
-    <div class="page-header">
-        <p class="eyebrow">Logistics</p>
-        <h1>Inventaire</h1>
-        <p>Gestion des équipements.</p>
-    </div>
+<style>
+    /* Premium background grid & ambient orbs */
+    .logistics-wrapper {
+        position: relative;
+        width: 100%;
+        overflow: visible;
+    }
+    
 
-    {% include 'logistics/partials/navigation.html' with active_page='inventaire' %}
 
-    <div class="logistics-grid">
-        <aside class="apprentissage-sidebar sidebar-card">
-            <h2>Équipements</h2>
-            <div class="actions" role="toolbar" aria-label="Filtres équipements">
-                <button class="btn btn-ghost is-active" hx-get="?etat=TOUS" hx-target="#equipements-list" hx-swap="innerHTML" hx-on:click="document.querySelectorAll('[role=toolbar] .btn').forEach(b => b.classList.remove('is-active')); this.classList.add('is-active');">Tous</button>
-                <button class="btn btn-ghost" hx-get="?etat=DISPONIBLE" hx-target="#equipements-list" hx-swap="innerHTML" hx-on:click="document.querySelectorAll('[role=toolbar] .btn').forEach(b => b.classList.remove('is-active')); this.classList.add('is-active');">Disponible</button>
-                <button class="btn btn-ghost" hx-get="?etat=EN_PANNE" hx-target="#equipements-list" hx-swap="innerHTML" hx-on:click="document.querySelectorAll('[role=toolbar] .btn').forEach(b => b.classList.remove('is-active')); this.classList.add('is-active');">En panne</button>
-                <button class="btn btn-ghost" hx-get="?etat=EN_MAINTENANCE" hx-target="#equipements-list" hx-swap="innerHTML" hx-on:click="document.querySelectorAll('[role=toolbar] .btn').forEach(b => b.classList.remove('is-active')); this.classList.add('is-active');">En maintenance</button>
-            </div>
+    /* Filter capsule switcher */
+    .logistics-filter-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.3rem;
+        background: var(--gray-100, rgba(0, 0, 0, 0.03));
+        border: 1px solid var(--border-light, #e2e8f0);
+        padding: 0.3rem;
+        border-radius: 12px;
+        margin-bottom: 1.25rem;
+    }
+    
+    .logistics-filter-btn {
+        flex: 1;
+        min-width: 80px;
+        text-align: center;
+        font-size: 0.8rem;
+        font-weight: 600;
+        padding: 0.45rem 0.65rem;
+        color: var(--text-secondary);
+        border: none;
+        background: transparent;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    
+    .logistics-filter-btn:hover {
+        color: var(--text-primary);
+        background: rgba(0, 0, 0, 0.02);
+    }
+    
+    .logistics-filter-btn.is-active {
+        color: var(--primary, #0d9488);
+        background: var(--bg-surface, #ffffff);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+    }
 
-            {% if user.is_staff or user.is_formateur %}
-            <div class="actions mt-3 gap-sm">
-                <button class="btn" type="button" hx-get="{% url 'logistics:ajouter_equipement' %}" hx-target="#form-equipement-container" hx-swap="innerHTML">Ajouter un équipement</button>
-            </div>
-            {% endif %}
+    [data-theme="dark"] .logistics-filter-group {
+        background: rgba(255, 255, 255, 0.03);
+        border-color: var(--border-light);
+    }
+    [data-theme="dark"] .logistics-filter-btn.is-active {
+        background: var(--bg-elevated, #334155);
+        color: #ffffff;
+    }
 
-            <div class="sidebar-doc-list carte" id="equipements-list">
-                {% include 'logistics/partials/equipements_list.html' with equipements=equipements %}
-            </div>
-        </aside>
+    /* Primary button for sidebar */
+    .logistics-btn-primary {
+        background: linear-gradient(135deg, var(--primary, #0d9488), var(--primary-dark, #0f766e));
+        color: #ffffff !important;
+        border: none;
+        padding: 0.55rem 1.2rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        border-radius: 10px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        box-shadow: 0 4px 8px rgba(13, 148, 136, 0.15);
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+    
+    .logistics-btn-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 12px rgba(13, 148, 136, 0.25);
+        filter: brightness(1.05);
+    }
 
-        <section class="content-card min-h-240">
-            <div class="actions-between">
-                <h2 class="m-0">Formulaire équipement</h2>
-                <p class="text-muted m-0">Ajout ou modification</p>
-            </div>
-            <div id="form-equipement-container">
-                <div class="placeholder-card">
-                    <i class="ti ti-tools"></i>
-                    <p class="m-0">Sélectionnez ou ajoutez un équipement pour commencer.</p>
+    /* Placeholders */
+    .logistics-placeholder {
+        padding: 5rem 1.5rem;
+        text-align: center;
+        color: var(--text-muted);
+        border: 2px dashed var(--border-light, #e2e8f0);
+        border-radius: 16px;
+        background: rgba(0, 0, 0, 0.005);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+    }
+    
+    .logistics-placeholder i {
+        font-size: 2.2rem;
+        color: var(--text-muted);
+        background: var(--bg-page, #f8fafc);
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: var(--shadow-sm);
+        animation: pulse-tools 3s infinite ease-in-out;
+    }
+    
+    @keyframes pulse-tools {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.06); }
+        100% { transform: scale(1); }
+    }
+</style>
+
+<div class="logistics-wrapper">
+    <!-- Ambient background glows -->
+
+    <section class="page-shell" style="position: relative; z-index: 1;">
+        <!-- Header -->
+        <div class="page-header" style="margin-bottom: 2rem;">
+            <p class="eyebrow">Logistics</p>
+            <h1>Inventaire</h1>
+            <p class="muted" style="margin: 0.25rem 0 0 0;">Gérez et suivez le parc d'équipements et de matériels.</p>
+        </div>
+
+        <!-- Navigation Tabs -->
+        {% include 'logistics/partials/navigation.html' with active_page='inventaire' %}
+
+        <!-- Content Grid -->
+        <div class="logistics-grid">
+            <!-- Sidebar list panel -->
+            <aside class="apprentissage-sidebar sidebar-card" style="padding: 1.5rem; border-radius: 16px; border: 1px solid var(--border-light); background: var(--bg-surface); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 1.25rem;">
+                <h2 style="font-size: 1.15rem; font-weight: 700; color: var(--text-primary); margin: 0;">📦 Équipements</h2>
+                
+                <!-- Filters group -->
+                <div class="logistics-filter-group" role="toolbar" aria-label="Filtres équipements">
+                    <button class="logistics-filter-btn is-active" hx-get="?etat=TOUS" hx-target="#equipements-list" hx-swap="innerHTML" hx-on:click="document.querySelectorAll('.logistics-filter-btn').forEach(b => b.classList.remove('is-active')); this.classList.add('is-active');">Tous</button>
+                    <button class="logistics-filter-btn" hx-get="?etat=DISPONIBLE" hx-target="#equipements-list" hx-swap="innerHTML" hx-on:click="document.querySelectorAll('.logistics-filter-btn').forEach(b => b.classList.remove('is-active')); this.classList.add('is-active');">Dispo</button>
+                    <button class="logistics-filter-btn" hx-get="?etat=EN_PANNE" hx-target="#equipements-list" hx-swap="innerHTML" hx-on:click="document.querySelectorAll('.logistics-filter-btn').forEach(b => b.classList.remove('is-active')); this.classList.add('is-active');">Panne</button>
+                    <button class="logistics-filter-btn" hx-get="?etat=EN_MAINTENANCE" hx-target="#equipements-list" hx-swap="innerHTML" hx-on:click="document.querySelectorAll('.logistics-filter-btn').forEach(b => b.classList.remove('is-active')); this.classList.add('is-active');">Maint.</button>
                 </div>
-            </div>
-        </section>
-    </div>
-</section>
+
+                {% if user.is_staff or user.is_formateur %}
+                <button class="logistics-btn-primary" style="width: 100%;" type="button" hx-get="{% url 'logistics:ajouter_equipement' %}" hx-target="#form-equipement-container" hx-swap="innerHTML">
+                    <i class="ti ti-plus" style="font-size: 14px;"></i> Ajouter un équipement
+                </button>
+                {% endif %}
+
+                <!-- Equipments list container -->
+                <div id="equipements-list" style="margin-top: 0.5rem; display: flex; flex-direction: column;">
+                    {% include 'logistics/partials/equipements_list.html' with equipements=equipements %}
+                </div>
+            </aside>
+
+            <!-- Form card panel -->
+            <section class="content-card min-h-240" style="padding: 1.75rem; border-radius: 16px; border: 1px solid var(--border-light); background: var(--bg-surface); box-shadow: var(--shadow-sm);">
+                <div class="actions-between" style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+                    <h2 style="font-size: 1.2rem; font-weight: 700; color: var(--text-primary); margin: 0;">🛠️ Fiche Équipement</h2>
+                    <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0;">Ajout ou modification</p>
+                </div>
+                
+                <div id="form-equipement-container">
+                    <div class="logistics-placeholder">
+                        <i class="ti ti-tools"></i>
+                        <p class="m-0" style="font-size: 0.9rem; font-weight: 500;">Sélectionnez ou ajoutez un équipement pour commencer.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </section>
+</div>
 
 <template id="placeholder-template">
-    <div class="placeholder-card">
+    <div class="logistics-placeholder">
         <i class="ti ti-tools"></i>
-        <p class="m-0">Sélectionnez ou ajoutez un équipement pour commencer.</p>
+        <p class="m-0" style="font-size: 0.9rem; font-weight: 500;">Sélectionnez ou ajoutez un équipement pour commencer.</p>
     </div>
 </template>
 {% endblock %}
