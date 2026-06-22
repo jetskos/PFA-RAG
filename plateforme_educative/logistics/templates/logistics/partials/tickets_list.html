@@ -1,22 +1,67 @@
 {% if tickets.exists %}
-    <ul class="liste-docs-detaillee">
+    <div style="display: flex; flex-direction: column; gap: 1rem;">
         {% for ticket in tickets %}
-        <li class="doc-item">
-            <div class="doc-header">
-                <a class="doc-titre">{{ ticket.titre }}</a>
+        <div style="background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius-md); padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem; transition: border-color 0.15s;" onmouseover="this.style.borderColor='var(--teal)'" onmouseout="this.style.borderColor='var(--border)'">
+            
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem;">
+                <div>
+                    <h3 style="font-size: 1rem; font-weight: 800; color: var(--ink); margin: 0 0 0.25rem 0;">{{ ticket.titre }}</h3>
+                    <div style="font-size: 0.75rem; font-weight: 600; color: var(--ink-muted); display: flex; align-items: center; gap: 0.4rem;">
+                        <i class="ti ti-calendar"></i> {{ ticket.date_creation|date:"d M Y, H:i" }}
+                        &bull;
+                        <i class="ti ti-user"></i> {{ ticket.ouvert_par.get_full_name|default:ticket.ouvert_par.email }}
+                    </div>
+                </div>
+                
+                {% if ticket.statut == 'OUVERT' %}
+                    <span style="font-size: 0.7rem; font-weight: 700; padding: 3px 8px; border-radius: 999px; background: rgba(245,158,11,0.1); color: #d97706; display: inline-flex; align-items: center; gap: 4px;">
+                        <span style="width: 6px; height: 6px; border-radius: 50%; background: currentColor;"></span> En attente
+                    </span>
+                {% elif ticket.statut == 'EN_COURS' %}
+                    <span style="font-size: 0.7rem; font-weight: 700; padding: 3px 8px; border-radius: 999px; background: rgba(139,92,246,0.1); color: #7c3aed; display: inline-flex; align-items: center; gap: 4px;">
+                        <span style="width: 6px; height: 6px; border-radius: 50%; background: currentColor;"></span> En traitement
+                    </span>
+                {% endif %}
             </div>
-            <p class="doc-description">{{ ticket.description }}</p>
-            <p class="mt-2 text-muted m-0">Équipement: {{ ticket.equipement }} {% if ticket.atelier %}| Atelier: {{ ticket.atelier }}{% endif %}</p>
-            {% if user.is_staff or user.is_formateur %}
-            <form hx-post="{{ resolve_url }}" hx-target="#tickets-list" hx-swap="innerHTML" class="mt-2">
-                {% csrf_token %}
-                <input type="hidden" name="ticket_id" value="{{ ticket.id }}">
-                <button class="btn btn-ghost btn-sm" type="submit">Marquer Résolu</button>
-            </form>
-            {% endif %}
-        </li>
+            
+            <p style="font-size: 0.85rem; color: var(--ink-mid); margin: 0; line-height: 1.5;">
+                {{ ticket.description }}
+            </p>
+            
+            <div style="display: flex; flex-wrap: wrap; gap: 1rem; padding-top: 0.5rem; border-top: 1px solid var(--border);">
+                <div style="font-size: 0.75rem; color: var(--ink-muted); font-weight: 600; display: flex; align-items: center; gap: 0.35rem;">
+                    <i class="ti ti-package" style="font-size: 0.9rem; color: var(--teal);"></i> Équipement: <span style="color: var(--ink);">{{ ticket.equipement.nom|default:ticket.equipement }}</span>
+                </div>
+                {% if ticket.atelier %}
+                <div style="font-size: 0.75rem; color: var(--ink-muted); font-weight: 600; display: flex; align-items: center; gap: 0.35rem;">
+                    <i class="ti ti-building-community" style="font-size: 0.9rem; color: var(--teal);"></i> Atelier: <span style="color: var(--ink);">{{ ticket.atelier }}</span>
+                </div>
+                {% endif %}
+                
+                <div style="flex-grow: 1; display: flex; justify-content: flex-end;">
+                    {% if user.is_staff or user.is_formateur %}
+                    <form hx-post="{{ resolve_url }}" hx-target="#tickets-list" hx-swap="innerHTML" style="margin: 0;">
+                        {% csrf_token %}
+                        <input type="hidden" name="ticket_id" value="{{ ticket.id }}">
+                        <button type="submit" style="display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.4rem 0.8rem; background: var(--surface); color: var(--teal); border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: all 0.15s;" onmouseover="this.style.background='var(--teal-glow)'; this.style.borderColor='var(--teal)'" onmouseout="this.style.background='var(--surface)'; this.style.borderColor='var(--border)'">
+                            <i class="ti ti-check"></i> Marquer Résolu
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+            
+        </div>
         {% endfor %}
-    </ul>
+    </div>
 {% else %}
-    <p class="message-empty">Aucun ticket actif.</p>
+    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 250px; text-align: center; gap: 1rem;">
+        <div style="width: 64px; height: 64px; border-radius: 50%; border: 2px dashed var(--border); display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: var(--ink-faint); background: var(--bg);">
+            <i class="ti ti-ticket"></i>
+        </div>
+        <div>
+            <h3 style="font-size: 1rem; font-weight: 700; color: var(--ink); margin: 0 0 0.4rem 0;">Aucun ticket actif</h3>
+            <p style="font-size: 0.85rem; color: var(--ink-muted); margin: 0; max-width: 250px;">Il n'y a actuellement aucun problème signalé sur le matériel.</p>
+        </div>
+    </div>
 {% endif %}

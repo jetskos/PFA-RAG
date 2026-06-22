@@ -461,7 +461,11 @@ def detail_cours(request, cours_id):
                 etudiant=request.user,
                 chapitre=chapitre_initial
             )
-            
+            chapitre_initial_is_complete = ChapitreComplete.objects.filter(
+                etudiant=request.user,
+                chapitre=chapitre_initial
+            ).exists()
+
     context = {
         'cours': cours,
         'chapitres_data': chapitres_data,
@@ -473,6 +477,7 @@ def detail_cours(request, cours_id):
         'chapitre_initial_vimeo_embed_url': vimeo_embed_url,
         'chapitre_initial_precedent': chapitre_precedent,
         'chapitre_initial_suivant': chapitre_suivant,
+        'chapitre_initial_is_complete': chapitre_initial_is_complete,
     }
     
     if request.headers.get('HX-Request') == 'true':
@@ -589,6 +594,22 @@ def telecharger_document(request, document_id):
 def valider_chapitre(request, chapitre_id):
     """Marque un chapitre comme validé pour l'étudiant connecté."""
     chapitre = get_object_or_404(Chapitre, pk=chapitre_id, actif=True)
+    
+    # Vérification du QCM
+    from tuteur_ia.models import SessionQCM
+    has_passed_qcm = SessionQCM.objects.filter(
+        etudiant=request.user, 
+        chapitre=chapitre, 
+        statut='TERMINEE'
+    ).exists()
+    
+    if not has_passed_qcm:
+        from django.contrib import messages
+        messages.warning(request, "Vous devez d'abord réussir le QCM de ce chapitre pour le marquer comme terminé.")
+        response = HttpResponse(status=204)
+        from django.urls import reverse
+        response['HX-Redirect'] = reverse('apprentissage:detail_chapitre', args=[chapitre.cours.id, chapitre.id])
+        return response
     
     # Récupère ou crée la progression pour cet étudiant et ce cours
     progression, created = Progression.objects.get_or_create(
@@ -911,17 +932,23 @@ def soumission_noter_view(request, soumission_id):
 
 @login_required
 def devoirs_liste_view(request):
-    """Liste tous les devoirs actifs disponibles pour l'étudiant connecté."""
+    """Liste tous les devoirs actifs disponibles pour l'étudiant connecté, groupés par cours."""
+    from django.utils import timezone
+    from collections import defaultdict
+
     # Filtrer par niveau si l'étudiant a une classe
     classe = getattr(request.user, 'classe', None)
     niveau = getattr(classe, 'niveau', None)
 
     devoirs_qs = Devoir.objects.filter(actif=True).select_related(
         'chapitre', 'chapitre__cours', 'chapitre__cours__niveau'
-    ).order_by('-date_creation')
+    ).order_by('chapitre__cours__titre', '-date_creation')
 
     if niveau:
         devoirs_qs = devoirs_qs.filter(chapitre__cours__niveau=niveau)
+
+    # Filtre par statut (query param ?statut=)
+    filtre_statut = request.GET.get('statut', 'tous')
 
     # Annoter avec la soumission de l'étudiant si elle existe
     soumissions_map = {
@@ -929,15 +956,68 @@ def devoirs_liste_view(request):
         for s in Soumission.objects.filter(etudiant=request.user)
     }
 
+    now = timezone.now()
+
+    # Construire les items avec statut calculé
     devoirs_data = []
     for devoir in devoirs_qs:
+        soumission = soumissions_map.get(str(devoir.id))
+        # Calcul statut
+        if soumission:
+            if soumission.est_corrigee:
+                statut = 'corrige'
+            else:
+                statut = 'soumis'
+        else:
+            if devoir.date_limite and devoir.date_limite < now:
+                statut = 'depasse'
+            else:
+                statut = 'a_rendre'
+
         devoirs_data.append({
             'devoir': devoir,
-            'soumission': soumissions_map.get(str(devoir.id)),
+            'soumission': soumission,
+            'statut': statut,
         })
 
+    # Appliquer le filtre statut
+    if filtre_statut != 'tous':
+        devoirs_data = [d for d in devoirs_data if d['statut'] == filtre_statut]
+
+    # Grouper par cours
+    cours_map = defaultdict(list)
+    for item in devoirs_data:
+        cours_key = item['devoir'].chapitre.cours
+        cours_map[cours_key].append(item)
+
+    devoirs_par_cours = list(cours_map.items())  # [(cours_obj, [items...]), ...]
+
+    # Stats pour les onglets
+    total = len(devoirs_data) if filtre_statut != 'tous' else len([d for d in devoirs_data])
+    # Recompute stats always from full data
+    all_items = []
+    for devoir in Devoir.objects.filter(actif=True).select_related('chapitre', 'chapitre__cours'):
+        soumission = soumissions_map.get(str(devoir.id))
+        if soumission:
+            statut = 'corrige' if soumission.est_corrigee else 'soumis'
+        else:
+            statut = 'depasse' if (devoir.date_limite and devoir.date_limite < now) else 'a_rendre'
+        all_items.append(statut)
+
+    stats = {
+        'tous': len(all_items),
+        'a_rendre': all_items.count('a_rendre'),
+        'soumis': all_items.count('soumis'),
+        'corrige': all_items.count('corrige'),
+        'depasse': all_items.count('depasse'),
+    }
+
     return render(request, 'apprentissage/devoirs_liste.html', {
+        'devoirs_par_cours': devoirs_par_cours,
         'devoirs_data': devoirs_data,
+        'filtre_statut': filtre_statut,
+        'stats': stats,
+        'now': now,
         'titre_page': 'Mes devoirs',
     })
 
@@ -970,7 +1050,7 @@ def devoir_detail_view(request, devoir_id):
             soumission = None
 
         from .forms import SoumissionForm
-        if request.method == 'POST':
+        if request.method == 'POST' and not (soumission and soumission.est_corrigee):
             if soumission:
                 # Remplacement
                 form = SoumissionForm(request.POST, request.FILES, instance=soumission)
@@ -981,9 +1061,27 @@ def devoir_detail_view(request, devoir_id):
                 s.devoir = devoir
                 s.etudiant = request.user
                 s.save()
+
+                # Notifier le formateur créateur du devoir
+                if devoir.createur:
+                    try:
+                        from accounts.notifications import notifier
+                        notifier(
+                            destinataire=devoir.createur,
+                            type='NOUVELLE_INSCRIPTION',
+                            titre=f"Devoir soumis : {devoir.titre}",
+                            message=f"L'étudiant {request.user.get_full_name()} a soumis son devoir '{devoir.titre}'.",
+                            url=reverse('apprentissage:devoir_detail', args=[devoir.pk])
+                        )
+                    except Exception:
+                        pass
+
                 return redirect('apprentissage:devoir_detail', devoir_id=devoir.pk)
         else:
             form = SoumissionForm(instance=soumission) if soumission else SoumissionForm()
+            if soumission and soumission.est_corrigee:
+                for field in form.fields.values():
+                    field.disabled = True
 
     return render(request, 'apprentissage/devoir_detail.html', {
         'devoir': devoir,

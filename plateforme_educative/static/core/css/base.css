@@ -278,7 +278,7 @@ body {
 
 /* ── Layout & Containers ── */
 .site-main {
-    max-width: var(--max-width);
+    max-width: 1500px;
     margin: 0 auto;
     padding: 2rem 1.5rem 5rem 1.5rem;
 }

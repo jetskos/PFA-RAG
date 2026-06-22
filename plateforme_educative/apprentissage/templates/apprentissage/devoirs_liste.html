@@ -4,73 +4,254 @@
 
 {% block content %}
 <section class="page-shell">
+
+    <!-- ── En-tête ── -->
     <div class="page-header">
         <p class="eyebrow">Apprentissage</p>
         <h1>Mes devoirs</h1>
-        <p>Consultez et déposez vos travaux ici.</p>
+        <p style="color: var(--texte-secondaire);">Consultez et déposez vos travaux, organisés par cours.</p>
     </div>
 
-    {% if devoirs_data %}
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
-            {% for item in devoirs_data %}
-            {% with devoir=item.devoir soumission=item.soumission %}
-            <div class="carte" style="display: flex; flex-direction: column; gap: 0; padding: 0; overflow: hidden; border: 1px solid var(--bordure);">
-                <!-- Statut badge en haut -->
-                <div style="
-                    padding: 0.4rem 1rem;
-                    font-size: 0.78rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
-                    {% if soumission %}
-                        {% if soumission.est_corrigee %}
-                            background: rgba(76,175,80,0.15); color: #4caf50;
-                        {% else %}
-                            background: rgba(33,150,243,0.15); color: #2196f3;
-                        {% endif %}
+    <!-- ── Stats rapides ── -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-top: 2rem;">
+        <div class="carte" style="padding: 1rem; text-align: center; border-top: 3px solid #ff9800;">
+            <div style="font-size: 1.6rem; font-weight: 700; color: #ff9800;">{{ stats.a_rendre }}</div>
+            <div style="font-size: 0.78rem; color: var(--texte-secondaire); text-transform: uppercase; letter-spacing: .05em;">À rendre</div>
+        </div>
+        <div class="carte" style="padding: 1rem; text-align: center; border-top: 3px solid #2196f3;">
+            <div style="font-size: 1.6rem; font-weight: 700; color: #2196f3;">{{ stats.soumis }}</div>
+            <div style="font-size: 0.78rem; color: var(--texte-secondaire); text-transform: uppercase; letter-spacing: .05em;">Soumis</div>
+        </div>
+        <div class="carte" style="padding: 1rem; text-align: center; border-top: 3px solid #10b981;">
+            <div style="font-size: 1.6rem; font-weight: 700; color: #10b981;">{{ stats.corrige }}</div>
+            <div style="font-size: 0.78rem; color: var(--texte-secondaire); text-transform: uppercase; letter-spacing: .05em;">Corrigés</div>
+        </div>
+        <div class="carte" style="padding: 1rem; text-align: center; border-top: 3px solid #ef4444;">
+            <div style="font-size: 1.6rem; font-weight: 700; color: #ef4444;">{{ stats.depasse }}</div>
+            <div style="font-size: 0.78rem; color: var(--texte-secondaire); text-transform: uppercase; letter-spacing: .05em;">Délai dépassé</div>
+        </div>
+    </div>
+
+    <!-- ── Onglets de filtrage ── -->
+    <nav style="display: flex; gap: 0.35rem; flex-wrap: wrap; margin-top: 2rem; border-bottom: 2px solid var(--bordure);">
+
+        {% with tab_data="tous:Tous:list-check:a_rendre:À rendre:clock:soumis:Soumis:upload:corrige:Corrigés:check:depasse:Délai dépassé:alert-triangle" %}
+        {# Onglets manuels car Django templates n'ont pas de split complexe #}
+        {% endwith %}
+
+        <a href="?statut=tous"
+           id="tab-tous"
+           style="display:inline-flex; align-items:center; gap:.4rem; padding:.5rem 1rem;
+                  font-size:.85rem; font-weight:600; border-radius:.5rem .5rem 0 0; text-decoration:none;
+                  margin-bottom:-2px; border: 2px solid transparent; border-bottom: none;
+                  {% if filtre_statut == 'tous' %}background:var(--primary);color:#fff;border-color:var(--primary);{% else %}color:var(--texte-secondaire);{% endif %}">
+            <i class="ti ti-list-check"></i> Tous
+            <span style="font-size:.72rem; padding:.1rem .45rem; border-radius:9999px;
+                {% if filtre_statut == 'tous' %}background:rgba(255,255,255,.25);color:#fff;{% else %}background:var(--surface-alt);color:var(--texte-secondaire);{% endif %}">
+                {{ stats.tous }}
+            </span>
+        </a>
+
+        <a href="?statut=a_rendre"
+           id="tab-a-rendre"
+           style="display:inline-flex; align-items:center; gap:.4rem; padding:.5rem 1rem;
+                  font-size:.85rem; font-weight:600; border-radius:.5rem .5rem 0 0; text-decoration:none;
+                  margin-bottom:-2px; border: 2px solid transparent; border-bottom: none;
+                  {% if filtre_statut == 'a_rendre' %}background:#ff9800;color:#fff;border-color:#ff9800;{% else %}color:#ff9800;{% endif %}">
+            <i class="ti ti-clock"></i> À rendre
+            <span style="font-size:.72rem; padding:.1rem .45rem; border-radius:9999px;
+                {% if filtre_statut == 'a_rendre' %}background:rgba(255,255,255,.25);color:#fff;{% else %}background:rgba(255,152,0,.15);color:#ff9800;{% endif %}">
+                {{ stats.a_rendre }}
+            </span>
+        </a>
+
+        <a href="?statut=soumis"
+           id="tab-soumis"
+           style="display:inline-flex; align-items:center; gap:.4rem; padding:.5rem 1rem;
+                  font-size:.85rem; font-weight:600; border-radius:.5rem .5rem 0 0; text-decoration:none;
+                  margin-bottom:-2px; border: 2px solid transparent; border-bottom: none;
+                  {% if filtre_statut == 'soumis' %}background:#2196f3;color:#fff;border-color:#2196f3;{% else %}color:#2196f3;{% endif %}">
+            <i class="ti ti-upload"></i> Soumis
+            <span style="font-size:.72rem; padding:.1rem .45rem; border-radius:9999px;
+                {% if filtre_statut == 'soumis' %}background:rgba(255,255,255,.25);color:#fff;{% else %}background:rgba(33,150,243,.15);color:#2196f3;{% endif %}">
+                {{ stats.soumis }}
+            </span>
+        </a>
+
+        <a href="?statut=corrige"
+           id="tab-corrige"
+           style="display:inline-flex; align-items:center; gap:.4rem; padding:.5rem 1rem;
+                  font-size:.85rem; font-weight:600; border-radius:.5rem .5rem 0 0; text-decoration:none;
+                  margin-bottom:-2px; border: 2px solid transparent; border-bottom: none;
+                  {% if filtre_statut == 'corrige' %}background:#10b981;color:#fff;border-color:#10b981;{% else %}color:#10b981;{% endif %}">
+            <i class="ti ti-check"></i> Corrigés
+            <span style="font-size:.72rem; padding:.1rem .45rem; border-radius:9999px;
+                {% if filtre_statut == 'corrige' %}background:rgba(255,255,255,.25);color:#fff;{% else %}background:rgba(16,185,129,.15);color:#10b981;{% endif %}">
+                {{ stats.corrige }}
+            </span>
+        </a>
+
+        <a href="?statut=depasse"
+           id="tab-depasse"
+           style="display:inline-flex; align-items:center; gap:.4rem; padding:.5rem 1rem;
+                  font-size:.85rem; font-weight:600; border-radius:.5rem .5rem 0 0; text-decoration:none;
+                  margin-bottom:-2px; border: 2px solid transparent; border-bottom: none;
+                  {% if filtre_statut == 'depasse' %}background:#ef4444;color:#fff;border-color:#ef4444;{% else %}color:#ef4444;{% endif %}">
+            <i class="ti ti-alert-triangle"></i> Délai dépassé
+            <span style="font-size:.72rem; padding:.1rem .45rem; border-radius:9999px;
+                {% if filtre_statut == 'depasse' %}background:rgba(255,255,255,.25);color:#fff;{% else %}background:rgba(239,68,68,.15);color:#ef4444;{% endif %}">
+                {{ stats.depasse }}
+            </span>
+        </a>
+    </nav>
+
+    <!-- ── Contenu groupé par cours ── -->
+    <div style="margin-top: 2rem;">
+
+        {% if devoirs_par_cours %}
+            {% for cours, items in devoirs_par_cours %}
+            <!-- Section par cours -->
+            <div style="margin-bottom: 3rem;">
+                <!-- En-tête de cours -->
+                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.25rem;">
+                    {% if cours.image_couverture %}
+                    <img src="{{ cours.image_couverture.url }}" alt="{{ cours.titre }}"
+                         style="width: 44px; height: 44px; border-radius: 0.5rem; object-fit: cover; flex-shrink: 0;">
                     {% else %}
-                        {% if devoir.date_limite and devoir.date_limite < now %}
-                            background: rgba(244,67,54,0.15); color: #f44336;
-                        {% else %}
-                            background: rgba(255,152,0,0.15); color: #ff9800;
-                        {% endif %}
+                    <div style="width: 44px; height: 44px; border-radius: 0.5rem; background: var(--primary-gradient, linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%));
+                                display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <i class="ti ti-book-2" style="color: #fff; font-size: 1.2rem;"></i>
+                    </div>
                     {% endif %}
-                ">
-                    {% if soumission %}
-                        {% if soumission.est_corrigee %}✓ Corrigé — {{ soumission.note }}/{{ devoir.note_max }}{% else %}📤 Soumis{% endif %}
-                    {% else %}
-                        {% if devoir.date_limite and devoir.date_limite < now %}⏰ Délai dépassé{% else %}📋 À rendre{% endif %}
-                    {% endif %}
+                    <div>
+                        <h2 style="margin: 0; font-size: 1.05rem; font-weight: 700;">{{ cours.titre }}</h2>
+                        <span style="font-size: 0.78rem; color: var(--texte-secondaire);">
+                            <i class="ti ti-clipboard-list"></i> {{ items|length }} devoir{{ items|length|pluralize }}
+                        </span>
+                    </div>
+                    <div style="flex: 1; height: 1px; background: var(--bordure); margin-left: 0.5rem;"></div>
+                    <a href="{% url 'apprentissage:detail_cours' cours_id=cours.pk %}"
+                       class="btn btn-ghost" style="font-size: 0.78rem; padding: 0.3rem 0.75rem; flex-shrink: 0;">
+                        <i class="ti ti-external-link"></i> Voir le cours
+                    </a>
                 </div>
 
-                <div style="padding: 1.25rem; flex: 1; display: flex; flex-direction: column; gap: 0.5rem;">
-                    <div style="font-size: 0.78rem; color: var(--texte-secondaire);">
-                        {{ devoir.chapitre.cours.titre }} › {{ devoir.chapitre.titre }}
-                    </div>
-                    <h3 style="margin: 0; font-size: 1rem;">{{ devoir.titre }}</h3>
-                    <p style="font-size: 0.85rem; color: var(--texte-secondaire); flex: 1;">
-                        {{ devoir.consigne|truncatewords:25 }}
-                    </p>
+                <!-- Grille des devoirs de ce cours -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 1.25rem;">
+                    {% for item in items %}
+                    {% with devoir=item.devoir soumission=item.soumission statut=item.statut %}
+                    {% with app=soumission.appreciation_details %}
 
-                    <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--bordure); font-size: 0.8rem; color: var(--texte-secondaire);">
-                        <span>
-                            <i class="ti ti-star"></i> /{{ devoir.note_max }}
-                            {% if devoir.date_limite %}
-                                · <i class="ti ti-calendar"></i> {{ devoir.date_limite|date:"d/m/Y H:i" }}
+                    <div class="carte" style="display:flex; flex-direction:column; padding:0; overflow:hidden;
+                                              border: 1px solid var(--bordure); transition: box-shadow .2s, transform .2s;"
+                         onmouseenter="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 24px rgba(0,0,0,.12)'"
+                         onmouseleave="this.style.transform='';this.style.boxShadow=''">
+
+                        <!-- Barre de statut colorée -->
+                        <div style="padding:.4rem 1rem; font-size:.78rem; font-weight:700;
+                                    text-transform:uppercase; letter-spacing:.06em;
+                                    {% if statut == 'corrige' %}
+                                        background: {{ app.bg_color }}; color: {{ app.color }};
+                                    {% elif statut == 'soumis' %}
+                                        background: rgba(33,150,243,.15); color: #2196f3;
+                                    {% elif statut == 'depasse' %}
+                                        background: rgba(239,68,68,.15); color: #ef4444;
+                                    {% else %}
+                                        background: rgba(255,152,0,.15); color: #ff9800;
+                                    {% endif %}">
+                            {% if statut == 'corrige' %}
+                                <i class="ti ti-rosette-discount-check"></i>
+                                {{ app.text }} — {{ soumission.note }}/{{ devoir.note_max }}
+                            {% elif statut == 'soumis' %}
+                                <i class="ti ti-upload"></i> Soumis — en attente de correction
+                            {% elif statut == 'depasse' %}
+                                <i class="ti ti-alert-triangle"></i> Délai dépassé
+                            {% else %}
+                                <i class="ti ti-clock"></i> À rendre
                             {% endif %}
-                        </span>
-                        <a href="{% url 'apprentissage:devoir_detail' devoir_id=devoir.pk %}" class="btn" style="font-size: 0.8rem; padding: 0.35rem 0.8rem;">
-                            {% if soumission %}Voir{% else %}Déposer{% endif %}
-                        </a>
+                        </div>
+
+                        <!-- Corps de la carte -->
+                        <div style="padding:1.1rem 1.25rem; flex:1; display:flex; flex-direction:column; gap:.45rem;">
+                            <div style="font-size:.75rem; color:var(--texte-secondaire); font-weight:500;">
+                                <i class="ti ti-folder"></i> {{ devoir.chapitre.titre }}
+                            </div>
+                            <h3 style="margin:0; font-size:.98rem; font-weight:700; line-height:1.3;">
+                                {{ devoir.titre }}
+                            </h3>
+                            <p style="font-size:.82rem; color:var(--texte-secondaire); flex:1; margin:0; line-height:1.5;">
+                                {{ devoir.consigne|truncatewords:20 }}
+                            </p>
+
+                            <!-- Feedback corrigé -->
+                            {% if statut == 'corrige' and soumission.feedback %}
+                            <div style="font-size:.8rem; font-style:italic; padding:.6rem .75rem;
+                                        background:{{ app.bg_color }}; border-left:3px solid {{ app.color }};
+                                        border-radius:.35rem; color:var(--texte-primaire);">
+                                "{{ soumission.feedback|truncatewords:15 }}"
+                            </div>
+                            {% endif %}
+
+                            <!-- Footer de la carte -->
+                            <div style="display:flex; align-items:center; justify-content:space-between;
+                                        margin-top:.6rem; padding-top:.75rem; border-top:1px solid var(--bordure);
+                                        font-size:.78rem; color:var(--texte-secondaire);">
+                                <span style="display:flex; align-items:center; gap:.75rem;">
+                                    <span><i class="ti ti-star"></i> /{{ devoir.note_max }}</span>
+                                    {% if devoir.date_limite %}
+                                    <span style="{% if statut == 'depasse' %}color:#ef4444;font-weight:600;{% endif %}">
+                                        <i class="ti ti-calendar-due"></i>
+                                        {{ devoir.date_limite|date:"d/m H:i" }}
+                                    </span>
+                                    {% endif %}
+                                </span>
+                                <a href="{% url 'apprentissage:devoir_detail' devoir_id=devoir.pk %}"
+                                   class="btn {% if statut == 'a_rendre' %}btn-primary{% else %}btn-ghost{% endif %}"
+                                   style="font-size:.78rem; padding:.3rem .85rem;">
+                                    {% if statut == 'corrige' %}
+                                        <i class="ti ti-eye"></i> Voir
+                                    {% elif statut == 'soumis' %}
+                                        <i class="ti ti-eye"></i> Voir
+                                    {% elif statut == 'depasse' %}
+                                        <i class="ti ti-file-off"></i> Voir
+                                    {% else %}
+                                        <i class="ti ti-upload"></i> Déposer
+                                    {% endif %}
+                                </a>
+                            </div>
+                        </div>
+
                     </div>
+                    {% endwith %}
+                    {% endwith %}
+                    {% endfor %}
                 </div>
             </div>
-            {% endwith %}
             {% endfor %}
-        </div>
-    {% else %}
-        <div class="carte" style="text-align: center; padding: 4rem 2rem; margin-top: 2rem;">
-            <div class="feat-icon" style="margin: 0 auto 1rem;"><i class="ti ti-file-text"></i></div>
-            <h3>Aucun devoir pour le moment</h3>
-            <p class="message-empty">Vos formateurs n'ont pas encore publié de devoirs pour votre niveau.</p>
-        </div>
-    {% endif %}
+
+        {% else %}
+            <!-- État vide -->
+            <div class="carte" style="text-align:center; padding:4rem 2rem; margin-top: 1rem;">
+                <div style="font-size:3.5rem; margin-bottom:1rem;">
+                    {% if filtre_statut == 'corrige' %}✅
+                    {% elif filtre_statut == 'soumis' %}📤
+                    {% elif filtre_statut == 'depasse' %}⏰
+                    {% elif filtre_statut == 'a_rendre' %}📋
+                    {% else %}<i class="ti ti-file-text" style="color:var(--texte-secondaire);"></i>
+                    {% endif %}
+                </div>
+                {% if filtre_statut == 'tous' %}
+                    <h3>Aucun devoir pour le moment</h3>
+                    <p style="color:var(--texte-secondaire);">Vos formateurs n'ont pas encore publié de devoirs pour votre niveau.</p>
+                {% else %}
+                    <h3>Aucun devoir dans cette catégorie</h3>
+                    <p style="color:var(--texte-secondaire);">
+                        <a href="?statut=tous" style="color:var(--primary);">Voir tous les devoirs</a>
+                    </p>
+                {% endif %}
+            </div>
+        {% endif %}
+
+    </div>
 </section>
 {% endblock %}

@@ -40,6 +40,7 @@ from .views import (
     admin_equipement_create_view,
     admin_equipement_update_view,
     admin_equipement_toggle_active_view,
+    export_classe_students_excel_view,
 )
 
 urlpatterns = [
@@ -56,6 +57,7 @@ urlpatterns = [
     path('dashboard/admin/classes/<uuid:classe_id>/eleves/<uuid:student_id>/delete/', delete_student_from_classe_page_view, name='dashboard_admin_delete_student_page'),
     path('dashboard/admin/classes/<uuid:classe_id>/eleves/assign/', assign_student_to_classe_page_view, name='dashboard_admin_assign_student_page'),
     path('dashboard/admin/classes/<uuid:classe_id>/eleves/add/', add_student_to_classe_page_view, name='dashboard_admin_add_student_page'),
+    path('dashboard/admin/classes/<uuid:classe_id>/eleves/export/', export_classe_students_excel_view, name='dashboard_admin_export_classe_students'),
     path('dashboard/admin/pending/activer/', activate_pending_student_view, name='dashboard_admin_activate_pending_student'),
         path('dashboard/admin/demandes/<uuid:demande_id>/process/',
             admin_process_demande_view, name='dashboard_admin_process_demande'),
