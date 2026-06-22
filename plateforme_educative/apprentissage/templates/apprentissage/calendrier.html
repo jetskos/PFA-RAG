@@ -3,79 +3,296 @@
 {% block title %}Calendrier scolaire{% endblock %}
 
 {% block content %}
+<style>
+    /* Section & Cards layout */
+    .evt-card {
+        background: var(--bg-surface, #ffffff);
+        border: 1px solid var(--border-light, #e2e8f0);
+        border-radius: 16px;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02), 0 2px 4px -1px rgba(0,0,0,0.01);
+        transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
+                    box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
+                    border-color 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                    border-left-width 0.25s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    /* Dynamic left highlight bar depending on the event type */
+    .evt-card-devoir {
+        border-left: 5px solid #ef4444;
+    }
+    .evt-card-devoir:hover {
+        border-left-width: 8px;
+        box-shadow: 0 12px 20px -8px rgba(239, 68, 68, 0.15), var(--shadow-md);
+        border-color: rgba(239, 68, 68, 0.3);
+    }
+    
+    .evt-card-session {
+        border-left: 5px solid #3b82f6;
+    }
+    .evt-card-session:hover {
+        border-left-width: 8px;
+        box-shadow: 0 12px 20px -8px rgba(59, 130, 246, 0.15), var(--shadow-md);
+        border-color: rgba(59, 130, 246, 0.3);
+    }
+    
+    .evt-card-examen {
+        border-left: 5px solid #f59e0b;
+    }
+    .evt-card-examen:hover {
+        border-left-width: 8px;
+        box-shadow: 0 12px 20px -8px rgba(245, 158, 11, 0.15), var(--shadow-md);
+        border-color: rgba(245, 158, 11, 0.3);
+    }
+    
+    .evt-card-default {
+        border-left: 5px solid #10b981;
+    }
+    .evt-card-default:hover {
+        border-left-width: 8px;
+        box-shadow: 0 12px 20px -8px rgba(16, 185, 129, 0.15), var(--shadow-md);
+        border-color: rgba(16, 185, 129, 0.3);
+    }
+
+    .evt-card:hover {
+        transform: translateY(-3px);
+    }
+
+    /* Tear-sheet Calendar Date Badge */
+    .calendar-badge {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        background: var(--bg-surface, #ffffff);
+        width: 66px;
+        height: 74px;
+        border-radius: 12px;
+        border: 1px solid var(--border-light, #e2e8f0);
+        box-shadow: var(--shadow-sm, 0 1px 2px rgba(0,0,0,0.05));
+        overflow: hidden;
+        flex-shrink: 0;
+        transition: transform 0.2s ease;
+    }
+    .calendar-badge-header {
+        width: 100%;
+        text-align: center;
+        padding: 4px 0;
+        font-size: 0.7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #ffffff;
+    }
+    .calendar-badge-day {
+        font-size: 1.45rem;
+        font-weight: 800;
+        color: var(--text-primary);
+        line-height: 1.2;
+        margin-top: 5px;
+    }
+    
+    /* Tear-sheet color variants based on type */
+    .calendar-badge-devoir .calendar-badge-header {
+        background: linear-gradient(135deg, #f87171, #ef4444);
+    }
+    .calendar-badge-session .calendar-badge-header {
+        background: linear-gradient(135deg, #60a5fa, #3b82f6);
+    }
+    .calendar-badge-examen .calendar-badge-header {
+        background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    }
+    .calendar-badge-default .calendar-badge-header {
+        background: linear-gradient(135deg, #34d399, #10b981);
+    }
+
+    /* Tag / Pill Badge styling */
+    .evt-badge-custom {
+        font-size: 0.72rem;
+        padding: 0.25rem 0.6rem;
+        border-radius: 6px;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .evt-badge-devoir {
+        background: rgba(239, 68, 68, 0.07);
+        color: #ef4444;
+        border: 1px solid rgba(239, 68, 68, 0.15);
+    }
+    .evt-badge-session {
+        background: rgba(59, 130, 246, 0.07);
+        color: #3b82f6;
+        border: 1px solid rgba(59, 130, 246, 0.15);
+    }
+    .evt-badge-examen {
+        background: rgba(245, 158, 11, 0.07);
+        color: #f59e0b;
+        border: 1px solid rgba(245, 158, 11, 0.15);
+    }
+    .evt-badge-default {
+        background: rgba(16, 185, 129, 0.07);
+        color: #10b981;
+        border: 1px solid rgba(16, 185, 129, 0.15);
+    }
+
+    /* Meta Chips */
+    .evt-meta-chip {
+        font-size: 0.78rem;
+        color: var(--text-secondary);
+        font-weight: 600;
+        background: var(--bg-page, #f8fafc);
+        border: 1px solid var(--border-light, #e2e8f0);
+        padding: 0.2rem 0.65rem;
+        border-radius: 20px;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        transition: all 0.2s ease;
+    }
+    .evt-meta-chip:hover {
+        background: var(--border-light, #cbd5e1);
+        color: var(--text-primary);
+    }
+
+    /* Actions buttons */
+    .evt-btn-edit {
+        background: rgba(13, 148, 136, 0.05);
+        border: 1px solid rgba(13, 148, 136, 0.15);
+        color: var(--primary, #0D9488);
+        padding: 0.5rem 0.95rem;
+        font-size: 0.82rem;
+        border-radius: 8px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .evt-btn-edit:hover {
+        background: var(--primary, #0D9488) !important;
+        color: #ffffff !important;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(13, 148, 136, 0.25);
+    }
+    
+    .evt-btn-delete {
+        background: rgba(239, 68, 68, 0.05);
+        border: 1px solid rgba(239, 68, 68, 0.15);
+        color: #ef4444;
+        padding: 0.5rem 0.95rem;
+        font-size: 0.82rem;
+        border-radius: 8px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .evt-btn-delete:hover {
+        background: #ef4444 !important;
+        color: #ffffff !important;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(239, 68, 68, 0.25);
+    }
+</style>
+
 <section class="page-shell" style="max-width: 1000px; margin: 0 auto; padding: 2rem 1rem;">
     <!-- En-tête -->
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
         <div>
-            <h1>📅 Calendrier & Événements</h1>
+            <h1>📅 Calendrier &amp; Événements</h1>
             <p class="muted" style="margin: 0.25rem 0 0 0;">Retrouvez l'agenda des devoirs, examens et sessions de cours.</p>
         </div>
         {% if can_manage %}
         <div>
-            <a href="{% url 'apprentissage:creer_evenement' %}" class="btn" style="text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; background: var(--brand-primary); color: white; padding: 0.6rem 1.2rem; border-radius: 8px; font-weight: 600; transition: transform 0.2s, background-color 0.2s;">
-                ➕ Créer un événement
+            <a href="{% url 'apprentissage:creer_evenement' %}" class="btn" style="text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; background: var(--brand-primary, var(--primary)); color: white; padding: 0.6rem 1.2rem; border-radius: 8px; font-weight: 600; transition: transform 0.2s, background-color 0.2s;">
+                <i class="ti ti-plus" style="font-size: 14px;"></i> Créer un événement
             </a>
         </div>
         {% endif %}
     </div>
 
     <!-- Agenda list -->
-    <div class="carte" style="padding: 1.5rem; background: var(--surface); border: 1px solid var(--bordure); border-radius: 12px;">
-        <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.5rem; border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem;">Événements à venir</h2>
+    <div class="carte" style="padding: 1.75rem; background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: 16px; box-shadow: var(--shadow-sm);">
+        <h2 style="font-size: 1.35rem; font-weight: 800; margin-bottom: 1.75rem; border-bottom: 2px solid var(--border-light); padding-bottom: 0.85rem; color: var(--text-primary); display: flex; align-items: center; justify-content: space-between;">
+            <span style="display: inline-flex; align-items: center; gap: 8px;">
+                📅 Événements à venir
+            </span>
+            <span style="background: var(--primary-light, #ccfbf1); color: var(--primary, #0d9488); font-size: 0.8rem; padding: 0.2rem 0.6rem; border-radius: 20px; font-weight: 700;">
+                {{ events|length }} événement{{ events|pluralize }}
+            </span>
+        </h2>
         
-        <div style="display: flex; flex-direction: column; gap: 1rem;">
+        <div style="display: flex; flex-direction: column; gap: 1.25rem;">
             {% for evt in events %}
-            <div style="display: flex; gap: 1.5rem; padding: 1rem; border: 1px solid var(--bordure); border-radius: 8px; background: var(--surface-alt, rgba(0,0,0,0.02)); transition: transform 0.2s; align-items: center; justify-content: space-between; flex-wrap: wrap;">
-                <div style="display: flex; gap: 1.5rem; align-items: center;">
-                    <!-- Date badge -->
-                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--brand-primary); color: white; width: 64px; height: 64px; border-radius: 8px; font-weight: 700;">
-                        <span style="font-size: 0.75rem; text-transform: uppercase;">{{ evt.date_debut|date:"M" }}</span>
-                        <span style="font-size: 1.4rem; line-height: 1.1;">{{ evt.date_debut|date:"d" }}</span>
+            <div class="evt-card {% if evt.type == 'ECHEANCE_DEVOIR' %}evt-card-devoir{% elif evt.type == 'SESSION' %}evt-card-session{% elif evt.type == 'EXAMEN' %}evt-card-examen{% else %}evt-card-default{% endif %}" style="display: flex; gap: 1.5rem; padding: 1.5rem; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+                <div style="display: flex; gap: 1.5rem; align-items: center; flex: 1; min-width: 280px;">
+                    <!-- Date badge in teardrop style -->
+                    <div class="calendar-badge {% if evt.type == 'ECHEANCE_DEVOIR' %}calendar-badge-devoir{% elif evt.type == 'SESSION' %}calendar-badge-session{% elif evt.type == 'EXAMEN' %}calendar-badge-examen{% else %}calendar-badge-default{% endif %}">
+                        <div class="calendar-badge-header">{{ evt.date_debut|date:"M" }}</div>
+                        <div class="calendar-badge-day">{{ evt.date_debut|date:"d" }}</div>
                     </div>
                     
                     <!-- Info -->
-                    <div>
+                    <div style="flex: 1; min-width: 0;">
                         <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-                            <span class="badge" style="background: {% if evt.type == 'ECHEANCE_DEVOIR' %}#ef4444{% elif evt.type == 'SESSION' %}#3b82f6{% elif evt.type == 'EXAMEN' %}#f59e0b{% else %}#10b981{% endif %}; color: white; font-size: 0.75rem; padding: 0.15rem 0.5rem; border-radius: 4px; font-weight: 600;">
+                            <span class="evt-badge-custom {% if evt.type == 'ECHEANCE_DEVOIR' %}evt-badge-devoir{% elif evt.type == 'SESSION' %}evt-badge-session{% elif evt.type == 'EXAMEN' %}evt-badge-examen{% else %}evt-badge-default{% endif %}">
                                 {{ evt.get_type_display }}
                             </span>
                             {% if evt.cours %}
-                            <span style="font-size: 0.8rem; color: var(--texte-secondaire); font-weight: 500;">
-                                Cours : {{ evt.cours.titre }}
+                            <span class="evt-meta-chip">
+                                <i class="ti ti-book" style="font-size: 14px; color: var(--primary);"></i> {{ evt.cours.titre }}
                             </span>
                             {% endif %}
                             {% if evt.classe %}
-                            <span style="font-size: 0.8rem; color: var(--texte-secondaire); font-weight: 500;">
-                                Classe : {{ evt.classe.nom }}
+                            <span class="evt-meta-chip">
+                                <i class="ti ti-school" style="font-size: 14px; color: var(--secondary);"></i> {{ evt.classe.nom }}
                             </span>
                             {% endif %}
                         </div>
-                        <h3 style="font-size: 1.1rem; margin: 0.35rem 0 0.2rem 0; font-weight: 700; color: var(--text-primary);">{{ evt.titre }}</h3>
-                        <p style="margin: 0; font-size: 0.9rem; color: var(--texte-secondaire);">{{ evt.description }}</p>
-                        <div style="font-size: 0.8rem; color: var(--texte-secondaire); margin-top: 0.25rem;">
-                            🕒 {{ evt.date_debut|date:"H:i" }} {% if evt.date_fin %} - {{ evt.date_fin|date:"H:i" }}{% endif %}
+                        <h3 style="font-size: 1.15rem; margin: 0.6rem 0 0.25rem 0; font-weight: 700; color: var(--text-primary); letter-spacing: -0.01em;">{{ evt.titre_affiche }}</h3>
+                        <p style="margin: 0 0 0.5rem 0; font-size: 0.9rem; color: var(--text-secondary); line-height: 1.5;">{{ evt.description_affichee }}</p>
+                        
+                        <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; font-size: 0.8rem; color: var(--text-muted); font-weight: 500; margin-top: 0.6rem;">
+                            <span class="evt-meta-chip" style="font-size: 0.75rem; border-color: transparent; background: transparent; padding: 0;">
+                                <i class="ti ti-clock" style="font-size: 14px; color: var(--primary);"></i>
+                                {{ evt.date_debut|date:"H:i" }}{% if evt.date_fin %} - {{ evt.date_fin|date:"H:i" }}{% endif %}
+                            </span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Actions for managers -->
                 {% if can_manage and evt.createur == request.user or request.user.is_superuser or request.user.role == 'ADMIN' %}
-                <div style="display: flex; gap: 0.5rem; align-items: center;">
-                    <a href="{% url 'apprentissage:modifier_evenement' evt.id %}" class="btn btn-ghost" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; text-decoration: none; border: 1px solid var(--bordure); border-radius: 6px; font-weight: 600;">
-                        ✏️ Modifier
+                <div style="display: flex; gap: 0.5rem; align-items: center; flex-shrink: 0;">
+                    <a href="{% url 'apprentissage:modifier_evenement' evt.id %}" class="evt-btn-edit">
+                        <i class="ti ti-edit"></i> Modifier
                     </a>
-                    <form action="{% url 'apprentissage:supprimer_evenement' evt.id %}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet événement ?');" style="margin: 0;">
+                    <form action="{% url 'apprentissage:supprimer_evenement' evt.id %}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet événement ?');" style="margin: 0; display: inline-flex;">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-ghost" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; color: #ef4444; border: 1px solid #ef4444; border-radius: 6px; background: transparent; font-weight: 600; cursor: pointer; transition: background-color 0.2s;">
-                            🗑️ Supprimer
+                        <button type="submit" class="evt-btn-delete">
+                            <i class="ti ti-trash"></i> Supprimer
                         </button>
                     </form>
                 </div>
                 {% endif %}
             </div>
             {% empty %}
-            <div style="padding: 3rem; text-align: center; color: var(--texte-secondaire);">
-                📅 Aucun événement de planifié pour le moment.
+            <div style="padding: 4rem 2rem; text-align: center; color: var(--text-muted); border: 2px dashed var(--border-light); border-radius: 16px; background: rgba(0,0,0,0.01); display: flex; flex-direction: column; align-items: center; gap: 1rem;">
+                <div style="width: 64px; height: 64px; background: var(--bg-page); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: var(--text-muted); box-shadow: var(--shadow-sm);">
+                    📅
+                </div>
+                <div>
+                    <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.25rem;">Aucun événement planifié</h3>
+                    <p style="font-size: 0.88rem; max-width: 320px; margin: 0 auto;">Il n'y a aucun devoir, examen ou session planifié pour le moment.</p>
+                </div>
             </div>
             {% endfor %}
         </div>

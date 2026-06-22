@@ -403,6 +403,120 @@ def manage_classe_students_view(request, classe_id):
     })
 
 @role_required('ADMIN')
+@require_http_methods(['GET'])
+def export_classe_students_excel_view(request, classe_id):
+    import openpyxl
+    from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
+    from openpyxl.utils import get_column_letter
+    from django.http import HttpResponse
+
+    classe = get_object_or_404(Classe, pk=classe_id)
+    eleves = Utilisateur.objects.filter(classe=classe, role='ELEVE').order_by('last_name', 'first_name', 'email')
+
+    # Create workbook
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Élèves"
+
+    # Show gridlines explicitly
+    ws.views.sheetView[0].showGridLines = True
+
+    # Title block
+    ws.merge_cells('A1:E1')
+    ws['A1'] = f"Liste des élèves - Classe : {classe.nom}"
+    title_font = Font(name="Calibri", size=16, bold=True, color="FFFFFF")
+    title_fill = PatternFill(start_color="0D9488", end_color="0D9488", fill_type="solid") # Teal brand
+    ws['A1'].font = title_font
+    ws['A1'].fill = title_fill
+    ws['A1'].alignment = Alignment(horizontal="center", vertical="center")
+    ws.row_dimensions[1].height = 40
+
+    # Metadata
+    ws['A2'] = "Niveau :"
+    ws['B2'] = classe.niveau.nom
+    ws['A3'] = "Année Scolaire :"
+    ws['B3'] = classe.annee_scolaire
+    ws['A4'] = "Effectif :"
+    ws['B4'] = f"{eleves.count()} élève(s)"
+
+    meta_label_font = Font(name="Calibri", size=11, bold=True, color="334155")
+    meta_val_font = Font(name="Calibri", size=11, color="334155")
+    for row in range(2, 5):
+        ws.cell(row=row, column=1).font = meta_label_font
+        ws.cell(row=row, column=2).font = meta_val_font
+    
+    ws.row_dimensions[5].height = 15
+
+    # Headers
+    headers = ["Nom", "Prénom", "Email", "Statut Compte", "Date d'Inscription"]
+    header_row = 6
+    ws.row_dimensions[header_row].height = 25
+    header_fill = PatternFill(start_color="4F46E5", end_color="4F46E5", fill_type="solid") # Indigo secondary
+    header_font = Font(name="Calibri", size=11, bold=True, color="FFFFFF")
+    header_align = Alignment(horizontal="center", vertical="center")
+    
+    thin_border = Border(
+        left=Side(style='thin', color='CBD5E1'),
+        right=Side(style='thin', color='CBD5E1'),
+        top=Side(style='thin', color='CBD5E1'),
+        bottom=Side(style='thin', color='CBD5E1')
+    )
+
+    for col_idx, text in enumerate(headers, 1):
+        cell = ws.cell(row=header_row, column=col_idx, value=text)
+        cell.font = header_font
+        cell.fill = header_fill
+        cell.alignment = header_align
+        cell.border = thin_border
+
+    # Data
+    row_idx = 7
+    data_font = Font(name="Calibri", size=11)
+    align_left = Alignment(horizontal="left", vertical="center")
+    align_center = Alignment(horizontal="center", vertical="center")
+
+    for student in eleves:
+        ws.row_dimensions[row_idx].height = 20
+        status = student.get_statut_compte_display() if hasattr(student, 'get_statut_compte_display') else ("Actif" if student.is_active else "Inactif")
+        date_str = student.date_creation.strftime("%d/%m/%Y %H:%M") if student.date_creation else ""
+
+        row_data = [
+            student.last_name or "-",
+            student.first_name or "-",
+            student.email,
+            status,
+            date_str
+        ]
+
+        for col_idx, val in enumerate(row_data, 1):
+            cell = ws.cell(row=row_idx, column=col_idx, value=val)
+            cell.font = data_font
+            cell.border = thin_border
+            if col_idx in [3, 4, 5]:
+                cell.alignment = align_center if col_idx != 3 else align_left
+            else:
+                cell.alignment = align_left
+            
+            # Zebra
+            if row_idx % 2 == 0:
+                cell.fill = PatternFill(start_color="F8FAFC", end_color="F8FAFC", fill_type="solid")
+        row_idx += 1
+
+    # Widths
+    for col in ws.columns:
+        max_len = 0
+        col_letter = get_column_letter(col[0].column)
+        for cell in col:
+            if cell.row > 1 and cell.value:
+                max_len = max(max_len, len(str(cell.value)))
+        ws.column_dimensions[col_letter].width = max(max_len + 4, 15)
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = f'attachment; filename="eleves_{classe.nom}.xlsx"'
+    wb.save(response)
+    return response
+
+@role_required('ADMIN')
 @require_http_methods(['POST'])
 def remove_student_from_classe_page_view(request, classe_id, student_id):
     student = get_object_or_404(Utilisateur, pk=student_id)

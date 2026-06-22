@@ -11,6 +11,9 @@
             <p>Niveau : {{ classe.niveau.nom }} | Année : {{ classe.annee_scolaire }}</p>
         </div>
         <div>
+            <a href="{% url 'dashboard_admin_export_classe_students' classe.id %}" class="btn btn-primary" style="margin-right: 0.5rem;">
+                <i class="ti ti-file-export"></i> Exporter (Excel)
+            </a>
             <a href="{% url 'dashboard_admin' %}?tab=classes" class="btn btn-ghost"><i class="ti ti-arrow-left"></i> Retour aux classes</a>
         </div>
     </div>

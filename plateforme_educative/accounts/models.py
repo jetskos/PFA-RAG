@@ -139,6 +139,7 @@ class Notification(models.Model):
         ('NOUVEAU_COURS', 'Nouveau Cours'),
         ('DEMANDE_TRAITEE', 'Demande Traitée'),
         ('NOUVELLE_INSCRIPTION', 'Nouvelle Inscription'),
+        ('NOUVELLE_DEMANDE', 'Nouvelle Demande'),
     )
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
