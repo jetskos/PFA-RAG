@@ -1,6 +1,230 @@
 {% load apprentissage_extras %}
 
 <style>
+/* Highlight active chapter in sidebar */
+.sidebar-chapter-link.active {
+    background: rgba(13, 148, 136, 0.08) !important;
+    border-left-color: var(--primary, #0D9488) !important;
+}
+.sidebar-chapter-link.active strong {
+    color: var(--primary-dark, #0F766E) !important;
+}
+
+/* Premium Course card */
+.sidebar-card--course {
+    background: linear-gradient(135deg, var(--primary, #0D9488) 0%, var(--primary-dark, #0F766E) 100%) !important;
+    color: #ffffff !important;
+    border: none !important;
+    box-shadow: 0 10px 25px rgba(13, 148, 136, 0.15) !important;
+    padding: 1.5rem !important;
+    border-radius: 16px !important;
+}
+
+.sidebar-card--course h2 {
+    color: #ffffff !important;
+    font-weight: 800 !important;
+    margin-top: 0 !important;
+    font-size: 1.5rem !important;
+    letter-spacing: -0.02em !important;
+}
+
+.sidebar-card--course .eyebrow {
+    color: rgba(255, 255, 255, 0.8) !important;
+    font-size: 0.72rem !important;
+    letter-spacing: 0.1em !important;
+}
+
+.sidebar-card--course .sidebar-meta {
+    color: #ccfbf1 !important;
+    font-size: 0.82rem !important;
+    font-weight: 600 !important;
+    background: rgba(255, 255, 255, 0.16) !important;
+    padding: 3px 10px !important;
+    border-radius: 999px !important;
+    width: fit-content !important;
+    margin-bottom: 0.85rem !important;
+}
+
+.sidebar-card--course .sidebar-text {
+    color: rgba(255, 255, 255, 0.85) !important;
+    font-size: 0.88rem !important;
+    line-height: 1.5 !important;
+    margin-bottom: 1.25rem !important;
+}
+
+.sidebar-card--course .btn-secondary {
+    background: rgba(255, 255, 255, 0.18) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    backdrop-filter: blur(4px) !important;
+    font-weight: 600 !important;
+    font-size: 0.85rem !important;
+    border-radius: 8px !important;
+    padding: 0.6rem 1rem !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    transition: all 0.2s ease !important;
+    text-decoration: none !important;
+}
+
+.sidebar-card--course .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.28) !important;
+    transform: translateY(-1px) !important;
+    border-color: rgba(255, 255, 255, 0.4) !important;
+}
+
+/* Premium Sidebar Chapters */
+.sidebar-chapter {
+    background: var(--bg-surface) !important;
+    border: 1px solid var(--border-light) !important;
+    box-shadow: var(--shadow-sm) !important;
+    border-radius: 12px !important;
+    transition: all 0.2s ease !important;
+}
+
+.sidebar-chapter:hover {
+    box-shadow: var(--shadow-md) !important;
+    transform: translateY(-1px) !important;
+}
+
+/* Premium Navigation Arrows */
+.nav-arrow-btn {
+    background-color: var(--bg-surface) !important;
+    border: 1px solid var(--border-light) !important;
+    border-radius: 8px !important;
+    padding: 0.55rem 1.1rem !important;
+    font-weight: 600 !important;
+    box-shadow: var(--shadow-sm) !important;
+    transition: all 0.2s ease !important;
+}
+
+.nav-arrow-btn:hover:not(.disabled) {
+    background-color: var(--primary-light) !important;
+    border-color: var(--primary) !important;
+    color: var(--primary-dark) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: var(--shadow-md) !important;
+}
+
+/* Premium Video Placeholder */
+.video-container-wrapper {
+    border-radius: 16px !important;
+    border: 1px solid var(--border-light) !important;
+    box-shadow: var(--shadow-md) !important;
+    background: var(--bg-surface) !important;
+    padding: 1.5rem !important;
+}
+
+.video-placeholder {
+    height: 320px !important;
+    background: linear-gradient(135deg, var(--gray-50) 0%, var(--gray-100) 100%) !important;
+    border: 2px dashed var(--border-default) !important;
+    border-radius: 12px !important;
+    color: var(--text-muted) !important;
+    transition: all 0.2s ease !important;
+}
+
+[data-theme="dark"] .video-placeholder {
+    background: linear-gradient(135deg, var(--gray-800) 0%, var(--gray-900) 100%) !important;
+}
+
+.video-placeholder i {
+    font-size: 3rem !important;
+    color: var(--primary) !important;
+    opacity: 0.8 !important;
+    animation: pulse 2s infinite !important;
+}
+
+/* Premium Evaluation Section */
+.eval-section {
+    border-radius: 16px !important;
+    border: 1px solid var(--border-light) !important;
+    background: var(--bg-surface) !important;
+    box-shadow: var(--shadow-md) !important;
+    padding: 2rem !important;
+}
+
+.eval-option {
+    border-radius: 12px !important;
+    border: 1px solid var(--border-light) !important;
+    background: var(--bg-page) !important;
+    padding: 1.5rem !important;
+    transition: all 0.2s ease !important;
+}
+
+.eval-option:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: var(--shadow-md) !important;
+    border-color: var(--primary) !important;
+}
+
+/* Premium Chat Tutor Assistant Card */
+.tuteur-rag-card {
+    border-radius: 16px !important;
+    border: 1px solid var(--border-light) !important;
+    box-shadow: var(--shadow-lg) !important;
+}
+
+.chat-header {
+    background-color: var(--bg-surface) !important;
+    border-bottom: 1px solid var(--border-light) !important;
+    padding: 1.25rem 1.5rem !important;
+}
+
+.chat-messages-area {
+    background-color: var(--bg-page) !important;
+    padding: 1.5rem !important;
+}
+
+.chat-msg {
+    border-radius: 14px !important;
+    padding: 0.95rem 1.25rem !important;
+    font-size: 0.9rem !important;
+    box-shadow: var(--shadow-sm) !important;
+}
+
+.msg-assistant {
+    border: 1px solid var(--border-light) !important;
+    border-top-left-radius: 2px !important;
+    background-color: var(--bg-surface) !important;
+}
+
+.msg-student {
+    border-top-right-radius: 2px !important;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%) !important;
+    box-shadow: 0 4px 10px rgba(13, 148, 136, 0.2) !important;
+}
+
+.chat-chip {
+    border-radius: 20px !important;
+    padding: 0.45rem 1rem !important;
+    box-shadow: var(--shadow-sm) !important;
+    transition: all 0.2s ease !important;
+}
+
+.chat-chip:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: var(--shadow-md) !important;
+    background-color: var(--primary-light) !important;
+    border-color: var(--primary) !important;
+    color: var(--primary-dark) !important;
+}
+
+.chat-input-bar {
+    border-top: 1px solid var(--border-light) !important;
+    background-color: var(--bg-surface) !important;
+    padding: 1rem 1.5rem !important;
+}
+
+.chat-input-bar input {
+    border-radius: 20px !important;
+    border: 1px solid var(--border-default) !important;
+    background-color: var(--bg-page) !important;
+    padding: 0.75rem 1.25rem !important;
+}
+
 /* ── CHAPTER DETAIL CONTAINER ── */
 .chapitre-detail-container {
     display: flex;
@@ -20,20 +244,48 @@
 }
 
 .chapitre-col-droite {
-    width: 340px;
-    flex-shrink: 0;
-    position: sticky;
-    top: 6rem;
-    transition: all 0.3s ease;
+    position: fixed !important;
+    bottom: 5.5rem !important;
+    right: 2rem !important;
+    width: 380px !important;
+    max-width: 90vw !important;
+    height: 550px !important;
+    z-index: 1000 !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    opacity: 1 !important;
+    transform: translateY(0) scale(1) !important;
+    pointer-events: auto !important;
 }
 
-.tuteur-hidden .chapitre-col-droite {
-    display: none !important;
+.chapitre-col-droite.minimized {
+    opacity: 0 !important;
+    transform: translateY(20px) scale(0.95) !important;
+    pointer-events: none !important;
 }
 
-.tuteur-hidden .chapitre-col-gauche {
-    width: 100% !important;
-    flex: 1 !important;
+.chat-fab {
+    position: fixed !important;
+    bottom: 2rem !important;
+    right: 2rem !important;
+    width: 60px !important;
+    height: 60px !important;
+    border-radius: 50% !important;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%) !important;
+    color: white !important;
+    border: none !important;
+    box-shadow: 0 8px 24px rgba(13, 148, 136, 0.3) !important;
+    cursor: pointer !important;
+    display: none; /* hidden when open */
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 1.6rem !important;
+    z-index: 999 !important;
+    transition: all 0.2s ease !important;
+}
+
+.chat-fab:hover {
+    transform: scale(1.05) translateY(-2px) !important;
+    box-shadow: 0 10px 28px rgba(13, 148, 136, 0.4) !important;
 }
 
 @media (max-width: 1024px) {
@@ -552,19 +804,14 @@
         <!-- Breadcrumb & Nav -->
         <div class="chapitre-header-bar">
             <div class="content-breadcrumb">
-                <a href="{% url 'apprentissage:liste_cours' %}" hx-get="{% url 'apprentissage:liste_cours' %}" hx-target="#zone-principale" hx-swap="outerHTML" hx-push-url="true">Cours</a>
+                <a href="{% url 'apprentissage:liste_cours' %}" hx-get="{% url 'apprentissage:liste_cours' %}" hx-target="#zone-principale" hx-select="#zone-principale" hx-swap="outerHTML" hx-push-url="true">Cours</a>
                 <span>/</span>
-                <a href="{% url 'apprentissage:detail_cours' cours.id %}" hx-get="{% url 'apprentissage:detail_cours' cours.id %}" hx-target="#zone-principale" hx-swap="outerHTML" hx-push-url="true">{{ cours.titre }}</a>
+                <a href="{% url 'apprentissage:detail_cours' cours.id %}" hx-get="{% url 'apprentissage:detail_cours' cours.id %}" hx-target="#zone-principale" hx-select="#zone-principale" hx-swap="outerHTML" hx-push-url="true">{{ cours.titre }}</a>
                 <span>/</span>
                 <span class="breadcrumb-accent">{{ chapitre.titre }}</span>
             </div>
             
             <div class="chapitre-nav-arrows">
-                <!-- Toggle Assistant -->
-                <button type="button" class="nav-arrow-btn" id="btn-toggle-tuteur" title="Afficher/Masquer le Tuteur Assistant">
-                    <i class="ti ti-messages"></i> <span>Masquer Assistant</span>
-                </button>
-
                 {% if chapitre_precedent %}
                     <a href="{% url 'apprentissage:detail_chapitre' cours.id chapitre_precedent.id %}" 
                        hx-get="{% url 'apprentissage:detail_chapitre' cours.id chapitre_precedent.id %}" 
@@ -697,7 +944,7 @@
                         <i class="ti ti-checkbox"></i> Passer le QCM
                     </a>
                     <p class="eval-desc">
-                        Un questionnaire interactif auto-corrigé généré en temps réel par l'IA à partir du contenu des PDF du chapitre.
+                        Un questionnaire interactif auto-corrigé généré en temps réel par l'IA à partir du contenu des PDF du chapitre. Requis pour valider le chapitre (score minimal : 80%).
                     </p>
                 </div>
                 <div class="eval-option">
@@ -705,17 +952,41 @@
                         <i class="ti ti-messages"></i> Study Buddy — mode socratique
                     </a>
                     <p class="eval-desc">
-                        Une discussion interactive où l'IA vous pose des questions et vous guide étape par étape (contrairement au Tuteur Assistant qui répond à vos questions).
+                        Une discussion interactive où l'IA vous pose des questions et vous guide étape par étape. Atteindre 100% de maîtrise valide également le chapitre !
                     </p>
                 </div>
+        </section>
+
+        <!-- Section Validation du Chapitre -->
+        <section class="eval-section" id="validation-section" style="margin-top: 1.5rem;">
+            <h3><i class="ti ti-circle-check" style="color: var(--primary);"></i> Validation du chapitre</h3>
+            <p class="eval-intro-text" style="margin-bottom: 1.25rem;">Validez ce chapitre pour mettre à jour votre progression dans le cours.</p>
+            
+            <div id="validation-button-container">
+                {% if is_complete %}
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <button class="btn" disabled style="background:var(--accent-emerald); color:#fff; cursor: not-allowed; border:none; opacity: 0.9; display:inline-flex; align-items:center; gap:4px; justify-content:center;">
+                            <i class="ti ti-circle-check"></i> ✓ Chapitre terminé
+                        </button>
+                        {% if chapitre_suivant %}
+                            <div style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.75rem;">
+                                <a href="{% url 'apprentissage:detail_chapitre' cours.id chapitre_suivant.id %}" hx-get="{% url 'apprentissage:detail_chapitre' cours.id chapitre_suivant.id %}" hx-target="#contenu-cours" hx-swap="innerHTML" hx-push-url="true" class="btn btn-primary" style="padding: 0.65rem 1.25rem; font-size: 0.9rem; border-radius: 8px; font-weight: 600; text-decoration:none; display:inline-flex; align-items:center; gap:4px;">
+                                    Passer au chapitre suivant <i class="ti ti-arrow-right"></i>
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <button class="btn btn-primary" 
+                            hx-post="{% url 'apprentissage:valider_chapitre' chapitre.id %}" 
+                            hx-target="#validation-button-container" 
+                            hx-swap="innerHTML" 
+                            style="padding: 0.75rem 1.5rem; font-size: 0.95rem; border-radius: 8px; font-weight: 600; display:inline-flex; align-items:center; gap:4px;">
+                        <i class="ti ti-circle-check"></i> Marquer comme terminé
+                    </button>
+                {% endif %}
             </div>
         </section>
-        
-        <div style="margin-top: 1rem; border-top: 1px solid var(--border-color); padding-top: 1rem; display: flex; gap: 0.75rem;">
-            <button hx-post="{% url 'apprentissage:valider_chapitre' chapitre.id %}" hx-swap="outerHTML" class="btn btn-outline">
-                <i class="ti ti-circle-check"></i> Marquer ce chapitre comme terminé
-            </button>
-        </div>
 
     </div>
 
@@ -724,13 +995,20 @@
         <div class="tuteur-rag-card">
             
             <!-- En-tête -->
-            <div class="chat-header">
+            <div class="chat-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
                 <div class="chat-title-wrapper">
                     <span class="status-indicator-dot"></span>
-                    <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--text-primary);">Tuteur Assistant</h4>
+                    <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--text-primary); margin: 0;">Tuteur Assistant</h4>
                 </div>
-                <div class="chat-menu-placeholder" title="Options de session (Placeholder)">
-                    <i class="ti ti-dots-vertical"></i>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <button type="button" id="btn-minimize-chat" class="btn-ghost" style="padding: 4px; border: none; background: transparent; cursor: pointer; color: var(--text-secondary); display: inline-flex; align-items: center; justify-content: center; border-radius: 4px; width: 28px; height: 28px;" title="Réduire le chat"
+                            onmouseover="this.style.background='var(--bg-surface-alt)';"
+                            onmouseout="this.style.background='transparent';">
+                        <i class="ti ti-minus" style="font-size: 1.1rem;"></i>
+                    </button>
+                    <div class="chat-menu-placeholder" title="Options de session (Placeholder)">
+                        <i class="ti ti-dots-vertical"></i>
+                    </div>
                 </div>
             </div>
 
@@ -796,6 +1074,12 @@
         </div>
     </div>
 
+    <!-- Floating Action Button (FAB) pour rouvrir le Tuteur Assistant -->
+    <button id="chat-fab-toggle" class="chat-fab" title="Ouvrir le Tuteur Assistant">
+        <i class="ti ti-messages"></i>
+        <span class="status-indicator-dot" style="position: absolute; top: 12px; right: 12px; width: 10px; height: 10px; border: 2px solid var(--bg-surface, #ffffff);"></span>
+    </button>
+
 </div>
 
 <!-- ── JAVASCRIPT CONTROLLER ── -->
@@ -807,25 +1091,35 @@
     const typingIndicator = document.getElementById("chat-loading-indicator");
     const chipResume = document.getElementById("chip-resume");
     const chipExpliquer = document.getElementById("chip-expliquer");
-    const btnToggle = document.getElementById("btn-toggle-tuteur");
-    const container = document.querySelector(".chapitre-detail-container");
     const csrfToken = "{{ csrf_token }}";
     const sessionId = "{{ session_assistant.id }}";
 
-    // Toggle Assistant Panel
-    if (btnToggle && container) {
-        btnToggle.addEventListener("click", function() {
-            container.classList.toggle("tuteur-hidden");
-            const isHidden = container.classList.contains("tuteur-hidden");
-            const btnText = btnToggle.querySelector("span");
-            const btnIcon = btnToggle.querySelector("i");
-            if (isHidden) {
-                btnText.textContent = "Afficher Assistant";
-                btnIcon.className = "ti ti-message-2";
-            } else {
-                btnText.textContent = "Masquer Assistant";
-                btnIcon.className = "ti ti-messages";
-            }
+    // Floating Chat Toggle Logic
+    const chatWidget = document.querySelector('.chapitre-col-droite');
+    const chatFab = document.getElementById('chat-fab-toggle');
+    const minimizeBtn = document.getElementById('btn-minimize-chat');
+    
+    if (chatWidget && chatFab && minimizeBtn) {
+        const isMinimized = localStorage.getItem('tuteur_minimized') !== 'false';
+        
+        if (isMinimized) {
+            chatWidget.classList.add('minimized');
+            chatFab.style.display = 'flex';
+        } else {
+            chatWidget.classList.remove('minimized');
+            chatFab.style.display = 'none';
+        }
+        
+        minimizeBtn.addEventListener('click', () => {
+            chatWidget.classList.add('minimized');
+            chatFab.style.display = 'flex';
+            localStorage.setItem('tuteur_minimized', 'true');
+        });
+        
+        chatFab.addEventListener('click', () => {
+            chatWidget.classList.remove('minimized');
+            chatFab.style.display = 'none';
+            localStorage.setItem('tuteur_minimized', 'false');
             scrollToBottom();
         });
     }
@@ -1060,6 +1354,14 @@
             input.focus();
         });
     }
+
+    // Highlight active chapter link in sidebar
+    document.querySelectorAll('.sidebar-chapter-link').forEach(link => {
+        link.classList.remove('active');
+        if (link.href.includes('{{ chapitre.id }}')) {
+            link.classList.add('active');
+        }
+    });
 
 })();
 </script>

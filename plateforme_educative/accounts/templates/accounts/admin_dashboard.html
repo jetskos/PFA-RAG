@@ -4,70 +4,296 @@
 
 {% block content %}
 <style>
+    /* Premium background grid & ambient orbs */
+    .admin-wrapper {
+        position: relative;
+        width: 100%;
+        overflow: visible;
+    }
+    
+
+
+    /* Stats Dashboard Grid */
+    .admin-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.25rem;
+        margin-bottom: 2rem;
+        position: relative;
+        z-index: 2;
+    }
+    
+    .admin-stat-card {
+        background: var(--bg-surface, #ffffff);
+        border: 1px solid var(--border-light, #e2e8f0);
+        border-radius: 16px;
+        padding: 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        box-shadow: var(--shadow-sm, 0 1px 2px rgba(0,0,0,0.05));
+        transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), 
+                    box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+                    border-color 0.22s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .admin-stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md, 0 4px 6px rgba(0,0,0,0.05));
+        border-color: var(--border-default);
+    }
+    
+    .admin-stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+    }
+    
+    .stat-total::before { background: var(--primary, #0d9488); }
+    .stat-student::before { background: var(--secondary, #4f46e5); }
+    .stat-formateur::before { background: #f59e0b; }
+    .stat-admin::before { background: #ef4444; }
+    
+    .admin-stat-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.35rem;
+        flex-shrink: 0;
+    }
+    
+    .stat-total .admin-stat-icon { background: rgba(13, 148, 136, 0.08); color: var(--primary, #0d9488); }
+    .stat-student .admin-stat-icon { background: rgba(79, 70, 229, 0.08); color: var(--secondary, #4f46e5); }
+    .stat-formateur .admin-stat-icon { background: rgba(245, 158, 11, 0.08); color: #f59e0b; }
+    .stat-admin .admin-stat-icon { background: rgba(239, 68, 68, 0.08); color: #ef4444; }
+    
+    .admin-stat-content {
+        flex: 1;
+        min-width: 0;
+    }
+    
+    .admin-stat-title {
+        font-size: 0.76rem;
+        font-weight: 750;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        letter-spacing: 0.04em;
+        margin: 0;
+    }
+    
+    .admin-stat-value {
+        font-size: 1.65rem;
+        font-weight: 800;
+        color: var(--text-primary);
+        line-height: 1.2;
+        margin: 0.1rem 0;
+    }
+    
+    .admin-stat-desc {
+        font-size: 0.76rem;
+        color: var(--text-secondary);
+        margin: 0;
+    }
+
     .admin-header {
         display: flex;
         justify-content: space-between;
-        align-items: flex-end;
+        align-items: center;
         margin-bottom: 2rem;
         flex-wrap: wrap;
         gap: 1rem;
+        position: relative;
+        z-index: 2;
     }
     
     .admin-controls {
         display: flex;
-        gap: 1rem;
-        flex-wrap: wrap;
+        justify-content: space-between;
         align-items: center;
+        gap: 1.25rem;
+        flex-wrap: wrap;
         background: var(--bg-surface);
-        padding: 1rem;
-        border-radius: var(--radius-lg);
-        box-shadow: var(--shadow-sm);
+        padding: 1.25rem;
+        border-radius: 20px;
+        box-shadow: var(--shadow-md, 0 4px 6px rgba(0,0,0,0.05));
         border: 1px solid var(--border-light);
-        margin-bottom: 1.5rem;
+        margin-bottom: 2rem;
+        position: relative;
+        z-index: 2;
     }
 
     .search-bar {
-        flex: 1;
-        min-width: 250px;
         position: relative;
+        flex: 1;
+        min-width: 280px;
+        max-width: 480px;
     }
 
-    .search-bar i {
+    .search-bar .search-icon {
         position: absolute;
-        left: 12px;
+        left: 15px;
         top: 50%;
         transform: translateY(-50%);
         color: var(--text-muted);
+        font-size: 1.1rem;
+        pointer-events: none;
+        transition: color 0.25s ease;
     }
 
     .search-bar input {
         width: 100%;
-        padding: 10px 10px 10px 36px;
-        border-radius: 8px;
+        padding: 12px 16px 12px 42px;
+        border-radius: 12px;
         border: 1px solid var(--border-default);
         font-family: inherit;
         background: var(--bg-page);
+        color: var(--text-primary);
+        font-size: 0.9rem;
+        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .search-bar input:focus {
         border-color: var(--primary);
+        background: var(--bg-surface);
         outline: none;
-        box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
+        box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.12);
+    }
+    
+    .search-bar input:focus ~ .search-icon {
+        color: var(--primary);
     }
 
     .filter-group {
         display: flex;
-        gap: 0.5rem;
+        gap: 1rem;
         align-items: center;
+        flex-wrap: wrap;
     }
 
-    .filter-group select {
-        padding: 10px;
-        border-radius: 8px;
-        border: 1px solid var(--border-default);
+    .admin-filter-group {
+        display: inline-flex;
         background: var(--bg-page);
-        font-family: inherit;
+        border: 1px solid var(--border-light);
+        padding: 4px;
+        border-radius: 14px;
+        gap: 4px;
+        align-items: center;
+    }
+    
+    .admin-filter-btn {
+        background: transparent;
+        border: none;
+        padding: 8px 14px;
+        border-radius: 10px;
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+        font-weight: 600;
         cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+        user-select: none;
+    }
+    
+    .admin-filter-btn i {
+        font-size: 1.05rem;
+        transition: transform 0.2s ease;
+    }
+    
+    .admin-filter-btn:hover {
+        color: var(--text-primary);
+        background: rgba(0, 0, 0, 0.03);
+    }
+    
+    [data-theme="dark"] .admin-filter-btn:hover {
+        background: rgba(255, 255, 255, 0.05);
+    }
+    
+    .admin-filter-btn.active {
+        background: var(--bg-surface);
+        color: var(--primary);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+    
+    [data-theme="dark"] .admin-filter-btn.active {
+        background: var(--gray-700);
+        color: var(--text-primary);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+    
+    .admin-filter-btn.active i {
+        transform: scale(1.1);
+    }
+
+    .custom-select-wrapper {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+    }
+    
+    .custom-select-wrapper select {
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        padding: 9px 38px 9px 16px;
+        border-radius: 14px;
+        border: 1px solid var(--border-default);
+        background: var(--bg-surface);
+        color: var(--text-primary);
+        font-family: inherit;
+        font-size: 0.88rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+        min-width: 190px;
+    }
+    
+    .custom-select-wrapper select:hover {
+        border-color: var(--text-muted);
+    }
+    
+    .custom-select-wrapper select:focus {
+        border-color: var(--primary);
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.12);
+    }
+    
+    .custom-select-wrapper::after {
+        content: '\ea5f';
+        font-family: 'tabler-icons' !important;
+        speak: none;
+        font-style: normal;
+        font-weight: normal;
+        font-variant: normal;
+        text-transform: none;
+        line-height: 1;
+        -webkit-font-smoothing: antialiased;
+        position: absolute;
+        right: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+        pointer-events: none;
+        font-size: 1rem;
+        transition: color 0.2s ease, transform 0.2s ease;
+    }
+    
+    .custom-select-wrapper:hover::after {
+        color: var(--text-primary);
+    }
+    
+    .custom-select-wrapper:focus-within::after {
+        transform: translateY(-50%) rotate(180deg);
+        color: var(--primary);
     }
 
     .table-container {
@@ -76,6 +302,8 @@
         border-radius: var(--radius-lg);
         border: 1px solid var(--border-light);
         box-shadow: var(--shadow-sm);
+        position: relative;
+        z-index: 2;
     }
 
     .admin-table {
@@ -86,8 +314,9 @@
 
     .admin-table th {
         background: var(--bg-page);
-        padding: 12px 16px;
-        font-size: 0.8rem;
+        padding: 14px 18px;
+        font-size: 0.78rem;
+        font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.05em;
         color: var(--text-muted);
@@ -95,7 +324,7 @@
     }
 
     .admin-table td {
-        padding: 12px 16px;
+        padding: 14px 18px;
         border-bottom: 1px solid var(--border-light);
         vertical-align: middle;
     }
@@ -115,26 +344,159 @@
     }
 
     .user-avatar-mini {
-        width: 36px;
-        height: 36px;
-        border-radius: 10px;
-        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
         color: white;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-weight: bold;
+        font-weight: 800;
         font-size: 0.9rem;
+        box-shadow: var(--shadow-sm);
+        overflow: hidden;
+        position: relative;
+    }
+
+    .avatar-img-mini {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    /* Role-based avatar gradients */
+    .avatar-eleve {
+        background: linear-gradient(135deg, #3b82f6, #4f46e5);
+    }
+    .avatar-formateur {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+    }
+    .avatar-admin {
+        background: linear-gradient(135deg, #ef4444, #7c3aed);
+    }
+    .avatar-default {
+        background: linear-gradient(135deg, var(--gray-400), var(--gray-600));
+    }
+
+    /* Premium User Details Panel styling */
+    .details-container {
+        display: grid;
+        grid-template-columns: 240px 1fr;
+        gap: 2rem;
+        margin-top: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .details-container {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+    }
+
+    .details-profile-sidebar {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        background: rgba(13, 148, 136, 0.04);
+        border: 1px solid var(--border-light);
+        padding: 2rem 1.5rem;
+        border-radius: 16px;
+    }
+
+    .details-avatar-large {
+        width: 100px;
+        height: 100px;
+        border-radius: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.25rem;
+        font-weight: 800;
+        color: white;
+        box-shadow: var(--shadow-md);
+        margin-bottom: 1.25rem;
+        overflow: hidden;
+        position: relative;
+        border: 3px solid var(--primary);
+    }
+
+    .details-avatar-large img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .details-info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.25rem;
+    }
+
+    .info-field-card {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-light);
+        padding: 1.15rem;
+        border-radius: 12px;
+        box-shadow: var(--shadow-sm);
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        word-break: break-word;
+    }
+
+    .info-field-card:hover {
+        transform: translateY(-1px);
+        box-shadow: var(--shadow);
+        border-color: var(--border-default);
+    }
+
+    .info-field-card .field-label {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .info-field-card .field-value {
+        font-size: 0.95rem;
+        color: var(--text-primary);
+        font-weight: 700;
+    }
+
+    .status-dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        margin-right: 6px;
+    }
+    
+    .status-active {
+        background-color: #10b981;
+        box-shadow: 0 0 8px #10b981;
+    }
+    
+    .status-pending {
+        background-color: #f59e0b;
+        box-shadow: 0 0 8px #f59e0b;
     }
 
     .user-details {
         display: flex;
         flex-direction: column;
+        gap: 2px;
     }
 
     .user-name {
         font-weight: 700;
         color: var(--text-primary);
+        font-size: 0.95rem;
     }
 
     .user-email-text {
@@ -143,57 +505,86 @@
     }
 
     .inline-select {
-        padding: 6px;
-        border-radius: 6px;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 8px center;
+        background-size: 14px;
+        padding: 6px 28px 6px 10px;
+        border-radius: 8px;
         border: 1px solid var(--border-default);
-        background: var(--bg-page);
+        background-color: var(--bg-surface);
+        color: var(--text-primary);
         font-size: 0.85rem;
+        font-weight: 550;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    .inline-select:hover {
+        border-color: var(--text-muted);
+    }
+    .inline-select:focus {
+        border-color: var(--primary);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.1);
     }
 
     .action-buttons {
         display: flex;
-        gap: 0.5rem;
+        gap: 0.4rem;
         justify-content: flex-end;
     }
 
     .action-btn {
         padding: 6px 10px;
-        border-radius: 6px;
-        font-size: 0.8rem;
+        border-radius: 8px;
+        font-size: 0.82rem;
         font-weight: 600;
         cursor: pointer;
         display: inline-flex;
         align-items: center;
+        justify-content: center;
         gap: 4px;
         border: 1px solid transparent;
-        transition: var(--transition);
-        background: var(--bg-page);
+        transition: all 0.2s ease;
     }
 
     .btn-save {
-        color: var(--primary-dark);
-        border-color: var(--border-default);
+        background: rgba(13, 148, 136, 0.05);
+        border-color: rgba(13, 148, 136, 0.15);
+        color: var(--primary, #0D9488);
     }
     .btn-save:hover {
-        background: var(--primary-light);
-        border-color: var(--primary);
+        background: var(--primary, #0D9488) !important;
+        color: white !important;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(13, 148, 136, 0.25);
     }
 
     .btn-view {
-        color: var(--text-primary);
-        border-color: var(--border-default);
+        background: rgba(79, 70, 229, 0.05);
+        border-color: rgba(79, 70, 229, 0.15);
+        color: var(--secondary, #4F46E5);
     }
     .btn-view:hover {
-        background: var(--border-light);
+        background: var(--secondary, #4F46E5) !important;
+        color: white !important;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(79, 70, 229, 0.25);
     }
 
     .btn-del {
+        background: rgba(239, 68, 68, 0.05);
+        border-color: rgba(239, 68, 68, 0.15);
         color: #ef4444;
-        border-color: var(--border-default);
     }
     .btn-del:hover {
-        background: rgba(239, 68, 68, 0.1);
-        border-color: rgba(239, 68, 68, 0.3);
+        background: #ef4444 !important;
+        color: white !important;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(239, 68, 68, 0.25);
     }
 
     .create-drawer {
@@ -203,7 +594,10 @@
         border: 1px solid var(--border-light);
         margin-bottom: 1.5rem;
         display: none; /* toggled via JS */
-        animation: slideDown 0.3s ease-out;
+        animation: slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        position: relative;
+        z-index: 3;
+        box-shadow: var(--shadow-sm);
     }
 
     @keyframes slideDown {
@@ -214,7 +608,7 @@
     .drawer-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1rem;
+        gap: 1.25rem;
         align-items: end;
     }
 
@@ -224,6 +618,7 @@
         gap: 0.4rem;
         font-size: 0.85rem;
         font-weight: 600;
+        color: var(--text-secondary);
     }
 
     .drawer-grid input[type="text"],
@@ -233,73 +628,149 @@
         padding: 8px 12px;
         border-radius: 8px;
         border: 1px solid var(--border-default);
+        background: var(--bg-surface);
+        color: var(--text-primary);
+        transition: border-color 0.2s;
+    }
+    
+    .drawer-grid input:focus,
+    .drawer-grid select:focus {
+        border-color: var(--primary);
+        outline: none;
     }
 
 </style>
 
-<section class="page-shell">
-    <div class="admin-header">
-        <div>
-            <p class="eyebrow">Administration</p>
-            <h1>Gestion des utilisateurs</h1>
-            <p style="color: var(--text-muted); margin-top: 0.25rem;">Gérez l'accès, les rôles et les profils de votre plateforme.</p>
-        </div>
-        <button class="btn btn-primary" onclick="toggleDrawer()">
-            <i class="ti ti-user-plus"></i> Nouvel utilisateur
-        </button>
-    </div>
+<div class="admin-wrapper">
+    <!-- Ambient background glows -->
 
-    <!-- Create User Drawer -->
-    <div id="create-drawer" class="create-drawer">
-        <h3 style="margin: 0 0 1rem 0; font-size: 1.1rem;"><i class="ti ti-user-circle"></i> Création de profil</h3>
-        <div class="drawer-grid">
-            <label>Prénom <input id="create-first_name" type="text" placeholder="Ex: Jean"></label>
-            <label>Nom <input id="create-last_name" type="text" placeholder="Ex: Dupont"></label>
-            <label>Email <input id="create-email" type="email" placeholder="jean.dupont@email.com" required></label>
-            <label>Mot de passe <input id="create-password" type="password" placeholder="********" required></label>
-            <label>Rôle
-                <select id="create-role">
-                    {% for val, label in role_choices %}
-                        <option value="{{ val }}">{{ label }}</option>
-                    {% endfor %}
-                </select>
-            </label>
-            <label>Niveau (Optionnel)
-                <select id="create-niveau">
-                    <option value="">-- Aucun --</option>
-                    {% for val, label in niveau_choices %}
-                        <option value="{{ val }}">{{ label }}</option>
-                    {% endfor %}
-                </select>
-            </label>
-            <label style="flex-direction: row; align-items: center; padding-bottom: 8px; cursor: pointer;">
-                <input id="create-formateur" type="checkbox" style="width:18px; height:18px;">
-                Statut Formateur Actif
-            </label>
-            <button id="create-user" class="btn btn-primary" style="height: 38px;">
-                <i class="ti ti-check"></i> Confirmer
+    <section class="page-shell" style="position: relative; z-index: 1;">
+        <div class="admin-header">
+            <div>
+                <p class="eyebrow">Administration</p>
+                <h1>Gestion des utilisateurs</h1>
+                <p style="color: var(--text-muted); margin-top: 0.25rem;">Gérez l'accès, les rôles et les profils de votre plateforme.</p>
+            </div>
+            <button class="btn btn-primary" onclick="toggleDrawer()" style="border-radius: 10px; padding: 0.6rem 1.25rem; display: inline-flex; align-items: center; gap: 6px;">
+                <i class="ti ti-user-plus" style="font-size: 15px;"></i> Nouvel utilisateur
             </button>
         </div>
-    </div>
+
+        <!-- Details Modal / In-line view -->
+        <div id="details-box" class="carte" style="margin-bottom:2rem; display:none; background: var(--bg-surface); border-left: 4px solid var(--primary); padding: 1.5rem; border-radius: 16px; box-shadow: var(--shadow-md); position: relative; z-index: 10;"></div>
+
+        <!-- Create User Drawer -->
+        <div id="create-drawer" class="create-drawer">
+            <h3 style="margin: 0 0 1.25rem 0; font-size: 1.1rem; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 6px;"><i class="ti ti-user-circle" style="color: var(--primary);"></i> Création de profil</h3>
+            <div class="drawer-grid">
+                <label>Prénom <input id="create-first_name" type="text" placeholder="Ex: Jean"></label>
+                <label>Nom <input id="create-last_name" type="text" placeholder="Ex: Dupont"></label>
+                <label>Email <input id="create-email" type="email" placeholder="jean.dupont@email.com" required></label>
+                <label>Mot de passe <input id="create-password" type="password" placeholder="********" required></label>
+                <label>Rôle
+                    <select id="create-role">
+                        {% for val, label in role_choices %}
+                            <option value="{{ val }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                <label>Niveau (Optionnel)
+                    <select id="create-niveau">
+                        <option value="">-- Aucun --</option>
+                        {% for val, label in niveau_choices %}
+                            <option value="{{ val }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                <label style="flex-direction: row; align-items: center; padding-bottom: 8px; cursor: pointer; gap: 8px;">
+                    <input id="create-formateur" type="checkbox" style="width:18px; height:18px; cursor: pointer;">
+                    Statut Formateur Actif
+                </label>
+                <button id="create-user" class="btn btn-primary" style="height: 38px; border-radius: 8px;">
+                    <i class="ti ti-check"></i> Confirmer
+                </button>
+            </div>
+        </div>
+
+        <!-- User Statistics Dashboard -->
+        <div class="admin-stats-grid">
+            <div class="admin-stat-card stat-total">
+                <div class="admin-stat-icon">
+                    <i class="ti ti-users"></i>
+                </div>
+                <div class="admin-stat-content">
+                    <p class="admin-stat-title">Utilisateurs</p>
+                    <p class="admin-stat-value">{{ total_users|default:"0" }}</p>
+                    <p class="admin-stat-desc">Comptes enregistrés</p>
+                </div>
+            </div>
+            <div class="admin-stat-card stat-student">
+                <div class="admin-stat-icon">
+                    <i class="ti ti-school"></i>
+                </div>
+                <div class="admin-stat-content">
+                    <p class="admin-stat-title">Élèves</p>
+                    <p class="admin-stat-value">{{ student_count|default:"0" }}</p>
+                    <p class="admin-stat-desc">Profils étudiants</p>
+                </div>
+            </div>
+            <div class="admin-stat-card stat-formateur">
+                <div class="admin-stat-icon">
+                    <i class="ti ti-user-check"></i>
+                </div>
+                <div class="admin-stat-content">
+                    <p class="admin-stat-title">Formateurs</p>
+                    <p class="admin-stat-value">{{ formateur_count|default:"0" }}</p>
+                    <p class="admin-stat-desc">Enseignants & tuteurs</p>
+                </div>
+            </div>
+            <div class="admin-stat-card stat-admin">
+                <div class="admin-stat-icon">
+                    <i class="ti ti-shield-lock"></i>
+                </div>
+                <div class="admin-stat-content">
+                    <p class="admin-stat-title">Administrateurs</p>
+                    <p class="admin-stat-value">{{ admin_count|default:"0" }}</p>
+                    <p class="admin-stat-desc">Accès supervision</p>
+                </div>
+            </div>
+        </div>
+
 
     <!-- Toolbar: Search & Filter -->
     <div class="admin-controls">
         <div class="search-bar">
-            <i class="ti ti-search"></i>
             <input type="text" id="searchInput" placeholder="Rechercher par nom, email..." oninput="filterTable()">
+            <i class="ti ti-search search-icon"></i>
         </div>
         <div class="filter-group">
-            <select id="roleFilter" onchange="filterTable()">
-                <option value="ALL">Tous les rôles</option>
+            <div class="admin-filter-group" id="rolePillGroup">
+                <button type="button" class="admin-filter-btn active" data-role="ALL" onclick="setRoleFilter('ALL', this)">
+                    <i class="ti ti-users"></i>
+                    <span>Tous les rôles</span>
+                </button>
                 {% for val, label in role_choices %}
-                    <option value="{{ val }}">{{ label }}</option>
+                    <button type="button" class="admin-filter-btn" data-role="{{ val }}" onclick="setRoleFilter('{{ val }}', this)">
+                        {% if val == 'ELEVE' %}
+                            <i class="ti ti-school"></i>
+                        {% elif val == 'FORMATEUR' %}
+                            <i class="ti ti-user-check"></i>
+                        {% elif val == 'ADMIN' %}
+                            <i class="ti ti-shield-lock"></i>
+                        {% else %}
+                            <i class="ti ti-user"></i>
+                        {% endif %}
+                        <span>{{ label }}</span>
+                    </button>
                 {% endfor %}
-            </select>
-            <select id="formateurFilter" onchange="filterTable()">
-                <option value="ALL">Statut Formateur</option>
-                <option value="TRUE">Oui</option>
-                <option value="FALSE">Non</option>
-            </select>
+            </div>
+            <div class="custom-select-wrapper">
+                <select id="formateurFilter" class="no-tomselect" onchange="filterTable()">
+                    <option value="ALL">Statut Formateur</option>
+                    <option value="TRUE">Formateur: Oui</option>
+                    <option value="FALSE">Formateur: Non</option>
+                </select>
+            </div>
         </div>
     </div>
 
@@ -315,16 +786,19 @@
                     <th style="text-align:right;">Actions</th>
                 </tr>
             </thead>
-            <tbody>
-                {% for user in users %}
+                      {% for user in users %}
                 <tr data-user-id="{{ user.id }}" class="user-row" data-role="{{ user.role }}" data-formateur="{% if user.is_formateur %}TRUE{% else %}FALSE{% endif %}">
                     <td>
                         <div class="user-info-cell">
-                            <div class="user-avatar-mini">
-                                {% if user.first_name %}
-                                    {{ user.first_name|make_list|first|upper }}{% if user.last_name %}{{ user.last_name|make_list|first|upper }}{% endif %}
+                            <div class="user-avatar-mini avatar-{{ user.role|lower|default:'default' }}">
+                                {% if user.photo %}
+                                    <img src="{{ user.photo.url }}" class="avatar-img-mini" alt="{{ user.get_full_name }}">
                                 {% else %}
-                                    {{ user.email|slice:":2"|upper }}
+                                    {% if user.first_name %}
+                                        {{ user.first_name|make_list|first|upper }}{% if user.last_name %}{{ user.last_name|make_list|first|upper }}{% endif %}
+                                    {% else %}
+                                        {{ user.email|slice:":2"|upper }}
+                                    {% endif %}
                                 {% endif %}
                             </div>
                             <div class="user-details">
@@ -375,9 +849,8 @@
         </div>
     </div>
 
-    <!-- Details Modal -->
-    <div id="details-box" class="carte" style="margin-top:1.5rem; display:none; border-left: 4px solid var(--primary);"></div>
 </section>
+</div>
 
 <script>
 function csrfToken() {
@@ -392,10 +865,23 @@ function toggleDrawer() {
     drawer.style.display = drawer.style.display === 'block' ? 'none' : 'block';
 }
 
+let currentRoleFilter = 'ALL';
+
+function setRoleFilter(role, btn) {
+    currentRoleFilter = role;
+    
+    // Update active button styling in the pill group
+    const buttons = document.querySelectorAll('.admin-filter-btn');
+    buttons.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    
+    filterTable();
+}
+
 // Client-side search and filtering
 function filterTable() {
     const query = document.getElementById('searchInput').value.toLowerCase();
-    const roleFilter = document.getElementById('roleFilter').value;
+    const roleFilter = currentRoleFilter;
     const formateurFilter = document.getElementById('formateurFilter').value;
     
     const rows = document.querySelectorAll('.user-row');
@@ -433,12 +919,19 @@ function buildUserRow(user) {
     niveauOptions += '<option value="{{ val }}"' + (user.niveau === '{{ val }}' ? ' selected' : '') + '>{{ label }}</option>';
     {% endfor %}
 
-    const initials = user.full_name ? user.full_name.substring(0, 2).toUpperCase() : user.email.substring(0, 2).toUpperCase();
+    var avatarHtml = '';
+    if (user.photo_url) {
+        avatarHtml = '<img src="' + user.photo_url + '" class="avatar-img-mini" alt="' + (user.full_name || '') + '">';
+    } else {
+        const initials = user.full_name ? user.full_name.substring(0, 2).toUpperCase() : user.email.substring(0, 2).toUpperCase();
+        avatarHtml = initials;
+    }
+    const roleClass = 'avatar-' + (user.role ? user.role.toLowerCase() : 'default');
 
     return '<tr data-user-id="' + user.id + '" class="user-row" data-role="' + user.role + '" data-formateur="' + (user.is_formateur ? 'TRUE' : 'FALSE') + '">' +
         '<td>' +
             '<div class="user-info-cell">' +
-                '<div class="user-avatar-mini">' + initials + '</div>' +
+                '<div class="user-avatar-mini ' + roleClass + '">' + avatarHtml + '</div>' +
                 '<div class="user-details">' +
                     '<span class="user-name search-target">' + (user.full_name || user.email) + '</span>' +
                     '<span class="user-email-text search-target">' + user.email + '</span>' +
@@ -546,6 +1039,11 @@ document.addEventListener('click', function(e){
             if (json.status === 'success'){
                 icon.className = "ti ti-check";
                 icon.style.color = "#10b981";
+                
+                // Update avatar class if role changed
+                var avatarDiv = row.querySelector('.user-avatar-mini');
+                avatarDiv.className = 'user-avatar-mini avatar-' + role.toLowerCase();
+                
                 setTimeout(function(){ 
                     icon.className = "ti ti-device-floppy"; 
                     icon.style.color = "";
@@ -608,20 +1106,112 @@ document.addEventListener('click', function(e){
             var u = json.user;
             var box = document.getElementById('details-box');
             box.style.display = 'block';
+
+            // Set left border color depending on role
+            var roleColor = 'var(--primary)';
+            var roleGradientStart = '#cbd5e1';
+            var roleGradientEnd = '#94a3b8';
+            var roleBadgeBg = 'rgba(148, 163, 184, 0.15)';
+            var roleBadgeText = '#475569';
+            
+            if (u.role_code === 'FORMATEUR') {
+                roleColor = '#f59e0b';
+                roleGradientStart = '#f59e0b';
+                roleGradientEnd = '#d97706';
+                roleBadgeBg = 'rgba(245, 158, 11, 0.15)';
+                roleBadgeText = '#b45309';
+            } else if (u.role_code === 'ADMIN') {
+                roleColor = '#ef4444';
+                roleGradientStart = '#ef4444';
+                roleGradientEnd = '#7c3aed';
+                roleBadgeBg = 'rgba(239, 68, 68, 0.15)';
+                roleBadgeText = '#b91c1c';
+            } else if (u.role_code === 'ELEVE') {
+                roleColor = '#3b82f6';
+                roleGradientStart = '#3b82f6';
+                roleGradientEnd = '#4f46e5';
+                roleBadgeBg = 'rgba(59, 130, 246, 0.15)';
+                roleBadgeText = '#1d4ed8';
+            }
+            
+            box.style.borderLeft = '4px solid ' + roleColor;
+            
+            // Initials for fallback
+            var initials = '';
+            if (u.first_name) {
+                initials = u.first_name.charAt(0).toUpperCase() + (u.last_name ? u.last_name.charAt(0).toUpperCase() : '');
+            } else {
+                initials = u.email.substring(0, 2).toUpperCase();
+            }
+            
+            var avatarMarkup = '';
+            if (u.photo_url) {
+                avatarMarkup = '<img src="' + u.photo_url + '" alt="' + u.full_name + '">';
+            } else {
+                avatarMarkup = initials;
+            }
+            
+            var statusDot = (u.statut_compte === 'Actif' || u.is_active) ? 'status-active' : 'status-pending';
+
             box.innerHTML =
-                '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">' +
-                    '<h2 style="margin:0;"><i class="ti ti-id-badge"></i> Détails : ' + (u.full_name || u.email) + '</h2>' +
-                    '<button onclick="document.getElementById(\'details-box\').style.display=\'none\'" class="btn btn-ghost"><i class="ti ti-x"></i></button>' +
+                '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; border-bottom: 1px solid var(--border-light); padding-bottom: 1rem;">' +
+                    '<h3 style="margin:0; font-size:1.25rem; font-weight: 800; color:var(--text-primary); display:flex; align-items:center; gap:8px;"><i class="ti ti-id-badge" style="color:' + roleColor + '; font-size: 1.5rem;"></i> Fiche Utilisateur : ' + u.email + '</h3>' +
+                    '<button onclick="document.getElementById(\'details-box\').style.display=\'none\'" class="btn btn-ghost" style="padding: 6px; border-radius:50%; width:32px; height:32px; display:flex; align-items:center; justify-content:center;"><i class="ti ti-x" style="font-size:1.15rem;"></i></button>' +
                 '</div>' +
-                '<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">' +
-                    '<div><span class="section-meta-title">Email</span><strong>' + u.email + '</strong></div>' +
-                    '<div><span class="section-meta-title">Rôle</span><strong>' + u.role + '</strong></div>' +
-                    '<div><span class="section-meta-title">Niveau</span><strong>' + (u.niveau || 'Aucun') + '</strong></div>' +
-                    '<div><span class="section-meta-title">Formateur Actif</span><strong>' + (u.is_formateur ? 'Oui' : 'Non') + '</strong></div>' +
-                    '<div><span class="section-meta-title">Créé le</span><strong>' + u.date_creation + '</strong></div>' +
-                    '<div><span class="section-meta-title">Dernière connexion</span><strong>' + u.last_login + '</strong></div>' +
+                '<div class="details-container">' +
+                    '<!-- Left: Profile card -->' +
+                    '<div class="details-profile-sidebar">' +
+                        '<div class="details-avatar-large" style="border-color:' + roleColor + '; background: linear-gradient(135deg, ' + roleGradientStart + ', ' + roleGradientEnd + ');">' +
+                            avatarMarkup +
+                        '</div>' +
+                        '<h4 style="margin:0 0 0.35rem 0; font-size: 1.25rem; font-weight: 800; color: var(--text-primary); word-break: break-all;">' + (u.full_name || (u.first_name + ' ' + u.last_name).trim() || u.email) + '</h4>' +
+                        '<span style="background:' + roleBadgeBg + '; color:' + roleBadgeText + '; padding:0.4rem 0.85rem; border-radius:30px; font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; display:inline-block;">' + u.role + '</span>' +
+                    '</div>' +
+                    '<!-- Right: Fields grid -->' +
+                    '<div class="details-info-grid">' +
+                        '<div class="info-field-card">' +
+                            '<span class="field-label"><i class="ti ti-user"></i> Prénom</span>' +
+                            '<span class="field-value">' + (u.first_name || '<em style="color:var(--text-muted); font-weight:normal;">Non renseigné</em>') + '</span>' +
+                        '</div>' +
+                        '<div class="info-field-card">' +
+                            '<span class="field-label"><i class="ti ti-user"></i> Nom</span>' +
+                            '<span class="field-value">' + (u.last_name || '<em style="color:var(--text-muted); font-weight:normal;">Non renseigné</em>') + '</span>' +
+                        '</div>' +
+                        '<div class="info-field-card">' +
+                            '<span class="field-label"><i class="ti ti-mail"></i> Adresse Email</span>' +
+                            '<span class="field-value">' + u.email + '</span>' +
+                        '</div>' +
+                        '<div class="info-field-card">' +
+                            '<span class="field-label"><i class="ti ti-shield"></i> Rôle</span>' +
+                            '<span class="field-value">' + u.role + '</span>' +
+                        '</div>' +
+                        '<div class="info-field-card">' +
+                            '<span class="field-label"><i class="ti ti-school"></i> Niveau d\'études</span>' +
+                            '<span class="field-value">' + (u.niveau || 'Aucun') + '</span>' +
+                        '</div>' +
+                        '<div class="info-field-card">' +
+                            '<span class="field-label"><i class="ti ti-users"></i> Classe</span>' +
+                            '<span class="field-value">' + (u.classe || 'Aucune') + '</span>' +
+                        '</div>' +
+                        '<div class="info-field-card">' +
+                            '<span class="field-label"><i class="ti ti-circle-check"></i> Statut du Compte</span>' +
+                            '<span class="field-value" style="display:flex; align-items:center;"><span class="status-dot ' + statusDot + '"></span>' + u.statut_compte + '</span>' +
+                        '</div>' +
+                        '<div class="info-field-card">' +
+                            '<span class="field-label"><i class="ti ti-presentation"></i> Formateur Actif</span>' +
+                            '<span class="field-value">' + (u.is_formateur ? '<span style="color:#10b981; display:flex; align-items:center; gap:4px;"><i class="ti ti-check"></i> Oui</span>' : '<span style="color:var(--text-muted); display:flex; align-items:center; gap:4px;"><i class="ti ti-x"></i> Non</span>') + '</span>' +
+                        '</div>' +
+                        '<div class="info-field-card">' +
+                            '<span class="field-label"><i class="ti ti-calendar"></i> Date d\'inscription</span>' +
+                            '<span class="field-value">' + u.date_creation + '</span>' +
+                        '</div>' +
+                        '<div class="info-field-card">' +
+                            '<span class="field-label"><i class="ti ti-clock"></i> Dernière connexion</span>' +
+                            '<span class="field-value">' + u.last_login + '</span>' +
+                        '</div>' +
+                    '</div>' +
                 '</div>';
-            box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }).catch(function(err){ console.error(err); alert('Erreur details: ' + err.message); });
     }
 });
@@ -633,5 +1223,4 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 </script>
-
 {% endblock %}

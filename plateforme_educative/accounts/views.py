@@ -131,6 +131,7 @@ def admin_dashboard(request):
                     'classe': str(user.classe) if user.classe else '',
                     'is_formateur': user.is_formateur,
                     'is_superuser': user.is_superuser,
+                    'photo_url': user.photo.url if user.photo else '',
                 }
             })
 

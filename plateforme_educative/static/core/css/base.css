@@ -5186,3 +5186,21 @@ tr:hover td {
         }
     
 
+
+/* ==========================================================================
+   HTMX Stability Fixes (Prevent layout shrinking/repositioning)
+   ========================================================================== */
+.htmx-request {
+    opacity: 0.7;
+    transition: opacity 200ms ease-in-out;
+    pointer-events: none;
+}
+
+/* Ensure containers don't collapse when content is being swapped */
+[hx-target], [hx-swap] {
+    min-height: min-content;
+}
+
+.chapitre-detail-container, .tuteur-rag-card, #validation-button-container {
+    min-height: 100px;
+}

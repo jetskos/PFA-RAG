@@ -59,7 +59,7 @@ urlpatterns = [
     path('dashboard/admin/classes/<uuid:classe_id>/eleves/add/', add_student_to_classe_page_view, name='dashboard_admin_add_student_page'),
     path('dashboard/admin/classes/<uuid:classe_id>/eleves/export/', export_classe_students_excel_view, name='dashboard_admin_export_classe_students'),
     path('dashboard/admin/pending/activer/', activate_pending_student_view, name='dashboard_admin_activate_pending_student'),
-        path('dashboard/admin/demandes/<uuid:demande_id>/process/',
+        path('dashboard/admin/demandes/<int:demande_id>/process/',
             admin_process_demande_view, name='dashboard_admin_process_demande'),
     path('dashboard/admin/equipements/creer/', admin_equipement_create_view, name='dashboard_admin_create_equipement'),
     path('dashboard/admin/equipements/<int:equipement_id>/editer/', admin_equipement_update_view, name='dashboard_admin_edit_equipement'),
@@ -72,9 +72,6 @@ urlpatterns = [
     path('apprentissage/', include('apprentissage.urls')),
     path('logistics/', include('logistics.urls', namespace='logistics')),
     path('tuteur/', include('tuteur_ia.urls', namespace='tuteur_ia')),
-    path('analytics/', include('analytics.urls', namespace='analytics')),
-    path('audit/', include('audit.urls', namespace='audit')),
-    path('api/', include('api.urls')),
 ]
 
 if settings.DEBUG:

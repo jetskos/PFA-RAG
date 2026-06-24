@@ -184,6 +184,39 @@ def repondre(request, session_id):
         session.mastery_score_final = mastery_score
         if session_terminee:
             session.statut = 'TERMINEE'
+            
+            # --- SAUVEGARDE DU SCORE QCM DANS LE CARNET DE NOTES ---
+            try:
+                from apprentissage.models import Devoir, Soumission
+                # Vérifier si un devoir IA existe déjà pour ce chapitre
+                devoir_ia, created = Devoir.objects.get_or_create(
+                    chapitre=session.chapitre,
+                    titre=f"QCM Intelligence Artificielle - {session.chapitre.titre}",
+                    defaults={
+                        'consigne': "Évaluation générée automatiquement par le Tuteur IA.",
+                        'note_max': 100,
+                        'createur': session.chapitre.cours.createur,
+                    }
+                )
+                
+                # Créer ou mettre à jour la soumission pour l'étudiant
+                soumission, s_created = Soumission.objects.get_or_create(
+                    devoir=devoir_ia,
+                    etudiant=session.etudiant,
+                    defaults={
+                        'note': min(mastery_score * 100, 100),
+                        'feedback': "Score automatique par le Tuteur IA.",
+                    }
+                )
+                if not s_created:
+                    nouvelle_note = min(mastery_score * 100, 100)
+                    if soumission.note is None or nouvelle_note > soumission.note:
+                        soumission.note = nouvelle_note
+                        soumission.save(update_fields=['note'])
+            except Exception as e:
+                logger.error(f"Erreur sauvegarde carnet de notes: {e}")
+            # --------------------------------------------------------
+
         session.save()
 
         return JsonResponse({
