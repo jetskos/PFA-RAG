@@ -57,9 +57,6 @@ INSTALLED_APPS = [
     'apprentissage',
     'logistics',
     'tuteur_ia',
-    'analytics',
-    'audit',
-    'api',
 ]
 
 MIDDLEWARE = [
@@ -175,6 +172,7 @@ EMAIL_PORT = int(os.getenv('EMAIL_PORT', 25))
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
 EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'False').lower() in {'1', 'true', 'yes', 'on'}
+EMAIL_TIMEOUT = 5
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'webmaster@localhost')
 
 GROQ_API_KEY = os.getenv('GROQ_API_KEY', '')
