@@ -34,7 +34,19 @@
         </div>
     </div>
 
-    <div id="chapitres-container" style="margin-top: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 2rem; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem; background: var(--surface); padding: 1rem; border-radius: 8px; border: 1px solid var(--bordure);">
+        <div style="position: relative; width: 100%; max-width: 400px;">
+            <i class="ti ti-search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--texte-secondaire);"></i>
+            <input type="text" id="chapter-search" placeholder="Rechercher un chapitre, PDF ou devoir..." 
+                   style="width: 100%; padding: 8px 12px 8px 36px; border-radius: 6px; border: 1px solid var(--bordure); background: #f8fafc; font-size: 0.95rem; outline: none;">
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+            <button class="btn btn-ghost" onclick="toggleAllAccordions(true)" style="padding: 6px 12px; font-size: 0.85rem;"><i class="ti ti-arrows-maximize"></i> Tout déplier</button>
+            <button class="btn btn-ghost" onclick="toggleAllAccordions(false)" style="padding: 6px 12px; font-size: 0.85rem;"><i class="ti ti-arrows-minimize"></i> Tout replier</button>
+        </div>
+    </div>
+
+    <div id="chapitres-container">
         {% include 'apprentissage/partials/chapitres_list.html' with cours=cours chapitres=chapitres %}
     </div>
 
@@ -48,5 +60,35 @@
     document.getElementById('form-modal').addEventListener('click', function(e) {
         if (e.target === this) this.style.display = 'none';
     });
+
+    // Filtrage instantané
+    document.getElementById('chapter-search').addEventListener('input', function(e) {
+        const term = e.target.value.toLowerCase();
+        const chapters = document.querySelectorAll('.builder-accordion');
+        
+        chapters.forEach(chap => {
+            const text = chap.textContent.toLowerCase();
+            if(text.includes(term)) {
+                chap.style.display = 'block';
+                if(term.length > 2 && !chap.hasAttribute('open')) {
+                    chap.setAttribute('open', '');
+                }
+            } else {
+                chap.style.display = 'none';
+            }
+        });
+    });
+
+    // Tout (dé)plier
+    function toggleAllAccordions(expand) {
+        const chapters = document.querySelectorAll('.builder-accordion');
+        chapters.forEach(chap => {
+            if(expand) {
+                chap.setAttribute('open', '');
+            } else {
+                chap.removeAttribute('open');
+            }
+        });
+    }
 </script>
 {% endblock %}

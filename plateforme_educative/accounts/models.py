@@ -98,6 +98,7 @@ class Utilisateur(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     is_formateur = models.BooleanField(default=False)
+    onboarding_completed = models.BooleanField(default=False)
     
     def get_full_name(self):
         if self.first_name and self.last_name:
@@ -115,6 +116,21 @@ class Utilisateur(AbstractBaseUser, PermissionsMixin):
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = [] # Email est déjà requis par USERNAME_FIELD
+
+    def save(self, *args, **kwargs):
+        if self.role == 'FORMATEUR':
+            self.is_formateur = True
+            self.is_staff = False
+            self.is_superuser = False
+        elif self.role == 'ADMIN':
+            self.is_formateur = False
+            self.is_staff = True
+            self.is_superuser = True
+        else:
+            self.is_formateur = False
+            self.is_staff = False
+            self.is_superuser = False
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.get_full_name()

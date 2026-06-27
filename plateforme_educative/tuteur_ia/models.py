@@ -2,6 +2,75 @@ import uuid
 from django.db import models
 
 
+class GraphCheckpoint(models.Model):
+    """Persistance LangGraph : snapshots du workflow (remplace MemorySaver)."""
+    thread_id            = models.CharField(max_length=255, db_index=True)
+    checkpoint_ns        = models.CharField(max_length=255, default="")
+    checkpoint_id        = models.CharField(max_length=255)
+    parent_checkpoint_id = models.CharField(max_length=255, blank=True, null=True)
+    type                 = models.CharField(max_length=50, default="json")
+    checkpoint           = models.BinaryField()
+    metadata             = models.BinaryField()
+    created_at           = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = [("thread_id", "checkpoint_ns", "checkpoint_id")]
+        ordering = ["-created_at"]
+        verbose_name = "Checkpoint LangGraph"
+        verbose_name_plural = "Checkpoints LangGraph"
+
+    def __str__(self):
+        return f"[{self.thread_id}] {self.checkpoint_id[:8]}…"
+
+
+class GraphWrite(models.Model):
+    """Persistance LangGraph : pending writes entre nœuds."""
+    thread_id     = models.CharField(max_length=255, db_index=True)
+    checkpoint_ns = models.CharField(max_length=255, default="")
+    checkpoint_id = models.CharField(max_length=255, db_index=True)
+    task_id       = models.CharField(max_length=255)
+    idx           = models.IntegerField()
+    channel       = models.CharField(max_length=255)
+    type          = models.CharField(max_length=50)
+    value         = models.BinaryField()
+
+    class Meta:
+        unique_together = [("thread_id", "checkpoint_ns", "checkpoint_id", "task_id", "idx")]
+        verbose_name = "Write LangGraph"
+        verbose_name_plural = "Writes LangGraph"
+
+    def __str__(self):
+        return f"[{self.thread_id}] {self.channel}[{self.idx}]"
+
+
+class DocumentChunk(models.Model):
+    """
+    Stockage persistant des chunks de documents pour la recherche BM25.
+    Synchronisé avec ChromaDB lors de l'indexation.
+    """
+    chunk_id        = models.CharField(max_length=255, unique=True, db_index=True)
+    document_id     = models.CharField(max_length=36, db_index=True)
+    document_titre  = models.CharField(max_length=500)
+    chapitre_id     = models.CharField(max_length=36, db_index=True)
+    cours_id        = models.CharField(max_length=36, db_index=True)
+    page_hint       = models.CharField(max_length=20, blank=True)
+    chunk_index     = models.IntegerField(default=0)
+    texte           = models.TextField()
+    date_creation   = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Chunk de document'
+        verbose_name_plural = 'Chunks de documents'
+        indexes = [
+            models.Index(fields=['chapitre_id']),
+            models.Index(fields=['cours_id']),
+            models.Index(fields=['document_id']),
+        ]
+
+    def __str__(self):
+        return f"{self.document_titre} — chunk {self.chunk_index}"
+
+
 class ProfilEtudiantIA(models.Model):
     etudiant = models.OneToOneField(
         'accounts.Utilisateur', on_delete=models.CASCADE, related_name='profil_ia'

@@ -39,7 +39,7 @@
                 {% endif %}
                 
                 <div style="flex-grow: 1; display: flex; justify-content: flex-end;">
-                    {% if user.is_staff or user.is_formateur %}
+                    {% if user.is_staff or user.role == "ADMIN" or user.is_formateur %}
                     <form hx-post="{{ resolve_url }}" hx-target="#tickets-list" hx-swap="innerHTML" style="margin: 0;">
                         {% csrf_token %}
                         <input type="hidden" name="ticket_id" value="{{ ticket.id }}">

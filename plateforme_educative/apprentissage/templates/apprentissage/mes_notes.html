@@ -28,6 +28,23 @@
         </div>
     </div>
 
+    <!-- Barre de recherche et filtres -->
+    <div class="filters-section" style="margin-top: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap; background: var(--surface); padding: 1rem; border-radius: 12px; border: 1px solid var(--bordure);">
+        <form method="get" style="display: flex; gap: 1rem; width: 100%; align-items: center;">
+            <div style="flex: 1; position: relative;">
+                <i class="ti ti-search" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--texte-secondaire);"></i>
+                <input type="text" name="q" placeholder="Rechercher un cours..." value="{{ search_query }}" style="width: 100%; padding: 0.6rem 1rem 0.6rem 2.5rem; border: 1px solid var(--bordure); border-radius: 8px; background: var(--fond); color: var(--texte);">
+            </div>
+            <select name="statut" style="padding: 0.6rem 1rem; border: 1px solid var(--bordure); border-radius: 8px; background: var(--fond); color: var(--texte);">
+                <option value="tous" {% if statut_filter == 'tous' %}selected{% endif %}>Tous les statuts (Chapitres)</option>
+                <option value="reussi" {% if statut_filter == 'reussi' %}selected{% endif %}>Réussi</option>
+                <option value="echec" {% if statut_filter == 'echec' %}selected{% endif %}>Échoué</option>
+                <option value="non_tente" {% if statut_filter == 'non_tente' %}selected{% endif %}>Non tenté</option>
+            </select>
+            <button type="submit" class="btn btn-primary" style="padding: 0.6rem 1.5rem;">Filtrer</button>
+        </form>
+    </div>
+
     {% if bulletin.cours %}
         {% for cours_data in bulletin.cours %}
         <div class="carte" style="margin-top: 2rem; padding: 0; overflow: hidden;">

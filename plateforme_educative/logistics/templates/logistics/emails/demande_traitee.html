@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Votre demande a été traitée — EduTech</title>
+</head>
+<body style="margin:0;padding:0;background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif;">
+
+  <!-- Wrapper -->
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f1f5f9;padding:40px 16px;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;">
+
+          <!-- HEADER -->
+          <tr>
+            <td>
+              <table width="100%" cellpadding="0" cellspacing="0" border="0"
+                     style="background:linear-gradient(135deg,#0f766e 0%,#065f46 60%,#0c4a6e 100%);
+                            border-radius:20px 20px 0 0;padding:40px 40px 32px;">
+                <tr>
+                  <td>
+                    <!-- Logo / Brand -->
+                    <table cellpadding="0" cellspacing="0" border="0" style="margin-bottom:28px;">
+                      <tr>
+                        <td style="background:rgba(255,255,255,0.15);border-radius:12px;
+                                   width:44px;height:44px;text-align:center;vertical-align:middle;">
+                          <span style="font-size:22px;line-height:44px;">🎓</span>
+                        </td>
+                        <td style="padding-left:12px;vertical-align:middle;">
+                          <span style="font-size:18px;font-weight:800;color:#ffffff;letter-spacing:-0.02em;">EduTech</span>
+                          <span style="font-size:13px;color:rgba(255,255,255,0.6);margin-left:6px;">IoT & IA Platform</span>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <!-- Status icon -->
+                    <div style="text-align:center;margin-bottom:20px;">
+                      {% if statut == 'APPROVED' %}
+                        <div style="display:inline-block;background:rgba(16,185,129,0.2);
+                                    border:2px solid rgba(16,185,129,0.4);
+                                    border-radius:50%;width:72px;height:72px;
+                                    line-height:72px;font-size:36px;text-align:center;">✅</div>
+                      {% elif statut == 'REJECTED' %}
+                        <div style="display:inline-block;background:rgba(239,68,68,0.2);
+                                    border:2px solid rgba(239,68,68,0.4);
+                                    border-radius:50%;width:72px;height:72px;
+                                    line-height:72px;font-size:36px;text-align:center;">❌</div>
+                      {% else %}
+                        <div style="display:inline-block;background:rgba(59,130,246,0.2);
+                                    border:2px solid rgba(59,130,246,0.4);
+                                    border-radius:50%;width:72px;height:72px;
+                                    line-height:72px;font-size:36px;text-align:center;">🔄</div>
+                      {% endif %}
+                    </div>
+
+                    <!-- Title -->
+                    <h1 style="margin:0;font-size:26px;font-weight:900;color:#ffffff;
+                               text-align:center;letter-spacing:-0.03em;line-height:1.2;">
+                      {% if statut == 'APPROVED' %}Demande approuvée !
+                      {% elif statut == 'REJECTED' %}Demande rejetée
+                      {% else %}Équipement retourné{% endif %}
+                    </h1>
+                    <p style="margin:10px 0 0;font-size:14px;color:rgba(255,255,255,0.7);
+                              text-align:center;font-weight:500;">
+                      Notification automatique · EduTech Logistics
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- STATUS BANNER -->
+          <tr>
+            <td>
+              {% if statut == 'APPROVED' %}
+              <div style="background:#dcfce7;border-left:4px solid #10b981;
+                          padding:14px 24px;text-align:center;">
+                <span style="font-size:13px;font-weight:800;color:#065f46;
+                             text-transform:uppercase;letter-spacing:0.08em;">
+                  ✅ &nbsp;APPROUVÉE — Matériel disponible
+                </span>
+              </div>
+              {% elif statut == 'REJECTED' %}
+              <div style="background:#fee2e2;border-left:4px solid #ef4444;
+                          padding:14px 24px;text-align:center;">
+                <span style="font-size:13px;font-weight:800;color:#991b1b;
+                             text-transform:uppercase;letter-spacing:0.08em;">
+                  ❌ &nbsp;REJETÉE — Demande non accordée
+                </span>
+              </div>
+              {% else %}
+              <div style="background:#dbeafe;border-left:4px solid #3b82f6;
+                          padding:14px 24px;text-align:center;">
+                <span style="font-size:13px;font-weight:800;color:#1e3a8a;
+                             text-transform:uppercase;letter-spacing:0.08em;">
+                  🔄 &nbsp;RETOURNÉ — Équipement récupéré
+                </span>
+              </div>
+              {% endif %}
+            </td>
+          </tr>
+
+          <!-- BODY -->
+          <tr>
+            <td style="background:#ffffff;padding:36px 40px;">
+
+              <!-- Greeting -->
+              <p style="margin:0 0 24px;font-size:16px;color:#0f172a;font-weight:700;">
+                Bonjour {{ formateur_nom }}&nbsp;👋
+              </p>
+              <p style="margin:0 0 28px;font-size:15px;color:#475569;line-height:1.6;">
+                Votre demande de matériel a été traitée par l'administration.
+                Voici le détail de la décision&nbsp;:
+              </p>
+
+              <!-- Demande card -->
+              <table width="100%" cellpadding="0" cellspacing="0" border="0"
+                     style="background:#f8fafc;border:1px solid #e2e8f0;
+                            border-radius:16px;margin-bottom:28px;overflow:hidden;">
+                <tr>
+                  <td style="background:#0f766e;padding:14px 20px;">
+                    <span style="font-size:11px;font-weight:800;color:#ccfbf1;
+                                 text-transform:uppercase;letter-spacing:0.1em;">
+                      📦 Détail de la demande
+                    </span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:20px;">
+                    <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td width="50%" style="padding-bottom:16px;vertical-align:top;">
+                          <div style="font-size:11px;font-weight:700;color:#94a3b8;
+                                      text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">
+                            Équipement
+                          </div>
+                          <div style="font-size:15px;font-weight:800;color:#0f172a;">
+                            {{ equipement_nom }}
+                          </div>
+                        </td>
+                        <td width="50%" style="padding-bottom:16px;vertical-align:top;">
+                          <div style="font-size:11px;font-weight:700;color:#94a3b8;
+                                      text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">
+                            Quantité
+                          </div>
+                          <div style="font-size:15px;font-weight:800;color:#0f172a;">
+                            {{ quantite }} unité{{ quantite|pluralize }}
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td width="50%" style="vertical-align:top;">
+                          <div style="font-size:11px;font-weight:700;color:#94a3b8;
+                                      text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">
+                            Atelier cible
+                          </div>
+                          <div style="font-size:14px;font-weight:600;color:#334155;">
+                            {{ atelier_nom|default:"Non spécifié" }}
+                          </div>
+                        </td>
+                        <td width="50%" style="vertical-align:top;">
+                          <div style="font-size:11px;font-weight:700;color:#94a3b8;
+                                      text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">
+                            Décision
+                          </div>
+                          {% if statut == 'APPROVED' %}
+                          <div style="display:inline-block;background:#dcfce7;color:#065f46;
+                                      font-size:12px;font-weight:800;padding:4px 12px;
+                                      border-radius:999px;border:1px solid #bbf7d0;">
+                            ✅ Approuvée
+                          </div>
+                          {% elif statut == 'REJECTED' %}
+                          <div style="display:inline-block;background:#fee2e2;color:#991b1b;
+                                      font-size:12px;font-weight:800;padding:4px 12px;
+                                      border-radius:999px;border:1px solid #fecaca;">
+                            ❌ Rejetée
+                          </div>
+                          {% else %}
+                          <div style="display:inline-block;background:#dbeafe;color:#1e3a8a;
+                                      font-size:12px;font-weight:800;padding:4px 12px;
+                                      border-radius:999px;border:1px solid #bfdbfe;">
+                            🔄 Retourné
+                          </div>
+                          {% endif %}
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Message spécifique -->
+              {% if statut == 'APPROVED' %}
+              <table width="100%" cellpadding="0" cellspacing="0" border="0"
+                     style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;
+                            margin-bottom:28px;">
+                <tr>
+                  <td style="padding:18px 20px;">
+                    <p style="margin:0;font-size:14px;color:#14532d;font-weight:600;line-height:1.6;">
+                      🎉 <strong>Félicitations !</strong> Votre demande a été approuvée.
+                      Vous pouvez récupérer {{ quantite }}x <strong>{{ equipement_nom }}</strong>
+                      auprès du service logistique.
+                    </p>
+                  </td>
+                </tr>
+              </table>
+              {% elif statut == 'REJECTED' %}
+              <table width="100%" cellpadding="0" cellspacing="0" border="0"
+                     style="background:#fff7f7;border:1px solid #fecaca;border-radius:12px;
+                            margin-bottom:28px;">
+                <tr>
+                  <td style="padding:18px 20px;">
+                    <p style="margin:0;font-size:14px;color:#7f1d1d;font-weight:600;line-height:1.6;">
+                      Nous sommes désolés, votre demande n'a pas pu être accordée.
+                      Vous pouvez contacter l'administration ou soumettre une nouvelle demande
+                      via la plateforme.
+                    </p>
+                  </td>
+                </tr>
+              </table>
+              {% endif %}
+
+              <!-- CTA -->
+              <div style="text-align:center;margin-bottom:8px;">
+                <a href="{{ site_url }}/logistics/demandes/"
+                   style="display:inline-block;background:linear-gradient(135deg,#0f766e,#0d9488);
+                          color:#ffffff;text-decoration:none;font-size:14px;font-weight:800;
+                          padding:14px 32px;border-radius:12px;
+                          box-shadow:0 4px 12px rgba(13,148,136,0.3);">
+                  📋 Voir mes demandes
+                </a>
+              </div>
+
+            </td>
+          </tr>
+
+          <!-- FOOTER -->
+          <tr>
+            <td style="background:#f8fafc;border-top:1px solid #e2e8f0;
+                       padding:24px 40px;border-radius:0 0 20px 20px;">
+              <p style="margin:0 0 6px;font-size:12px;color:#94a3b8;text-align:center;">
+                Cet email a été envoyé automatiquement par la plateforme <strong style="color:#0f766e;">EduTech</strong>.
+              </p>
+              <p style="margin:0;font-size:11px;color:#cbd5e1;text-align:center;">
+                Ne pas répondre à cet email · {{ date_envoi }}
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

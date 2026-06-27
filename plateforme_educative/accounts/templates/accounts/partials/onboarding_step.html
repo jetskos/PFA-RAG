@@ -1,0 +1,490 @@
+<style>
+  .ob-step { animation: obSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1); }
+  @keyframes obSlideIn {
+    from { opacity: 0; transform: translateX(24px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  /* Illustration circle */
+  .ob-illu {
+    width: 88px; height: 88px; border-radius: 24px; margin: 0 auto 1.5rem;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2.6rem;
+  }
+  .ob-illu-teal   { background: linear-gradient(135deg, #ccfbf1, #99f6e4); }
+  .ob-illu-blue   { background: linear-gradient(135deg, #dbeafe, #bfdbfe); }
+  .ob-illu-amber  { background: linear-gradient(135deg, #fef3c7, #fde68a); }
+  .ob-illu-purple { background: linear-gradient(135deg, #ede9fe, #ddd6fe); }
+  .ob-illu-green  { background: linear-gradient(135deg, #dcfce7, #bbf7d0); }
+
+  /* Titles */
+  .ob-title {
+    font-size: 1.45rem; font-weight: 900; color: #0f172a;
+    text-align: center; line-height: 1.25; margin: 0 0 0.6rem;
+    letter-spacing: -0.02em;
+  }
+  .ob-sub {
+    font-size: 0.9rem; color: #64748b; text-align: center;
+    line-height: 1.6; margin: 0 0 2rem; font-weight: 500;
+  }
+
+  /* Feature list (welcome steps) */
+  .ob-features { display: flex; flex-direction: column; gap: 0.85rem; margin-bottom: 2rem; }
+  .ob-feature {
+    display: flex; align-items: flex-start; gap: 0.85rem;
+    padding: 0.9rem 1rem; border-radius: 14px;
+    background: #f8fafc; border: 1px solid #f1f5f9;
+    transition: border-color 0.2s;
+  }
+  .ob-feature:hover { border-color: #e2e8f0; }
+  .ob-feature-icon {
+    width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
+  }
+  .ob-feature-text h4 { font-size: 0.88rem; font-weight: 800; color: #0f172a; margin: 0 0 2px; }
+  .ob-feature-text p  { font-size: 0.78rem; color: #64748b; margin: 0; line-height: 1.4; }
+
+  /* Form inputs */
+  .ob-form { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.75rem; }
+  .ob-field label {
+    display: block; font-size: 0.8rem; font-weight: 700;
+    color: #475569; margin-bottom: 0.4rem; letter-spacing: 0.02em;
+  }
+  .ob-field input[type="text"],
+  .ob-field input[type="file"],
+  .ob-field select {
+    width: 100%; padding: 10px 14px;
+    border: 1.5px solid #e2e8f0; border-radius: 12px;
+    font-family: inherit; font-size: 0.9rem; color: #0f172a;
+    background: #f8fafc; outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .ob-field input:focus, .ob-field select:focus {
+    border-color: #0f766e;
+    box-shadow: 0 0 0 3px rgba(15,118,110,0.1);
+    background: #fff;
+  }
+  .ob-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+  @media (max-width: 480px) { .ob-row { grid-template-columns: 1fr; } }
+
+  /* Photo preview */
+  .ob-photo-wrap {
+    display: flex; align-items: center; gap: 1rem;
+    padding: 0.85rem 1rem; background: #f8fafc;
+    border: 1.5px dashed #e2e8f0; border-radius: 14px;
+    cursor: pointer; transition: border-color 0.2s;
+  }
+  .ob-photo-wrap:hover { border-color: #0f766e; }
+  .ob-photo-avatar {
+    width: 52px; height: 52px; border-radius: 14px; overflow: hidden;
+    background: linear-gradient(135deg, #0f766e, #0d9488);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem; color: #fff; font-weight: 800; flex-shrink: 0;
+  }
+  .ob-photo-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .ob-photo-info h4 { font-size: 0.84rem; font-weight: 700; color: #0f172a; margin: 0 0 2px; }
+  .ob-photo-info p  { font-size: 0.74rem; color: #94a3b8; margin: 0; }
+
+  /* Buttons */
+  .ob-actions { display: flex; flex-direction: column; gap: 0.65rem; }
+  .ob-btn-primary {
+    width: 100%; padding: 13px;
+    background: linear-gradient(135deg, #0f766e, #0d9488);
+    color: #fff; border: none; border-radius: 14px;
+    font-family: inherit; font-size: 0.95rem; font-weight: 800;
+    cursor: pointer; letter-spacing: 0.01em;
+    box-shadow: 0 4px 14px rgba(13,148,136,0.3);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+  }
+  .ob-btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(13,148,136,0.4);
+  }
+  .ob-btn-secondary {
+    width: 100%; padding: 11px;
+    background: transparent; color: #94a3b8;
+    border: 1.5px solid #e2e8f0; border-radius: 14px;
+    font-family: inherit; font-size: 0.88rem; font-weight: 700;
+    cursor: pointer; transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center; gap: 0.4rem;
+    text-decoration: none;
+  }
+  .ob-btn-secondary:hover { border-color: #cbd5e1; color: #64748b; background: #f8fafc; }
+
+  /* Course card preview */
+  .ob-course-preview {
+    border: 1.5px solid #e2e8f0; border-radius: 16px; overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
+  .ob-course-preview-top {
+    background: linear-gradient(135deg, #0f766e, #065f46);
+    padding: 1.25rem; color: #fff;
+  }
+  .ob-course-preview-top h4 { font-size: 0.9rem; font-weight: 800; margin: 0 0 4px; }
+  .ob-course-preview-top p  { font-size: 0.78rem; opacity: 0.75; margin: 0; }
+  .ob-course-preview-body {
+    padding: 1rem 1.25rem;
+    display: flex; gap: 0.75rem; flex-wrap: wrap;
+  }
+  .ob-chip {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 0.72rem; font-weight: 700; padding: 4px 10px;
+    border-radius: 999px; background: #f0fdfa; color: #0f766e;
+    border: 1px solid #ccfbf1;
+  }
+
+  /* Logistics cards */
+  .ob-logi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1.5rem; }
+  @media (max-width: 420px) { .ob-logi-grid { grid-template-columns: 1fr; } }
+  .ob-logi-card {
+    border-radius: 14px; padding: 1rem; border: 1.5px solid #e2e8f0;
+    background: #f8fafc; text-align: center;
+    transition: all 0.2s; cursor: default;
+  }
+  .ob-logi-card:hover { border-color: #0f766e; background: #f0fdfa; transform: translateY(-2px); }
+  .ob-logi-card .lc-emoji { font-size: 1.8rem; margin-bottom: 0.5rem; }
+  .ob-logi-card h4 { font-size: 0.84rem; font-weight: 800; color: #0f172a; margin: 0 0 3px; }
+  .ob-logi-card p  { font-size: 0.72rem; color: #64748b; margin: 0; line-height: 1.4; }
+
+  /* Explorer cours (eleve) */
+  .ob-cours-list { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1.5rem; }
+  .ob-cours-item {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.8rem 1rem; border-radius: 12px;
+    background: #f8fafc; border: 1px solid #f1f5f9;
+  }
+  .ob-cours-item-icon {
+    width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-size: 1rem;
+  }
+  .ob-cours-item h4 { font-size: 0.84rem; font-weight: 700; color: #0f172a; margin: 0 0 1px; }
+  .ob-cours-item p  { font-size: 0.72rem; color: #94a3b8; margin: 0; }
+</style>
+
+<!-- ── Progress header — inclus dans le swap HTMX pour mise à jour auto ── -->
+<div class="ob-progress">
+  <div class="ob-progress-fill" style="width: {% widthratio step_num total 100 %}%"></div>
+</div>
+
+<div class="ob-dots">
+  {% for s in steps %}
+    <div class="ob-dot {% if forloop.counter < step_num %}done{% elif forloop.counter == step_num %}active{% endif %}"></div>
+  {% endfor %}
+</div>
+
+<div class="ob-counter">ÉTAPE {{ step_num }} / {{ total }}</div>
+
+<div class="ob-step-body" style="padding: 0 2.5rem 2.5rem;">
+<div class="ob-step">
+
+{% if user.role == 'FORMATEUR' %}
+
+  {# ━━━━━━━━━━ FORMATEUR STEP 1 — WELCOME ━━━━━━━━━━ #}
+  {% if step.id == 'welcome' %}
+  <div class="ob-illu ob-illu-teal">🎓</div>
+  <h2 class="ob-title">Bienvenue sur EduTech&nbsp;!</h2>
+  <p class="ob-sub">Votre espace formateur est prêt. Voici ce que vous pouvez faire sur la plateforme.</p>
+
+  <div class="ob-features">
+    <div class="ob-feature">
+      <div class="ob-feature-icon" style="background:rgba(15,118,110,0.1);color:#0f766e;">📚</div>
+      <div class="ob-feature-text">
+        <h4>Créer & gérer des cours</h4>
+        <p>Publiez des modules avec chapitres, documents et évaluations.</p>
+      </div>
+    </div>
+    <div class="ob-feature">
+      <div class="ob-feature-icon" style="background:rgba(59,130,246,0.1);color:#3b82f6;">🏫</div>
+      <div class="ob-feature-text">
+        <h4>Gérer vos ateliers</h4>
+        <p>Planifiez et organisez vos séances de travail pratique.</p>
+      </div>
+    </div>
+    <div class="ob-feature">
+      <div class="ob-feature-icon" style="background:rgba(245,158,11,0.1);color:#f59e0b;">📦</div>
+      <div class="ob-feature-text">
+        <h4>Demander du matériel</h4>
+        <p>Soumettez des demandes d'équipement directement à l'administration.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="ob-actions">
+    <form method="post" hx-post="{% url 'accounts:onboarding' %}?step=1"
+          hx-target="#onboarding-card" hx-swap="innerHTML">
+      {% csrf_token %}
+      <button type="submit" class="ob-btn-primary">Commencer la configuration <span>→</span></button>
+    </form>
+  </div>
+  {% endif %}
+
+  {# ━━━━━━━━━━ FORMATEUR STEP 2 — PROFIL ━━━━━━━━━━ #}
+  {% if step.id == 'profil' %}
+  <div class="ob-illu ob-illu-blue">👤</div>
+  <h2 class="ob-title">Votre profil formateur</h2>
+  <p class="ob-sub">Ces informations seront visibles par vos apprenants.</p>
+
+  <form method="post" enctype="multipart/form-data"
+        hx-post="{% url 'accounts:onboarding' %}?step=2"
+        hx-target="#onboarding-card" hx-swap="innerHTML" hx-encoding="multipart/form-data">
+    {% csrf_token %}
+    <div class="ob-form">
+      <div class="ob-row">
+        <div class="ob-field">
+          <label>Prénom</label>
+          <input type="text" name="first_name" value="{{ user.first_name|default:'' }}" placeholder="Jean">
+        </div>
+        <div class="ob-field">
+          <label>Nom</label>
+          <input type="text" name="last_name" value="{{ user.last_name|default:'' }}" placeholder="Dupont">
+        </div>
+      </div>
+      <div class="ob-field">
+        <label>Photo de profil <span style="color:#94a3b8;font-weight:500;">(optionnel)</span></label>
+        <label class="ob-photo-wrap" for="ob-photo-input">
+          <div class="ob-photo-avatar" id="ob-photo-preview">
+            {% if user.photo %}
+              <img src="{{ user.photo.url }}" alt="Photo">
+            {% else %}
+              {{ user.first_name|default:user.email|first|upper }}
+            {% endif %}
+          </div>
+          <div class="ob-photo-info">
+            <h4>Choisir une photo</h4>
+            <p>JPG, PNG · Max 5 Mo</p>
+          </div>
+        </label>
+        <input type="file" id="ob-photo-input" name="photo" accept="image/*"
+               style="display:none;" onchange="previewPhoto(this)">
+      </div>
+    </div>
+    <div class="ob-actions">
+      <button type="submit" class="ob-btn-primary">Enregistrer & continuer <span>→</span></button>
+    </div>
+  </form>
+  {% endif %}
+
+  {# ━━━━━━━━━━ FORMATEUR STEP 3 — PREMIER COURS ━━━━━━━━━━ #}
+  {% if step.id == 'cours' %}
+  <div class="ob-illu ob-illu-amber">📝</div>
+  <h2 class="ob-title">Créez votre premier cours</h2>
+  <p class="ob-sub">Publiez vos connaissances en quelques étapes simples.</p>
+
+  <div class="ob-course-preview">
+    <div class="ob-course-preview-top">
+      <h4>Structure d'un cours EduTech</h4>
+      <p>Organisez votre contenu en chapitres et modules</p>
+    </div>
+    <div class="ob-course-preview-body">
+      <span class="ob-chip">📄 Chapitres</span>
+      <span class="ob-chip">🎥 Vidéos</span>
+      <span class="ob-chip">📎 Documents</span>
+      <span class="ob-chip">✅ Évaluations</span>
+    </div>
+  </div>
+
+  <div class="ob-actions">
+    <a href="{% url 'apprentissage:nouveau_cours' %}" class="ob-btn-primary" style="text-decoration:none;">
+      ✏️ Créer mon premier cours
+    </a>
+    <form method="post" hx-post="{% url 'accounts:onboarding' %}?step=3"
+          hx-target="#onboarding-card" hx-swap="innerHTML">
+      {% csrf_token %}
+      <button type="submit" class="ob-btn-secondary">Passer pour l'instant</button>
+    </form>
+  </div>
+  {% endif %}
+
+  {# ━━━━━━━━━━ FORMATEUR STEP 4 — LOGISTIQUE ━━━━━━━━━━ #}
+  {% if step.id == 'logistique' %}
+  <div class="ob-illu ob-illu-green">🏗️</div>
+  <h2 class="ob-title">Découvrez la logistique</h2>
+  <p class="ob-sub">Gérez vos ateliers et commandez le matériel nécessaire à vos formations.</p>
+
+  <div class="ob-logi-grid">
+    <div class="ob-logi-card">
+      <div class="lc-emoji">🏫</div>
+      <h4>Ateliers</h4>
+      <p>Planifiez et gérez vos séances pratiques en salle</p>
+    </div>
+    <div class="ob-logi-card">
+      <div class="lc-emoji">📦</div>
+      <h4>Matériel</h4>
+      <p>Soumettez des demandes d'équipement à l'admin</p>
+    </div>
+    <div class="ob-logi-card">
+      <div class="lc-emoji">🔔</div>
+      <h4>Notifications</h4>
+      <p>Recevez des alertes sur l'état de vos demandes</p>
+    </div>
+    <div class="ob-logi-card">
+      <div class="lc-emoji">📊</div>
+      <h4>Suivi</h4>
+      <p>Consultez l'historique complet de vos demandes</p>
+    </div>
+  </div>
+
+  <div class="ob-actions">
+    <form method="post" hx-post="{% url 'accounts:onboarding' %}?step=4"
+          hx-target="body" hx-swap="none"
+          hx-on::after-request="handleFinalStep(event)">
+      {% csrf_token %}
+      <button type="submit" class="ob-btn-primary">🚀 Accéder à mon tableau de bord</button>
+    </form>
+  </div>
+  {% endif %}
+
+{% else %}
+
+  {# ━━━━━━━━━━ ELEVE STEP 1 — WELCOME ━━━━━━━━━━ #}
+  {% if step.id == 'welcome' %}
+  <div class="ob-illu ob-illu-purple">🎒</div>
+  <h2 class="ob-title">Bienvenue sur EduTech&nbsp;!</h2>
+  <p class="ob-sub">Votre espace d'apprentissage personnalisé vous attend. Découvrez tout ce que la plateforme vous offre.</p>
+
+  <div class="ob-features">
+    <div class="ob-feature">
+      <div class="ob-feature-icon" style="background:rgba(124,58,237,0.1);color:#7c3aed;">📚</div>
+      <div class="ob-feature-text">
+        <h4>Accéder à vos cours</h4>
+        <p>Consultez vos modules, chapitres et documents pédagogiques.</p>
+      </div>
+    </div>
+    <div class="ob-feature">
+      <div class="ob-feature-icon" style="background:rgba(16,185,129,0.1);color:#10b981;">🤖</div>
+      <div class="ob-feature-text">
+        <h4>Tuteur IA personnalisé</h4>
+        <p>Posez vos questions à votre assistant intelligent disponible 24h/24.</p>
+      </div>
+    </div>
+    <div class="ob-feature">
+      <div class="ob-feature-icon" style="background:rgba(59,130,246,0.1);color:#3b82f6;">📅</div>
+      <div class="ob-feature-text">
+        <h4>Calendrier & événements</h4>
+        <p>Suivez vos cours, devoirs et examens à venir.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="ob-actions">
+    <form method="post" hx-post="{% url 'accounts:onboarding' %}?step=1"
+          hx-target="#onboarding-card" hx-swap="innerHTML">
+      {% csrf_token %}
+      <button type="submit" class="ob-btn-primary">C'est parti ! <span>→</span></button>
+    </form>
+  </div>
+  {% endif %}
+
+  {# ━━━━━━━━━━ ELEVE STEP 2 — PROFIL ━━━━━━━━━━ #}
+  {% if step.id == 'profil' %}
+  <div class="ob-illu ob-illu-blue">✏️</div>
+  <h2 class="ob-title">Complétez votre profil</h2>
+  <p class="ob-sub">Personnalisez votre espace pour une meilleure expérience d'apprentissage.</p>
+
+  <form method="post" enctype="multipart/form-data"
+        hx-post="{% url 'accounts:onboarding' %}?step=2"
+        hx-target="#onboarding-card" hx-swap="innerHTML" hx-encoding="multipart/form-data">
+    {% csrf_token %}
+    <div class="ob-form">
+      <div class="ob-row">
+        <div class="ob-field">
+          <label>Prénom</label>
+          <input type="text" name="first_name" value="{{ user.first_name|default:'' }}" placeholder="Marie">
+        </div>
+        <div class="ob-field">
+          <label>Nom</label>
+          <input type="text" name="last_name" value="{{ user.last_name|default:'' }}" placeholder="Martin">
+        </div>
+      </div>
+      <div class="ob-field">
+        <label>Photo de profil <span style="color:#94a3b8;font-weight:500;">(optionnel)</span></label>
+        <label class="ob-photo-wrap" for="ob-photo-input">
+          <div class="ob-photo-avatar" id="ob-photo-preview">
+            {% if user.photo %}
+              <img src="{{ user.photo.url }}" alt="Photo">
+            {% else %}
+              {{ user.first_name|default:user.email|first|upper }}
+            {% endif %}
+          </div>
+          <div class="ob-photo-info">
+            <h4>Choisir une photo</h4>
+            <p>JPG, PNG · Max 5 Mo</p>
+          </div>
+        </label>
+        <input type="file" id="ob-photo-input" name="photo" accept="image/*"
+               style="display:none;" onchange="previewPhoto(this)">
+      </div>
+    </div>
+    <div class="ob-actions">
+      <button type="submit" class="ob-btn-primary">Enregistrer & continuer <span>→</span></button>
+    </div>
+  </form>
+  {% endif %}
+
+  {# ━━━━━━━━━━ ELEVE STEP 3 — EXPLORER ━━━━━━━━━━ #}
+  {% if step.id == 'explorer' %}
+  <div class="ob-illu ob-illu-teal">🚀</div>
+  <h2 class="ob-title">Explorez vos cours !</h2>
+  <p class="ob-sub">Vos formateurs ont préparé des contenus riches pour vous accompagner tout au long de votre parcours.</p>
+
+  <div class="ob-cours-list">
+    <div class="ob-cours-item">
+      <div class="ob-cours-item-icon" style="background:rgba(15,118,110,0.1);color:#0f766e;">📖</div>
+      <div>
+        <h4>Cours & chapitres</h4>
+        <p>Progressez à votre rythme avec des contenus interactifs</p>
+      </div>
+    </div>
+    <div class="ob-cours-item">
+      <div class="ob-cours-item-icon" style="background:rgba(245,158,11,0.1);color:#f59e0b;">✅</div>
+      <div>
+        <h4>Évaluations & devoirs</h4>
+        <p>Testez vos connaissances et suivez votre progression</p>
+      </div>
+    </div>
+    <div class="ob-cours-item">
+      <div class="ob-cours-item-icon" style="background:rgba(124,58,237,0.1);color:#7c3aed;">🤖</div>
+      <div>
+        <h4>Tuteur IA</h4>
+        <p>Obtenez des explications personnalisées en temps réel</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="ob-actions">
+    <form method="post" hx-post="{% url 'accounts:onboarding' %}?step=3"
+          hx-target="body" hx-swap="none"
+          hx-on::after-request="handleFinalStep(event)">
+      {% csrf_token %}
+      <button type="submit" class="ob-btn-primary">🎉 Accéder à la plateforme</button>
+    </form>
+  </div>
+  {% endif %}
+
+{% endif %}
+
+</div><!-- /ob-step -->
+</div><!-- /ob-step-body -->
+
+<script>
+function handleFinalStep(event) {
+  const xhr = event.detail.xhr;
+  if (xhr && xhr.status === 204) {
+    const redirect = xhr.getResponseHeader('HX-Redirect');
+    if (redirect) window.location.href = redirect;
+  }
+}
+
+function previewPhoto(input) {
+  if (!input.files || !input.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const preview = document.getElementById('ob-photo-preview');
+    if (preview) {
+      preview.innerHTML = '<img src="' + e.target.result + '" style="width:100%;height:100%;object-fit:cover;border-radius:14px;">';
+    }
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+</script>

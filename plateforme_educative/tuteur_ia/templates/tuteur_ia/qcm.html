@@ -334,6 +334,15 @@ function afficherResultats(data) {
 
     const panel = document.getElementById('result-panel');
     panel.classList.add('show');
+    
+    // Afficher toutes les cartes de questions pour que l'étudiant voie les corrections en bloc
+    document.querySelectorAll('.q-card').forEach(card => {
+        card.classList.add('active');
+    });
+    
+    // Désactiver le clic sur les puces de navigation
+    document.getElementById('q-dots').style.pointerEvents = 'none';
+
     setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
 
     document.getElementById('btn-submit').style.display = 'none';

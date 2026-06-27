@@ -1,12 +1,11 @@
 """
 Workflow LangGraph - Orchestration des 4 agents pédagogiques.
 
-CORRECTION : limite d'itérations passée de 5 à 15 pour permettre
-12-15 questions par session comme requis.
+Checkpointer : DjangoCheckpointSaver (MySQL) — les conversations
+survivent aux redémarrages du serveur (remplace MemorySaver).
 """
 
 from langgraph.graph import StateGraph, START, END
-from langgraph.checkpoint.memory import MemorySaver
 
 from tuteur_ia.graph.state import StudyBuddyState
 from tuteur_ia.agents.diagnostiqueur import diagnostiqueur_node
@@ -14,7 +13,6 @@ from tuteur_ia.agents.tuteur import tuteur_node
 from tuteur_ia.agents.evaluateur import evaluateur_node
 from tuteur_ia.agents.memoire import memoire_node
 
-# Limite maximale d'itérations (questions) par session
 MAX_ITERATIONS = 15
 
 
@@ -68,7 +66,13 @@ def get_graph():
             {"tutor": "tutor", END: END},
         )
 
-        checkpointer    = MemorySaver()
+        try:
+            from tuteur_ia.graph.checkpointer import DjangoCheckpointSaver
+            checkpointer = DjangoCheckpointSaver()
+        except Exception:
+            from langgraph.checkpoint.memory import MemorySaver
+            checkpointer = MemorySaver()
+
         _graph_instance = workflow.compile(
             checkpointer=checkpointer,
             interrupt_after=["tutor"],

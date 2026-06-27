@@ -7,6 +7,13 @@ from django.urls import reverse
 
 from .models import Equipment, Ticket, Workshop, DemandeMateriel
 from .forms import TicketForm, EquipmentForm, WorkshopForm, DemandeMaterielForm
+from .excel_export import (
+    export_equipements_excel,
+    export_ateliers_excel,
+    export_demandes_excel,
+    export_tickets_excel
+)
+from django.http import HttpResponse
 
 
 def _is_htmx(request):
@@ -14,7 +21,7 @@ def _is_htmx(request):
 
 
 @login_required
-@user_passes_test(lambda u: u.is_staff)
+@user_passes_test(lambda u: getattr(u, 'is_staff', False) or getattr(u, 'role', '') == 'ADMIN')
 def inventaire_view(request):
     """Page inventaire avec HTMX pour filtrer les équipements."""
     from django.db.models import Sum, F
@@ -58,7 +65,7 @@ def inventaire_view(request):
 
 
 @login_required
-@user_passes_test(lambda u: u.is_staff)
+@user_passes_test(lambda u: getattr(u, 'is_staff', False) or getattr(u, 'role', '') == 'ADMIN')
 @require_http_methods(['GET', 'POST'])
 def tickets_view(request):
     """Page support avec la liste des tickets actifs et résolution HTMX."""
@@ -96,7 +103,7 @@ def tickets_view(request):
 
 
 @login_required
-@user_passes_test(lambda u: u.is_staff)
+@user_passes_test(lambda u: getattr(u, 'is_staff', False) or getattr(u, 'role', '') == 'ADMIN')
 @require_http_methods(['GET', 'POST'])
 def nuevo_ticket(request):
     """Create a new ticket. User and status are set server-side."""
@@ -115,7 +122,7 @@ def nuevo_ticket(request):
 
 
 @login_required
-@user_passes_test(lambda u: u.is_staff)
+@user_passes_test(lambda u: getattr(u, 'is_staff', False) or getattr(u, 'role', '') == 'ADMIN')
 @require_http_methods(['GET', 'POST'])
 def ajouter_equipement(request):
     """Ajouter un équipement (GET: renvoie le formulaire, POST: sauvegarde et renvoie la liste mise à jour)."""
@@ -144,7 +151,7 @@ def ajouter_equipement(request):
 
 
 @login_required
-@user_passes_test(lambda u: u.is_staff)
+@user_passes_test(lambda u: getattr(u, 'is_staff', False) or getattr(u, 'role', '') == 'ADMIN')
 @require_http_methods(['GET', 'POST'])
 def editer_equipement(request, pk):
     """Editer un équipement (GET: formulaire, POST: sauvegarde et retourne la liste)."""
@@ -177,7 +184,7 @@ def editer_equipement(request, pk):
 
 
 @login_required
-@user_passes_test(lambda u: u.is_staff)
+@user_passes_test(lambda u: getattr(u, 'is_staff', False) or getattr(u, 'role', '') == 'ADMIN')
 @require_http_methods(['POST'])
 def supprimer_equipement(request, pk):
     """Supprimer un équipement et renvoyer la liste mise à jour."""
@@ -189,10 +196,10 @@ def supprimer_equipement(request, pk):
 
 
 @login_required
-@user_passes_test(lambda u: u.is_staff or getattr(u, 'is_formateur', False) or getattr(u, 'role', '') == 'FORMATEUR')
+@user_passes_test(lambda u: getattr(u, 'is_staff', False) or getattr(u, 'role', '') == 'ADMIN' or getattr(u, 'is_formateur', False) or getattr(u, 'role', '') == 'FORMATEUR')
 def ateliers_view(request):
     from django.utils import timezone
-    if request.user.is_staff:
+    if getattr(request.user, 'is_staff', False) or getattr(request.user, 'role', '') == 'ADMIN':
         ateliers = Workshop.objects.select_related('createur', 'tuteur').all()
     else:
         ateliers = Workshop.objects.select_related('createur', 'tuteur').filter(createur=request.user)
@@ -221,7 +228,7 @@ def ateliers_view(request):
 
 
 @login_required
-@user_passes_test(lambda u: u.is_staff or getattr(u, 'is_formateur', False) or getattr(u, 'role', '') == 'FORMATEUR')
+@user_passes_test(lambda u: getattr(u, 'is_staff', False) or getattr(u, 'role', '') == 'ADMIN' or getattr(u, 'is_formateur', False) or getattr(u, 'role', '') == 'FORMATEUR')
 @require_http_methods(['GET', 'POST'])
 def ajouter_atelier(request):
     if request.method == 'POST':
@@ -229,8 +236,10 @@ def ajouter_atelier(request):
         if form.is_valid():
             atelier = form.save(commit=False)
             atelier.createur = request.user
+            if not atelier.tuteur:
+                atelier.tuteur = request.user
             atelier.save()
-            if request.user.is_staff:
+            if getattr(request.user, 'is_staff', False) or getattr(request.user, 'role', '') == 'ADMIN':
                 ateliers = Workshop.objects.all()
             else:
                 ateliers = Workshop.objects.filter(createur=request.user)
@@ -244,7 +253,7 @@ def ajouter_atelier(request):
             response['HX-Retarget'] = '#form-atelier-container'
             return response
     else:
-        form = WorkshopForm()
+        form = WorkshopForm(initial={'tuteur': request.user})
 
     return render(request, 'logistics/partials/atelier_form.html', {
         'form': form,
@@ -254,7 +263,7 @@ def ajouter_atelier(request):
 
 
 @login_required
-@user_passes_test(lambda u: u.is_staff or getattr(u, 'is_formateur', False) or getattr(u, 'role', '') == 'FORMATEUR')
+@user_passes_test(lambda u: getattr(u, 'is_staff', False) or getattr(u, 'role', '') == 'ADMIN' or getattr(u, 'is_formateur', False) or getattr(u, 'role', '') == 'FORMATEUR')
 @require_http_methods(['GET', 'POST'])
 def editer_atelier(request, pk):
     atelier = get_object_or_404(Workshop, pk=pk)
@@ -266,7 +275,7 @@ def editer_atelier(request, pk):
         form = WorkshopForm(request.POST, instance=atelier)
         if form.is_valid():
             form.save()
-            if request.user.is_staff:
+            if getattr(request.user, 'is_staff', False) or getattr(request.user, 'role', '') == 'ADMIN':
                 ateliers = Workshop.objects.all()
             else:
                 ateliers = Workshop.objects.filter(createur=request.user)
@@ -292,7 +301,7 @@ def editer_atelier(request, pk):
 
 
 @login_required
-@user_passes_test(lambda u: u.is_staff or getattr(u, 'is_formateur', False) or getattr(u, 'role', '') == 'FORMATEUR')
+@user_passes_test(lambda u: getattr(u, 'is_staff', False) or getattr(u, 'role', '') == 'ADMIN' or getattr(u, 'is_formateur', False) or getattr(u, 'role', '') == 'FORMATEUR')
 @require_http_methods(['POST'])
 def supprimer_atelier(request, pk):
     atelier = get_object_or_404(Workshop, pk=pk)
@@ -310,7 +319,7 @@ def supprimer_atelier(request, pk):
     atelier.est_annule = True
     atelier.save()
 
-    if request.user.is_staff:
+    if getattr(request.user, 'is_staff', False) or getattr(request.user, 'role', '') == 'ADMIN':
         ateliers = Workshop.objects.all()
     else:
         ateliers = Workshop.objects.filter(createur=request.user)
@@ -318,9 +327,9 @@ def supprimer_atelier(request, pk):
 
 
 @login_required
-@user_passes_test(lambda u: u.is_staff or getattr(u, 'is_formateur', False) or getattr(u, 'role', '') == 'FORMATEUR')
+@user_passes_test(lambda u: getattr(u, 'is_staff', False) or getattr(u, 'role', '') == 'ADMIN' or getattr(u, 'is_formateur', False) or getattr(u, 'role', '') == 'FORMATEUR')
 def demandes_view(request):
-    if request.user.is_staff:
+    if getattr(request.user, 'is_staff', False) or getattr(request.user, 'role', '') == 'ADMIN':
         demandes = DemandeMateriel.objects.select_related('formateur', 'equipement', 'atelier_cible').all()
     else:
         demandes = DemandeMateriel.objects.select_related('formateur', 'equipement', 'atelier_cible').filter(formateur=request.user)
@@ -358,7 +367,7 @@ def demandes_view(request):
 
 
 @login_required
-@user_passes_test(lambda u: u.is_staff or getattr(u, 'is_formateur', False) or getattr(u, 'role', '') == 'FORMATEUR')
+@user_passes_test(lambda u: getattr(u, 'is_staff', False) or getattr(u, 'role', '') == 'ADMIN' or getattr(u, 'is_formateur', False) or getattr(u, 'role', '') == 'FORMATEUR')
 @require_http_methods(['GET', 'POST'])
 def ajouter_demande(request):
     if request.method == 'POST':
@@ -375,7 +384,7 @@ def ajouter_demande(request):
                 response['HX-Redirect'] = reverse('logistics:demandes')
                 return response
                 
-            if request.user.is_staff:
+            if getattr(request.user, 'is_staff', False) or getattr(request.user, 'role', '') == 'ADMIN':
                 demandes = DemandeMateriel.objects.all()
             else:
                 demandes = DemandeMateriel.objects.filter(formateur=request.user)
@@ -399,7 +408,7 @@ def ajouter_demande(request):
 
 
 @login_required
-@user_passes_test(lambda u: u.is_staff or getattr(u, 'is_formateur', False) or getattr(u, 'role', '') == 'FORMATEUR')
+@user_passes_test(lambda u: getattr(u, 'is_staff', False) or getattr(u, 'role', '') == 'ADMIN' or getattr(u, 'is_formateur', False) or getattr(u, 'role', '') == 'FORMATEUR')
 @require_http_methods(['GET', 'POST'])
 def editer_demande(request, pk):
     demande = get_object_or_404(DemandeMateriel, pk=pk)
@@ -414,7 +423,7 @@ def editer_demande(request, pk):
         form = DemandeMaterielForm(request.POST, instance=demande, request=request)
         if form.is_valid():
             form.save()
-            if request.user.is_staff:
+            if getattr(request.user, 'is_staff', False) or getattr(request.user, 'role', '') == 'ADMIN':
                 demandes = DemandeMateriel.objects.all()
             else:
                 demandes = DemandeMateriel.objects.filter(formateur=request.user)
@@ -440,7 +449,7 @@ def editer_demande(request, pk):
 
 
 @login_required
-@user_passes_test(lambda u: u.is_staff or getattr(u, 'is_formateur', False) or getattr(u, 'role', '') == 'FORMATEUR')
+@user_passes_test(lambda u: getattr(u, 'is_staff', False) or getattr(u, 'role', '') == 'ADMIN' or getattr(u, 'is_formateur', False) or getattr(u, 'role', '') == 'FORMATEUR')
 @require_http_methods(['POST'])
 def supprimer_demande(request, pk):
     demande = get_object_or_404(DemandeMateriel, pk=pk)
@@ -453,7 +462,7 @@ def supprimer_demande(request, pk):
 
     demande.delete()
 
-    if request.user.is_staff:
+    if getattr(request.user, 'is_staff', False) or getattr(request.user, 'role', '') == 'ADMIN':
         demandes = DemandeMateriel.objects.all()
     else:
         demandes = DemandeMateriel.objects.filter(formateur=request.user)
@@ -461,7 +470,7 @@ def supprimer_demande(request, pk):
 
 
 @login_required
-@user_passes_test(lambda u: u.is_staff)
+@user_passes_test(lambda u: getattr(u, 'is_staff', False) or getattr(u, 'role', '') == 'ADMIN')
 @require_http_methods(['POST'])
 @transaction.atomic
 def changer_statut_demande(request, pk):
@@ -485,9 +494,131 @@ def changer_statut_demande(request, pk):
         
     demande.statut = nouveau_statut
     demande.save()
-    
-    if request.user.is_staff:
+
+    # Notifier le formateur de la décision (notification in-app)
+    try:
+        from accounts.notifications import notifier
+        statut_labels = {'APPROVED': 'approuvée ✅', 'REJECTED': 'rejetée ❌', 'RETURNED': 'marquée comme retournée 🔄'}
+        label = statut_labels.get(nouveau_statut)
+        if label:
+            notifier(
+                destinataire=demande.formateur,
+                type='DEMANDE_TRAITEE',
+                titre='Votre demande a été traitée',
+                message=f'Votre demande de {demande.quantite}x {demande.equipement.nom} a été {label}.',
+                url=reverse('logistics:demandes'),
+            )
+    except Exception as e:
+        print(f"Erreur notification: {e}")
+
+    # Envoyer un email au formateur via SMTP
+    if nouveau_statut in ('APPROVED', 'REJECTED', 'RETURNED'):
+        try:
+            from django.core.mail import EmailMultiAlternatives
+            from django.template.loader import render_to_string
+            from django.utils import timezone
+            from django.conf import settings
+
+            site_url = request.build_absolute_uri('/').rstrip('/')
+            formateur = demande.formateur
+
+            ctx = {
+                'statut': nouveau_statut,
+                'formateur_nom': formateur.get_full_name() or formateur.email,
+                'equipement_nom': demande.equipement.nom,
+                'quantite': demande.quantite,
+                'atelier_nom': demande.atelier_cible.titre if demande.atelier_cible else None,
+                'site_url': site_url,
+                'date_envoi': timezone.now().strftime('%d/%m/%Y à %Hh%M'),
+            }
+
+            sujet_map = {
+                'APPROVED': f'✅ Demande approuvée — {demande.quantite}x {demande.equipement.nom}',
+                'REJECTED': f'❌ Demande rejetée — {demande.quantite}x {demande.equipement.nom}',
+                'RETURNED': f'🔄 Équipement retourné — {demande.quantite}x {demande.equipement.nom}',
+            }
+            sujet = sujet_map[nouveau_statut]
+
+            html_body = render_to_string('logistics/emails/demande_traitee.html', ctx)
+
+            text_body = (
+                f"Bonjour {ctx['formateur_nom']},\n\n"
+                f"Votre demande de {demande.quantite}x {demande.equipement.nom} "
+                f"a été {statut_labels.get(nouveau_statut, nouveau_statut)}.\n\n"
+                f"Consultez vos demandes : {site_url}/logistics/demandes/\n\n"
+                f"— EduTech"
+            )
+
+            email = EmailMultiAlternatives(
+                subject=sujet,
+                body=text_body,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                to=[formateur.email],
+            )
+            email.attach_alternative(html_body, 'text/html')
+            email.send(fail_silently=False)
+        except Exception as e:
+            print(f"Erreur envoi email demande: {e}")
+
+    if getattr(request.user, 'is_staff', False) or getattr(request.user, 'role', '') == 'ADMIN':
         demandes = DemandeMateriel.objects.all()
     else:
         demandes = DemandeMateriel.objects.filter(formateur=request.user)
     return render(request, 'logistics/partials/demandes_list.html', {'demandes': demandes})
+
+
+@login_required
+@user_passes_test(lambda u: getattr(u, 'is_staff', False) or getattr(u, 'role', '') == 'ADMIN' or getattr(u, 'is_formateur', False) or getattr(u, 'role', '') == 'FORMATEUR')
+def exporter_equipements(request):
+    """Exporter les équipements en Excel formaté."""
+    equipements = Equipment.objects.all()
+    excel_bytes, filename = export_equipements_excel(equipements)
+    
+    response = HttpResponse(
+        excel_bytes,
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    return response
+
+@login_required
+@user_passes_test(lambda u: getattr(u, 'is_staff', False) or getattr(u, 'role', '') == 'ADMIN' or getattr(u, 'is_formateur', False) or getattr(u, 'role', '') == 'FORMATEUR')
+def exporter_ateliers(request):
+    """Exporter les ateliers en Excel formaté."""
+    ateliers = Workshop.objects.select_related('createur', 'tuteur').all()
+    excel_bytes, filename = export_ateliers_excel(ateliers)
+    
+    response = HttpResponse(
+        excel_bytes,
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    return response
+
+@login_required
+@user_passes_test(lambda u: getattr(u, 'is_staff', False) or getattr(u, 'role', '') == 'ADMIN' or getattr(u, 'is_formateur', False) or getattr(u, 'role', '') == 'FORMATEUR')
+def exporter_demandes(request):
+    """Exporter les demandes de matériel en Excel formaté."""
+    demandes = DemandeMateriel.objects.select_related('formateur', 'equipement', 'atelier_cible').all()
+    excel_bytes, filename = export_demandes_excel(demandes)
+    
+    response = HttpResponse(
+        excel_bytes,
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    return response
+
+@login_required
+@user_passes_test(lambda u: getattr(u, 'is_staff', False) or getattr(u, 'role', '') == 'ADMIN')
+def exporter_tickets(request):
+    """Exporter les tickets en Excel formaté."""
+    tickets = Ticket.objects.select_related('equipement', 'atelier', 'ouvert_par').all()
+    excel_bytes, filename = export_tickets_excel(tickets)
+    
+    response = HttpResponse(
+        excel_bytes,
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    return response

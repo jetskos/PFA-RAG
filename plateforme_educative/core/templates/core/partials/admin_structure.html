@@ -3,7 +3,6 @@
     .tabs-container {
         display: flex;
         gap: 0.5rem;
-        margin-bottom: 1rem;
         flex-wrap: wrap;
         padding: 0.5rem;
         background: #f8fafc;
@@ -48,6 +47,8 @@
         background: #e2e8f0;
         color: #475569;
         transition: all 0.2s ease;
+        white-space: nowrap;
+        /* Empêche la coupure sur deux lignes */
     }
 
     [data-theme="dark"] .tab-badge {
@@ -59,7 +60,7 @@
         background: #0f766e;
         color: #ffffff;
     }
-    
+
     .structure-content-card {
         background: #ffffff;
         border-radius: 16px;
@@ -69,33 +70,39 @@
     }
 </style>
 
-<div style="display:grid; gap:1rem; grid-template-columns: 1fr; align-items:start;">
-    
-    <!-- GLOBAL ADMIN TABS -->
+<div style="display:grid; gap:0rem; grid-template-columns: 1fr; align-items:start;">
+
     <div class="tabs-container">
-        <button hx-get="{% url 'dashboard_admin_structure' %}?tab=niveaux" hx-target="#dashboard-structure" hx-swap="innerHTML" 
-                class="tab-pill {% if active_tab == 'niveaux' %}is-active{% endif %}">
-            <i class="ti ti-layers-linked"></i> Niveaux <span class="tab-badge">{{ niveaux|length }}</span>
+        <button hx-get="{% url 'dashboard_admin_structure' %}?tab=niveaux" hx-target="#dashboard-structure"
+            hx-swap="innerHTML" class="tab-pill {% if active_tab == 'niveaux' %}is-active{% endif %}">
+            <i class="ti ti-layers-linked"></i> Niveaux
+            <span class="tab-badge">{{ niveaux|length|default:"0" }}</span>
         </button>
-        <button hx-get="{% url 'dashboard_admin_structure' %}?tab=classes" hx-target="#dashboard-structure" hx-swap="innerHTML" 
-                class="tab-pill {% if active_tab == 'classes' %}is-active{% endif %}">
-            <i class="ti ti-users-group"></i> Classes <span class="tab-badge">{{ classes|length }}</span>
+
+        <button hx-get="{% url 'dashboard_admin_structure' %}?tab=classes" hx-target="#dashboard-structure"
+            hx-swap="innerHTML" class="tab-pill {% if active_tab == 'classes' %}is-active{% endif %}">
+            <i class="ti ti-users-group"></i> Classes
+            <span class="tab-badge">{{ classes|length|default:"0" }}</span>
         </button>
-        <button hx-get="{% url 'dashboard_admin_structure' %}?tab=students" hx-target="#dashboard-structure" hx-swap="innerHTML" 
-                class="tab-pill {% if active_tab == 'students' %}is-active{% endif %}">
-            <i class="ti ti-user-plus"></i> Étudiants en attente <span class="tab-badge">{{ pending_students|length }}</span>
+
+        <button hx-get="{% url 'dashboard_admin_structure' %}?tab=students" hx-target="#dashboard-structure"
+            hx-swap="innerHTML" class="tab-pill {% if active_tab == 'students' %}is-active{% endif %}">
+            <i class="ti ti-user-plus"></i> Étudiants en attente
+            <span class="tab-badge">{{ pending_students|length|default:"0" }}</span>
         </button>
-        <button hx-get="{% url 'dashboard_admin_structure' %}?tab=logistics" hx-target="#dashboard-structure" hx-swap="innerHTML" 
-                class="tab-pill {% if active_tab == 'logistics' %}is-active{% endif %}">
-            <i class="ti ti-package"></i> Demandes Logistiques <span class="tab-badge">{{ pending_demandes|length }}</span>
+
+        <button hx-get="{% url 'dashboard_admin_structure' %}?tab=logistics" hx-target="#dashboard-structure"
+            hx-swap="innerHTML" class="tab-pill {% if active_tab == 'logistics' %}is-active{% endif %}">
+            <i class="ti ti-package"></i> Demandes Logistiques
+            <span class="tab-badge">{{ pending_demandes|length|default:"0" }}</span>
         </button>
-        <button hx-get="{% url 'dashboard_admin_structure' %}?tab=equipements" hx-target="#dashboard-structure" hx-swap="innerHTML" 
-                class="tab-pill {% if active_tab == 'equipements' %}is-active{% endif %}">
+
+        <button hx-get="{% url 'dashboard_admin_structure' %}?tab=equipements" hx-target="#dashboard-structure"
+            hx-swap="innerHTML" class="tab-pill {% if active_tab == 'equipements' %}is-active{% endif %}">
             <i class="ti ti-server"></i> Catalogue Matériel
         </button>
     </div>
 
-    <!-- TAB CONTENTS -->
     <div class="structure-content-card" style="width: 100%;">
         {% if active_tab == 'students' %}
         <div style="display: flex; justify-content: center; width: 100%;">
@@ -128,7 +135,7 @@
             </div>
         </div>
         {% endif %}
-        
+
         {% if active_tab == 'classes' %}
         <div style="display: flex; justify-content: center; width: 100%;">
             <div style="width: 100%;">

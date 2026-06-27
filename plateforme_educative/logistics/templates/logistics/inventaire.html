@@ -535,7 +535,11 @@
         <p class="logi-page-sub">Consultez, filtrez et gérez tout le parc matériel.</p>
       </div>
       <div class="logi-header-actions">
-        {% if user.is_staff or user.is_formateur %}
+          <a href="{% url 'logistics:exporter_equipements' %}" class="btn-primary" title="Exporter en Excel" style="background:var(--primary); color:white; text-decoration:none; display:inline-flex; align-items:center; gap:6px; padding:0.5rem 1rem; border-radius:10px; font-weight:600; font-size:0.9rem;">
+            <i class="ti ti-download"></i> Exporter
+          </a>
+
+        {% if user.is_staff or user.role == "ADMIN" or user.is_formateur %}
         <button class="btn-primary" type="button"
           hx-get="{% url 'logistics:ajouter_equipement' %}"
           hx-target="#form-equipement-container"
