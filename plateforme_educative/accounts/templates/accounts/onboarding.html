@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% block title %}Bienvenue — Configuration{% endblock %}
+
+{% block content %}
+<style>
+  .ob-overlay {
+    position: fixed; inset: 0; z-index: 1000;
+    background: linear-gradient(135deg, #0c1a1a 0%, #0f2027 50%, #0c1a2e 100%);
+    display: flex; align-items: center; justify-content: center;
+    padding: 1rem;
+    min-height: 100vh;
+  }
+  .ob-overlay::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(circle at 20% 30%, rgba(13,148,136,0.12) 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(59,130,246,0.08) 0%, transparent 45%),
+      radial-gradient(circle at 50% 50%, rgba(16,185,129,0.04) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  /* ── Card ── */
+  .ob-card {
+    position: relative; z-index: 1;
+    background: #fff;
+    border-radius: 28px;
+    width: 100%; max-width: 560px;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.45), 0 2px 8px rgba(0,0,0,0.2);
+    overflow: hidden;
+  }
+
+  /* ── Progress bar ── */
+  .ob-progress {
+    height: 4px;
+    background: #e2e8f0;
+  }
+  .ob-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #0f766e, #14b8a6);
+    border-radius: 0 999px 999px 0;
+    transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* ── Step dots ── */
+  .ob-dots {
+    display: flex; align-items: center; justify-content: center;
+    gap: 8px; padding: 1.25rem 2rem 0;
+  }
+  .ob-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #e2e8f0;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .ob-dot.active {
+    background: #0f766e;
+    width: 24px; border-radius: 999px;
+  }
+  .ob-dot.done { background: #10b981; }
+
+  /* ── Step counter ── */
+  .ob-counter {
+    text-align: center; padding: 0.5rem 2rem 0;
+    font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; color: #94a3b8;
+  }
+
+  /* ── Step content (HTMX target) ── */
+  #onboarding-card { padding: 0; }
+
+  @media (max-width: 540px) {
+    .ob-card { border-radius: 20px; }
+    .ob-step-body { padding: 0 1.5rem 1.5rem !important; }
+  }
+</style>
+
+<div class="ob-overlay">
+  <div class="ob-card">
+
+    <!-- Step content (HTMX target) — contient aussi header + progress -->
+    <div id="onboarding-card">
+      {% include 'accounts/partials/onboarding_step.html' %}
+    </div>
+
+  </div>
+</div>
+{% endblock %}

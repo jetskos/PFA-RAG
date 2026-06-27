@@ -902,9 +902,14 @@
         <div class="courses-grid">
             {% for cours in mes_cours %}
             <a href="{% url 'apprentissage:detail_cours' cours.id %}" class="course-card">
+                {% if cours.image_couverture %}
+                <div class="course-img" style="background-image: url('{{ cours.image_couverture.url }}'); background-size: cover; background-position: center;">
+                </div>
+                {% else %}
                 <div class="course-img" style="background: linear-gradient(135deg, #1e293b, #0f172a);">
                     <i class="ti ti-book-2"></i>
                 </div>
+                {% endif %}
                 
                 <div class="course-info">
                     <div class="course-top-dark">

@@ -1,196 +1,221 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="fr" data-theme="light">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Plateforme Éducative IoT & IA{% endblock %}</title>
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
     <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
-    
+
     <link rel="stylesheet" href="{% static 'core/css/base.css' %}">
     <link rel="stylesheet" href="{% static 'core/css/components.css' %}">
     <link rel="stylesheet" href="{% static 'core/css/formateur.css' %}">
     <link rel="stylesheet" href="{% static 'core/css/apprentissage.css' %}">
     <link rel="stylesheet" href="{% static 'core/css/tuteur.css' %}">
-    
+
     <script src="https://unpkg.com/htmx.org@1.9.12" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js" defer></script>
 
 </head>
+
 <body>
 
-<header class="site-header">
-    <div class="header-inner">
-        <a href="{% url 'accueil' %}" class="brand">
-            <div class="brand-icon">
-                <i class="ti ti-circuit-board brand-logo"></i>
-            </div>
-            <div>
-                <div class="brand-name">EduTech</div>
-                <div class="brand-tagline">IoT & IA Platform</div>
-            </div>
-        </a>
+    <header class="site-header">
+        <div class="header-inner">
+            <a href="{% url 'accueil' %}" class="brand">
+                <div class="brand-icon">
+                    <i class="ti ti-circuit-board brand-logo"></i>
+                </div>
+                <div>
+                    <div class="brand-name">EduTech</div>
+                    <div class="brand-tagline">IoT & IA Platform</div>
+                </div>
+            </a>
 
-        {% with current_url=request.resolver_match.url_name %}
-        <nav class="main-nav">
-            {% if user.is_authenticated and user.role == 'ADMIN' %}
-                <a href="{% url 'dashboard_admin' %}" class="{% if current_url == 'dashboard_admin' %}active{% endif %}">
+            {% with current_url=request.resolver_match.url_name %}
+            <nav class="main-nav">
+                {% if user.is_authenticated and user.role == 'ADMIN' %}
+                <a href="{% url 'dashboard_admin' %}"
+                    class="{% if current_url == 'dashboard_admin' %}active{% endif %}">
                     <i class="ti ti-home"></i> <span>Accueil</span>
                 </a>
-            {% else %}
+                {% else %}
                 <a href="{% url 'accueil' %}" class="{% if current_url == 'accueil' %}active{% endif %}">
                     <i class="ti ti-home"></i> <span>Accueil</span>
                 </a>
-            {% endif %}
-            
-            <a href="{% url 'apprentissage:liste_cours' %}" class="{% if current_url == 'liste_cours' or current_url == 'detail_cours' or current_url == 'detail_chapitre' %}active{% endif %}">
-                <i class="ti ti-book"></i> <span>Apprentissage</span>
-            </a>
-            
-            {% if user.is_authenticated and user.is_formateur %}
-                <a href="{% url 'apprentissage:espace_formateur' %}" class="{% if current_url == 'espace_formateur' %}active{% endif %}">
+                {% endif %}
+
+                <a href="{% url 'apprentissage:liste_cours' %}"
+                    class="{% if current_url == 'liste_cours' or current_url == 'detail_cours' or current_url == 'detail_chapitre' %}active{% endif %}">
+                    <i class="ti ti-book"></i> <span>Apprentissage</span>
+                </a>
+
+                {% if user.is_authenticated and user.is_formateur %}
+                <a href="{% url 'apprentissage:espace_formateur' %}"
+                    class="{% if current_url == 'espace_formateur' %}active{% endif %}">
                     <i class="ti ti-school"></i> <span>Formateur</span>
                 </a>
-            {% endif %}
-            
-            {% if user.is_authenticated %}
-                <a href="{% url 'apprentissage:calendrier' %}" class="{% if current_url == 'calendrier' %}active{% endif %}">
+                <a href="{% url 'logistics:demandes' %}"
+                    class="{% if current_url == 'demandes' or current_url == 'ateliers' %}active{% endif %}">
+                    <i class="ti ti-truck"></i> <span>Logistique</span>
+                </a>
+                {% endif %}
+
+                {% if user.is_authenticated %}
+                <a href="{% url 'apprentissage:calendrier' %}"
+                    class="{% if current_url == 'calendrier' %}active{% endif %}">
                     <i class="ti ti-calendar"></i> <span>Calendrier</span>
                 </a>
-                
+
                 {% if user.role == 'ADMIN' %}
-                    <a href="{% url 'dashboard_admin_structure' %}" class="{% if current_url == 'dashboard_admin_structure' %}active{% endif %}">
-                        <i class="ti ti-dashboard"></i> <span>Tableau</span>
-                    </a>
+                <a href="{% url 'dashboard_admin_structure' %}"
+                    class="{% if current_url == 'dashboard_admin_structure' %}active{% endif %}">
+                    <i class="ti ti-dashboard"></i> <span>Administration</span>
+                </a>
                 {% endif %}
-            {% endif %}
-            {% if user.is_superuser %}
-                <a href="{% url 'logistics:inventaire' %}" class="{% if current_url == 'inventaire' %}active{% endif %}">
+                {% endif %}
+                {% if user.is_superuser %}
+                <a href="{% url 'logistics:inventaire' %}"
+                    class="{% if current_url == 'inventaire' %}active{% endif %}">
                     <i class="ti ti-tools"></i> <span>Logistique</span>
                 </a>
-            {% endif %}
-            {% if user.is_superuser or user.role == 'ADMIN' %}
-                <a href="{% url 'accounts:admin_dashboard' %}" class="{% if current_url == 'admin_dashboard' or current_url == 'user_details' %}active{% endif %}">
-                    <i class="ti ti-users"></i> <span>Admin</span>
+                {% endif %}
+                {% if user.is_superuser or user.role == 'ADMIN' %}
+                <a href="{% url 'accounts:admin_dashboard' %}"
+                    class="{% if current_url == 'admin_dashboard' or current_url == 'user_details' %}active{% endif %}">
+                    <i class="ti ti-users"></i> <span>Utilisateurs</span>
                 </a>
-            {% endif %}
-        </nav>
+                {% endif %}
+            </nav>
 
-        <div class="header-actions">
-            {% if user.is_authenticated %}
+            <div class="header-actions">
+                {% if user.is_authenticated %}
                 <div class="notifications-dropdown-container">
-                    <button class="btn-ghost" id="notifications-dropdown-btn" aria-haspopup="true" aria-expanded="false" style="padding: 8px; border-radius: 50%; width: 36px; height: 36px; justify-content: center; position: relative; display: inline-flex; cursor: pointer; color: var(--text-secondary); background: transparent;" title="Notifications">
+                    <button class="btn-ghost" id="notifications-dropdown-btn" aria-haspopup="true" aria-expanded="false"
+                        style="padding: 8px; border-radius: 50%; width: 36px; height: 36px; justify-content: center; position: relative; display: inline-flex; cursor: pointer; color: var(--text-secondary); background: transparent;"
+                        title="Notifications">
                         <i class="ti ti-bell" style="font-size: 18px;"></i>
                         {% if unread_notifications_count > 0 %}
-                            <span class="notifications-badge" style="position: absolute; top: -2px; right: -2px; background: #ef4444; color: white; font-size: 9px; font-weight: bold; border-radius: 50%; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;">
-                                {{ unread_notifications_count }}
-                            </span>
+                        <span class="notifications-badge"
+                            style="position: absolute; top: -2px; right: -2px; background: #ef4444; color: white; font-size: 9px; font-weight: bold; border-radius: 50%; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;">
+                            {{ unread_notifications_count }}
+                        </span>
                         {% endif %}
                     </button>
-                    
+
                     <div class="notifications-dropdown-menu" id="notifications-dropdown-menu">
                         <div class="notifications-dropdown-header">
                             <h3>Notifications</h3>
                             {% if unread_notifications_count > 0 %}
-                                <form action="{% url 'accounts:mark_notifications_read_all' %}" method="POST" style="margin: 0;">
-                                    {% csrf_token %}
-                                    <button type="submit" class="mark-all-read-btn">Tout marquer comme lu</button>
-                                </form>
+                            <form action="{% url 'accounts:mark_notifications_read_all' %}" method="POST"
+                                style="margin: 0;">
+                                {% csrf_token %}
+                                <button type="submit" class="mark-all-read-btn">Tout marquer comme lu</button>
+                            </form>
                             {% endif %}
                         </div>
-                        
+
                         <div class="notifications-dropdown-list">
                             {% if recent_notifications %}
-                                {% for notif in recent_notifications %}
-                                    <a href="{% if notif.url %}{{ notif.url }}{% else %}{% url 'accounts:notifications_list' %}{% endif %}" class="notifications-dropdown-item {% if not notif.lu %}unread{% endif %}">
-                                        <div class="notif-dropdown-icon {% if notif.type == 'COMPTE_ACTIVE' %}icon-active{% elif notif.type == 'QCM_CORRIGE' %}icon-qcm{% elif notif.type == 'NOUVEAU_COURS' %}icon-cours{% elif notif.type == 'NOUVELLE_INSCRIPTION' %}icon-signup{% else %}icon-default{% endif %}">
-                                            {% if notif.type == 'COMPTE_ACTIVE' %}
-                                                <i class="ti ti-user-check"></i>
-                                            {% elif notif.type == 'QCM_CORRIGE' %}
-                                                <i class="ti ti-checkbox"></i>
-                                            {% elif notif.type == 'NOUVEAU_COURS' %}
-                                                <i class="ti ti-book"></i>
-                                            {% elif notif.type == 'NOUVELLE_INSCRIPTION' %}
-                                                <i class="ti ti-user-plus"></i>
-                                            {% else %}
-                                                <i class="ti ti-settings"></i>
-                                            {% endif %}
-                                        </div>
-                                        <div class="notif-dropdown-content">
-                                            <div class="notif-dropdown-title-row">
-                                                <span class="notif-dropdown-title">{{ notif.titre }}</span>
-                                                <span class="notif-dropdown-age">{{ notif.age_humanise }}</span>
-                                            </div>
-                                            <p class="notif-dropdown-text">{{ notif.message }}</p>
-                                        </div>
-                                    </a>
-                                {% endfor %}
-                            {% else %}
-                                <div class="notifications-dropdown-empty">
-                                    <i class="ti ti-bell-off"></i>
-                                    <p>Aucune notification</p>
+                            {% for notif in recent_notifications %}
+                            <a href="{% if notif.url %}{{ notif.url }}{% else %}{% url 'accounts:notifications_list' %}{% endif %}"
+                                class="notifications-dropdown-item {% if not notif.lu %}unread{% endif %}">
+                                <div
+                                    class="notif-dropdown-icon {% if notif.type == 'COMPTE_ACTIVE' %}icon-active{% elif notif.type == 'QCM_CORRIGE' %}icon-qcm{% elif notif.type == 'NOUVEAU_COURS' %}icon-cours{% elif notif.type == 'NOUVELLE_INSCRIPTION' %}icon-signup{% else %}icon-default{% endif %}">
+                                    {% if notif.type == 'COMPTE_ACTIVE' %}
+                                    <i class="ti ti-user-check"></i>
+                                    {% elif notif.type == 'QCM_CORRIGE' %}
+                                    <i class="ti ti-checkbox"></i>
+                                    {% elif notif.type == 'NOUVEAU_COURS' %}
+                                    <i class="ti ti-book"></i>
+                                    {% elif notif.type == 'NOUVELLE_INSCRIPTION' %}
+                                    <i class="ti ti-user-plus"></i>
+                                    {% else %}
+                                    <i class="ti ti-settings"></i>
+                                    {% endif %}
                                 </div>
+                                <div class="notif-dropdown-content">
+                                    <div class="notif-dropdown-title-row">
+                                        <span class="notif-dropdown-title">{{ notif.titre }}</span>
+                                        <span class="notif-dropdown-age">{{ notif.age_humanise }}</span>
+                                    </div>
+                                    <p class="notif-dropdown-text">{{ notif.message }}</p>
+                                </div>
+                            </a>
+                            {% endfor %}
+                            {% else %}
+                            <div class="notifications-dropdown-empty">
+                                <i class="ti ti-bell-off"></i>
+                                <p>Aucune notification</p>
+                            </div>
                             {% endif %}
                         </div>
-                        
+
                         <div class="notifications-dropdown-footer">
                             <a href="{% url 'accounts:notifications_list' %}">Voir toutes les notifications</a>
                         </div>
                     </div>
                 </div>
-            {% endif %}
+                {% endif %}
 
-            <button id="theme-toggle" class="btn-ghost" style="padding: 8px; border-radius: 50%; width: 36px; height: 36px; justify-content: center; margin-right: 4px;">
-                <i class="ti ti-sun" id="theme-toggle-light-icon" style="font-size: 18px;"></i>
-                <i class="ti ti-moon" id="theme-toggle-dark-icon" style="font-size: 18px; display: none;"></i>
-            </button>
-            
-            {% if user.is_authenticated %}
+                <button id="theme-toggle" class="btn-ghost"
+                    style="padding: 8px; border-radius: 50%; width: 36px; height: 36px; justify-content: center; margin-right: 4px;">
+                    <i class="ti ti-sun" id="theme-toggle-light-icon" style="font-size: 18px;"></i>
+                    <i class="ti ti-moon" id="theme-toggle-dark-icon" style="font-size: 18px; display: none;"></i>
+                </button>
+
+                {% if user.is_authenticated %}
                 <div class="profile-dropdown-container">
-                    <button class="profile-capsule-trigger" id="profile-dropdown-btn" aria-haspopup="true" aria-expanded="false">
+                    <button class="profile-capsule-trigger" id="profile-dropdown-btn" aria-haspopup="true"
+                        aria-expanded="false">
                         <div class="profile-capsule-info">
                             <span class="profile-capsule-name">
                                 {% if user.first_name and user.last_name %}
-                                    {{ user.first_name }} {{ user.last_name }}
+                                {{ user.first_name }} {{ user.last_name }}
                                 {% elif user.first_name %}
-                                    {{ user.first_name }}
+                                {{ user.first_name }}
                                 {% else %}
-                                    {{ user.get_full_name|truncatechars:16 }}
+                                {{ user.get_full_name|truncatechars:16 }}
                                 {% endif %}
                             </span>
-                            <span class="profile-capsule-badge {% if user.is_superuser or user.role == 'ADMIN' %}badge-admin{% elif user.is_formateur %}badge-formateur{% else %}badge-eleve{% endif %}">
+                            <span
+                                class="profile-capsule-badge {% if user.is_superuser or user.role == 'ADMIN' %}badge-admin{% elif user.is_formateur %}badge-formateur{% else %}badge-eleve{% endif %}">
                                 {% if user.role == 'ADMIN' %}Admin{% elif user.is_formateur %}Formateur{% else %}Élève{% endif %}
                             </span>
                         </div>
                         <div class="profile-capsule-avatar">
                             {% if user.photo %}
-                                <img src="{{ user.photo.url }}" alt="Photo de profil" class="profile-capsule-img">
+                            <img src="{{ user.photo.url }}" alt="Photo de profil" class="profile-capsule-img">
                             {% else %}
-                                <span class="profile-capsule-initials">
-                                    {% if user.first_name %}
-                                        {{ user.first_name|make_list|first|upper }}{% if user.last_name %}{{ user.last_name|make_list|first|upper }}{% endif %}
-                                    {% else %}
-                                        {{ user.email|slice:":2"|upper }}
-                                    {% endif %}
-                                </span>
+                            <span class="profile-capsule-initials">
+                                {% if user.first_name %}
+                                {{ user.first_name|make_list|first|upper }}{% if user.last_name %}{{ user.last_name|make_list|first|upper }}{% endif %}
+                                {% else %}
+                                {{ user.email|slice:":2"|upper }}
+                                {% endif %}
+                            </span>
                             {% endif %}
                         </div>
                     </button>
-                    
+
                     <div class="profile-dropdown-menu" id="profile-dropdown-menu">
                         <a href="{% url 'accounts:profile' %}" class="dropdown-item">
                             <i class="ti ti-user-circle"></i>
                             <span>Paramètres du profil</span>
                         </a>
-                        
+
                         <div class="dropdown-divider"></div>
-                        
-                        <form action="{% url 'accounts:logout' %}" method="post" id="logout-form-dropdown" style="margin: 0;">
+
+                        <form action="{% url 'accounts:logout' %}" method="post" id="logout-form-dropdown"
+                            style="margin: 0;">
                             {% csrf_token %}
                             <button type="submit" class="dropdown-item logout-btn">
                                 <i class="ti ti-logout"></i>
@@ -199,158 +224,159 @@
                         </form>
                     </div>
                 </div>
-            {% else %}
+                {% else %}
                 <a href="{% url 'accounts:register' %}" class="btn-ghost">
                     <i class="ti ti-user-plus"></i> <span>Inscription</span>
                 </a>
                 <a href="{% url 'accounts:login' %}" class="btn-primary">
                     <i class="ti ti-login"></i> <span>Connexion</span>
                 </a>
-            {% endif %}
+                {% endif %}
+            </div>
+            {% endwith %}
         </div>
-        {% endwith %}
-    </div>
-</header>
+    </header>
 
-{% if messages %}
+    {% if messages %}
     <div class="messages-zone">
         {% for message in messages %}
-            <div class="message-item">
-                <i class="ti ti-info-circle" style="color: var(--primary);"></i>
-                {{ message }}
-            </div>
+        <div class="message-item">
+            <i class="ti ti-info-circle" style="color: var(--primary);"></i>
+            {{ message }}
+        </div>
         {% endfor %}
     </div>
-{% endif %}
+    {% endif %}
 
-<main class="site-main" id="zone-principale">
-    {% block content %}{% endblock %}
-</main>
+    <main class="site-main" id="zone-principale">
+        {% block content %}{% endblock %}
+    </main>
 
-<script>
-    // Theme toggle
-    const themeBtn = document.getElementById('theme-toggle');
-    const lightIcon = document.getElementById('theme-toggle-light-icon');
-    const darkIcon = document.getElementById('theme-toggle-dark-icon');
-    
-    function setTheme(theme) {
-        document.documentElement.setAttribute('data-theme', theme);
-        localStorage.setItem('theme', theme);
-        if (theme === 'dark') {
-            lightIcon.style.display = 'block';
-            darkIcon.style.display = 'none';
-        } else {
-            lightIcon.style.display = 'none';
-            darkIcon.style.display = 'block';
+    <script>
+        // Theme toggle
+        const themeBtn = document.getElementById('theme-toggle');
+        const lightIcon = document.getElementById('theme-toggle-light-icon');
+        const darkIcon = document.getElementById('theme-toggle-dark-icon');
+
+        function setTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            if (theme === 'dark') {
+                lightIcon.style.display = 'block';
+                darkIcon.style.display = 'none';
+            } else {
+                lightIcon.style.display = 'none';
+                darkIcon.style.display = 'block';
+            }
         }
-    }
-    
-    const savedTheme = localStorage.getItem('theme') || 
-        (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-    setTheme(savedTheme);
-    
-    if (themeBtn) {
-        themeBtn.addEventListener('click', () => {
-            const current = document.documentElement.getAttribute('data-theme');
-            setTheme(current === 'dark' ? 'light' : 'dark');
+
+        const savedTheme = localStorage.getItem('theme') ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        setTheme(savedTheme);
+
+        if (themeBtn) {
+            themeBtn.addEventListener('click', () => {
+                const current = document.documentElement.getAttribute('data-theme');
+                setTheme(current === 'dark' ? 'light' : 'dark');
+            });
+        }
+
+        // HTMX CSRF
+        document.body.addEventListener('htmx:configRequest', (e) => {
+            e.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
         });
-    }
-    
-    // HTMX CSRF
-    document.body.addEventListener('htmx:configRequest', (e) => {
-        e.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
-    });
-    
-    // TomSelect
-    function initSelects() {
-        if (typeof TomSelect !== 'undefined') {
-            document.querySelectorAll('select').forEach(el => {
-                if (!el.classList.contains('tomselected')) {
-                    new TomSelect(el, { create: false });
+
+        // TomSelect
+        function initSelects() {
+            if (typeof TomSelect !== 'undefined') {
+                document.querySelectorAll('select').forEach(el => {
+                    if (!el.classList.contains('tomselected')) {
+                        new TomSelect(el, { create: false });
+                    }
+                });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', initSelects);
+        document.addEventListener('htmx:afterSwap', initSelects);
+
+        // Auto-hide messages after 4 seconds
+        setTimeout(() => {
+            document.querySelectorAll('.message-item').forEach(msg => {
+                msg.style.opacity = '0';
+                msg.style.transform = 'translateX(100%)';
+                setTimeout(() => msg.remove(), 300);
+            });
+        }, 4000);
+
+        // Dropdown toggle
+        const dropdownBtn = document.getElementById('profile-dropdown-btn');
+        const dropdownMenu = document.getElementById('profile-dropdown-menu');
+
+        // Notifications dropdown toggle
+        const notifBtn = document.getElementById('notifications-dropdown-btn');
+        const notifMenu = document.getElementById('notifications-dropdown-menu');
+
+        if (dropdownBtn && dropdownMenu) {
+            dropdownBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+
+                // Close notifications dropdown if open
+                if (notifMenu) notifMenu.classList.remove('is-open');
+                if (notifBtn) notifBtn.setAttribute('aria-expanded', 'false');
+
+                const isOpen = dropdownMenu.classList.contains('is-open');
+                if (isOpen) {
+                    dropdownMenu.classList.remove('is-open');
+                    dropdownBtn.setAttribute('aria-expanded', 'false');
+                } else {
+                    dropdownMenu.classList.add('is-open');
+                    dropdownBtn.setAttribute('aria-expanded', 'true');
+                }
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!dropdownBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                    dropdownMenu.classList.remove('is-open');
+                    dropdownBtn.setAttribute('aria-expanded', 'false');
                 }
             });
         }
-    }
-    
-    document.addEventListener('DOMContentLoaded', initSelects);
-    document.addEventListener('htmx:afterSwap', initSelects);
-    
-    // Auto-hide messages after 4 seconds
-    setTimeout(() => {
-        document.querySelectorAll('.message-item').forEach(msg => {
-            msg.style.opacity = '0';
-            msg.style.transform = 'translateX(100%)';
-            setTimeout(() => msg.remove(), 300);
-        });
-    }, 4000);
 
-    // Dropdown toggle
-    const dropdownBtn = document.getElementById('profile-dropdown-btn');
-    const dropdownMenu = document.getElementById('profile-dropdown-menu');
-    
-    // Notifications dropdown toggle
-    const notifBtn = document.getElementById('notifications-dropdown-btn');
-    const notifMenu = document.getElementById('notifications-dropdown-menu');
-    
-    if (dropdownBtn && dropdownMenu) {
-        dropdownBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            
-            // Close notifications dropdown if open
-            if (notifMenu) notifMenu.classList.remove('is-open');
-            if (notifBtn) notifBtn.setAttribute('aria-expanded', 'false');
-            
-            const isOpen = dropdownMenu.classList.contains('is-open');
-            if (isOpen) {
-                dropdownMenu.classList.remove('is-open');
-                dropdownBtn.setAttribute('aria-expanded', 'false');
-            } else {
-                dropdownMenu.classList.add('is-open');
-                dropdownBtn.setAttribute('aria-expanded', 'true');
-            }
-        });
-        
-        document.addEventListener('click', (e) => {
-            if (!dropdownBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
-                dropdownMenu.classList.remove('is-open');
-                dropdownBtn.setAttribute('aria-expanded', 'false');
-            }
-        });
-    }
-    
-    if (notifBtn && notifMenu) {
-        notifBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            
-            // Close profile dropdown if open
-            if (dropdownMenu) dropdownMenu.classList.remove('is-open');
-            if (dropdownBtn) dropdownBtn.setAttribute('aria-expanded', 'false');
-            
-            const isOpen = notifMenu.classList.contains('is-open');
-            if (isOpen) {
-                notifMenu.classList.remove('is-open');
-                notifBtn.setAttribute('aria-expanded', 'false');
-            } else {
-                notifMenu.classList.add('is-open');
-                notifBtn.setAttribute('aria-expanded', 'true');
-            }
-        });
-        
-        document.addEventListener('click', (e) => {
-            if (!notifBtn.contains(e.target) && !notifMenu.contains(e.target)) {
-                notifMenu.classList.remove('is-open');
-                notifBtn.setAttribute('aria-expanded', 'false');
-            }
-        });
-    }
-    
-    // Écouteur global pour fermer la modale
-    document.body.addEventListener("closeModal", function() {
-        document.getElementById("modal-container").innerHTML = "";
-    });
-</script>
+        if (notifBtn && notifMenu) {
+            notifBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
 
-<div id="modal-container"></div>
+                // Close profile dropdown if open
+                if (dropdownMenu) dropdownMenu.classList.remove('is-open');
+                if (dropdownBtn) dropdownBtn.setAttribute('aria-expanded', 'false');
+
+                const isOpen = notifMenu.classList.contains('is-open');
+                if (isOpen) {
+                    notifMenu.classList.remove('is-open');
+                    notifBtn.setAttribute('aria-expanded', 'false');
+                } else {
+                    notifMenu.classList.add('is-open');
+                    notifBtn.setAttribute('aria-expanded', 'true');
+                }
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!notifBtn.contains(e.target) && !notifMenu.contains(e.target)) {
+                    notifMenu.classList.remove('is-open');
+                    notifBtn.setAttribute('aria-expanded', 'false');
+                }
+            });
+        }
+
+        // Écouteur global pour fermer la modale
+        document.body.addEventListener("closeModal", function () {
+            document.getElementById("modal-container").innerHTML = "";
+        });
+    </script>
+
+    <div id="modal-container"></div>
 
 </body>
+
 </html>

@@ -107,22 +107,44 @@ def _admin_dashboard_context(request=None):
         elif status_filter == 'inactif':
             niveaux_qs = niveaux_qs.filter(actif=False)
             classes_qs = classes_qs.filter(actif=False)
+            
+        page_number = request.GET.get('page', 1)
+    else:
+        page_number = 1
+
+    # Pagination
+    from django.core.paginator import Paginator
+    
+    niveaux_paginator = Paginator(niveaux_qs, 10)
+    niveaux_page = niveaux_paginator.get_page(page_number)
+    
+    classes_paginator = Paginator(classes_qs, 10)
+    classes_page = classes_paginator.get_page(page_number)
+    
+    students_paginator = Paginator(pending_students_qs, 10)
+    pending_students_page = students_paginator.get_page(page_number)
+    
+    demandes_paginator = Paginator(pending_demandes_qs, 10)
+    pending_demandes_page = demandes_paginator.get_page(page_number)
+    
+    equipements_paginator = Paginator(equipements_qs, 10)
+    equipements_page = equipements_paginator.get_page(page_number)
 
     pending_rows = [
         {
             'user': student,
             'form': PendingStudentActivationForm(initial={'student_id': student.id}),
         }
-        for student in pending_students_qs
+        for student in pending_students_page
     ]
 
     return {
-        'niveaux': niveaux_qs,
-        'classes': classes_qs,
-        'equipements': equipements_qs,
-        'pending_students': pending_students_qs,
+        'niveaux': niveaux_page,
+        'classes': classes_page,
+        'equipements': equipements_page,
+        'pending_students': pending_students_page,
         'pending_rows': pending_rows,
-        'pending_demandes': pending_demandes_qs,
+        'pending_demandes': pending_demandes_page,
         'niveau_form': NiveauForm(),
         'classe_form': ClasseForm(),
         'niveau_editor_form': None,
@@ -153,9 +175,14 @@ def _formateur_dashboard_context(request):
         'equipement',
         'atelier_cible',
     ).order_by('-date_creation')
+    
+    from logistics.models import Workshop
+    mes_ateliers = Workshop.objects.filter(createur=request.user).order_by('-date_debut')
+    
     return {
         'mes_cours': mes_cours,
         'mes_demandes': mes_demandes,
+        'mes_ateliers': mes_ateliers,
         'demande_form': DemandeMaterielForm(),
     }
 
@@ -268,7 +295,8 @@ def student_dashboard_view(request):
                 'titre': cours.titre,
                 'description': cours.description,
                 'chapitres_count': cours.chapitres.count(),
-                'progression_percent': progression_percent
+                'progression_percent': progression_percent,
+                'image_couverture': cours.image_couverture
             })
             
             radar_labels.append(cours.titre[:15] + '...' if len(cours.titre) > 15 else cours.titre)

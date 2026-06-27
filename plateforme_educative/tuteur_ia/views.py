@@ -307,42 +307,90 @@ def poser_question(request, session_id):
         return JsonResponse({"error": "Question vide."}, status=400)
 
     try:
-        # ── Recherche RAG rapide (résultats limités pour réduire la taille du contexte) ──
-        from tuteur_ia.tools.rag_tool import rag_search
-        context = rag_search(
-            query=question,
-            chapitre_id=str(session.chapitre.id),
-            cours_id=str(session.chapitre.cours.id),
-            n_results=3,  # Limiter à 3 résultats au lieu de la valeur par défaut
-        )
-        # Tronquer le contexte à 1500 caractères max pour éviter les prompts trop longs
+        # ── Recherche sémantique directe (ChromaDB, sans BM25/RRF) ──
+        from tuteur_ia.tools.chroma_store import search as chroma_search, get_stats
+        chapitre_id = str(session.chapitre.id)
+        titre_chapitre = session.chapitre.titre
+
+        # Recherche principale avec la question de l'élève
+        raw_results = chroma_search(query=question, chapitre_id=chapitre_id, n_results=3)
+
+        # Si la question est générale ("résume", "explique le chapitre"…),
+        # ChromaDB ne trouve rien car ces mots ne sont pas dans le PDF.
+        # Fallback : rechercher avec le titre du chapitre pour avoir du contexte.
+        if not raw_results:
+            raw_results = chroma_search(query=titre_chapitre, chapitre_id=chapitre_id, n_results=4)
+
+        # Assembler le contexte
+        context_parts = []
+        for r in raw_results:
+            text = (r.get("text") or "").strip()
+            if text:
+                source = r.get("document_titre", "Document")
+                page   = r.get("page_hint", "")
+                header = f"[{source}" + (f" — p.{page}" if page else "") + "]"
+                context_parts.append(f"{header}\n{text}")
+        context = "\n\n---\n\n".join(context_parts)
+
+        # Tronquer à 1500 caractères pour un prompt léger
         if context and len(context) > 1500:
             context = context[:1500] + "\n[...]"
 
-        # ── Historique limité aux 4 derniers échanges (mémoire courte pour la rapidité) ──
+        # Si aucun document n'est indexé pour ce chapitre → pas de PDF disponible
+        stats = get_stats()
+        aucun_document = not raw_results or stats.get("total_chunks", 0) == 0
+
+        # ── Historique limité aux 3 derniers échanges ──
         from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
         chat_history = []
-        for msg in session.messages[-8:]:  # Max 4 tours (user+assistant)
+        for msg in session.messages[-6:]:
             if msg.get('role') == 'user':
                 chat_history.append(HumanMessage(content=msg.get('content', '')))
             elif msg.get('role') == 'assistant':
-                # Tronquer les anciennes réponses longues
                 content = msg.get('content', '')
-                chat_history.append(AIMessage(content=content[:500] if len(content) > 500 else content))
+                chat_history.append(AIMessage(content=content[:400] if len(content) > 400 else content))
 
-        system_prompt = (
-            f"Tu es le Tuteur Assistant du chapitre '{session.chapitre.titre}'.\n"
-            "Extraits de référence :\n"
-            f"{context or '[Aucun extrait disponible]'}\n\n"
-            "Réponds en français, de façon claire et concise (max 3 paragraphes). "
-            "Formate en Markdown si utile."
+        refus_hors_sujet = (
+            f"❌ Je réponds uniquement aux questions concernant le contenu "
+            f"du chapitre **« {titre_chapitre} »**. Cette question est hors sujet."
         )
+
+        if aucun_document:
+            # Pas de PDF indexé → on ne peut pas répondre
+            system_prompt = (
+                f"Tu es le Tuteur Assistant du chapitre '{titre_chapitre}'.\n"
+                "Aucun document PDF n'est encore indexé pour ce chapitre.\n"
+                "Réponds EXACTEMENT : \"Aucun document n'est disponible pour ce chapitre. "
+                "Veuillez contacter votre formateur pour qu'il uploade le contenu.\""
+            )
+        else:
+            system_prompt = (
+                f"Tu es le Tuteur Assistant STRICTEMENT limité au chapitre '{titre_chapitre}'.\n\n"
+                "EXTRAITS DU DOCUMENT PDF (seule source autorisée) :\n"
+                "---\n"
+                f"{context}\n"
+                "---\n\n"
+                "RÈGLE ABSOLUE N°1 — DÉTECTION HORS SUJET :\n"
+                "Analyse d'abord si la question de l'élève est liée au contenu du chapitre "
+                f"'{titre_chapitre}' ou aux extraits PDF ci-dessus.\n"
+                "• Si la question concerne des sujets ÉTRANGERS au chapitre "
+                "(marques commerciales, célébrités, pays, recettes, sports, actualités, "
+                "ou tout sujet non mentionné dans le PDF ci-dessus), "
+                "réponds UNIQUEMENT et EXACTEMENT :\n"
+                f"\"{refus_hors_sujet}\"\n"
+                "• Ne donne JAMAIS de réponse basée sur tes connaissances générales. "
+                "Même si tu connais la réponse, si elle n'est pas dans le PDF : REFUSE.\n\n"
+                "RÈGLE N°2 — QUESTIONS VALIDES :\n"
+                "Si la question porte bien sur le chapitre (résumé, explication, concepts du PDF...), "
+                "réponds clairement et de façon concise (max 3 paragraphes) "
+                "en te basant EXCLUSIVEMENT sur les extraits fournis."
+            )
 
         messages_to_send = [SystemMessage(content=system_prompt)] + chat_history + [HumanMessage(content=question)]
 
         # ── LLM rapide : llama-3.1-8b-instant (le plus rapide sur Groq) ──
         from tuteur_ia.agents.llm_factory import get_llm
-        llm = get_llm(temperature=0.3, model_name="llama-3.1-8b-instant")
+        llm = get_llm(temperature=0.0, model_name="llama-3.1-8b-instant")
         response = llm.invoke(messages_to_send)
         reponse_content = response.content
 

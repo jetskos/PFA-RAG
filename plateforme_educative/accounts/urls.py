@@ -31,4 +31,5 @@ urlpatterns = [
     path('notifications/<uuid:pk>/marquer-lu/', views.mark_notification_read_view, name='mark_notification_read'),
     path('notifications/<uuid:pk>/lire/', views.read_and_redirect_notification_view, name='read_and_redirect_notification'),
     path('notifications/<uuid:pk>/supprimer/', views.delete_notification_view, name='delete_notification'),
+    path('onboarding/', views.onboarding_view, name='onboarding'),
 ]

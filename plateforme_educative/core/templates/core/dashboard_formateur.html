@@ -1,59 +1,757 @@
 {% extends 'base.html' %}
-
-{% block title %}Dashboard Formateur{% endblock %}
-
+{% block title %}Tableau de bord — Formateur{% endblock %}
 {% block content %}
-<section class="page-shell formateur-shell">
-    <!-- WELCOME HERO SECTION -->
-    <div class="welcome-hero" style="margin-bottom: 2.5rem; display: flex; align-items: center; justify-content: space-between; background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.6)); border-radius: 24px; padding: 2.5rem 3rem; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); backdrop-filter: blur(10px);">
-        <div>
-            <span class="eyebrow" style="color: #3b82f6; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.85rem; margin-bottom: 0.5rem; display: inline-block;">Espace Formateur</span>
-            <h1 style="font-size: 2.5rem; font-weight: 800; color: #0f172a; margin: 0 0 0.5rem 0;">Bonjour, {{ request.user.get_full_name|default:request.user.email|default:'Formateur' }} 👋</h1>
-            <p style="color: #64748b; font-size: 1.1rem; margin: 0; max-width: 500px;">Prêt à inspirer vos étudiants aujourd'hui ? Gérez vos cours, suivez leurs progressions et organisez vos ateliers.</p>
-        </div>
-        <div class="hero-stats" style="display: flex; gap: 2rem; border-left: 1px solid rgba(226, 232, 240, 0.8); padding-left: 2rem;">
-            <div style="text-align: center;">
-                <div style="font-size: 2rem; font-weight: 800; color: #0f172a;">{{ mes_cours|length }}</div>
-                <div style="font-size: 0.85rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">Cours actifs</div>
-            </div>
-        </div>
-    </div>
-    <!-- ACTION BAR COMPACTE -->
-    <div class="action-bar-compact" style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 2rem; background: #ffffff; border-radius: 16px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05); margin-bottom: 2rem;">
-        <h1 style="margin: 0; font-size: 1.5rem; font-weight: 800; color: #0f172a;">Mes Cours</h1>
-        <div style="display: flex; gap: 1rem;">
-            <a href="{% url 'apprentissage:formateur_notes' %}" class="btn-ghost" style="color: #64748b; font-weight: 600; padding: 0.5rem 1rem;">
-                <i class="ti ti-chart-bar" style="margin-right: 6px;"></i> Voir les Notes
-            </a>
-            <a href="{% url 'logistics:demandes' %}" class="btn-outline" style="color: #0f172a; border-color: #e2e8f0; font-weight: 600; padding: 0.5rem 1rem; text-decoration: none;">
-                <i class="ti ti-package" style="margin-right: 6px;"></i> Demandes Logistiques
-            </a>
-            <a href="{% url 'apprentissage:nouveau_cours' %}" class="btn-primary" style="background: #3b82f6; border-radius: 8px; font-weight: 600; padding: 0.5rem 1rem;">
-                <i class="ti ti-plus" style="margin-right: 6px;"></i> Nouveau Cours
-            </a>
-        </div>
-    </div>
-
-    <!-- MAIN GRID CONTAINER -->
-    <div id="dashboard-formateur-structure">
-           {% include 'core/partials/formateur_structure.html' %}
-    </div>
-</section>
-
-<!-- Modal Container for Logistics -->
-<div id="form-demande-container"></div>
-
 <style>
-    body { background-color: #f8fafc; } /* Premium SaaS background */
-    .formateur-shell { max-width: 1200px; margin: 0 auto; padding-top: 2rem; }
-    
-    .btn-ghost { background: transparent; border: none; cursor: pointer; transition: all 0.2s; border-radius: 8px; display: inline-flex; align-items: center; }
-    .btn-ghost:hover { background: #f1f5f9; color: #0f172a; }
-    
-    .btn-outline { background: white; border: 1px solid #e2e8f0; cursor: pointer; transition: all 0.2s; border-radius: 8px; display: inline-flex; align-items: center; }
-    .btn-outline:hover { background: #f8fafc; border-color: #cbd5e1; }
-    
-    .btn-primary { background: #3b82f6; color: white; border: none; cursor: pointer; transition: all 0.2s; border-radius: 8px; display: inline-flex; align-items: center; }
-    .btn-primary:hover { background: #2563eb; }
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     RESET & BASE
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  .fmt { font-family: 'Inter', system-ui, sans-serif; background: #f1f5f9; min-height: 100vh; }
+  [data-theme="dark"] .fmt { background: #0d1117; }
+
+  /* ━━━━━━ DARK MODE ━━━━━━ */
+  [data-theme="dark"] .kpi-card {
+    background: #161b22; border-color: #30363d;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.2);
+  }
+  [data-theme="dark"] .kpi-num { color: #e6edf3; }
+  [data-theme="dark"] .kpi-label { color: #8b949e; }
+  [data-theme="dark"] .kpi-bar { background: #21262d; }
+
+  [data-theme="dark"] .fmt-panel {
+    background: #161b22; border-color: #30363d;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3), 0 4px 16px rgba(0,0,0,0.2);
+  }
+  [data-theme="dark"] .fmt-panel-head { border-bottom-color: #21262d; }
+  [data-theme="dark"] .fmt-panel-title { color: #e6edf3; }
+  [data-theme="dark"] .fmt-link { color: #3fb950; }
+  [data-theme="dark"] .fmt-link:hover { background: rgba(63,185,80,0.08); }
+
+  [data-theme="dark"] .cours-card {
+    background: #161b22; border-color: #30363d;
+  }
+  [data-theme="dark"] .cours-card:hover { border-color: #444c56; box-shadow: 0 4px 6px rgba(0,0,0,0.2), 0 20px 40px rgba(0,0,0,0.3); }
+  [data-theme="dark"] .cours-cover { background: linear-gradient(135deg, #1c2128, #21262d); }
+  [data-theme="dark"] .cours-titre { color: #e6edf3; }
+  [data-theme="dark"] .cours-actions { border-top-color: #21262d; }
+  [data-theme="dark"] .btn-sm-ghost { background: #21262d; color: #8b949e; border-color: #30363d; }
+  [data-theme="dark"] .btn-sm-ghost:hover { background: #2d333b; color: #e6edf3; }
+  [data-theme="dark"] .badge-brouillon { background: #21262d; color: #8b949e; }
+  [data-theme="dark"] .cours-niveau { background: rgba(63,185,80,0.1); color: #3fb950; }
+
+  [data-theme="dark"] .fmt-empty h3 { color: #e6edf3; }
+  [data-theme="dark"] .fmt-empty p  { color: #8b949e; }
+  [data-theme="dark"] .fmt-empty-icon { background: linear-gradient(135deg, #1c2128, #21262d); }
+
+  [data-theme="dark"] .demande-item { border-bottom-color: #21262d; }
+  [data-theme="dark"] .demande-item:hover { background: #1c2128; }
+  [data-theme="dark"] .demande-nom { color: #e6edf3; }
+  [data-theme="dark"] .demande-sub { color: #6e7681; }
+  [data-theme="dark"] .btn-fmt-outline { background: #21262d; color: #e6edf3; border-color: #30363d; }
+  [data-theme="dark"] .btn-fmt-outline:hover { background: #2d333b; border-color: #444c56; }
+
+  [data-theme="dark"] .atelier-card { background: #161b22; border-color: #30363d; }
+  [data-theme="dark"] .atelier-card:hover { border-color: #444c56; box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+  [data-theme="dark"] .atelier-titre { color: #e6edf3; }
+  [data-theme="dark"] .atelier-meta { color: #6e7681; }
+  [data-theme="dark"] .adp-termine { background: #21262d; color: #8b949e; }
+  [data-theme="dark"] .ateliers-scroll::-webkit-scrollbar-thumb { background: #30363d; }
+
+  [data-theme="dark"] .qa-tile { background: #161b22; border-color: #30363d; }
+  [data-theme="dark"] .qa-tile:hover { box-shadow: 0 4px 6px rgba(0,0,0,0.2), 0 12px 32px rgba(63,185,80,0.1); }
+  [data-theme="dark"] .qa-label { color: #e6edf3; }
+  .fmt *, .fmt *::before, .fmt *::after { box-sizing: border-box; }
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     LAYOUT
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  .fmt-wrap { max-width: 1360px; margin: 0 auto; padding: 0 2rem 4rem; }
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     HERO BANNER
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  .fmt-hero {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #0f766e 0%, #065f46 50%, #0c4a6e 100%);
+    border-radius: 0 0 32px 32px;
+    padding: 3.5rem 2rem 5rem;
+    margin-bottom: -2.5rem;
+  }
+  .fmt-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(circle at 20% 50%, rgba(16,185,129,0.15) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(59,130,246,0.1) 0%, transparent 40%),
+      url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
+  }
+  .fmt-hero-inner {
+    position: relative; z-index: 1;
+    max-width: 1360px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between; gap: 2rem; flex-wrap: wrap;
+  }
+  .fmt-hero-left { flex: 1; min-width: 280px; }
+  .fmt-hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+    color: rgba(167,243,208,0.9); margin-bottom: 0.75rem;
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+    padding: 0.3rem 0.75rem; border-radius: 999px;
+  }
+  .fmt-hero-title {
+    font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 900;
+    color: #fff; line-height: 1.1; letter-spacing: -0.03em;
+    margin: 0 0 0.6rem;
+  }
+  .fmt-hero-title em { font-style: normal; color: #6ee7b7; }
+  .fmt-hero-sub { font-size: 1rem; color: rgba(255,255,255,0.7); font-weight: 500; margin: 0; }
+
+  .fmt-hero-pills {
+    display: flex; gap: 0.75rem; margin-top: 1.75rem; flex-wrap: wrap;
+  }
+  .fmt-hero-pill {
+    display: flex; align-items: center; gap: 0.5rem;
+    background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.18);
+    backdrop-filter: blur(8px);
+    padding: 0.5rem 1rem; border-radius: 999px;
+    font-size: 0.82rem; font-weight: 700; color: #fff;
+    transition: background 0.2s;
+  }
+  .fmt-hero-pill:hover { background: rgba(255,255,255,0.2); }
+  .fmt-hero-pill .ph-num {
+    font-size: 1.1rem; font-weight: 900; color: #6ee7b7;
+  }
+
+  .fmt-hero-avatar {
+    width: 80px; height: 80px; border-radius: 50%;
+    border: 3px solid rgba(255,255,255,0.3);
+    object-fit: cover;
+    box-shadow: 0 0 0 6px rgba(255,255,255,0.08);
+    flex-shrink: 0;
+  }
+  .fmt-hero-avatar-placeholder {
+    width: 80px; height: 80px; border-radius: 50%;
+    background: linear-gradient(135deg, #10b981, #0f766e);
+    border: 3px solid rgba(255,255,255,0.3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2rem; color: #fff; font-weight: 800; flex-shrink: 0;
+    box-shadow: 0 0 0 6px rgba(255,255,255,0.08);
+  }
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     KPI CARDS ROW
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  .fmt-kpi-row {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;
+    position: relative; z-index: 2; margin-bottom: 2rem;
+  }
+  @media (max-width: 900px) { .fmt-kpi-row { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 500px) { .fmt-kpi-row { grid-template-columns: 1fr; } }
+
+  .kpi-card {
+    background: #fff; border-radius: 20px;
+    padding: 1.5rem 1.6rem 1.2rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.06);
+    border: 1px solid #e2e8f0;
+    transition: transform 0.2s cubic-bezier(0.16,1,0.3,1), box-shadow 0.2s;
+    position: relative; overflow: hidden;
+  }
+  .kpi-card:hover { transform: translateY(-4px); box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 16px 40px rgba(0,0,0,0.1); }
+  .kpi-card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1rem; }
+  .kpi-icon {
+    width: 44px; height: 44px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem; flex-shrink: 0;
+  }
+  .kpi-badge {
+    font-size: 0.68rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase;
+    padding: 3px 8px; border-radius: 999px;
+  }
+  .kpi-num {
+    font-size: 2.4rem; font-weight: 900; color: #0f172a;
+    line-height: 1; letter-spacing: -0.04em; margin-bottom: 0.25rem;
+  }
+  .kpi-label { font-size: 0.78rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; }
+  .kpi-bar { height: 3px; border-radius: 999px; background: #e2e8f0; margin-top: 1rem; overflow: hidden; }
+  .kpi-bar-fill { height: 100%; border-radius: 999px; }
+
+  .kpi-card--teal .kpi-icon { background: rgba(15,118,110,0.1); color: #0f766e; }
+  .kpi-card--teal .kpi-badge { background: rgba(15,118,110,0.08); color: #0f766e; }
+  .kpi-card--teal .kpi-bar-fill { background: #0f766e; width: 70%; }
+
+  .kpi-card--emerald .kpi-icon { background: rgba(16,185,129,0.1); color: #10b981; }
+  .kpi-card--emerald .kpi-badge { background: rgba(16,185,129,0.08); color: #10b981; }
+  .kpi-card--emerald .kpi-bar-fill { background: #10b981; width: 55%; }
+
+  .kpi-card--blue .kpi-icon { background: rgba(59,130,246,0.1); color: #3b82f6; }
+  .kpi-card--blue .kpi-badge { background: rgba(59,130,246,0.08); color: #3b82f6; }
+  .kpi-card--blue .kpi-bar-fill { background: #3b82f6; width: 40%; }
+
+  .kpi-card--amber .kpi-icon { background: rgba(245,158,11,0.1); color: #d97706; }
+  .kpi-card--amber .kpi-badge { background: rgba(245,158,11,0.08); color: #d97706; }
+  .kpi-card--amber .kpi-bar-fill { background: #f59e0b; width: 30%; }
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     MAIN GRID
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  .fmt-main-grid {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 1.5rem;
+    align-items: start;
+    margin-bottom: 1.5rem;
+  }
+  @media (max-width: 1100px) { .fmt-main-grid { grid-template-columns: 1fr; } }
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     PANELS
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  .fmt-panel {
+    background: #fff; border-radius: 20px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.04);
+    overflow: hidden;
+  }
+  .fmt-panel-head {
+    padding: 1.25rem 1.5rem; border-bottom: 1px solid #f1f5f9;
+    display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+  }
+  .fmt-panel-title {
+    font-size: 0.95rem; font-weight: 800; color: #0f172a;
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .fmt-panel-title i { color: #0f766e; font-size: 1.1rem; }
+
+  .fmt-link {
+    font-size: 0.78rem; font-weight: 700; color: #0f766e; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 0.25rem;
+    padding: 0.3rem 0.75rem; border-radius: 8px;
+    transition: background 0.15s;
+  }
+  .fmt-link:hover { background: rgba(15,118,110,0.06); }
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     COURS GRID
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  .cours-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.25rem;
+    padding: 1.5rem;
+  }
+
+  .cours-card {
+    border-radius: 16px; border: 1px solid #e2e8f0;
+    overflow: hidden; background: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    transition: all 0.25s cubic-bezier(0.16,1,0.3,1);
+    display: flex; flex-direction: column;
+  }
+  .cours-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.04), 0 20px 40px rgba(0,0,0,0.1);
+    border-color: #cbd5e1;
+  }
+  .cours-cover {
+    height: 130px; position: relative; overflow: hidden;
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2.5rem;
+  }
+  .cours-cover img { width: 100%; height: 100%; object-fit: cover; }
+  .cours-cover-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.45) 0%, transparent 60%);
+  }
+  .cours-cover-badge {
+    position: absolute; top: 0.75rem; right: 0.75rem;
+    font-size: 0.65rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase;
+    padding: 3px 8px; border-radius: 999px;
+  }
+  .badge-publie { background: #dcfce7; color: #166534; }
+  .badge-brouillon { background: #f1f5f9; color: #475569; }
+
+  .cours-body { padding: 1rem 1.1rem; flex: 1; display: flex; flex-direction: column; }
+  .cours-niveau {
+    font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em;
+    color: #0f766e; background: rgba(15,118,110,0.08); padding: 2px 7px; border-radius: 999px;
+    display: inline-block; margin-bottom: 0.5rem;
+  }
+  .cours-titre { font-size: 0.95rem; font-weight: 800; color: #0f172a; margin-bottom: 0.6rem; line-height: 1.35; }
+  .cours-meta { font-size: 0.75rem; color: #94a3b8; font-weight: 600; display: flex; gap: 0.75rem; margin-top: auto; }
+  .cours-meta i { font-size: 0.85rem; }
+  .cours-actions {
+    padding: 0.75rem 1.1rem; border-top: 1px solid #f1f5f9;
+    display: flex; gap: 0.5rem;
+  }
+  .btn-sm {
+    flex: 1; padding: 0.45rem 0.6rem;
+    border: none; border-radius: 8px; cursor: pointer;
+    font-size: 0.78rem; font-weight: 700; font-family: inherit;
+    display: flex; align-items: center; justify-content: center; gap: 0.3rem;
+    text-decoration: none; transition: all 0.15s;
+  }
+  .btn-sm-primary { background: #0f766e; color: #fff; }
+  .btn-sm-primary:hover { background: #0d6460; }
+  .btn-sm-ghost { background: #f8fafc; color: #64748b; border: 1px solid #e2e8f0; }
+  .btn-sm-ghost:hover { background: #f1f5f9; color: #0f172a; }
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     EMPTY STATE
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  .fmt-empty {
+    padding: 4rem 2rem; text-align: center;
+    display: flex; flex-direction: column; align-items: center; gap: 1rem;
+  }
+  .fmt-empty-icon {
+    width: 72px; height: 72px; border-radius: 20px;
+    background: linear-gradient(135deg, #f0fdfa, #dcfce7);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2rem; margin-bottom: 0.5rem;
+  }
+  .fmt-empty h3 { font-size: 1.1rem; font-weight: 800; color: #0f172a; margin: 0; }
+  .fmt-empty p { font-size: 0.875rem; color: #64748b; margin: 0; max-width: 280px; }
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     SIDEBAR PANELS
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  .fmt-sidebar { display: flex; flex-direction: column; gap: 1.25rem; }
+
+  /* Demandes list */
+  .demande-item {
+    display: flex; align-items: center; gap: 0.85rem;
+    padding: 0.85rem 1.25rem; border-bottom: 1px solid #f8fafc;
+    transition: background 0.15s; position: relative;
+  }
+  .demande-item:last-child { border-bottom: none; }
+  .demande-item:hover { background: #f8fafc; }
+  .demande-dot {
+    width: 3px; position: absolute; left: 0; top: 0; bottom: 0; border-radius: 0 2px 2px 0;
+  }
+  .dot-PENDING { background: #f59e0b; }
+  .dot-APPROVED { background: #10b981; }
+  .dot-REJECTED { background: #ef4444; }
+  .dot-RETURNED { background: #3b82f6; }
+
+  .demande-icon {
+    width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-size: 1rem;
+  }
+  .demande-info { flex: 1; min-width: 0; }
+  .demande-nom { font-size: 0.84rem; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .demande-sub { font-size: 0.72rem; color: #94a3b8; font-weight: 600; margin-top: 1px; }
+  .demande-badge {
+    font-size: 0.62rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em;
+    padding: 2px 7px; border-radius: 999px; flex-shrink: 0;
+  }
+  .db-PENDING { background: rgba(245,158,11,0.1); color: #d97706; }
+  .db-APPROVED { background: rgba(16,185,129,0.1); color: #059669; }
+  .db-REJECTED { background: rgba(239,68,68,0.1); color: #dc2626; }
+  .db-RETURNED { background: rgba(59,130,246,0.1); color: #2563eb; }
+
+  /* Notifications */
+  .notif-item {
+    display: flex; align-items: flex-start; gap: 0.75rem;
+    padding: 0.85rem 1.25rem; border-bottom: 1px solid #f8fafc;
+  }
+  .notif-item:last-child { border-bottom: none; }
+  .notif-dot { width: 8px; height: 8px; border-radius: 50%; background: #0f766e; flex-shrink: 0; margin-top: 5px; }
+  .notif-titre { font-size: 0.82rem; font-weight: 700; color: #0f172a; }
+  .notif-msg { font-size: 0.75rem; color: #64748b; margin-top: 2px; line-height: 1.4; }
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     ATELIERS SECTION
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  .ateliers-scroll {
+    display: flex; gap: 1rem; overflow-x: auto;
+    padding: 1.25rem 1.5rem;
+    scrollbar-width: thin; scrollbar-color: #e2e8f0 transparent;
+  }
+  .ateliers-scroll::-webkit-scrollbar { height: 4px; }
+  .ateliers-scroll::-webkit-scrollbar-track { background: transparent; }
+  .ateliers-scroll::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 999px; }
+
+  .atelier-card {
+    min-width: 240px; border-radius: 16px; border: 1px solid #e2e8f0;
+    padding: 1.1rem 1.25rem; background: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    transition: all 0.2s cubic-bezier(0.16,1,0.3,1);
+    flex-shrink: 0; position: relative; overflow: hidden;
+  }
+  .atelier-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); border-color: #cbd5e1; }
+  .atelier-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  }
+  .atelier-card.ac-en_cours::before { background: linear-gradient(90deg, #10b981, #34d399); }
+  .atelier-card.ac-a_venir::before { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+  .atelier-card.ac-termine::before { background: linear-gradient(90deg, #94a3b8, #cbd5e1); }
+  .atelier-card.ac-annule::before { background: linear-gradient(90deg, #ef4444, #f87171); }
+
+  .atelier-status-dot {
+    width: 7px; height: 7px; border-radius: 50%; display: inline-block; margin-right: 5px;
+  }
+  .asd-en_cours { background: #10b981; box-shadow: 0 0 0 3px rgba(16,185,129,0.2); }
+  .asd-a_venir { background: #3b82f6; }
+  .asd-termine { background: #94a3b8; }
+  .asd-annule { background: #ef4444; }
+
+  .atelier-titre { font-size: 0.92rem; font-weight: 800; color: #0f172a; margin: 0.6rem 0 0.4rem; line-height: 1.35; }
+  .atelier-meta { font-size: 0.72rem; color: #94a3b8; font-weight: 600; display: flex; flex-direction: column; gap: 3px; }
+  .atelier-meta span { display: flex; align-items: center; gap: 0.3rem; }
+  .atelier-date-pill {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    font-size: 0.7rem; font-weight: 800; padding: 3px 8px; border-radius: 999px; margin-bottom: 0.4rem;
+  }
+  .adp-en_cours { background: rgba(16,185,129,0.1); color: #059669; }
+  .adp-a_venir { background: rgba(59,130,246,0.1); color: #2563eb; }
+  .adp-termine { background: #f1f5f9; color: #64748b; }
+  .adp-annule { background: rgba(239,68,68,0.08); color: #dc2626; }
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     QUICK ACTIONS
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  .qa-grid-vertical {
+    display: flex; flex-direction: column; gap: 0.75rem;
+    padding: 1.25rem 1.5rem;
+  }
+  
+  .qa-tile-horiz {
+    border-radius: 12px; border: 1.5px solid #e2e8f0; background: #fff;
+    padding: 0.85rem 1rem; text-decoration: none;
+    display: flex; flex-direction: row; align-items: center; gap: 0.85rem;
+    transition: all 0.2s cubic-bezier(0.16,1,0.3,1);
+    position: relative; overflow: hidden;
+  }
+  .qa-tile-horiz::after {
+    content: ''; position: absolute; inset: 0;
+    border-radius: 10px; border: 2px solid #0f766e;
+    opacity: 0; transition: opacity 0.2s;
+  }
+  .qa-tile-horiz:hover { transform: scale(1.02); box-shadow: 0 4px 6px rgba(0,0,0,0.04), 0 12px 32px rgba(15,118,110,0.12); border-color: transparent; }
+  .qa-tile-horiz:hover::after { opacity: 1; }
+  
+  .qa-emoji { font-size: 1.5rem; line-height: 1; }
+  .qa-label { font-size: 0.85rem; font-weight: 700; color: #0f172a; flex: 1; text-align: left; }
+  .qa-arrow { font-size: 1rem; color: #94a3b8; transition: transform 0.2s; }
+  .qa-tile-horiz:hover .qa-arrow { transform: translateX(3px); color: #0f766e; }
+  .qa-emoji { font-size: 1.8rem; line-height: 1; }
+  .qa-label { font-size: 0.78rem; font-weight: 800; color: #0f172a; }
+  .qa-arrow { font-size: 0.7rem; color: #0f766e; font-weight: 700; opacity: 0; transition: opacity 0.2s; }
+  .qa-tile:hover .qa-arrow { opacity: 1; }
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     SECTION HEADER
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  .fmt-section-lbl {
+    font-size: 0.68rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em;
+    color: #94a3b8; padding: 0 0 0.75rem;
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .fmt-section-lbl::after { content: ''; flex: 1; height: 1px; background: #e2e8f0; }
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     BTN PRIMARY
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  .btn-fmt {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.5rem 1rem; border-radius: 10px;
+    font-size: 0.8rem; font-weight: 700; font-family: inherit;
+    cursor: pointer; text-decoration: none; border: none;
+    transition: all 0.15s;
+  }
+  .btn-fmt-primary { background: #0f766e; color: #fff; }
+  .btn-fmt-primary:hover { background: #0d6460; }
+  .btn-fmt-outline { background: #fff; color: #0f172a; border: 1.5px solid #e2e8f0; }
+  .btn-fmt-outline:hover { background: #f8fafc; border-color: #cbd5e1; }
+  .btn-fmt-amber { background: #f59e0b; color: #fff; }
+  .btn-fmt-amber:hover { background: #d97706; }
 </style>
+
+<div class="fmt">
+
+  <!-- ━━ HERO ━━ -->
+  <div class="fmt-hero">
+    <div class="fmt-hero-inner">
+      <div class="fmt-hero-left">
+        <div class="fmt-hero-eyebrow">
+          <i class="bi bi-cpu-fill"></i> EduTech · Espace Formateur
+        </div>
+        <h1 class="fmt-hero-title">
+          Bonjour, <em>{{ user.get_full_name|default:user.email|truncatechars:20 }}</em> 👋
+        </h1>
+        <p class="fmt-hero-sub">
+          {% now "l d F Y" %} · Prêt à inspirer vos apprenants aujourd'hui&nbsp;?
+        </p>
+        <div class="fmt-hero-pills">
+          <div class="fmt-hero-pill">
+            <span class="ph-num">{{ total_cours }}</span> cours
+          </div>
+          <div class="fmt-hero-pill">
+            <span class="ph-num">{{ total_chapitres }}</span> chapitres
+          </div>
+          <div class="fmt-hero-pill">
+            <span class="ph-num">{{ demandes_en_attente }}</span> demande{{ demandes_en_attente|pluralize }} en attente
+          </div>
+        </div>
+      </div>
+      {% if user.photo %}
+        <img src="{{ user.photo.url }}" alt="{{ user.get_full_name }}" class="fmt-hero-avatar">
+      {% else %}
+        <div class="fmt-hero-avatar-placeholder">
+          {{ user.get_full_name|default:user.email|first|upper }}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- ━━ CONTENT ━━ -->
+  <div class="fmt-wrap">
+
+    <!-- KPI ROW -->
+    <div class="fmt-kpi-row">
+      <div class="kpi-card kpi-card--teal">
+        <div class="kpi-card-top">
+          <div class="kpi-icon"><i class="bi bi-collection-fill"></i></div>
+          <span class="kpi-badge">📚 Cours</span>
+        </div>
+        <div class="kpi-num">{{ total_cours }}</div>
+        <div class="kpi-label">Cours créés</div>
+        <div class="kpi-bar"><div class="kpi-bar-fill"></div></div>
+      </div>
+
+      <div class="kpi-card kpi-card--emerald">
+        <div class="kpi-card-top">
+          <div class="kpi-icon"><i class="bi bi-journal-text"></i></div>
+          <span class="kpi-badge">📖 Chapitres</span>
+        </div>
+        <div class="kpi-num">{{ total_chapitres }}</div>
+        <div class="kpi-label">Chapitres rédigés</div>
+        <div class="kpi-bar"><div class="kpi-bar-fill"></div></div>
+      </div>
+
+      <div class="kpi-card kpi-card--blue">
+        <div class="kpi-card-top">
+          <div class="kpi-icon"><i class="ti ti-building-community"></i></div>
+          <span class="kpi-badge">🏫 Ateliers</span>
+        </div>
+        <div class="kpi-num">{{ mes_ateliers|length }}</div>
+        <div class="kpi-label">Ateliers organisés</div>
+        <div class="kpi-bar"><div class="kpi-bar-fill"></div></div>
+      </div>
+
+      <div class="kpi-card kpi-card--amber">
+        <div class="kpi-card-top">
+          <div class="kpi-icon"><i class="bi bi-truck-flatbed"></i></div>
+          <span class="kpi-badge">🚚 Logistique</span>
+        </div>
+        <div class="kpi-num">{{ demandes_en_attente }}</div>
+        <div class="kpi-label">Demandes en attente</div>
+        <div class="kpi-bar"><div class="kpi-bar-fill"></div></div>
+      </div>
+    </div>
+
+    <!-- MAIN GRID -->
+    <div class="fmt-main-grid">
+
+      <!-- LEFT: COURS & ATELIERS -->
+      <div>
+        <div class="fmt-panel" style="margin-bottom:1.5rem;">
+          <div class="fmt-panel-head">
+            <span class="fmt-panel-title"><i class="bi bi-collection"></i> Mes Cours</span>
+            <div style="display:flex;gap:0.5rem;">
+              <a href="{% url 'apprentissage:formateur_notes' %}" class="fmt-link">
+                <i class="bi bi-bar-chart"></i> Notes
+              </a>
+              <a href="{% url 'apprentissage:nouveau_cours' %}" class="btn-fmt btn-fmt-primary">
+                <i class="ti ti-plus"></i> Nouveau cours
+              </a>
+            </div>
+          </div>
+
+          {% if mes_cours %}
+          <div class="cours-grid">
+            {% for cours in mes_cours %}
+            <div class="cours-card">
+              <div class="cours-cover">
+                {% if cours.image_couverture %}
+                  <img src="{{ cours.image_couverture.url }}" alt="{{ cours.titre }}">
+                  <div class="cours-cover-overlay"></div>
+                {% else %}
+                  📚
+                {% endif %}
+                {% if cours.actif %}
+                  <span class="cours-cover-badge badge-publie">✓ Publié</span>
+                {% else %}
+                  <span class="cours-cover-badge badge-brouillon">Brouillon</span>
+                {% endif %}
+              </div>
+              <div class="cours-body">
+                {% if cours.niveau %}
+                  <span class="cours-niveau">{{ cours.niveau.nom }}</span>
+                {% endif %}
+                <div class="cours-titre">{{ cours.titre }}</div>
+                <div class="cours-meta">
+                  <span><i class="bi bi-stack"></i> {{ cours.chapitres.count }} chapitre{{ cours.chapitres.count|pluralize }}</span>
+                  <span><i class="bi bi-calendar3"></i> {{ cours.date_creation|date:"d/m/Y" }}</span>
+                </div>
+              </div>
+              <div class="cours-actions">
+                <a href="{% url 'apprentissage:gerer_cours' cours.id %}" class="btn-sm btn-sm-primary">
+                  <i class="ti ti-settings"></i> Gérer
+                </a>
+                <a href="{% url 'apprentissage:editer_cours' cours.id %}" class="btn-sm btn-sm-ghost">
+                  <i class="ti ti-pencil"></i>
+                </a>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+          {% else %}
+          <div class="fmt-empty">
+            <div class="fmt-empty-icon">📚</div>
+            <h3>Votre espace est prêt</h3>
+            <p>Vous n'avez pas encore de cours. Créez votre premier module pour commencer.</p>
+            <a href="{% url 'apprentissage:nouveau_cours' %}" class="btn-fmt btn-fmt-primary" style="margin-top:0.5rem;">
+              <i class="ti ti-plus"></i> Créer mon premier cours
+            </a>
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- ATELIERS -->
+        <div class="fmt-panel">
+          <div class="fmt-panel-head">
+            <span class="fmt-panel-title"><i class="bi bi-building"></i> Mes Ateliers</span>
+            <a href="{% url 'logistics:ateliers' %}" class="fmt-link">Gérer <i class="bi bi-arrow-right"></i></a>
+          </div>
+          {% if mes_ateliers %}
+          <div class="ateliers-scroll">
+            {% for atelier in mes_ateliers %}
+            {% with s=atelier.statut_dynamique %}
+            <div class="atelier-card {% if atelier.est_annule %}ac-annule{% elif s == 'En cours' %}ac-en_cours{% elif s == 'À venir' %}ac-a_venir{% else %}ac-termine{% endif %}">
+              <div>
+                <span class="atelier-date-pill {% if atelier.est_annule %}adp-annule{% elif s == 'En cours' %}adp-en_cours{% elif s == 'À venir' %}adp-a_venir{% else %}adp-termine{% endif %}">
+                  <span class="atelier-status-dot {% if atelier.est_annule %}asd-annule{% elif s == 'En cours' %}asd-en_cours{% elif s == 'À venir' %}asd-a_venir{% else %}asd-termine{% endif %}"></span>
+                  {{ s }}
+                </span>
+              </div>
+              <div class="atelier-titre">{{ atelier.titre }}</div>
+              <div class="atelier-meta">
+                <span><i class="bi bi-geo-alt"></i> {{ atelier.salle }}</span>
+                <span><i class="bi bi-calendar3"></i> {{ atelier.date_debut|date:"d M Y" }}</span>
+                <span><i class="bi bi-clock"></i> {{ atelier.date_debut|time:"H:i" }} → {{ atelier.date_fin|time:"H:i" }}</span>
+              </div>
+            </div>
+            {% endwith %}
+            {% endfor %}
+          </div>
+          {% else %}
+          <div class="fmt-empty" style="padding:2.5rem 1.5rem;">
+            <div class="fmt-empty-icon">🏫</div>
+            <h3>Pas encore d'atelier</h3>
+            <p>Organisez des séances pratiques pour vos apprenants.</p>
+            <a href="{% url 'logistics:ateliers' %}" class="btn-fmt btn-fmt-primary" style="margin-top:0.25rem;">
+              <i class="ti ti-plus"></i> Créer un atelier
+            </a>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- RIGHT: SIDEBAR -->
+      <div class="fmt-sidebar">
+
+        <!-- QUICK ACTIONS -->
+        <div class="fmt-panel" style="margin-bottom:1.5rem;">
+          <div class="fmt-panel-head">
+            <span class="fmt-panel-title"><i class="bi bi-lightning-charge-fill"></i> Actions rapides</span>
+          </div>
+          <div class="qa-grid-vertical">
+            <a href="{% url 'apprentissage:nouveau_cours' %}" class="qa-tile-horiz">
+              <span class="qa-emoji">📝</span>
+              <span class="qa-label">Nouveau cours</span>
+              <span class="qa-arrow">→</span>
+            </a>
+            <a href="{% url 'logistics:ateliers' %}" class="qa-tile-horiz">
+              <span class="qa-emoji">🏫</span>
+              <span class="qa-label">Mes ateliers</span>
+              <span class="qa-arrow">→</span>
+            </a>
+            <a href="{% url 'logistics:demandes' %}" class="qa-tile-horiz">
+              <span class="qa-emoji">📦</span>
+              <span class="qa-label">Demande matériel</span>
+              <span class="qa-arrow">→</span>
+            </a>
+            <a href="{% url 'apprentissage:formateur_notes' %}" class="qa-tile-horiz">
+              <span class="qa-emoji">📊</span>
+              <span class="qa-label">Notes & Résultats</span>
+              <span class="qa-arrow">→</span>
+            </a>
+            <a href="{% url 'tuteur_ia:profil_ia' %}" class="qa-tile-horiz">
+              <span class="qa-emoji">🤖</span>
+              <span class="qa-label">Tuteur IA</span>
+              <span class="qa-arrow">→</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- DEMANDES -->
+        <div class="fmt-panel">
+          <div class="fmt-panel-head">
+            <span class="fmt-panel-title"><i class="bi bi-truck"></i> Mes Demandes</span>
+            <a href="{% url 'logistics:demandes' %}" class="fmt-link">Voir tout <i class="bi bi-arrow-right"></i></a>
+          </div>
+          {% if mes_demandes %}
+            {% for demande in mes_demandes|slice:":4" %}
+            <div class="demande-item">
+              <div class="demande-dot dot-{{ demande.statut }}"></div>
+              <div class="demande-icon" style="
+                {% if demande.statut == 'PENDING' %}background:rgba(245,158,11,0.1);color:#d97706;
+                {% elif demande.statut == 'APPROVED' %}background:rgba(16,185,129,0.1);color:#059669;
+                {% elif demande.statut == 'REJECTED' %}background:rgba(239,68,68,0.1);color:#dc2626;
+                {% else %}background:rgba(59,130,246,0.1);color:#2563eb;{% endif %}">
+                {% if demande.statut == 'PENDING' %}<i class="ti ti-clock"></i>
+                {% elif demande.statut == 'APPROVED' %}<i class="ti ti-circle-check"></i>
+                {% elif demande.statut == 'REJECTED' %}<i class="ti ti-circle-x"></i>
+                {% else %}<i class="ti ti-refresh"></i>{% endif %}
+              </div>
+              <div class="demande-info">
+                <div class="demande-nom">{{ demande.equipement.nom }} <span style="color:#94a3b8;">×{{ demande.quantite }}</span></div>
+                <div class="demande-sub">{{ demande.date_creation|date:"d M Y" }}</div>
+              </div>
+              <span class="demande-badge db-{{ demande.statut }}">
+                {% if demande.statut == 'PENDING' %}Attente
+                {% elif demande.statut == 'APPROVED' %}Approuvé
+                {% elif demande.statut == 'REJECTED' %}Rejeté
+                {% else %}Retourné{% endif %}
+              </span>
+            </div>
+            {% endfor %}
+            <div style="padding:0.85rem 1.25rem; border-top:1px solid #f8fafc;">
+              <a href="{% url 'logistics:demandes' %}" class="btn-fmt btn-fmt-outline" style="width:100%; justify-content:center;">
+                <i class="ti ti-plus"></i> Nouvelle demande
+              </a>
+            </div>
+          {% else %}
+          <div class="fmt-empty" style="padding:2rem 1.5rem;">
+            <div class="fmt-empty-icon" style="width:52px;height:52px;font-size:1.4rem;">🚚</div>
+            <h3 style="font-size:0.9rem;">Aucune demande</h3>
+            <p style="font-size:0.78rem;">Demandez du matériel pour vos ateliers.</p>
+            <a href="{% url 'logistics:demandes' %}" class="btn-fmt btn-fmt-primary" style="margin-top:0.25rem;">
+              <i class="ti ti-plus"></i> Faire une demande
+            </a>
+          </div>
+          {% endif %}
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /fmt-wrap -->
+</div><!-- /fmt -->
+
+<div id="form-demande-container"></div>
 {% endblock %}

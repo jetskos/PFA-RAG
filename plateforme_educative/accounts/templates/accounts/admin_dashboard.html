@@ -651,9 +651,14 @@
                 <h1>Gestion des utilisateurs</h1>
                 <p style="color: var(--text-muted); margin-top: 0.25rem;">Gérez l'accès, les rôles et les profils de votre plateforme.</p>
             </div>
-            <button class="btn btn-primary" onclick="toggleDrawer()" style="border-radius: 10px; padding: 0.6rem 1.25rem; display: inline-flex; align-items: center; gap: 6px;">
-                <i class="ti ti-user-plus" style="font-size: 15px;"></i> Nouvel utilisateur
-            </button>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-secondary" onclick="exportCSV('ALL')" style="border-radius: 10px; padding: 0.6rem 1.25rem; display: inline-flex; align-items: center; gap: 6px; background: white; border: 1px solid var(--border-default); font-weight: 600; color: var(--text-primary); cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.borderColor='var(--primary)'; this.style.color='var(--primary)';" onmouseout="this.style.borderColor='var(--border-default)'; this.style.color='var(--text-primary)';">
+                    <i class="ti ti-download" style="font-size: 15px;"></i> Exporter Excel
+                </button>
+                <button class="btn btn-primary" onclick="toggleDrawer()" style="border-radius: 10px; padding: 0.6rem 1.25rem; display: inline-flex; align-items: center; gap: 6px;">
+                    <i class="ti ti-user-plus" style="font-size: 15px;"></i> Nouvel utilisateur
+                </button>
+            </div>
         </div>
 
         <!-- Details Modal / In-line view -->
@@ -682,10 +687,7 @@
                         {% endfor %}
                     </select>
                 </label>
-                <label style="flex-direction: row; align-items: center; padding-bottom: 8px; cursor: pointer; gap: 8px;">
-                    <input id="create-formateur" type="checkbox" style="width:18px; height:18px; cursor: pointer;">
-                    Statut Formateur Actif
-                </label>
+                
                 <button id="create-user" class="btn btn-primary" style="height: 38px; border-radius: 8px;">
                     <i class="ti ti-check"></i> Confirmer
                 </button>
@@ -764,13 +766,7 @@
                     </button>
                 {% endfor %}
             </div>
-            <div class="custom-select-wrapper">
-                <select id="formateurFilter" class="no-tomselect" onchange="filterTable()">
-                    <option value="ALL">Statut Formateur</option>
-                    <option value="TRUE">Formateur: Oui</option>
-                    <option value="FALSE">Formateur: Non</option>
-                </select>
-            </div>
+
         </div>
     </div>
 
@@ -781,7 +777,7 @@
                 <tr>
                     <th>Utilisateur</th>
                     <th>Rôle Principal</th>
-                    <th style="text-align:center;">Formateur</th>
+                    
                     <th>Niveau Assigné</th>
                     <th style="text-align:right;">Actions</th>
                 </tr>
@@ -814,9 +810,7 @@
                             {% endfor %}
                         </select>
                     </td>
-                    <td style="text-align:center;">
-                        <input type="checkbox" name="is_formateur" style="width:16px; height:16px; cursor:pointer;" {% if user.is_formateur %}checked{% endif %}>
-                    </td>
+                    
                     <td>
                         <select name="niveau" class="inline-select">
                             <option value="">-- Aucun --</option>
@@ -848,6 +842,24 @@
             <p>Aucun utilisateur ne correspond à votre recherche.</p>
         </div>
     </div>
+
+
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+        <div class="pagination" style="display: flex; justify-content: center; gap: 10px; margin-top: 1rem;">
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-secondary" style="padding: 8px 12px; border-radius: 8px;">&laquo; Précédent</a>
+            {% endif %}
+
+            <span style="display: flex; align-items: center; font-weight: 600; color: var(--text-primary);">
+                Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}
+            </span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}" class="btn btn-secondary" style="padding: 8px 12px; border-radius: 8px;">Suivant &raquo;</a>
+            {% endif %}
+        </div>
+        {% endif %}
 
 </section>
 </div>
@@ -882,7 +894,6 @@ function setRoleFilter(role, btn) {
 function filterTable() {
     const query = document.getElementById('searchInput').value.toLowerCase();
     const roleFilter = currentRoleFilter;
-    const formateurFilter = document.getElementById('formateurFilter').value;
     
     const rows = document.querySelectorAll('.user-row');
     let visibleCount = 0;
@@ -890,13 +901,11 @@ function filterTable() {
     rows.forEach(row => {
         const textToSearch = row.querySelector('.user-info-cell').textContent.toLowerCase();
         const rowRole = row.getAttribute('data-role');
-        const rowFormateur = row.getAttribute('data-formateur');
         
         let matchQuery = textToSearch.includes(query);
         let matchRole = (roleFilter === 'ALL' || roleFilter === rowRole);
-        let matchFormateur = (formateurFilter === 'ALL' || formateurFilter === rowFormateur);
         
-        if (matchQuery && matchRole && matchFormateur) {
+        if (matchQuery && matchRole) {
             row.style.display = '';
             visibleCount++;
         } else {
@@ -939,7 +948,7 @@ function buildUserRow(user) {
             '</div>' +
         '</td>' +
         '<td><select name="role" class="inline-select">' + roleOptions + '</select></td>' +
-        '<td style="text-align:center;"><input type="checkbox" name="is_formateur" style="width:16px; height:16px; cursor:pointer;"' + (user.is_formateur ? ' checked' : '') + '></td>' +
+        '' +
         '<td><select name="niveau" class="inline-select">' + niveauOptions + '</select></td>' +
         '<td>' +
             '<div class="action-buttons">' +
@@ -958,7 +967,7 @@ document.getElementById('create-user').addEventListener('click', function(){
     var password = document.getElementById('create-password').value;
     var role = document.getElementById('create-role').value;
     var niveauId = document.getElementById('create-niveau').value;
-    var isFormateur = document.getElementById('create-formateur').checked;
+    
 
     if (!email || !password) {
         alert("Email et mot de passe sont obligatoires.");
@@ -973,7 +982,7 @@ document.getElementById('create-user').addEventListener('click', function(){
     data.append('password', password);
     data.append('role', role);
     data.append('niveau', niveauId);
-    data.append('is_formateur', isFormateur);
+    
 
     const btn = this;
     const originalHtml = btn.innerHTML;
@@ -994,7 +1003,7 @@ document.getElementById('create-user').addEventListener('click', function(){
             document.getElementById('create-email').value = '';
             document.getElementById('create-password').value = '';
             document.getElementById('create-niveau').value = '';
-            document.getElementById('create-formateur').checked = false;
+            
             toggleDrawer(); // Hide drawer on success
             filterTable(); // Re-apply filters
         } else {
@@ -1012,7 +1021,7 @@ document.addEventListener('click', function(e){
     if (modifyBtn) {
         var row = modifyBtn.closest('tr');
         var userId = row.dataset.userId;
-        var isFormateur = row.querySelector('input[name="is_formateur"]').checked;
+        var isFormateur = (role === 'FORMATEUR');
         var niveau = row.querySelector('select[name="niveau"]').value;
         var role = row.querySelector('select[name="role"]').value;
 
@@ -1022,7 +1031,7 @@ document.addEventListener('click', function(e){
 
         var data = new FormData();
         data.append('user_id', userId);
-        data.append('is_formateur', isFormateur);
+        
         data.append('niveau', niveau); // might be empty string
         data.append('role', role);
 
@@ -1222,5 +1231,88 @@ style.textContent = `
     @keyframes spin { 100% { transform: rotate(360deg); } }
 `;
 document.head.appendChild(style);
+</script>
+
+<!-- SheetJS for Excel export -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+function exportCSV(roleFilter) {
+    const rows = document.querySelectorAll('.user-row');
+    const data = [];
+
+    rows.forEach(row => {
+        const role      = row.getAttribute('data-role');
+        const isVisible = row.style.display !== 'none';
+        if (roleFilter === 'VISIBLE' && !isVisible) return;
+        if (roleFilter !== 'ALL' && roleFilter !== 'VISIBLE' && role !== roleFilter) return;
+
+        const nameEl   = row.querySelector('.user-name');
+        const emailEl  = row.querySelector('.user-email-text');
+        const roleEl   = row.querySelector('select[name="role"]');
+        const niveauEl = row.querySelector('select[name="niveau"]');
+        
+        const roleText = roleEl ? roleEl.options[roleEl.selectedIndex]?.text : role;
+
+        data.push({
+            nom:        (nameEl  ? nameEl.textContent.trim()  : ''),
+            email:      (emailEl ? emailEl.textContent.trim() : ''),
+            role:       roleText,
+            formateur:  (role === 'FORMATEUR' ? 'Oui' : 'Non'),
+            niveau:     (niveauEl ? (niveauEl.options[niveauEl.selectedIndex]?.text || '—') : '—'),
+        });
+    });
+
+    if (!data.length) { alert('Aucun utilisateur à exporter.'); return; }
+
+    const roleNames  = { ALL:'Tous les utilisateurs', ELEVE:'Élèves', FORMATEUR:'Formateurs', ADMIN:'Administrateurs', VISIBLE:'Vue filtrée' };
+    const today = new Date().toLocaleDateString('fr-FR');
+
+    const wb = XLSX.utils.book_new();
+    const wsData = [];
+
+    wsData.push([`Export — ${roleNames[roleFilter] || roleFilter}`, '', '', '', '']);
+    wsData.push([`Généré le ${today}`, '', '', '', '']);
+    wsData.push(['', '', '', '', '']);
+    wsData.push(['Nom complet', 'Adresse email', 'Rôle', 'Formateur actif', 'Niveau assigné']);
+    data.forEach(u => wsData.push([u.nom, u.email, u.role, u.formateur, u.niveau]));
+
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
+
+    ws['!cols'] = [{ wch: 28 }, { wch: 34 }, { wch: 18 }, { wch: 18 }, { wch: 20 }];
+    ws['!merges'] = [
+        { s: { r: 0, c: 0 }, e: { r: 0, c: 4 } },
+        { s: { r: 1, c: 0 }, e: { r: 1, c: 4 } },
+    ];
+
+    const titleStyle = { font: { name: 'Calibri', sz: 16, bold: true, color: { rgb: 'FFFFFF' } }, fill: { fgColor: { rgb: '0F766E' } }, alignment: { horizontal: 'center', vertical: 'center' } };
+    const subStyle = { font: { name: 'Calibri', sz: 10, italic: true, color: { rgb: 'C7F9F4' } }, fill: { fgColor: { rgb: '0D6460' } }, alignment: { horizontal: 'center', vertical: 'center' } };
+    const headerStyle = { font: { name: 'Calibri', sz: 11, bold: true, color: { rgb: 'FFFFFF' } }, fill: { fgColor: { rgb: '134E4A' } }, alignment: { horizontal: 'center', vertical: 'center' }, border: { bottom: { style: 'medium', color: { rgb: '0F766E' } } } };
+    const evenStyle = { font: { name: 'Calibri', sz: 10, color: { rgb: '1E293B' } }, fill: { fgColor: { rgb: 'F0FDFA' } }, alignment: { vertical: 'center' }, border: { bottom: { style: 'thin', color: { rgb: 'CCFBF1' } } } };
+    const oddStyle = { font: { name: 'Calibri', sz: 10, color: { rgb: '1E293B' } }, fill: { fgColor: { rgb: 'FFFFFF' } }, alignment: { vertical: 'center' }, border: { bottom: { style: 'thin', color: { rgb: 'E2E8F0' } } } };
+    const badgeOui = { font: { name: 'Calibri', sz: 10, bold: true, color: { rgb: '065F46' } }, fill: { fgColor: { rgb: 'D1FAE5' } }, alignment: { horizontal: 'center', vertical: 'center' } };
+    const badgeNon = { font: { name: 'Calibri', sz: 10, color: { rgb: '64748B' } }, fill: { fgColor: { rgb: 'F1F5F9' } }, alignment: { horizontal: 'center', vertical: 'center' } };
+
+    if (ws['A1']) ws['A1'].s = titleStyle;
+    if (ws['A2']) ws['A2'].s = subStyle;
+
+    ['A','B','C','D','E'].forEach((col, i) => { const ref = col + '4'; if (ws[ref]) ws[ref].s = headerStyle; });
+
+    for (let i = 0; i < data.length; i++) {
+        const rowNum = 5 + i;
+        const base = i % 2 === 0 ? evenStyle : oddStyle;
+        ['A','B','C','D','E'].forEach(col => {
+            const ref = col + rowNum;
+            if (ws[ref]) {
+                if (col === 'D') { ws[ref].s = ws[ref].v === 'Oui' ? badgeOui : badgeNon; }
+                else { ws[ref].s = JSON.parse(JSON.stringify(base)); }
+            }
+        });
+    }
+
+    ws['!rows'] = [{ hpt: 32 }, { hpt: 18 }, { hpt: 8 }, { hpt: 26 }, ...data.map(() => ({ hpt: 20 }))];
+
+    XLSX.utils.book_append_sheet(wb, ws, roleNames[roleFilter] || 'Export');
+    XLSX.writeFile(wb, `EduTech_${roleFilter}_${today.replace(/\//g,'-')}.xlsx`);
+}
 </script>
 {% endblock %}

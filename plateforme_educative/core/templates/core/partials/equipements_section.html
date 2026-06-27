@@ -161,5 +161,17 @@
                 </tbody>
             </table>
         </div>
+        
+        {% if equipements.has_other_pages %}
+        <div style="display: flex; justify-content: center; gap: 0.5rem; margin-top: 1.5rem;">
+            {% if equipements.has_previous %}
+            <button class="btn btn-ghost" hx-get="{% url 'dashboard_admin_structure' %}?tab=equipements&page={{ equipements.previous_page_number }}" hx-target="#dashboard-structure" hx-include="[name='q'], [name='status']">Précédent</button>
+            {% endif %}
+            <span style="padding: 0.5rem 1rem; background: #e2e8f0; border-radius: 8px; font-weight: 600; color: #475569;">Page {{ equipements.number }} sur {{ equipements.paginator.num_pages }}</span>
+            {% if equipements.has_next %}
+            <button class="btn btn-ghost" hx-get="{% url 'dashboard_admin_structure' %}?tab=equipements&page={{ equipements.next_page_number }}" hx-target="#dashboard-structure" hx-include="[name='q'], [name='status']">Suivant</button>
+            {% endif %}
+        </div>
+        {% endif %}
     </div>
 </section>

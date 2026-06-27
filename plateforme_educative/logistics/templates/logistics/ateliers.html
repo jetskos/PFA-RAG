@@ -428,6 +428,10 @@
         <p class="logi-page-sub">Planifiez et gérez les ateliers de formation.</p>
       </div>
       <div class="logi-header-actions">
+          <a href="{% url 'logistics:exporter_ateliers' %}" class="btn-primary" title="Exporter en Excel" style="background:var(--primary); color:white; text-decoration:none; display:inline-flex; align-items:center; gap:6px; padding:0.5rem 1rem; border-radius:10px; font-weight:600; font-size:0.9rem;">
+            <i class="ti ti-download"></i> Exporter
+          </a>
+
         <div class="logi-search">
           <i class="ti ti-search"></i>
           <input type="text" name="q" placeholder="Rechercher un atelier..."

@@ -1,5 +1,6 @@
 from django.db import transaction
 from django.shortcuts import render, redirect, get_object_or_404
+from django.core.paginator import Paginator
 from django.http import HttpResponse
 from django.urls import reverse
 from .forms import InscriptionForm, ProfileForm, PasswordResetRequestForm
@@ -72,7 +73,7 @@ def admin_dashboard(request):
             role = request.POST.get('role') or 'ELEVE'
             classe_id = request.POST.get('classe_id') or None
             niveau_id = request.POST.get('niveau') or None
-            is_formateur = request.POST.get('is_formateur') == 'true'
+            is_formateur = (role == 'FORMATEUR')
 
             first_name = (request.POST.get('first_name') or '').strip()
             last_name = (request.POST.get('last_name') or '').strip()
@@ -119,6 +120,11 @@ def admin_dashboard(request):
                 classe=classe,
                 is_formateur=is_formateur,
             )
+
+            if role == 'ADMIN':
+                user.is_staff = True
+                user.is_superuser = True
+                user.save()
             return JsonResponse({
                 'status': 'success',
                 'user': {
@@ -152,17 +158,19 @@ def admin_dashboard(request):
             return JsonResponse({'status': 'success'})
 
         # default: save updates
-        is_formateur = request.POST.get('is_formateur') == 'true'
         role = request.POST.get('role')
         classe_id = request.POST.get('classe_id') or None
         niveau_id = request.POST.get('niveau') or None
 
         if role in dict(Utilisateur.ROLE_CHOICES):
             user.role = role
-            if role == 'FORMATEUR':
-                is_formateur = True
-
-        user.is_formateur = is_formateur
+            user.is_formateur = (role == 'FORMATEUR')
+            if role == 'ADMIN':
+                user.is_staff = True
+                user.is_superuser = True
+            else:
+                user.is_staff = False
+                user.is_superuser = False
 
         if classe_id:
             try:
@@ -213,14 +221,19 @@ def admin_dashboard(request):
         return JsonResponse({'status': 'success'})
 
     # GET
-    users = Utilisateur.objects.all().order_by('-date_creation')
-    total_users = users.count()
-    student_count = users.filter(role='ELEVE').count()
-    formateur_count = users.filter(role='FORMATEUR').count()
-    admin_count = users.filter(role='ADMIN').count()
+    users_list = Utilisateur.objects.all().order_by('-date_creation')
+    total_users = users_list.count()
+    student_count = users_list.filter(role='ELEVE').count()
+    formateur_count = users_list.filter(role='FORMATEUR').count()
+    admin_count = users_list.filter(role='ADMIN').count()
+
+    paginator = Paginator(users_list, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
 
     return render(request, 'accounts/admin_dashboard.html', {
-        'users': users,
+        'users': page_obj,
+        'page_obj': page_obj,
         'role_choices': Utilisateur.ROLE_CHOICES,
         'niveau_choices': [(str(niveau.id), niveau.nom) for niveau in Niveau.objects.order_by('ordre', 'nom')],
         'niveaux': Niveau.objects.prefetch_related('classes').order_by('ordre', 'nom'),
@@ -521,6 +534,20 @@ class CustomLoginView(LoginView):
                 
         return super().form_valid(form)
 
+    def get_success_url(self):
+        user = self.request.user
+        # Onboarding prioritaire pour FORMATEUR et ELEVE
+        if user.role in ('FORMATEUR', 'ELEVE') and not user.onboarding_completed:
+            from django.urls import reverse
+            return reverse('accounts:onboarding')
+        if user.role == 'FORMATEUR':
+            from django.urls import reverse
+            return reverse('dashboard_formateur')
+        elif user.role == 'ELEVE':
+            from django.urls import reverse
+            return reverse('dashboard_student')
+        return super().get_success_url()
+
 
 @login_required
 def change_password_view(request):
@@ -548,3 +575,96 @@ def change_password_view(request):
         'form': form,
         'profile_user': request.user,
     })
+
+ONBOARDING_STEPS = {
+    'FORMATEUR': [
+        {'id': 'welcome',    'title': 'Bienvenue sur EduTech !',          'skippable': False},
+        {'id': 'profil',     'title': 'Votre profil formateur',           'skippable': False},
+        {'id': 'cours',      'title': 'Créez votre premier cours',        'skippable': True},
+        {'id': 'logistique', 'title': 'Découvrez la logistique',          'skippable': False},
+    ],
+    'ELEVE': [
+        {'id': 'welcome', 'title': 'Bienvenue sur EduTech !',      'skippable': False},
+        {'id': 'profil',  'title': 'Complétez votre profil',       'skippable': False},
+        {'id': 'explorer','title': 'Explorez les cours',           'skippable': False},
+    ],
+}
+
+
+def _onboarding_dashboard(user):
+    if user.role == 'FORMATEUR':
+        return reverse('dashboard_formateur')
+    return reverse('dashboard_student')
+
+
+@login_required
+def onboarding_view(request):
+    user = request.user
+
+    # Seuls FORMATEUR et ELEVE ont un onboarding
+    if user.role not in ('FORMATEUR', 'ELEVE'):
+        return redirect('dashboard')
+
+    # Déjà complété → dashboard
+    if user.onboarding_completed:
+        return redirect(_onboarding_dashboard(user))
+
+    steps = ONBOARDING_STEPS[user.role]
+    total = len(steps)
+
+    try:
+        step_num = int(request.GET.get('step', 1))
+    except (ValueError, TypeError):
+        step_num = 1
+    step_num = max(1, min(step_num, total))
+    step = steps[step_num - 1]
+    is_htmx = request.headers.get('HX-Request') == 'true'
+
+    if request.method == 'POST':
+        # Étape profil — sauvegarde
+        if step['id'] == 'profil':
+            first_name = request.POST.get('first_name', '').strip()
+            last_name  = request.POST.get('last_name', '').strip()
+            if first_name:
+                user.first_name = first_name
+            if last_name:
+                user.last_name = last_name
+            if 'photo' in request.FILES:
+                user.photo = request.FILES['photo']
+            user.save()
+
+        # Dernière étape → compléter l'onboarding
+        if step_num == total:
+            user.onboarding_completed = True
+            user.save()
+            if is_htmx:
+                response = HttpResponse(status=204)
+                response['HX-Redirect'] = _onboarding_dashboard(user)
+                return response
+            return redirect(_onboarding_dashboard(user))
+
+        # Passer à l'étape suivante
+        next_step = step_num + 1
+        if is_htmx:
+            next_step_data = steps[next_step - 1]
+            ctx = {
+                'step': next_step_data,
+                'step_num': next_step,
+                'total': total,
+                'steps': steps,
+                'niveaux': Niveau.objects.filter(actif=True).order_by('ordre'),
+            }
+            return render(request, 'accounts/partials/onboarding_step.html', ctx)
+        return redirect(f"{reverse('accounts:onboarding')}?step={next_step}")
+
+    # GET
+    ctx = {
+        'step': step,
+        'step_num': step_num,
+        'total': total,
+        'steps': steps,
+        'niveaux': Niveau.objects.filter(actif=True).order_by('ordre'),
+    }
+    if is_htmx:
+        return render(request, 'accounts/partials/onboarding_step.html', ctx)
+    return render(request, 'accounts/onboarding.html', ctx)

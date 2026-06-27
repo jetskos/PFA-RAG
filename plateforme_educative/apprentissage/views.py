@@ -364,7 +364,7 @@ def liste_cours(request):
         'q': q
     }
     
-    if request.headers.get('HX-Request') == 'true':
+    if request.headers.get('HX-Request') == 'true' and request.headers.get('HX-Target') == 'catalog-grid':
         return render(request, 'apprentissage/partials/liste_cours.html', context)
     
     return render(request, 'apprentissage/liste_cours.html', context)
@@ -637,9 +637,44 @@ def mes_notes_view(request):
     """Affiche le carnet de notes agrégé de l'étudiant connecté."""
     from .grades import calculer_bulletin
     bulletin = calculer_bulletin(request.user)
+
+    search_query = request.GET.get('q', '').lower()
+    statut_filter = request.GET.get('statut', 'tous')
+
+    cours_filtres = []
+    for c_data in bulletin.get('cours', []):
+        cours_obj = c_data['cours']
+        
+        # Filtre par recherche de titre
+        if search_query and search_query not in cours_obj.titre.lower():
+            continue
+            
+        # Filtre par statut des chapitres
+        if statut_filter != 'tous':
+            chapitres_filtres = []
+            for ch in c_data['chapitres']:
+                statut_ch = ch.get('statut', 'NON_TENTE').upper()
+                if statut_filter == 'reussi' and statut_ch == 'REUSSI':
+                    chapitres_filtres.append(ch)
+                elif statut_filter == 'echec' and statut_ch == 'ECHOUE':
+                    chapitres_filtres.append(ch)
+                elif statut_filter == 'non_tente' and statut_ch == 'NON_TENTE':
+                    chapitres_filtres.append(ch)
+            
+            c_data['chapitres'] = chapitres_filtres
+            # Si le cours ne contient plus aucun chapitre correspondant, on l'ignore
+            if not chapitres_filtres:
+                continue
+
+        cours_filtres.append(c_data)
+
+    bulletin['cours'] = cours_filtres
+
     return render(request, 'apprentissage/mes_notes.html', {
         'bulletin': bulletin,
         'titre_page': 'Mon carnet de notes',
+        'search_query': search_query,
+        'statut_filter': statut_filter,
     })
 
 
@@ -944,8 +979,8 @@ def devoirs_liste_view(request):
         'chapitre', 'chapitre__cours', 'chapitre__cours__niveau'
     ).order_by('chapitre__cours__titre', '-date_creation')
 
-    if niveau:
-        devoirs_qs = devoirs_qs.filter(chapitre__cours__niveau=niveau)
+    # N'afficher que les devoirs liés aux cours que l'étudiant a commencés (via Progression)
+    devoirs_qs = devoirs_qs.filter(chapitre__cours__progressions__etudiant=request.user)
 
     # Filtre par statut (query param ?statut=)
     filtre_statut = request.GET.get('statut', 'tous')

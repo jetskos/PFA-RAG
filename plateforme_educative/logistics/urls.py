@@ -23,4 +23,10 @@ urlpatterns = [
     path('demande/<int:pk>/editer/', views.editer_demande, name='editer_demande'),
     path('demande/<int:pk>/supprimer/', views.supprimer_demande, name='supprimer_demande'),
     path('demande/<int:pk>/statut/', views.changer_statut_demande, name='changer_statut_demande'),
+
+    # Exports
+    path('equipements/export/', views.exporter_equipements, name='exporter_equipements'),
+    path('ateliers/export/', views.exporter_ateliers, name='exporter_ateliers'),
+    path('demandes/export/', views.exporter_demandes, name='exporter_demandes'),
+    path('tickets/export/', views.exporter_tickets, name='exporter_tickets'),
 ]

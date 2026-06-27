@@ -165,20 +165,65 @@ def add_chunks(
         f"(doc={document_id[:8]}...)"
     )
 
+    # ── Sync DB pour BM25 ────────────────────────────────────────────────────
+    try:
+        from tuteur_ia.models import DocumentChunk
+        from tuteur_ia.tools.bm25_store import invalidate_cache
+
+        # Supprimer anciens chunks du document dans la DB
+        DocumentChunk.objects.filter(document_id=document_id).delete()
+
+        # Bulk-create les nouveaux chunks
+        db_chunks = [
+            DocumentChunk(
+                chunk_id=ids[i],
+                document_id=document_id,
+                document_titre=document_titre,
+                chapitre_id=chapitre_id,
+                cours_id=cours_id,
+                page_hint=metadatas[i].get("page_hint", ""),
+                chunk_index=int(metadatas[i].get("chunk_index", i)),
+                texte=documents[i],
+            )
+            for i in range(len(ids))
+        ]
+        DocumentChunk.objects.bulk_create(db_chunks, ignore_conflicts=True)
+        logger.info(f"DB BM25 : {len(db_chunks)} chunks synchronisés pour doc {document_id[:8]}")
+
+        invalidate_cache(chapitre_id=chapitre_id, cours_id=cours_id)
+    except Exception as e:
+        logger.warning(f"Sync DB BM25 échouée (non bloquant) : {e}")
+
 
 def delete_document(document_id: str):
-    """Supprime tous les chunks d'un document de ChromaDB."""
+    """Supprime tous les chunks d'un document de ChromaDB et de la DB BM25."""
+    # Récupérer les métadonnées avant suppression pour invalider le bon cache
+    chapitre_id = cours_id = None
     try:
         collection = get_collection()
         existing = collection.get(
             where={"document_id": document_id},
-            include=[],
+            include=["metadatas"],
         )
         if existing["ids"]:
+            if existing.get("metadatas"):
+                meta = existing["metadatas"][0]
+                chapitre_id = meta.get("chapitre_id")
+                cours_id    = meta.get("cours_id")
             collection.delete(ids=existing["ids"])
-            logger.info(f"Supprimé {len(existing['ids'])} chunks pour doc {document_id}")
+            logger.info(f"ChromaDB : supprimé {len(existing['ids'])} chunks pour doc {document_id}")
     except Exception as e:
         logger.error(f"Erreur suppression ChromaDB : {e}")
+
+    # ── Sync DB BM25 ─────────────────────────────────────────────────────────
+    try:
+        from tuteur_ia.models import DocumentChunk
+        from tuteur_ia.tools.bm25_store import invalidate_cache
+        DocumentChunk.objects.filter(document_id=document_id).delete()
+        invalidate_cache(chapitre_id=chapitre_id, cours_id=cours_id)
+        logger.info(f"DB BM25 : chunks supprimés pour doc {document_id[:8]}")
+    except Exception as e:
+        logger.warning(f"Suppression DB BM25 échouée (non bloquant) : {e}")
 
 
 def search(

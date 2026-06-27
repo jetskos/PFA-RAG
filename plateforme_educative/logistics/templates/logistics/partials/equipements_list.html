@@ -25,7 +25,7 @@
             </div>
         </div>
         
-        {% if user.is_staff or user.is_formateur %}
+        {% if user.is_staff or user.role == "ADMIN" or user.is_formateur %}
         <div class="eq-item-actions">
             <button class="eq-action mod"
                     hx-get="{% url 'logistics:editer_equipement' eq.id %}"
