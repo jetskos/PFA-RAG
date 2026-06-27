@@ -1,0 +1,240 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Création de Cours - Super Wizard{% endblock %}
+
+{% block content %}
+<style>
+    .wiz-container {
+        max-width: 800px;
+        margin: 40px auto;
+        background: var(--surface, #ffffff);
+        border-radius: 16px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        padding: 40px;
+        position: relative;
+    }
+    
+    [data-theme="dark"] .wiz-container {
+        background: #161b22;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .wiz-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .wiz-title {
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--ink, #1f2937);
+        margin-bottom: 10px;
+    }
+
+    /* Progression */
+    .wiz-progress {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+        margin-bottom: 40px;
+    }
+    .wiz-progress::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: var(--border, #e5e7eb);
+        z-index: 1;
+        transform: translateY(-50%);
+    }
+    .wiz-step {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--surface, #ffffff);
+        border: 2px solid var(--border, #e5e7eb);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        color: var(--ink-muted, #6b7280);
+        position: relative;
+        z-index: 2;
+        transition: all 0.3s;
+    }
+    .wiz-step.active {
+        border-color: #3b82f6;
+        background: #3b82f6;
+        color: #ffffff;
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+    }
+    .wiz-step.completed {
+        border-color: #10b981;
+        background: #10b981;
+        color: #ffffff;
+    }
+
+    .wiz-form-group {
+        margin-bottom: 24px;
+    }
+    .wiz-label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: var(--ink, #374151);
+    }
+    .wiz-input {
+        width: 100%;
+        padding: 12px 16px;
+        border: 1px solid var(--border, #d1d5db);
+        border-radius: 8px;
+        font-size: 1rem;
+        background: var(--bg, #f9fafb);
+        color: var(--ink, #1f2937);
+        transition: border-color 0.2s;
+    }
+    .wiz-input:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .wiz-btn {
+        padding: 14px 28px;
+        background: #3b82f6;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+    }
+    .wiz-btn:hover {
+        background: #2563eb;
+    }
+    .wiz-btn-success {
+        background: #10b981;
+    }
+    .wiz-btn-success:hover {
+        background: #059669;
+    }
+
+    .wiz-loading {
+        display: none;
+        text-align: center;
+        padding: 20px;
+    }
+    .htmx-request .wiz-loading {
+        display: block;
+    }
+    .htmx-request .wiz-btn {
+        opacity: 0.5;
+        pointer-events: none;
+    }
+
+    .loader-spinner {
+        border: 4px solid rgba(0,0,0,0.1);
+        border-left-color: #3b82f6;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 10px;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+</style>
+
+<div class="wiz-container">
+    <div class="wiz-header">
+        <h1 class="wiz-title">Créer un nouveau cours</h1>
+        <p style="color: var(--ink-faint, #6b7280);">Suivez les étapes pour configurer votre cours de A à Z.</p>
+    </div>
+
+    <div class="wiz-progress" id="wizard-progress">
+        <div class="wiz-step active" id="step1-indicator">1</div>
+        <div class="wiz-step" id="step2-indicator">2</div>
+        <div class="wiz-step" id="step3-indicator">3</div>
+        <div class="wiz-step" id="step4-indicator">4</div>
+    </div>
+
+    <div id="wizard-content">
+        <!-- Initial Load: Step 1 Form -->
+        <form hx-post="{% url 'apprentissage:wizard_step1' %}" hx-target="#wizard-content" hx-swap="innerHTML">
+            {% csrf_token %}
+            <div class="wiz-form-group">
+                <label class="wiz-label">Titre du cours *</label>
+                <input type="text" name="titre" class="wiz-input" placeholder="Ex: Introduction à Python" required>
+            </div>
+            
+            <div class="wiz-form-group">
+                <label class="wiz-label">Niveau cible *</label>
+                <select name="niveau" class="wiz-input" required>
+                    <option value="">Sélectionnez un niveau</option>
+                    {% for n in niveaux %}
+                    <option value="{{ n.pk }}">{{ n.nom }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="wiz-form-group">
+                <label class="wiz-label">Résumé court</label>
+                <input type="text" name="resume" class="wiz-input" placeholder="Résumé affiché dans les listes">
+            </div>
+
+            <div class="wiz-form-group">
+                <label class="wiz-label">Description globale</label>
+                <textarea name="description" class="wiz-input" rows="4" placeholder="De quoi parle ce cours ?"></textarea>
+            </div>
+
+            <button type="submit" class="wiz-btn">Étape suivante : Couverture <i class="bi bi-arrow-right" style="margin-left: 8px;"></i></button>
+            <div class="wiz-loading">
+                <div class="loader-spinner"></div>
+                <span>Création du cours...</span>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Écouter les événements HTMX pour mettre à jour la barre de progression
+    document.body.addEventListener('htmx:afterSwap', function(evt) {
+        if (evt.detail.target.id === 'wizard-content') {
+            const stepNumber = document.getElementById('current-step-data')?.dataset?.step;
+            if (stepNumber) {
+                // Update active step
+                for(let i=1; i<=4; i++) {
+                    const indicator = document.getElementById('step' + i + '-indicator');
+                    if (indicator) {
+                        if (i < parseInt(stepNumber)) {
+                            indicator.className = 'wiz-step completed';
+                            indicator.innerHTML = '<i class="bi bi-check"></i>';
+                        } else if (i === parseInt(stepNumber)) {
+                            indicator.className = 'wiz-step active';
+                            indicator.innerHTML = i;
+                        } else {
+                            indicator.className = 'wiz-step';
+                            indicator.innerHTML = i;
+                        }
+                    }
+                }
+                
+                // Hide progress bar on success
+                if (stepNumber === '5') {
+                    const progress = document.getElementById('wizard-progress');
+                    if (progress) progress.style.display = 'none';
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}
