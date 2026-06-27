@@ -1,117 +1,645 @@
 {% extends 'base.html' %}
-
-{% block title %}Accueil | Plateforme Éducative{% endblock %}
+{% load static %}
+{% block title %}EduTech IoT & IA — La Plateforme Éducative Nouvelle Génération{% endblock %}
 
 {% block content %}
-<section class="home-hero">
-    <div class="home-hero__copy">
-        <span class="home-kicker">
-            <i class="ti ti-circuit-board" aria-hidden="true"></i>
-            IoT · IA · Logistique
-        </span>
-        <h1>La plateforme éducative <em>nouvelle génération.</em></h1>
-        <p>
-            Des parcours pédagogiques structurés en IoT et Réseaux, 
-            soutenus par une IA d'assistance locale et un système de gestion d'atelier performant.
-        </p>
-        <div class="home-actions">
-            <a class="btn btn-primary" href="{% url 'accounts:register' %}">
-                <i class="ti ti-rocket" aria-hidden="true"></i>
-                Commencer maintenant
-            </a>
-            <a class="btn btn-ghost" href="{% url 'accounts:login' %}">
-                <i class="ti ti-login" aria-hidden="true"></i>
-                Se connecter
-            </a>
-        </div>
-    </div>
+<style>
+/* ══════════════════════════════════════════════════
+   HOME PAGE — PREMIUM REDESIGN WITH REAL IMAGES
+══════════════════════════════════════════════════ */
 
-    <div class="home-hero__visual">
-        <div class="home-visual-card home-visual-card--primary">
-            <div class="home-visual-card__overlay"></div>
-            <div class="home-visual-card__content">
-                <p class="home-visual-label">Architecture et composants</p>
-                <h2>Le matériel devient un support d'apprentissage clair.</h2>
+/* ── HERO ── */
+.home-hero {
+    position: relative;
+    min-height: 90vh;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    padding: 5rem 4rem;
+    border-radius: 28px;
+    margin-bottom: 5rem;
+}
+/* Real circuit image as hero background */
+.home-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url('{% static "images/home-circuit.jpg" %}');
+    background-size: cover;
+    background-position: center;
+    border-radius: 28px;
+}
+/* Dark overlay so text is readable */
+.home-hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(100deg,
+        rgba(2,12,24,0.92) 0%,
+        rgba(10,25,41,0.85) 40%,
+        rgba(10,25,41,0.40) 70%,
+        rgba(2,12,24,0.1) 100%);
+    border-radius: 28px;
+}
+
+/* Teal ambient glow on top of overlay */
+.hero-glow-teal {
+    position: absolute;
+    top: -100px; right: 20%;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(13,148,136,0.18) 0%, transparent 65%);
+    border-radius: 50%;
+    filter: blur(40px);
+    pointer-events: none;
+    z-index: 1;
+    animation: orbFloat 9s ease-in-out infinite alternate;
+}
+.hero-glow-blue {
+    position: absolute;
+    bottom: -80px; right: 10%;
+    width: 350px; height: 350px;
+    background: radial-gradient(circle, rgba(59,130,246,0.12) 0%, transparent 65%);
+    border-radius: 50%;
+    filter: blur(50px);
+    pointer-events: none;
+    z-index: 1;
+    animation: orbFloat 12s ease-in-out infinite alternate-reverse;
+}
+@keyframes orbFloat {
+    from { transform: translate(0,0) scale(1); }
+    to   { transform: translate(15px,25px) scale(1.08); }
+}
+
+/* Hero text */
+.hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 620px;
+}
+.hero-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(13,148,136,0.15);
+    border: 1px solid rgba(13,148,136,0.4);
+    color: #2dd4bf;
+    font-size: 0.72rem; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 6px 16px; border-radius: 999px; margin-bottom: 1.5rem;
+    backdrop-filter: blur(8px);
+}
+.hero-tag .dot { width: 6px; height: 6px; border-radius: 50%; background: #2dd4bf; animation: blink 2s ease-in-out infinite; }
+@keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+
+.hero-h1 {
+    font-size: clamp(2.8rem, 5vw, 4rem);
+    font-weight: 900; line-height: 1.08;
+    letter-spacing: -0.04em; color: #ffffff; margin-bottom: 1.5rem;
+}
+.hero-h1 .grad {
+    background: linear-gradient(90deg, #2dd4bf 0%, #60a5fa 60%, #a78bfa 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+
+.hero-desc {
+    font-size: 1.1rem; color: rgba(255,255,255,0.65);
+    line-height: 1.7; max-width: 500px; margin-bottom: 2.5rem;
+}
+
+.hero-ctas { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; margin-bottom: 3rem; }
+.btn-hero-primary {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 0.9rem 2rem;
+    background: linear-gradient(135deg, #0d9488, #0f766e);
+    color: white; font-weight: 700; font-size: 1rem; border-radius: 12px;
+    text-decoration: none; transition: all 0.2s;
+    box-shadow: 0 8px 24px rgba(13,148,136,0.4);
+}
+.btn-hero-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(13,148,136,0.55); filter: brightness(1.08); }
+.btn-hero-ghost {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 0.9rem 2rem;
+    background: rgba(255,255,255,0.07); border: 1.5px solid rgba(255,255,255,0.18);
+    color: rgba(255,255,255,0.85); font-weight: 600; font-size: 1rem;
+    border-radius: 12px; text-decoration: none; transition: all 0.2s;
+    backdrop-filter: blur(8px);
+}
+.btn-hero-ghost:hover { background: rgba(255,255,255,0.13); border-color: rgba(255,255,255,0.35); transform: translateY(-2px); }
+
+/* Stats */
+.hero-stats { display: flex; gap: 2rem; align-items: center; }
+.hero-stat-num { font-size: 1.6rem; font-weight: 900; color: white; line-height: 1; }
+.hero-stat-lbl { font-size: 0.68rem; font-weight: 600; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.08em; }
+.hero-stat-divider { width: 1px; height: 36px; background: rgba(255,255,255,0.12); }
+
+/* Hero right image — robot floating card */
+.hero-visual {
+    position: absolute;
+    right: 4rem; top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 340px;
+}
+.vis-robot-card {
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 24px 60px rgba(0,0,0,0.4);
+    position: relative;
+    height: 280px;
+}
+.vis-robot-card img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.vis-robot-card-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(2,12,24,0.85) 0%, transparent 50%);
+}
+.vis-robot-card-label {
+    position: absolute; bottom: 1rem; left: 1rem; right: 1rem;
+}
+.vis-robot-card-label p { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #2dd4bf; margin-bottom: 3px; }
+.vis-robot-card-label h3 { font-size: 0.9rem; font-weight: 800; color: white; }
+
+.vis-mini-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+.vis-mini-card {
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.09);
+    border-radius: 14px; padding: 0.9rem;
+    backdrop-filter: blur(12px);
+    transition: all 0.25s;
+}
+.vis-mini-card:hover { background: rgba(255,255,255,0.09); border-color: rgba(13,148,136,0.3); }
+.vis-mini-icon { font-size: 1.3rem; margin-bottom: 0.4rem; }
+.vis-mini-card h4 { font-size: 0.78rem; font-weight: 700; color: white; margin-bottom: 2px; }
+.vis-mini-card p  { font-size: 0.68rem; color: rgba(255,255,255,0.45); }
+
+@media (max-width: 1100px) { .hero-visual { display: none; } }
+@media (max-width: 768px) { .home-hero { padding: 3rem 1.5rem; min-height: 70vh; } }
+
+/* ── PILLARS (image cards) ── */
+.home-pillars {
+    display: grid;
+    grid-template-columns: 1fr 2fr 2fr 1fr;
+    gap: 1.25rem;
+    margin-bottom: 5rem;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+@media (max-width: 1024px) { .home-pillars { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 640px)  { .home-pillars { grid-template-columns: 1fr; } }
+
+.pillar-card {
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+    min-height: 280px;
+    display: flex;
+    align-items: flex-end;
+    transition: transform 0.3s cubic-bezier(0.16,1,0.3,1);
+}
+.pillar-card:hover { transform: translateY(-5px); }
+.pillar-card img {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%; object-fit: cover;
+    transition: transform 0.5s;
+}
+.pillar-card:hover img { transform: scale(1.05); }
+.pillar-card-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(2,12,24,0.9) 0%, rgba(2,12,24,0.3) 60%, transparent 100%);
+}
+.pillar-card-content { position: relative; z-index: 2; padding: 1.5rem; }
+.pillar-card-tag {
+    display: inline-block; font-size: 0.62rem; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase; color: #2dd4bf;
+    margin-bottom: 0.4rem;
+}
+.pillar-card-content h3 { font-size: 1rem; font-weight: 800; color: white; line-height: 1.35; }
+
+/* Plain feature cards */
+.pillar-feat {
+    background: var(--bg-surface, #ffffff);
+    border: 1.5px solid var(--border-light, #e8edf3);
+    border-radius: 20px;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    transition: all 0.3s;
+}
+.pillar-feat:hover { box-shadow: 0 16px 40px rgba(0,0,0,0.08); transform: translateY(-4px); }
+.pillar-feat-icon {
+    width: 52px; height: 52px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
+}
+.pillar-feat h3 { font-size: 1.1rem; font-weight: 800; color: var(--text-primary, #0f172a); }
+.pillar-feat p  { font-size: 0.87rem; color: var(--text-muted, #64748b); line-height: 1.65; }
+
+/* ── BENTO / IoT SHOWCASE ── */
+.home-bento {
+    max-width: 1200px;
+    margin: 0 auto 5rem;
+    padding: 0 1rem;
+}
+.bento-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 1.25rem;
+}
+@media (max-width: 800px) { .bento-grid { grid-template-columns: 1fr; } }
+
+.bento-main {
+    grid-row: span 2;
+    border-radius: 24px;
+    overflow: hidden;
+    position: relative;
+    min-height: 460px;
+}
+.bento-main img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.bento-main-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(2,12,24,0.92) 0%, rgba(2,12,24,0.2) 55%, transparent 100%);
+}
+.bento-main-content {
+    position: absolute; bottom: 0; left: 0; right: 0; padding: 2rem;
+}
+.bento-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(13,148,136,0.2); border: 1px solid rgba(13,148,136,0.35);
+    color: #2dd4bf; font-size: 0.68rem; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 4px 12px; border-radius: 999px; margin-bottom: 0.75rem;
+    backdrop-filter: blur(6px);
+}
+.bento-main-content h2 { font-size: 1.6rem; font-weight: 900; color: white; line-height: 1.2; margin-bottom: 0.5rem; letter-spacing: -0.03em; }
+.bento-main-content p  { font-size: 0.85rem; color: rgba(255,255,255,0.6); line-height: 1.6; }
+
+.bento-side {
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+    min-height: 210px;
+}
+.bento-side img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.bento-side-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(2,12,24,0.88) 0%, transparent 65%);
+}
+.bento-side-content { position: absolute; bottom: 0; left: 0; right: 0; padding: 1.25rem; }
+.bento-side-content p { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #2dd4bf; margin-bottom: 4px; }
+.bento-side-content h3 { font-size: 1rem; font-weight: 800; color: white; }
+
+/* ── HOW IT WORKS ── */
+.home-steps {
+    max-width: 1200px; margin: 0 auto 5rem; padding: 3.5rem;
+    background: linear-gradient(160deg, #020c18 0%, #0a1929 100%);
+    border-radius: 28px; position: relative; overflow: hidden;
+}
+.home-steps::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image: url('{% static "images/home-circuit.jpg" %}');
+    background-size: cover; background-position: center;
+    opacity: 0.05; border-radius: 28px;
+}
+.steps-inner { position: relative; z-index: 2; }
+.section-eyebrow {
+    font-size: 0.72rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+    color: #2dd4bf; margin-bottom: 0.75rem;
+}
+.section-title-big { font-size: 2.2rem; font-weight: 900; letter-spacing: -0.04em; margin-bottom: 0.5rem; }
+.steps-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; margin-top: 2.5rem;
+}
+@media (max-width: 900px) { .steps-grid { grid-template-columns: repeat(2,1fr); } }
+.step-item {
+    padding: 1.5rem; background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07); border-radius: 16px;
+    backdrop-filter: blur(8px); transition: all 0.25s;
+    display: flex; flex-direction: column; gap: 0.85rem;
+}
+.step-item:hover { background: rgba(255,255,255,0.07); border-color: rgba(13,148,136,0.3); transform: translateY(-3px); }
+.step-num {
+    font-size: 0.65rem; font-weight: 800; color: #2dd4bf;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    background: rgba(13,148,136,0.15); border: 1px solid rgba(13,148,136,0.3);
+    padding: 2px 10px; border-radius: 999px; align-self: flex-start;
+}
+.step-icon { font-size: 2rem; color: white; }
+.step-item h4 { font-size: 0.95rem; font-weight: 700; color: white; }
+.step-item p  { font-size: 0.8rem; color: rgba(255,255,255,0.5); line-height: 1.55; }
+
+/* ── ROLES ── */
+.home-roles {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;
+    max-width: 1200px; margin: 0 auto 5rem; padding: 0 1rem;
+}
+@media (max-width: 768px) { .home-roles { grid-template-columns: 1fr; } }
+.role-card { padding: 2.5rem; border-radius: 24px; position: relative; overflow: hidden; }
+.role-card--student  { background: linear-gradient(135deg, #eff6ff, #dbeafe); border: 1.5px solid #bfdbfe; }
+.role-card--formateur{ background: linear-gradient(135deg, #f0fdfa, #ccfbf1); border: 1.5px solid #99f6e4; }
+.role-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 0.68rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 4px 12px; border-radius: 999px; margin-bottom: 1rem;
+}
+.badge--student   { background: rgba(59,130,246,0.12); color: #1d4ed8; border: 1px solid rgba(59,130,246,0.2); }
+.badge--formateur { background: rgba(13,148,136,0.12); color: #0f766e; border: 1px solid rgba(13,148,136,0.2); }
+.role-card h3 { font-size: 1.5rem; font-weight: 900; color: #0f172a; margin-bottom: 0.75rem; letter-spacing: -0.03em; }
+.role-card > p { font-size: 0.9rem; color: #475569; line-height: 1.65; margin-bottom: 1.5rem; }
+.role-list { list-style: none; padding: 0; margin: 0 0 2rem; display: flex; flex-direction: column; gap: 0.6rem; }
+.role-list li { display: flex; align-items: center; gap: 10px; font-size: 0.88rem; font-weight: 600; color: #334155; }
+.role-list li::before { content: '✓'; font-weight: 900; color: #0d9488; }
+.btn-role {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 0.75rem 1.75rem; border-radius: 10px;
+    font-weight: 700; font-size: 0.9rem; text-decoration: none; transition: all 0.2s;
+}
+.btn-role--blue { background: #3b82f6; color: white; box-shadow: 0 4px 12px rgba(59,130,246,0.3); }
+.btn-role--blue:hover  { filter: brightness(1.1); transform: translateY(-1px); }
+.btn-role--teal { background: #0d9488; color: white; box-shadow: 0 4px 12px rgba(13,148,136,0.3); }
+.btn-role--teal:hover  { filter: brightness(1.1); transform: translateY(-1px); }
+
+/* ── CTA BOTTOM ── */
+.home-cta-bottom {
+    background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+    border-radius: 28px; padding: 4rem; text-align: center;
+    position: relative; overflow: hidden;
+    max-width: 1200px; margin: 0 auto 3rem;
+}
+.home-cta-bottom::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image: url('{% static "images/home-circuit.jpg" %}');
+    background-size: cover; background-position: center;
+    opacity: 0.08; border-radius: 28px;
+}
+.home-cta-bottom::after {
+    content: '';
+    position: absolute; top: -80px; right: -80px;
+    width: 280px; height: 280px;
+    background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 70%);
+    border-radius: 50%;
+}
+.home-cta-inner { position: relative; z-index: 2; }
+.home-cta-bottom h2 { font-size: 2.2rem; font-weight: 900; color: white; margin-bottom: 1rem; letter-spacing: -0.03em; }
+.home-cta-bottom p  { font-size: 1rem; color: rgba(255,255,255,0.8); max-width: 480px; margin: 0 auto 2rem; line-height: 1.65; }
+.btn-cta-white {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 0.9rem 2.5rem; background: white; color: #0f766e;
+    font-weight: 800; font-size: 1rem; border-radius: 12px; text-decoration: none;
+    transition: all 0.2s; box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+}
+.btn-cta-white:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(0,0,0,0.2); }
+</style>
+
+<div style="padding: 1.5rem 0;">
+
+    <!-- ═══════ HERO ═══════ -->
+    <section class="home-hero">
+        <div class="hero-glow-teal"></div>
+        <div class="hero-glow-blue"></div>
+
+        <div class="hero-content">
+            <span class="hero-tag">
+                <span class="dot"></span>
+                IoT · Intelligence Artificielle · Logistique
+            </span>
+
+            <h1 class="hero-h1">
+                La plateforme<br>éducative
+                <span class="grad"><br>nouvelle génération.</span>
+            </h1>
+
+            <p class="hero-desc">
+                Des parcours pédagogiques structurés en IoT et Réseaux, soutenus par un Tuteur IA socratique basé sur vos cours et un système de gestion d'atelier intégré.
+            </p>
+
+            <div class="hero-ctas">
+                <a class="btn-hero-primary" href="{% url 'accounts:register' %}">
+                    <i class="ti ti-rocket"></i> Commencer maintenant
+                </a>
+                <a class="btn-hero-ghost" href="{% url 'accounts:login' %}">
+                    <i class="ti ti-login"></i> Se connecter
+                </a>
             </div>
-        </div>
-        <div class="home-visual-grid">
-            <div class="home-visual-card home-visual-card--secondary">
-                <div class="home-visual-card__overlay home-visual-card__overlay--light"></div>
-                <div class="home-visual-card__content">
-                    <p class="home-visual-label home-visual-label--dark">Modules IoT</p>
-                    <h3>Capteurs, cartes, LEDs et prototypage.</h3>
+
+            <div class="hero-stats">
+                <div>
+                    <div class="hero-stat-num">3</div>
+                    <div class="hero-stat-lbl">Profils</div>
+                </div>
+                <div class="hero-stat-divider"></div>
+                <div>
+                    <div class="hero-stat-num">IA</div>
+                    <div class="hero-stat-lbl">Tuteur RAG local</div>
+                </div>
+                <div class="hero-stat-divider"></div>
+                <div>
+                    <div class="hero-stat-num">100%</div>
+                    <div class="hero-stat-lbl">Contenu ciblé</div>
                 </div>
             </div>
         </div>
+
+        <!-- Visual cards — robot + mini cards -->
+        <div class="hero-visual">
+            <div class="vis-robot-card">
+                <img src="{% static 'images/AI-text-to-image-photo-robot-with-computer.webp' %}" alt="Tuteur IA">
+                <div class="vis-robot-card-overlay"></div>
+                <div class="vis-robot-card-label">
+                    <p><i class="ti ti-sparkles"></i> Tuteur IA</p>
+                    <h3>Session socratique intelligente</h3>
+                </div>
+            </div>
+            <div class="vis-mini-row">
+                <div class="vis-mini-card">
+                    <div class="vis-mini-icon">📡</div>
+                    <h4>Cours IoT</h4>
+                    <p>PDFs & chapitres indexés</p>
+                </div>
+                <div class="vis-mini-card">
+                    <div class="vis-mini-icon">🏗️</div>
+                    <h4>Ateliers</h4>
+                    <p>Gestion logistique</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════ PILLARS ═══════ -->
+    <div style="max-width:1200px; margin: 0 auto 5rem; padding: 0 1rem;">
+        <div class="home-pillars" style="margin: 0;">
+            <!-- Plain feature card -->
+            <div class="pillar-feat">
+                <div class="pillar-feat-icon" style="background:rgba(13,148,136,0.1); color:#0d9488;">
+                    <i class="ti ti-book-2"></i>
+                </div>
+                <h3>Cours structurés</h3>
+                <p>Chapitres progressifs avec documents, vidéos et QCM auto-générés par l'IA.</p>
+            </div>
+
+            <!-- Image card — robotics -->
+            <div class="pillar-card">
+                <img src="{% static 'images/robotics-for-beginners-v3.webp' %}" alt="Robotique IoT">
+                <div class="pillar-card-overlay"></div>
+                <div class="pillar-card-content">
+                    <span class="pillar-card-tag">Matériel</span>
+                    <h3>Une gestion d'atelier intégrée et fluide.</h3>
+                </div>
+            </div>
+
+            <!-- Image card — student + kit -->
+            <div class="pillar-card">
+                <img src="{% static 'images/unnamed_-_2025-11-07T141254.530.webp' %}" alt="Apprentissage concret">
+                <div class="pillar-card-overlay"></div>
+                <div class="pillar-card-content">
+                    <span class="pillar-card-tag">Apprentissage</span>
+                    <h3>Construire, tester et itérer sur de vrais projets.</h3>
+                </div>
+            </div>
+
+            <!-- Plain feature card -->
+            <div class="pillar-feat">
+                <div class="pillar-feat-icon" style="background:rgba(139,92,246,0.1); color:#8b5cf6;">
+                    <i class="ti ti-robot"></i>
+                </div>
+                <h3>Tuteur IA Dédié</h3>
+                <p>Assistant 100% basé sur les supports de cours fournis par les formateurs.</p>
+            </div>
+        </div>
     </div>
-</section>
 
-<section class="home-pillars">
-    <article class="home-panel">
-        <div class="feat-icon teal"><i class="ti ti-book-2" aria-hidden="true"></i></div>
-        <h3>Cours structurés</h3>
-        <p>Chapitres progressifs avec documents techniques, vidéos d'atelier et QCM auto-générés.</p>
-    </article>
-
-    <article class="home-panel home-panel--image home-panel--image-dark">
-        <div class="home-panel__shade"></div>
-        <div class="home-panel__content">
-            <p class="home-panel__eyebrow">Interface</p>
-            <h3>Un design pensé pour la concentration.</h3>
+    <!-- ═══════ BENTO — IoT SHOWCASE ═══════ -->
+    <section class="home-bento">
+        <div style="margin-bottom: 2.5rem;">
+            <p class="section-eyebrow">Modules IoT & Composants</p>
+            <h2 class="section-title-big" style="color: var(--text-primary,#0f172a);">Le matériel devient<br>un support d'apprentissage.</h2>
         </div>
-    </article>
+        <div class="bento-grid">
+            <!-- Main image — IoT components -->
+            <div class="bento-main">
+                <img src="{% static 'images/bento-components-bg.png' %}" alt="Composants IoT Arduino">
+                <div class="bento-main-overlay"></div>
+                <div class="bento-main-content">
+                    <span class="bento-tag"><i class="ti ti-circuit-board"></i> IoT Hardware</span>
+                    <h2>Capteurs, microcontrôleurs et protocoles réseaux.</h2>
+                    <p>De l'Arduino aux modules sans fil, chaque composant fait partie d'un cours structuré avec documentation technique.</p>
+                </div>
+            </div>
 
-    <article class="home-panel home-panel--image home-panel--image-light">
-        <div class="home-panel__shade home-panel__shade--soft"></div>
-        <div class="home-panel__content">
-            <p class="home-panel__eyebrow">Matériel</p>
-            <h3>Une gestion d'atelier intégrée et fluide.</h3>
-        </div>
-    </article>
+            <!-- Side — robot -->
+            <div class="bento-side">
+                <img src="{% static 'images/AI-text-to-image-photo-robot-with-computer.webp' %}" alt="IA Tuteur">
+                <div class="bento-side-overlay"></div>
+                <div class="bento-side-content">
+                    <p>Intelligence Artificielle</p>
+                    <h3>L'IA au service de la pratique.</h3>
+                </div>
+            </div>
 
-    <article class="home-panel">
-        <div class="feat-icon blue"><i class="ti ti-robot" aria-hidden="true"></i></div>
-        <h3>Tuteur IA Dédié</h3>
-        <p>Assistant pédagogique 100% basé sur les supports de cours fournis par les formateurs.</p>
-    </article>
-</section>
+            <!-- Side — robotics workshop -->
+            <div class="bento-side">
+                <img src="{% static 'images/robotics-for-beginners-v3.webp' %}" alt="Atelier Robotique">
+                <div class="bento-side-overlay"></div>
+                <div class="bento-side-content">
+                    <p>Ateliers Pratiques</p>
+                    <h3>Prototypage & expérimentation réels.</h3>
+                </div>
+            </div>
+        </div>
+    </section>
 
-<section class="home-gallery">
-    <article class="home-gallery-card home-gallery-card--robot">
-        <div class="home-gallery-card__overlay"></div>
-        <div class="home-gallery-card__content">
-            <span>Technologies immersives</span>
-            <h3>L'intelligence artificielle au service de la pratique.</h3>
-        </div>
-    </article>
-    <article class="home-gallery-card home-gallery-card--kit">
-        <div class="home-gallery-card__overlay home-gallery-card__overlay--soft"></div>
-        <div class="home-gallery-card__content">
-            <span>Apprentissage concret</span>
-            <h3>Construire, tester et itérer sur de vrais projets.</h3>
-        </div>
-    </article>
-    <article class="home-gallery-card home-gallery-card--kid">
-        <div class="home-gallery-card__overlay"></div>
-        <div class="home-gallery-card__content">
-            <span>Suivi personnalisé</span>
-            <h3>Un accompagnement adapté à chaque élève.</h3>
-        </div>
-    </article>
-</section>
+    <!-- ═══════ HOW IT WORKS ═══════ -->
+    <section class="home-steps">
+        <div class="steps-inner">
+            <p class="section-eyebrow">Comment ça marche</p>
+            <h2 class="section-title-big" style="color: white;">Un parcours en 4 étapes.</h2>
+            <p style="color: rgba(255,255,255,0.5); font-size: 0.95rem;">De l'inscription à la maîtrise du contenu.</p>
 
-<section class="home-bottom">
-    <div class="home-bottom__card">
-        <p class="section-title">Pour les formateurs</p>
-        <h2>Créer, organiser et mettre à jour les contenus sans friction.</h2>
-        <p>Bénéficiez d'une interface d'édition type Notion et d'un tableau de bord de suivi académique extrêmement clair.</p>
+            <div class="steps-grid">
+                <div class="step-item">
+                    <span class="step-num">Étape 1</span>
+                    <div class="step-icon"><i class="ti ti-user-plus"></i></div>
+                    <h4>Inscription & Validation</h4>
+                    <p>Créez votre compte, choisissez votre rôle et attendez la validation par l'admin.</p>
+                </div>
+                <div class="step-item">
+                    <span class="step-num">Étape 2</span>
+                    <div class="step-icon"><i class="ti ti-books"></i></div>
+                    <h4>Accès aux Cours</h4>
+                    <p>Explorez le catalogue, accédez aux chapitres correspondant à votre niveau.</p>
+                </div>
+                <div class="step-item">
+                    <span class="step-num">Étape 3</span>
+                    <div class="step-icon"><i class="ti ti-robot"></i></div>
+                    <h4>Session Tuteur IA</h4>
+                    <p>Après chaque chapitre, démarrez une session socratique avec votre tuteur IA.</p>
+                </div>
+                <div class="step-item">
+                    <span class="step-num">Étape 4</span>
+                    <div class="step-icon"><i class="ti ti-certificate"></i></div>
+                    <h4>Validation & QCM</h4>
+                    <p>Obtenez votre score de maîtrise et validez vos connaissances avec le QCM.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════ ROLES ═══════ -->
+    <div style="max-width: 1200px; margin: 0 auto 1.5rem; padding: 0 1rem;">
+        <p class="section-eyebrow">Pour qui ?</p>
+        <h2 class="section-title-big" style="color: var(--text-primary,#0f172a);">Une expérience adaptée à chaque profil.</h2>
     </div>
-    <div class="home-bottom__card home-bottom__card--accent">
-        <p class="section-title section-title--light">Prêt à démarrer ?</p>
-        <h2>Rejoignez l'aventure technologique.</h2>
-        <a class="btn btn-primary" href="{% url 'accounts:register' %}">
-            Créer un compte
-        </a>
+    <div class="home-roles">
+        <div class="role-card role-card--student">
+            <span class="role-badge badge--student"><i class="ti ti-school"></i> Étudiant</span>
+            <h3>Apprenez à votre rythme</h3>
+            <p>Accédez aux cours de votre niveau, pratiquez avec le Tuteur IA et suivez votre progression en temps réel.</p>
+            <ul class="role-list">
+                <li>Catalogue de cours par niveau</li>
+                <li>Tuteur IA socratique interactif</li>
+                <li>QCM de validation automatiques</li>
+                <li>Suivi de progression personnalisé</li>
+                <li>Devoirs et évaluations en ligne</li>
+            </ul>
+            <a href="{% url 'accounts:register' %}" class="btn-role btn-role--blue">
+                <i class="ti ti-rocket"></i> Commencer gratuitement
+            </a>
+        </div>
+
+        <div class="role-card role-card--formateur">
+            <span class="role-badge badge--formateur"><i class="ti ti-chalkboard"></i> Formateur</span>
+            <h3>Enseignez sans friction</h3>
+            <p>Créez vos cours, gérez vos ateliers et suivez la progression de vos étudiants depuis un tableau de bord clair.</p>
+            <ul class="role-list">
+                <li>Wizard de création de cours en 4 étapes</li>
+                <li>Upload de PDFs indexés par l'IA</li>
+                <li>Gestion des devoirs et corrections</li>
+                <li>Analytics de progression en temps réel</li>
+                <li>Gestion logistique des ateliers</li>
+            </ul>
+            <a href="{% url 'accounts:register' %}" class="btn-role btn-role--teal">
+                <i class="ti ti-wand"></i> Créer mon espace
+            </a>
+        </div>
     </div>
-</section>
+
+    <!-- ═══════ CTA BOTTOM ═══════ -->
+    <div class="home-cta-bottom">
+        <div class="home-cta-inner">
+            <h2>Prêt à rejoindre l'aventure technologique ?</h2>
+            <p>Rejoignez des étudiants et formateurs qui utilisent EduTech pour des formations en IoT, Réseaux et Intelligence Artificielle.</p>
+            <a href="{% url 'accounts:register' %}" class="btn-cta-white">
+                <i class="ti ti-rocket"></i> Créer mon compte — c'est gratuit
+            </a>
+        </div>
+    </div>
+
+</div>
 {% endblock %}

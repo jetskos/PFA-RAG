@@ -1,194 +1,453 @@
 {% extends 'base.html' %}
-
-{% block title %}{{ titre_page }}{% endblock %}
+{% load static %}
+{% block title %}Analytics Formateur | EduTech{% endblock %}
 
 {% block content %}
-<section class="page-shell" style="max-width: 1200px; margin: 0 auto; padding: 2rem 1rem;">
-    <!-- En-tête -->
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-        <div>
-            <h1>📊 Tableau de bord Analytics — Formateur</h1>
-            <p class="muted">Vue d'ensemble de la progression et des performances de vos élèves.</p>
+<style>
+    /* ═══════════════════════════════════════
+       ANALYTICS FORMATEUR — PREMIUM REDESIGN
+    ═══════════════════════════════════════ */
+
+    .analytics-hero {
+        position: relative;
+        border-radius: 24px;
+        overflow: hidden;
+        padding: 2rem 2.5rem;
+        margin-bottom: 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1.5rem;
+        background: linear-gradient(135deg, #1e1b4b 0%, #0f2027 50%, #1a2a3a 100%);
+        box-shadow: 0 16px 48px -8px rgba(99,102,241,0.25);
+    }
+    .analytics-hero::before {
+        content: '';
+        position: absolute;
+        top: -70px; right: -70px;
+        width: 280px; height: 280px;
+        background: radial-gradient(circle, rgba(99,102,241,0.2) 0%, transparent 70%);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+    .analytics-hero::after {
+        content: '';
+        position: absolute;
+        bottom: -50px; left: 20%;
+        width: 200px; height: 200px;
+        background: radial-gradient(circle, rgba(13,148,136,0.15) 0%, transparent 70%);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+    .ah-left { position: relative; z-index: 2; }
+    .ah-eyebrow {
+        display: inline-flex; align-items: center; gap: 6px;
+        background: rgba(99,102,241,0.2);
+        border: 1px solid rgba(99,102,241,0.4);
+        color: #a5b4fc; font-size: 0.72rem; font-weight: 700;
+        letter-spacing: 0.12em; text-transform: uppercase;
+        padding: 4px 12px; border-radius: 999px; margin-bottom: 0.6rem;
+    }
+    .ah-title {
+        font-size: 1.9rem; font-weight: 900; color: #fff;
+        letter-spacing: -0.03em; margin: 0 0 0.4rem; line-height: 1.2;
+    }
+    .ah-title span {
+        background: linear-gradient(90deg, #a5b4fc, #2dd4bf);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    .ah-subtitle { color: rgba(255,255,255,0.6); font-size: 0.9rem; margin: 0; }
+    .ah-right { position: relative; z-index: 2; display: flex; gap: 0.75rem; flex-shrink: 0; flex-wrap: wrap; }
+
+    /* KPI grid */
+    .kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    .kpi-card {
+        background: var(--bg-surface, #fff);
+        border: 1.5px solid var(--border-light, #e8edf3);
+        border-radius: 18px;
+        padding: 1.4rem 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        transition: all 0.25s;
+        position: relative;
+        overflow: hidden;
+    }
+    .kpi-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0; height: 3px;
+        border-radius: 18px 18px 0 0;
+    }
+    .kpi-card.teal::before { background: linear-gradient(90deg, #0D9488, #2dd4bf); }
+    .kpi-card.blue::before { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+    .kpi-card.amber::before { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+    .kpi-card.red::before { background: linear-gradient(90deg, #ef4444, #f87171); }
+    .kpi-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.07); transform: translateY(-2px); }
+
+    .kpi-icon {
+        width: 48px; height: 48px; border-radius: 14px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.4rem; flex-shrink: 0;
+    }
+    .kpi-icon.teal { background: rgba(13,148,136,0.12); color: #0D9488; }
+    .kpi-icon.blue { background: rgba(59,130,246,0.12); color: #3b82f6; }
+    .kpi-icon.amber { background: rgba(245,158,11,0.12); color: #f59e0b; }
+    .kpi-icon.red { background: rgba(239,68,68,0.12); color: #ef4444; }
+
+    .kpi-num { font-size: 2rem; font-weight: 900; line-height: 1; color: var(--text-primary, #0f172a); }
+    .kpi-label { font-size: 0.78rem; font-weight: 700; color: var(--text-muted, #64748b); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px; }
+
+    /* Charts row */
+    .charts-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    .chart-card {
+        background: var(--bg-surface, #fff);
+        border: 1.5px solid var(--border-light, #e8edf3);
+        border-radius: 20px;
+        padding: 1.5rem;
+    }
+    .chart-card-title {
+        font-size: 1rem; font-weight: 800;
+        color: var(--text-primary, #0f172a);
+        display: flex; align-items: center; gap: 8px;
+        margin: 0 0 1.25rem;
+    }
+    .chart-card-title i { color: #0D9488; }
+
+    /* Bottom grid */
+    .bottom-grid {
+        display: grid;
+        grid-template-columns: 3fr 2fr;
+        gap: 1.5rem;
+        align-items: start;
+    }
+    @media (max-width: 900px) { .bottom-grid { grid-template-columns: 1fr; } }
+
+    /* Data table */
+    .data-card {
+        background: var(--bg-surface, #fff);
+        border: 1.5px solid var(--border-light, #e8edf3);
+        border-radius: 20px;
+        overflow: hidden;
+    }
+    .data-card-header {
+        padding: 1.1rem 1.5rem;
+        border-bottom: 1px solid var(--border-light, #e8edf3);
+        background: var(--bg-surface-alt, #f8fafc);
+        font-size: 1rem; font-weight: 800;
+        color: var(--text-primary, #0f172a);
+        display: flex; align-items: center; gap: 8px;
+    }
+    .data-card-header i { color: #0D9488; }
+
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table thead tr {
+        background: var(--bg-surface-alt, #f8fafc);
+        font-size: 0.72rem; text-transform: uppercase;
+        color: var(--text-muted, #94a3b8);
+        letter-spacing: 0.06em;
+    }
+    .data-table th { padding: 0.65rem 1.25rem; text-align: left; font-weight: 700; border-bottom: 1px solid var(--border-light, #e8edf3); }
+    .data-table th:not(:first-child) { text-align: center; }
+    .data-table tbody tr { border-bottom: 1px solid var(--border-light, #f1f5f9); transition: background 0.15s; }
+    .data-table tbody tr:last-child { border-bottom: none; }
+    .data-table tbody tr:hover { background: var(--bg-surface-alt, #f8fafc); }
+    .data-table td { padding: 0.85rem 1.25rem; font-size: 0.88rem; }
+    .data-table td:not(:first-child) { text-align: center; }
+    .data-table td:first-child { font-weight: 600; color: var(--text-primary, #0f172a); }
+
+    .td-completion-bar {
+        display: flex; align-items: center; gap: 0.5rem; justify-content: center;
+    }
+    .mini-bar-track {
+        width: 60px; height: 6px;
+        background: var(--bg-surface-alt, #f1f5f9);
+        border-radius: 999px; overflow: hidden;
+    }
+    .mini-bar-fill { height: 100%; background: linear-gradient(90deg, #0D9488, #2dd4bf); border-radius: 999px; }
+
+    /* Alert students */
+    .alert-card {
+        background: var(--bg-surface, #fff);
+        border: 1.5px solid rgba(239,68,68,0.2);
+        border-radius: 20px;
+        overflow: hidden;
+    }
+    .alert-card-header {
+        padding: 1.1rem 1.5rem;
+        border-bottom: 1px solid rgba(239,68,68,0.15);
+        background: rgba(239,68,68,0.04);
+        font-size: 1rem; font-weight: 800;
+        color: #ef4444;
+        display: flex; align-items: center; gap: 8px;
+    }
+
+    .alert-student-row {
+        padding: 0.9rem 1.25rem;
+        border-bottom: 1px solid var(--border-light, #f1f5f9);
+        display: flex; align-items: flex-start; gap: 0.75rem;
+        transition: background 0.15s;
+    }
+    .alert-student-row:hover { background: rgba(239,68,68,0.02); }
+    .alert-student-row:last-child { border-bottom: none; }
+
+    .alert-avatar {
+        width: 36px; height: 36px; border-radius: 10px;
+        background: rgba(239,68,68,0.12); color: #ef4444;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 0.85rem; font-weight: 800; flex-shrink: 0;
+    }
+    .alert-info { flex: 1; min-width: 0; }
+    .alert-name { font-weight: 700; font-size: 0.88rem; color: var(--text-primary, #0f172a); }
+    .alert-cours { font-size: 0.78rem; color: var(--text-muted, #64748b); margin: 1px 0; }
+    .alert-stats { display: flex; gap: 0.75rem; font-size: 0.78rem; font-weight: 700; margin-top: 3px; }
+    .alert-reason {
+        font-size: 0.68rem; font-weight: 800; text-transform: uppercase;
+        background: #ef4444; color: white; padding: 2px 7px; border-radius: 5px;
+        letter-spacing: 0.04em; display: inline-flex; align-items: center; gap: 3px;
+        margin-top: 4px; align-self: flex-start;
+    }
+
+    .all-ok {
+        padding: 2rem; text-align: center; color: var(--text-muted, #64748b);
+        display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+    }
+    .all-ok i { font-size: 2rem; color: #10b981; }
+
+    /* Button helpers */
+    .btn-ah-secondary {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 0.65rem 1.3rem; border-radius: 12px;
+        background: rgba(255,255,255,0.08);
+        border: 1.5px solid rgba(255,255,255,0.18);
+        color: rgba(255,255,255,0.9); font-weight: 600; font-size: 0.85rem;
+        text-decoration: none; backdrop-filter: blur(8px); transition: all 0.2s;
+    }
+    .btn-ah-secondary:hover { background: rgba(255,255,255,0.15); color: #a5b4fc; }
+</style>
+
+<div class="page-shell" style="max-width: 1200px; margin: 0 auto; padding-top: 2rem;">
+
+    <!-- ═══════════════════ HERO ═══════════════════ -->
+    <div class="analytics-hero">
+        <div class="ah-left">
+            <span class="ah-eyebrow"><i class="ti ti-chart-dots"></i> Analytics</span>
+            <h1 class="ah-title">Tableau de bord <span>Formateur</span></h1>
+            <p class="ah-subtitle">Vue d'ensemble de la progression et des performances de vos élèves.</p>
+        </div>
+        <div class="ah-right">
+            <a href="{% url 'apprentissage:espace_formateur' %}" class="btn-ah-secondary">
+                <i class="ti ti-arrow-left"></i> Espace Formateur
+            </a>
+            <a href="{% url 'apprentissage:formateur_notes' %}" class="btn-ah-secondary">
+                <i class="ti ti-users"></i> Notes détaillées
+            </a>
         </div>
     </div>
 
-    <!-- KPI Cards -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem;">
-        <!-- Card 1 -->
-        <div class="carte" style="background: var(--surface); border: 1px solid var(--bordure); border-radius: 12px; padding: 1.5rem; display: flex; align-items: center; gap: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
-            <div style="font-size: 2.5rem; color: var(--brand-primary);">📚</div>
+    <!-- ═══════════════════ KPI CARDS ═══════════════════ -->
+    <div class="kpi-grid">
+        <div class="kpi-card teal">
+            <div class="kpi-icon teal"><i class="ti ti-books"></i></div>
             <div>
-                <div style="font-size: 1.8rem; font-weight: 800; line-height: 1.1; color: var(--text-primary);">{{ stats.total_cours }}</div>
-                <div style="font-size: 0.85rem; color: var(--texte-secondaire); text-transform: uppercase; font-weight: 600; margin-top: 2px;">Cours créés</div>
+                <div class="kpi-num">{{ stats.total_cours }}</div>
+                <div class="kpi-label">Cours créés</div>
             </div>
         </div>
-        <!-- Card 2 -->
-        <div class="carte" style="background: var(--surface); border: 1px solid var(--bordure); border-radius: 12px; padding: 1.5rem; display: flex; align-items: center; gap: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
-            <div style="font-size: 2.5rem; color: var(--accent-teal, #10b981);">🎓</div>
+        <div class="kpi-card blue">
+            <div class="kpi-icon blue"><i class="ti ti-school"></i></div>
             <div>
-                <div style="font-size: 1.8rem; font-weight: 800; line-height: 1.1; color: var(--text-primary);">{{ stats.total_inscrits }}</div>
-                <div style="font-size: 0.85rem; color: var(--texte-secondaire); text-transform: uppercase; font-weight: 600; margin-top: 2px;">Élèves uniques</div>
+                <div class="kpi-num">{{ stats.total_inscrits }}</div>
+                <div class="kpi-label">Élèves uniques</div>
             </div>
         </div>
-        <!-- Card 3 -->
-        <div class="carte" style="background: var(--surface); border: 1px solid var(--bordure); border-radius: 12px; padding: 1.5rem; display: flex; align-items: center; gap: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
-            <div style="font-size: 2.5rem; color: #f59e0b;">🏆</div>
+        <div class="kpi-card amber">
+            <div class="kpi-icon amber"><i class="ti ti-trophy"></i></div>
             <div>
-                <div style="font-size: 1.8rem; font-weight: 800; line-height: 1.1; color: var(--text-primary);">{{ stats.score_qcm_moyen_global }}%</div>
-                <div style="font-size: 0.85rem; color: var(--texte-secondaire); text-transform: uppercase; font-weight: 600; margin-top: 2px;">Moyenne QCM Globale</div>
+                <div class="kpi-num">{{ stats.score_qcm_moyen_global }}%</div>
+                <div class="kpi-label">Moyenne QCM Globale</div>
+            </div>
+        </div>
+        <div class="kpi-card red">
+            <div class="kpi-icon red"><i class="ti ti-alert-triangle"></i></div>
+            <div>
+                <div class="kpi-num">{{ diff_students|length }}</div>
+                <div class="kpi-label">En difficulté</div>
             </div>
         </div>
     </div>
 
-    <!-- Charts Section -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 2rem; margin-bottom: 2.5rem;">
-        <!-- Chart 1: Complétion par cours -->
-        <div class="carte" style="background: var(--surface); border: 1px solid var(--bordure); border-radius: 12px; padding: 1.5rem;">
-            <h3 style="margin-top: 0; margin-bottom: 1.5rem; font-size: 1.15rem; font-weight: 700; color: var(--text-primary);">📈 Complétion moyenne par cours (%)</h3>
-            <div style="position: relative; height: 300px; width: 100%;">
+    <!-- ═══════════════════ CHARTS ═══════════════════ -->
+    <div class="charts-row">
+        <div class="chart-card">
+            <h3 class="chart-card-title">
+                <i class="ti ti-chart-bar"></i> Complétion moyenne par cours (%)
+            </h3>
+            <div style="position: relative; height: 260px;">
                 <canvas id="completionChart"></canvas>
             </div>
         </div>
-        
-        <!-- Chart 2: Répartition de progression -->
-        <div class="carte" style="background: var(--surface); border: 1px solid var(--bordure); border-radius: 12px; padding: 1.5rem;">
-            <h3 style="margin-top: 0; margin-bottom: 1.5rem; font-size: 1.15rem; font-weight: 700; color: var(--text-primary);">👥 Répartition globale des progressions</h3>
-            <div style="position: relative; height: 300px; width: 100%;">
+        <div class="chart-card">
+            <h3 class="chart-card-title">
+                <i class="ti ti-chart-pie"></i> Répartition globale des progressions
+            </h3>
+            <div style="position: relative; height: 260px;">
                 <canvas id="repartitionChart"></canvas>
             </div>
         </div>
     </div>
 
-    <!-- Layout 2 Colonnes : Détail des cours (Gauche) & Élèves en difficulté (Droite) -->
-    <div style="display: grid; grid-template-columns: 3fr 2fr; gap: 2rem; margin-bottom: 2.5rem; align-items: start; min-width: 0;">
-        <!-- Détail par cours -->
-        <div class="carte" style="background: var(--surface); border: 1px solid var(--bordure); border-radius: 12px; padding: 1.5rem; overflow-x: auto;">
-            <h3 style="margin-top: 0; margin-bottom: 1.25rem; font-size: 1.15rem; font-weight: 700; color: var(--text-primary);">📋 Détails de vos cours</h3>
-            <table style="width: 100%; border-collapse: collapse;">
+    <!-- ═══════════════════ BOTTOM GRID ═══════════════════ -->
+    <div class="bottom-grid">
+
+        <!-- Details table -->
+        <div class="data-card">
+            <div class="data-card-header">
+                <i class="ti ti-table"></i> Détails de vos cours
+            </div>
+            <table class="data-table">
                 <thead>
-                    <tr style="background: var(--surface-alt, rgba(0,0,0,0.02)); border-bottom: 1px solid var(--bordure); text-align: left; font-size: 0.8rem; color: var(--texte-secondaire); text-transform: uppercase;">
-                        <th style="padding: 0.75rem 1rem;">Cours</th>
-                        <th style="padding: 0.75rem 1rem; text-align: center;">Inscrits</th>
-                        <th style="padding: 0.75rem 1rem; text-align: center;">Complétion</th>
-                        <th style="padding: 0.75rem 1rem; text-align: center;">Moyenne QCM</th>
+                    <tr>
+                        <th>Cours</th>
+                        <th>Inscrits</th>
+                        <th>Complétion</th>
+                        <th>Moy. QCM</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for item in stats.details_cours %}
-                    <tr style="border-bottom: 1px solid var(--bordure);">
-                        <td style="padding: 1rem; font-weight: 600;">{{ item.titre }}</td>
-                        <td style="padding: 1rem; text-align: center;">{{ item.nb_inscrits }}</td>
-                        <td style="padding: 1rem; text-align: center;">{{ item.taux_completion_moyen }}%</td>
-                        <td style="padding: 1rem; text-align: center; font-weight: 700; color: var(--brand-primary);">{{ item.score_qcm_moyen }}%</td>
+                    <tr>
+                        <td>{{ item.titre }}</td>
+                        <td><span style="font-weight: 700; color: #3b82f6;">{{ item.nb_inscrits }}</span></td>
+                        <td>
+                            <div class="td-completion-bar">
+                                <div class="mini-bar-track">
+                                    <div class="mini-bar-fill" style="width: {{ item.taux_completion_moyen }}%;"></div>
+                                </div>
+                                <span style="font-weight: 700; font-size: 0.82rem; color: var(--text-primary, #0f172a);">{{ item.taux_completion_moyen }}%</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span style="font-weight: 800; font-size: 0.92rem; color: {% if item.score_qcm_moyen >= 80 %}#10b981{% elif item.score_qcm_moyen >= 50 %}#f59e0b{% else %}#ef4444{% endif %};">
+                                {{ item.score_qcm_moyen }}%
+                            </span>
+                        </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="4" style="padding: 2rem; text-align: center; color: var(--texte-secondaire);">Aucun cours créé pour le moment.</td>
+                        <td colspan="4" style="padding: 2.5rem; text-align: center; color: var(--text-muted, #94a3b8);">
+                            Aucun cours créé pour le moment.
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
 
-        <!-- Élèves en difficulté -->
-        <div class="carte" style="background: var(--surface); border: 1px solid var(--bordure); border-radius: 12px; padding: 1.5rem;">
-            <h3 style="margin-top: 0; margin-bottom: 1.25rem; font-size: 1.15rem; font-weight: 700; color: #ef4444; display: flex; align-items: center; gap: 0.5rem;">
-                ⚠️ Élèves en difficulté
-            </h3>
-            <div style="max-height: 400px; overflow-y: auto; display: flex; flex-direction: column; gap: 1rem;">
+        <!-- Alert students -->
+        <div class="alert-card">
+            <div class="alert-card-header">
+                <i class="ti ti-alert-circle"></i> Élèves en difficulté
+            </div>
+            <div style="max-height: 420px; overflow-y: auto;">
                 {% for item in diff_students %}
-                <div style="padding: 0.85rem; border: 1px solid var(--bordure); border-radius: 8px; background: rgba(239, 68, 68, 0.03);">
-                    <div style="font-weight: 600; font-size: 0.95rem; color: var(--text-primary);">{{ item.get_full_name }}</div>
-                    <div style="font-size: 0.8rem; color: var(--texte-secondaire); margin: 0.2rem 0;">Cours : {{ item.cours_titre }}</div>
-                    <div style="display: flex; gap: 1rem; font-size: 0.8rem; font-weight: 600; margin-top: 0.35rem;">
-                        <span style="color: var(--brand-primary);">Progression: {{ item.progression }}%</span>
-                        <span style="color: #ef4444;">QCM: {% if item.moyenne_qcm %}{{ item.moyenne_qcm }}%{% else %}N/A{% endif %}</span>
+                <div class="alert-student-row">
+                    <div class="alert-avatar">{{ item.get_full_name|slice:":1"|upper }}</div>
+                    <div class="alert-info">
+                        <div class="alert-name">{{ item.get_full_name }}</div>
+                        <div class="alert-cours"><i class="ti ti-book"></i> {{ item.cours_titre }}</div>
+                        <div class="alert-stats">
+                            <span style="color: #0D9488;">{{ item.progression }}% complet</span>
+                            <span style="color: #ef4444;">QCM: {% if item.moyenne_qcm %}{{ item.moyenne_qcm }}%{% else %}N/A{% endif %}</span>
+                        </div>
+                        <span class="alert-reason"><i class="ti ti-alert-triangle"></i> {{ item.raison }}</span>
                     </div>
-                    <span style="display: inline-block; background: #ef4444; color: white; font-size: 0.7rem; padding: 0.1rem 0.4rem; border-radius: 4px; font-weight: 600; margin-top: 0.5rem;">
-                        {{ item.raison }}
-                    </span>
                 </div>
                 {% empty %}
-                <div style="padding: 2rem; text-align: center; color: var(--texte-secondaire);">
-                    🎉 Aucun élève sous le seuil d'alerte.
+                <div class="all-ok">
+                    <i class="ti ti-circle-check"></i>
+                    <strong style="color: #10b981;">Excellent !</strong>
+                    <p style="margin: 0; font-size: 0.85rem;">Aucun élève sous le seuil d'alerte.</p>
                 </div>
                 {% endfor %}
             </div>
         </div>
+
     </div>
-</section>
+
+</div><!-- /.page-shell -->
 
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // Prepare Data
-    const coursLabels = [];
-    const completionData = [];
-    const repartitionData = { '0-25': 0, '25-50': 0, '50-75': 0, '75-100': 0 };
+    const isDark = document.documentElement.classList.contains('dark') ||
+                   document.body.classList.contains('dark-mode');
+    const gridColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
+    const textColor = isDark ? 'rgba(255,255,255,0.6)' : '#64748b';
 
-    {% for item in stats.details_cours %}
-        coursLabels.push("{{ item.titre|escapejs }}");
-        completionData.push({{ item.taux_completion_moyen }});
-        repartitionData['0-25'] += {{ item.repartition.0-25 }};
-        repartitionData['25-50'] += {{ item.repartition.25-50 }};
-        repartitionData['50-75'] += {{ item.repartition.50-75 }};
-        repartitionData['75-100'] += {{ item.repartition.75-100 }};
-    {% endfor %}
+    const _chartData = JSON.parse('{{ chart_data_json|escapejs }}');
+    const coursLabels  = _chartData.labels;
+    const completionData = _chartData.completion;
+    const _rep = _chartData.repartition;  // [0-25, 25-50, 50-75, 75-100]
 
-    // Chart 1: Completion rate per course
-    const ctx1 = document.getElementById('completionChart').getContext('2d');
-    new Chart(ctx1, {
+
+    // Bar chart
+    new Chart(document.getElementById('completionChart').getContext('2d'), {
         type: 'bar',
         data: {
             labels: coursLabels,
             datasets: [{
-                label: 'Taux de complétion moyen',
+                label: 'Complétion (%)',
                 data: completionData,
-                backgroundColor: 'rgba(20, 184, 166, 0.75)',
-                borderColor: 'rgb(20, 184, 166)',
+                backgroundColor: 'rgba(13,148,136,0.7)',
+                borderColor: 'rgba(13,148,136,1)',
                 borderWidth: 1,
-                borderRadius: 4
+                borderRadius: 6,
+                borderSkipped: false,
             }]
         },
         options: {
-            responsive: true,
-            maintainAspectRatio: false,
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
             scales: {
+                x: { grid: { color: gridColor }, ticks: { color: textColor, font: { size: 11 } } },
                 y: {
-                    beginAtZero: true,
-                    max: 100,
-                    ticks: { callback: value => value + '%' }
+                    beginAtZero: true, max: 100,
+                    grid: { color: gridColor },
+                    ticks: { color: textColor, callback: v => v + '%' }
                 }
             }
         }
     });
 
-    // Chart 2: Distribution of progressions
-    const ctx2 = document.getElementById('repartitionChart').getContext('2d');
-    new Chart(ctx2, {
+    // Doughnut chart
+    new Chart(document.getElementById('repartitionChart').getContext('2d'), {
         type: 'doughnut',
         data: {
             labels: ['0-25%', '25-50%', '50-75%', '75-100%'],
             datasets: [{
-                data: [
-                    repartitionData['0-25'],
-                    repartitionData['25-50'],
-                    repartitionData['50-75'],
-                    repartitionData['75-100']
-                ],
-                backgroundColor: [
-                    '#ef4444',
-                    '#f59e0b',
-                    '#3b82f6',
-                    '#10b981'
-                ]
+                data: [_rep[0], _rep[1], _rep[2], _rep[3]],
+                backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6', '#10b981'],
+                borderWidth: 2,
+                borderColor: isDark ? '#1e293b' : '#ffffff',
             }]
         },
         options: {
-            responsive: true,
-            maintainAspectRatio: false,
+            responsive: true, maintainAspectRatio: false,
+            cutout: '60%',
             plugins: {
-                legend: { position: 'bottom' }
+                legend: { position: 'bottom', labels: { color: textColor, padding: 12, font: { size: 12 } } }
             }
         }
     });

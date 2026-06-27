@@ -1,301 +1,662 @@
 {% extends 'base.html' %}
-
 {% block title %}Calendrier scolaire{% endblock %}
 
 {% block content %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css">
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/locales/fr.global.min.js"></script>
+
 <style>
-    /* Section & Cards layout */
-    .evt-card {
-        background: var(--bg-surface, #ffffff);
-        border: 1px solid var(--border-light, #e2e8f0);
-        border-radius: 16px;
-        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02), 0 2px 4px -1px rgba(0,0,0,0.01);
-        transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
-                    box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
-                    border-color 0.25s cubic-bezier(0.16, 1, 0.3, 1),
-                    border-left-width 0.25s ease;
-        position: relative;
-        overflow: hidden;
-    }
-    
-    /* Dynamic left highlight bar depending on the event type */
-    .evt-card-devoir {
-        border-left: 5px solid #ef4444;
-    }
-    .evt-card-devoir:hover {
-        border-left-width: 8px;
-        box-shadow: 0 12px 20px -8px rgba(239, 68, 68, 0.15), var(--shadow-md);
-        border-color: rgba(239, 68, 68, 0.3);
-    }
-    
-    .evt-card-session {
-        border-left: 5px solid #3b82f6;
-    }
-    .evt-card-session:hover {
-        border-left-width: 8px;
-        box-shadow: 0 12px 20px -8px rgba(59, 130, 246, 0.15), var(--shadow-md);
-        border-color: rgba(59, 130, 246, 0.3);
-    }
-    
-    .evt-card-examen {
-        border-left: 5px solid #f59e0b;
-    }
-    .evt-card-examen:hover {
-        border-left-width: 8px;
-        box-shadow: 0 12px 20px -8px rgba(245, 158, 11, 0.15), var(--shadow-md);
-        border-color: rgba(245, 158, 11, 0.3);
-    }
-    
-    .evt-card-default {
-        border-left: 5px solid #10b981;
-    }
-    .evt-card-default:hover {
-        border-left-width: 8px;
-        box-shadow: 0 12px 20px -8px rgba(16, 185, 129, 0.15), var(--shadow-md);
-        border-color: rgba(16, 185, 129, 0.3);
-    }
+/* ══ Layout ══════════════════════════════════════════ */
+.cal-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1.5rem 1.25rem 2rem;
+}
+.cal-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+.cal-top h1 {
+    font-size: 1.6rem;
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    color: var(--text-primary);
+    margin: 0 0 0.2rem;
+}
+.cal-top p { margin: 0; font-size: 0.85rem; color: var(--text-muted); }
 
-    .evt-card:hover {
-        transform: translateY(-3px);
-    }
+.cal-layout {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 1.25rem;
+    align-items: start;
+}
+@media (max-width: 820px) {
+    .cal-layout { grid-template-columns: 1fr; }
+}
 
-    /* Tear-sheet Calendar Date Badge */
-    .calendar-badge {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: flex-start;
-        background: var(--bg-surface, #ffffff);
-        width: 66px;
-        height: 74px;
-        border-radius: 12px;
-        border: 1px solid var(--border-light, #e2e8f0);
-        box-shadow: var(--shadow-sm, 0 1px 2px rgba(0,0,0,0.05));
-        overflow: hidden;
-        flex-shrink: 0;
-        transition: transform 0.2s ease;
-    }
-    .calendar-badge-header {
-        width: 100%;
-        text-align: center;
-        padding: 4px 0;
-        font-size: 0.7rem;
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-        color: #ffffff;
-    }
-    .calendar-badge-day {
-        font-size: 1.45rem;
-        font-weight: 800;
-        color: var(--text-primary);
-        line-height: 1.2;
-        margin-top: 5px;
-    }
-    
-    /* Tear-sheet color variants based on type */
-    .calendar-badge-devoir .calendar-badge-header {
-        background: linear-gradient(135deg, #f87171, #ef4444);
-    }
-    .calendar-badge-session .calendar-badge-header {
-        background: linear-gradient(135deg, #60a5fa, #3b82f6);
-    }
-    .calendar-badge-examen .calendar-badge-header {
-        background: linear-gradient(135deg, #fbbf24, #f59e0b);
-    }
-    .calendar-badge-default .calendar-badge-header {
-        background: linear-gradient(135deg, #34d399, #10b981);
-    }
+/* ══ Calendar card ════════════════════════════════════ */
+.cal-card {
+    background: var(--bg-surface, #fff);
+    border: 1px solid var(--border-light, #e8edf3);
+    border-radius: 16px;
+    padding: 1.25rem 1.25rem 1.5rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+}
 
-    /* Tag / Pill Badge styling */
-    .evt-badge-custom {
-        font-size: 0.72rem;
-        padding: 0.25rem 0.6rem;
-        border-radius: 6px;
-        font-weight: 700;
-        letter-spacing: 0.03em;
-        text-transform: uppercase;
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-    }
-    .evt-badge-devoir {
-        background: rgba(239, 68, 68, 0.07);
-        color: #ef4444;
-        border: 1px solid rgba(239, 68, 68, 0.15);
-    }
-    .evt-badge-session {
-        background: rgba(59, 130, 246, 0.07);
-        color: #3b82f6;
-        border: 1px solid rgba(59, 130, 246, 0.15);
-    }
-    .evt-badge-examen {
-        background: rgba(245, 158, 11, 0.07);
-        color: #f59e0b;
-        border: 1px solid rgba(245, 158, 11, 0.15);
-    }
-    .evt-badge-default {
-        background: rgba(16, 185, 129, 0.07);
-        color: #10b981;
-        border: 1px solid rgba(16, 185, 129, 0.15);
-    }
+/* ══ FullCalendar overrides ═══════════════════════════ */
+.fc {
+    --fc-border-color: var(--border-light, #e8edf3);
+    --fc-today-bg-color: rgba(13,148,136,0.05);
+    --fc-page-bg-color: transparent;
+    font-family: inherit;
+    font-size: 0.85rem;
+}
+.fc .fc-toolbar { margin-bottom: 1rem !important; gap: 0.5rem; flex-wrap: wrap; }
+.fc .fc-toolbar-title {
+    font-size: 1rem !important;
+    font-weight: 800;
+    color: var(--text-primary);
+}
+/* Nav buttons */
+.fc .fc-button {
+    background: var(--bg-page, #f1f5f9) !important;
+    border: 1px solid var(--border-light, #e2e8f0) !important;
+    color: var(--text-secondary) !important;
+    border-radius: 8px !important;
+    font-size: 0.78rem !important;
+    font-weight: 700 !important;
+    padding: 0.35rem 0.75rem !important;
+    box-shadow: none !important;
+    transition: all 0.15s !important;
+}
+.fc .fc-button:hover {
+    background: var(--border-light, #e2e8f0) !important;
+    color: var(--text-primary) !important;
+}
+.fc .fc-today-button {
+    background: var(--primary, #0d9488) !important;
+    border-color: var(--primary, #0d9488) !important;
+    color: #fff !important;
+}
+.fc .fc-button-primary:not(:disabled).fc-button-active {
+    background: var(--primary, #0d9488) !important;
+    border-color: var(--primary, #0d9488) !important;
+    color: #fff !important;
+}
+/* Column headers */
+.fc .fc-col-header-cell { background: transparent; padding: 0.5rem 0 !important; }
+.fc .fc-col-header-cell-cushion {
+    font-size: 0.7rem !important;
+    font-weight: 800 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--text-muted, #94a3b8);
+    text-decoration: none !important;
+}
+/* Weekend header red */
+.fc .fc-day-sat .fc-col-header-cell-cushion,
+.fc .fc-day-sun .fc-col-header-cell-cushion { color: #ef4444 !important; }
 
-    /* Meta Chips */
-    .evt-meta-chip {
-        font-size: 0.78rem;
-        color: var(--text-secondary);
-        font-weight: 600;
-        background: var(--bg-page, #f8fafc);
-        border: 1px solid var(--border-light, #e2e8f0);
-        padding: 0.2rem 0.65rem;
-        border-radius: 20px;
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        transition: all 0.2s ease;
-    }
-    .evt-meta-chip:hover {
-        background: var(--border-light, #cbd5e1);
-        color: var(--text-primary);
-    }
+/* Day numbers */
+.fc .fc-daygrid-day-number {
+    font-size: 0.8rem !important;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-decoration: none !important;
+    padding: 5px 7px !important;
+    line-height: 1;
+}
+.fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
+    background: var(--primary, #0d9488);
+    color: #fff;
+    border-radius: 50%;
+    width: 24px; height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 !important;
+}
+/* Selected day border */
+.fc .fc-daygrid-day.fc-day-selected {
+    outline: 2px solid var(--primary, #0d9488);
+    outline-offset: -2px;
+    border-radius: 4px;
+}
+/* Grid borders */
+.fc-theme-standard td, .fc-theme-standard th {
+    border-color: var(--border-light, #e8edf3) !important;
+}
+/* Events */
+.fc-event {
+    border: none !important;
+    border-radius: 5px !important;
+    font-size: 0.7rem !important;
+    font-weight: 700 !important;
+    padding: 1px 6px !important;
+    cursor: pointer !important;
+    color: #fff !important;
+    transition: opacity 0.15s !important;
+}
+.fc-event * { color: #fff !important; }
+.fc-event:hover { opacity: 0.82 !important; }
+.fc-daygrid-event-dot { display: none !important; }
+.fc-more-link {
+    font-size: 0.68rem !important;
+    font-weight: 700 !important;
+    color: var(--primary, #0d9488) !important;
+}
+.fc-popover {
+    border-radius: 12px !important;
+    border: 1px solid var(--border-light, #e8edf3) !important;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.1) !important;
+}
+.fc-popover-header {
+    border-radius: 12px 12px 0 0 !important;
+    background: var(--bg-page, #f8fafc) !important;
+    font-weight: 700 !important;
+    font-size: 0.75rem !important;
+}
+/* List view */
+.fc-list-event:hover td { background: var(--bg-page) !important; }
+.fc-list-day-cushion {
+    background: var(--bg-page, #f1f5f9) !important;
+    font-weight: 700 !important;
+    font-size: 0.75rem !important;
+}
+.fc-list-event-dot { border-radius: 50% !important; }
 
-    /* Actions buttons */
-    .evt-btn-edit {
-        background: rgba(13, 148, 136, 0.05);
-        border: 1px solid rgba(13, 148, 136, 0.15);
-        color: var(--primary, #0D9488);
-        padding: 0.5rem 0.95rem;
-        font-size: 0.82rem;
-        border-radius: 8px;
-        font-weight: 600;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .evt-btn-edit:hover {
-        background: var(--primary, #0D9488) !important;
-        color: #ffffff !important;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 10px rgba(13, 148, 136, 0.25);
-    }
-    
-    .evt-btn-delete {
-        background: rgba(239, 68, 68, 0.05);
-        border: 1px solid rgba(239, 68, 68, 0.15);
-        color: #ef4444;
-        padding: 0.5rem 0.95rem;
-        font-size: 0.82rem;
-        border-radius: 8px;
-        font-weight: 600;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        cursor: pointer;
-        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .evt-btn-delete:hover {
-        background: #ef4444 !important;
-        color: #ffffff !important;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 10px rgba(239, 68, 68, 0.25);
-    }
+/* ══ Sidebar ══════════════════════════════════════════ */
+.sidebar { display: flex; flex-direction: column; gap: 1rem; }
+
+/* Stat cards 2×2 */
+.stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+}
+.stat-card {
+    background: var(--bg-surface, #fff);
+    border: 1px solid var(--border-light, #e8edf3);
+    border-radius: 14px;
+    padding: 1rem 1.1rem 0.9rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+}
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    border-radius: 14px 14px 0 0;
+}
+.stat-card.red::before   { background: #ef4444; }
+.stat-card.blue::before  { background: #3b82f6; }
+.stat-card.amber::before { background: #f59e0b; }
+.stat-card.teal::before  { background: #10b981; }
+
+.stat-num {
+    font-size: 1.8rem;
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 0.2rem;
+}
+.stat-card.red   .stat-num { color: #ef4444; }
+.stat-card.blue  .stat-num { color: #3b82f6; }
+.stat-card.amber .stat-num { color: #f59e0b; }
+.stat-card.teal  .stat-num { color: #10b981; }
+
+.stat-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-muted);
+}
+
+/* Legend card */
+.legend-card {
+    background: var(--bg-surface, #fff);
+    border: 1px solid var(--border-light, #e8edf3);
+    border-radius: 14px;
+    padding: 1rem 1.25rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+}
+.legend-card h4 {
+    font-size: 0.68rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    margin: 0 0 0.75rem;
+}
+.legend-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+.legend-row:last-child { margin-bottom: 0; }
+.ldot {
+    width: 10px; height: 10px;
+    border-radius: 3px;
+    flex-shrink: 0;
+}
+
+/* Date detail card */
+.detail-card {
+    background: var(--bg-surface, #fff);
+    border: 1px solid var(--border-light, #e8edf3);
+    border-radius: 14px;
+    padding: 1rem 1.25rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+    min-height: 120px;
+}
+.detail-date-num {
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--primary, #0d9488);
+    line-height: 1;
+}
+.detail-date-label { font-size: 0.82rem; font-weight: 700; color: var(--text-primary); }
+.detail-date-sub   { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.9rem; }
+
+.detail-evt {
+    border-left: 3px solid #ccc;
+    border-radius: 0 8px 8px 0;
+    background: var(--bg-page, #f8fafc);
+    padding: 0.55rem 0.75rem;
+    margin-bottom: 0.5rem;
+}
+.detail-evt:last-child { margin-bottom: 0; }
+.detail-evt-type {
+    font-size: 0.63rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-bottom: 0.18rem;
+}
+.detail-evt-title {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.15rem;
+}
+.detail-evt-meta {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    align-items: center;
+}
+.detail-empty {
+    text-align: center;
+    padding: 1.5rem 0;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+}
+
+/* ══ Header buttons ═══════════════════════════════════ */
+.btn-new {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--primary, #0d9488);
+    color: #fff;
+    padding: 0.55rem 1.15rem;
+    border-radius: 10px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 2px 8px rgba(13,148,136,0.25);
+    transition: all 0.15s;
+    white-space: nowrap;
+}
+.btn-new:hover { background: #0f766e; color: #fff; transform: translateY(-1px); }
+
+/* ══ Modal ════════════════════════════════════════════ */
+#evt-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(15,23,42,0.45);
+    backdrop-filter: blur(3px);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+}
+#evt-overlay.open { display: flex; }
+#evt-modal {
+    background: var(--bg-surface, #fff);
+    border-radius: 18px;
+    width: 90%; max-width: 440px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+    overflow: hidden;
+    animation: popIn 0.2s cubic-bezier(0.16,1,0.3,1);
+    position: relative;
+}
+@keyframes popIn {
+    from { transform: translateY(16px) scale(0.97); opacity: 0; }
+    to   { transform: none; opacity: 1; }
+}
+#modal-stripe { height: 4px; }
+#modal-body { padding: 1.4rem 1.6rem 1.6rem; }
+#modal-close {
+    position: absolute; top: 0.85rem; right: 0.85rem;
+    width: 28px; height: 28px;
+    background: var(--bg-page); border: none; border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: var(--text-muted); font-size: 0.85rem;
+    transition: all 0.15s;
+}
+#modal-close:hover { background: var(--border-light); }
+.modal-pill {
+    font-size: 0.65rem; font-weight: 800; text-transform: uppercase;
+    letter-spacing: 0.08em; padding: 0.2rem 0.6rem; border-radius: 20px;
+    display: inline-block; margin-bottom: 0.65rem;
+}
+#modal-title { font-size: 1.1rem; font-weight: 800; color: var(--text-primary); margin: 0 0 0.35rem; padding-right: 2rem; }
+#modal-desc  { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6; margin: 0 0 0.9rem; }
+.mchips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1.1rem; }
+.mchip {
+    font-size: 0.73rem; font-weight: 600;
+    color: var(--text-secondary);
+    background: var(--bg-page); border: 1px solid var(--border-light);
+    padding: 0.2rem 0.65rem; border-radius: 20px;
+    display: inline-flex; align-items: center; gap: 4px;
+}
+.mfooter {
+    display: flex; gap: 0.45rem; justify-content: flex-end;
+    padding-top: 0.9rem; border-top: 1px solid var(--border-light);
+}
+.mbtn {
+    padding: 0.45rem 1rem; border-radius: 8px;
+    font-size: 0.78rem; font-weight: 700;
+    display: inline-flex; align-items: center; gap: 4px;
+    cursor: pointer; text-decoration: none;
+    border: 1px solid transparent; transition: all 0.15s;
+}
+.mbtn-edit   { background: rgba(13,148,136,.07); border-color: rgba(13,148,136,.2); color: var(--primary,#0d9488); }
+.mbtn-edit:hover { background: var(--primary,#0d9488); color:#fff; }
+.mbtn-del    { background: rgba(239,68,68,.07); border-color: rgba(239,68,68,.2); color:#ef4444; }
+.mbtn-del:hover { background:#ef4444; color:#fff; }
 </style>
 
-<section class="page-shell" style="max-width: 1000px; margin: 0 auto; padding: 2rem 1rem;">
-    <!-- En-tête -->
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+<div class="cal-page">
+
+    <!-- Top header -->
+    <div class="cal-top">
         <div>
-            <h1>📅 Calendrier &amp; Événements</h1>
-            <p class="muted" style="margin: 0.25rem 0 0 0;">Retrouvez l'agenda des devoirs, examens et sessions de cours.</p>
+            <h1>Calendrier</h1>
+            <p>Visualisez les devoirs, examens et sessions planifiés.</p>
         </div>
         {% if can_manage %}
-        <div>
-            <a href="{% url 'apprentissage:creer_evenement' %}" class="btn" style="text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; background: var(--brand-primary, var(--primary)); color: white; padding: 0.6rem 1.2rem; border-radius: 8px; font-weight: 600; transition: transform 0.2s, background-color 0.2s;">
-                <i class="ti ti-plus" style="font-size: 14px;"></i> Créer un événement
-            </a>
-        </div>
+        <a href="{% url 'apprentissage:creer_evenement' %}" class="btn-new">
+            <i class="ti ti-plus"></i> Créer un événement
+        </a>
         {% endif %}
     </div>
 
-    <!-- Agenda list -->
-    <div class="carte" style="padding: 1.75rem; background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: 16px; box-shadow: var(--shadow-sm);">
-        <h2 style="font-size: 1.35rem; font-weight: 800; margin-bottom: 1.75rem; border-bottom: 2px solid var(--border-light); padding-bottom: 0.85rem; color: var(--text-primary); display: flex; align-items: center; justify-content: space-between;">
-            <span style="display: inline-flex; align-items: center; gap: 8px;">
-                📅 Événements à venir
-            </span>
-            <span style="background: var(--primary-light, #ccfbf1); color: var(--primary, #0d9488); font-size: 0.8rem; padding: 0.2rem 0.6rem; border-radius: 20px; font-weight: 700;">
-                {{ events|length }} événement{{ events|pluralize }}
-            </span>
-        </h2>
-        
-        <div style="display: flex; flex-direction: column; gap: 1.25rem;">
-            {% for evt in events %}
-            <div class="evt-card {% if evt.type == 'ECHEANCE_DEVOIR' %}evt-card-devoir{% elif evt.type == 'SESSION' %}evt-card-session{% elif evt.type == 'EXAMEN' %}evt-card-examen{% else %}evt-card-default{% endif %}" style="display: flex; gap: 1.5rem; padding: 1.5rem; align-items: center; justify-content: space-between; flex-wrap: wrap;">
-                <div style="display: flex; gap: 1.5rem; align-items: center; flex: 1; min-width: 280px;">
-                    <!-- Date badge in teardrop style -->
-                    <div class="calendar-badge {% if evt.type == 'ECHEANCE_DEVOIR' %}calendar-badge-devoir{% elif evt.type == 'SESSION' %}calendar-badge-session{% elif evt.type == 'EXAMEN' %}calendar-badge-examen{% else %}calendar-badge-default{% endif %}">
-                        <div class="calendar-badge-header">{{ evt.date_debut|date:"M" }}</div>
-                        <div class="calendar-badge-day">{{ evt.date_debut|date:"d" }}</div>
-                    </div>
-                    
-                    <!-- Info -->
-                    <div style="flex: 1; min-width: 0;">
-                        <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-                            <span class="evt-badge-custom {% if evt.type == 'ECHEANCE_DEVOIR' %}evt-badge-devoir{% elif evt.type == 'SESSION' %}evt-badge-session{% elif evt.type == 'EXAMEN' %}evt-badge-examen{% else %}evt-badge-default{% endif %}">
-                                {{ evt.get_type_display }}
-                            </span>
-                            {% if evt.cours %}
-                            <span class="evt-meta-chip">
-                                <i class="ti ti-book" style="font-size: 14px; color: var(--primary);"></i> {{ evt.cours.titre }}
-                            </span>
-                            {% endif %}
-                            {% if evt.classe %}
-                            <span class="evt-meta-chip">
-                                <i class="ti ti-school" style="font-size: 14px; color: var(--secondary);"></i> {{ evt.classe.nom }}
-                            </span>
-                            {% endif %}
-                        </div>
-                        <h3 style="font-size: 1.15rem; margin: 0.6rem 0 0.25rem 0; font-weight: 700; color: var(--text-primary); letter-spacing: -0.01em;">{{ evt.titre_affiche }}</h3>
-                        <p style="margin: 0 0 0.5rem 0; font-size: 0.9rem; color: var(--text-secondary); line-height: 1.5;">{{ evt.description_affichee }}</p>
-                        
-                        <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; font-size: 0.8rem; color: var(--text-muted); font-weight: 500; margin-top: 0.6rem;">
-                            <span class="evt-meta-chip" style="font-size: 0.75rem; border-color: transparent; background: transparent; padding: 0;">
-                                <i class="ti ti-clock" style="font-size: 14px; color: var(--primary);"></i>
-                                {{ evt.date_debut|date:"H:i" }}{% if evt.date_fin %} - {{ evt.date_fin|date:"H:i" }}{% endif %}
-                            </span>
-                        </div>
-                    </div>
-                </div>
+    <!-- Two-column layout -->
+    <div class="cal-layout">
 
-                <!-- Actions for managers -->
-                {% if can_manage and evt.createur == request.user or request.user.is_superuser or request.user.role == 'ADMIN' %}
-                <div style="display: flex; gap: 0.5rem; align-items: center; flex-shrink: 0;">
-                    <a href="{% url 'apprentissage:modifier_evenement' evt.id %}" class="evt-btn-edit">
-                        <i class="ti ti-edit"></i> Modifier
-                    </a>
-                    <form action="{% url 'apprentissage:supprimer_evenement' evt.id %}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet événement ?');" style="margin: 0; display: inline-flex;">
-                        {% csrf_token %}
-                        <button type="submit" class="evt-btn-delete">
-                            <i class="ti ti-trash"></i> Supprimer
-                        </button>
-                    </form>
+        <!-- LEFT : calendar -->
+        <div class="cal-card">
+            <div id="calendar"></div>
+        </div>
+
+        <!-- RIGHT : sidebar -->
+        <div class="sidebar">
+
+            <!-- Stats 2×2 -->
+            <div class="stat-grid">
+                <div class="stat-card red">
+                    <div class="stat-num" id="cnt-devoirs">–</div>
+                    <div class="stat-label">Devoirs</div>
                 </div>
-                {% endif %}
+                <div class="stat-card blue">
+                    <div class="stat-num" id="cnt-sessions">–</div>
+                    <div class="stat-label">Sessions</div>
+                </div>
+                <div class="stat-card amber">
+                    <div class="stat-num" id="cnt-examens">–</div>
+                    <div class="stat-label">Examens</div>
+                </div>
+                <div class="stat-card teal">
+                    <div class="stat-num" id="cnt-autres">–</div>
+                    <div class="stat-label">Autres</div>
+                </div>
             </div>
-            {% empty %}
-            <div style="padding: 4rem 2rem; text-align: center; color: var(--text-muted); border: 2px dashed var(--border-light); border-radius: 16px; background: rgba(0,0,0,0.01); display: flex; flex-direction: column; align-items: center; gap: 1rem;">
-                <div style="width: 64px; height: 64px; background: var(--bg-page); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: var(--text-muted); box-shadow: var(--shadow-sm);">
-                    📅
+
+            <!-- Legend -->
+            <div class="legend-card">
+                <h4>Légende</h4>
+                <div class="legend-row"><span class="ldot" style="background:#ef4444;"></span> Devoir / Échéance</div>
+                <div class="legend-row"><span class="ldot" style="background:#3b82f6;"></span> Session de cours</div>
+                <div class="legend-row"><span class="ldot" style="background:#f59e0b;"></span> Examen</div>
+                <div class="legend-row"><span class="ldot" style="background:#10b981;"></span> Autre événement</div>
+            </div>
+
+            <!-- Selected date detail -->
+            <div class="detail-card" id="detail-panel">
+                <div style="display:flex; align-items:baseline; gap:0.6rem; margin-bottom:0.2rem;">
+                    <div class="detail-date-num" id="detail-day">–</div>
+                    <div>
+                        <div class="detail-date-label" id="detail-month"></div>
+                        <div class="detail-date-sub"   id="detail-weekday"></div>
+                    </div>
                 </div>
-                <div>
-                    <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.25rem;">Aucun événement planifié</h3>
-                    <p style="font-size: 0.88rem; max-width: 320px; margin: 0 auto;">Il n'y a aucun devoir, examen ou session planifié pour le moment.</p>
+                <div id="detail-events">
+                    <div class="detail-empty">Cliquez sur un jour pour voir les événements.</div>
                 </div>
             </div>
-            {% endfor %}
+
         </div>
     </div>
-</section>
+</div>
+
+<!-- Modal -->
+<div id="evt-overlay" onclick="if(event.target===this)closeModal()">
+    <div id="evt-modal">
+        <div id="modal-stripe"></div>
+        <div id="modal-body">
+            <button id="modal-close" onclick="closeModal()"><i class="ti ti-x"></i></button>
+            <div id="modal-pill" class="modal-pill"></div>
+            <h3 id="modal-title"></h3>
+            <p id="modal-desc"></p>
+            <div id="modal-chips" class="mchips"></div>
+            <div id="modal-footer" class="mfooter" style="display:none;">
+                <a id="modal-edit" href="#" class="mbtn mbtn-edit"><i class="ti ti-edit"></i> Modifier</a>
+                <form id="modal-del" method="POST" style="margin:0;" onsubmit="return confirm('Supprimer cet événement ?');">
+                    {% csrf_token %}
+                    <button type="submit" class="mbtn mbtn-del"><i class="ti ti-trash"></i> Supprimer</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const EVENTS_URL = "{% url 'apprentissage:calendrier_events_json' %}";
+const COLOR_MAP = {
+    'ECHEANCE_DEVOIR': '#ef4444',
+    'SESSION':         '#3b82f6',
+    'EXAMEN':          '#f59e0b',
+    'AUTRE':           '#10b981',
+};
+const FR_DAYS = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+const FR_MONTHS = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+
+let cal;
+let allEvents = [];
+let selectedDate = null;
+
+document.addEventListener('DOMContentLoaded', () => {
+    cal = new FullCalendar.Calendar(document.getElementById('calendar'), {
+        locale: 'fr',
+        firstDay: 1,
+        initialView: 'dayGridMonth',
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,listMonth'
+        },
+        buttonText: { today: "Aujourd'hui", month: 'Mois', list: 'Liste' },
+        height: 'auto',
+        dayMaxEvents: 3,
+        moreLinkText: n => `+${n}`,
+        nowIndicator: true,
+        events: EVENTS_URL,
+
+        eventDidMount(info) {
+            const now = new Date();
+            const end = info.event.end || info.event.start;
+            const isPast = end < now;
+            if (isPast) {
+                info.el.style.background = '#d1d5db';
+                info.el.style.opacity = '0.55';
+                info.el.style.textDecoration = 'line-through';
+                info.el.style.boxShadow = 'none';
+            } else {
+                const c = info.event.backgroundColor;
+                info.el.style.background = c;
+                info.el.style.boxShadow = `0 1px 4px ${c}44`;
+            }
+        },
+
+        eventsSet(events) {
+            allEvents = events;
+            updateStats(events);
+        },
+
+        dateClick(info) {
+            // Remove previous selected class
+            document.querySelectorAll('.fc-day-selected').forEach(el => el.classList.remove('fc-day-selected'));
+            info.dayEl.classList.add('fc-day-selected');
+            selectedDate = info.date;
+            renderDetail(info.date);
+        },
+
+        eventClick(info) {
+            openModal(info.event);
+        },
+    });
+    cal.render();
+
+    // Show today's events on load
+    renderDetail(new Date());
+});
+
+function updateStats(events) {
+    const now = new Date();
+    let d=0, s=0, e=0, a=0;
+    events.forEach(ev => {
+        const end = ev.end || ev.start;
+        if (end >= now) {
+            const t = ev.extendedProps.rawType || '';
+            if (t === 'ECHEANCE_DEVOIR') d++;
+            else if (t === 'SESSION') s++;
+            else if (t === 'EXAMEN') e++;
+            else a++;
+        }
+    });
+    document.getElementById('cnt-devoirs').textContent  = d;
+    document.getElementById('cnt-sessions').textContent = s;
+    document.getElementById('cnt-examens').textContent  = e;
+    document.getElementById('cnt-autres').textContent   = a;
+}
+
+function localDateStr(date) {
+    const d = new Date(date);
+    return d.getFullYear() + '-' +
+        String(d.getMonth()+1).padStart(2,'0') + '-' +
+        String(d.getDate()).padStart(2,'0');
+}
+
+function renderDetail(date) {
+    const d = date instanceof Date ? date : new Date(date);
+    document.getElementById('detail-day').textContent     = d.getDate();
+    document.getElementById('detail-month').textContent   = FR_MONTHS[d.getMonth()] + ' ' + d.getFullYear();
+    document.getElementById('detail-weekday').textContent = FR_DAYS[d.getDay()];
+
+    const dayStr = localDateStr(d);
+    const dayEvts = allEvents.filter(ev => {
+        const s = ev.start ? localDateStr(ev.start) : null;
+        return s === dayStr;
+    });
+
+    const container = document.getElementById('detail-events');
+    if (!dayEvts.length) {
+        container.innerHTML = '<div class="detail-empty">Aucun événement ce jour.</div>';
+        return;
+    }
+    container.innerHTML = dayEvts.map(ev => {
+        const color = ev.backgroundColor || '#10b981';
+        const p = ev.extendedProps;
+        const time = ev.start ? ev.start.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}) : '';
+        return `
+        <div class="detail-evt" style="border-left-color:${color};">
+            <div class="detail-evt-type" style="color:${color};">${p.type||'Événement'}</div>
+            <div class="detail-evt-title">${ev.title}</div>
+            <div class="detail-evt-meta">
+                ${time ? `<span><i class="ti ti-clock" style="font-size:11px;"></i> ${time}</span>` : ''}
+                ${p.cours  ? `<span><i class="ti ti-book" style="font-size:11px;"></i> ${p.cours}</span>` : ''}
+                ${p.classe ? `<span><i class="ti ti-school" style="font-size:11px;"></i> ${p.classe}</span>` : ''}
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function openModal(event) {
+    const p = event.extendedProps;
+    const color = event.backgroundColor || '#10b981';
+
+    document.getElementById('modal-stripe').style.background = color;
+    const pill = document.getElementById('modal-pill');
+    pill.textContent = p.type || 'Événement';
+    pill.style.background = color + '18';
+    pill.style.color = color;
+
+    document.getElementById('modal-title').textContent = event.title;
+    const descEl = document.getElementById('modal-desc');
+    descEl.textContent = p.description || '';
+    descEl.style.display = p.description ? '' : 'none';
+
+    const chips = document.getElementById('modal-chips');
+    chips.innerHTML = '';
+    const start = event.start;
+    if (start) {
+        chips.innerHTML += `<span class="mchip"><i class="ti ti-calendar" style="color:${color}"></i>${start.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</span>`;
+        if (start.getHours() || start.getMinutes()) {
+            const t = start.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+            const e = event.end ? event.end.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}) : null;
+            chips.innerHTML += `<span class="mchip"><i class="ti ti-clock" style="color:${color}"></i>${t}${e?' → '+e:''}</span>`;
+        }
+    }
+    if (p.cours)  chips.innerHTML += `<span class="mchip"><i class="ti ti-book"></i>${p.cours}</span>`;
+    if (p.classe) chips.innerHTML += `<span class="mchip"><i class="ti ti-school"></i>${p.classe}</span>`;
+
+    const footer = document.getElementById('modal-footer');
+    if (p.can_manage) {
+        document.getElementById('modal-edit').href = p.edit_url;
+        document.getElementById('modal-del').action = p.delete_url;
+        footer.style.display = 'flex';
+    } else {
+        footer.style.display = 'none';
+    }
+    document.getElementById('evt-overlay').classList.add('open');
+}
+
+function closeModal() {
+    document.getElementById('evt-overlay').classList.remove('open');
+}
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
+</script>
 {% endblock %}

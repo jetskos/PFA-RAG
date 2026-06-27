@@ -5,6 +5,14 @@
     hx-swap="outerHTML"
 >
     {% csrf_token %}
+    {% if form.non_field_errors %}
+    <div style="background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2); border-radius: 10px; padding: 0.75rem 1rem; color: #dc2626; font-size: 0.85rem; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 8px;">
+        <i class="ti ti-alert-circle"></i>
+        {{ form.non_field_errors.0 }}
+    </div>
+    {% endif %}
     {{ form.as_p }}
-    <button class="btn" type="submit">S'inscrire</button>
+    <button class="btn-auth-submit" type="submit">
+        <i class="ti ti-user-plus"></i> Créer mon compte
+    </button>
 </form>

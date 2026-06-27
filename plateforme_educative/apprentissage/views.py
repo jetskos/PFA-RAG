@@ -183,7 +183,9 @@ def gerer_chapitre(request, chapitre_id):
         'can_edit_documents': True,
     }
 
-    return render(request, 'apprentissage/partials/chapitre_detail.html', context)
+    if request.headers.get('HX-Request') == 'true' and request.headers.get('HX-Target') != 'zone-principale':
+        return render(request, 'apprentissage/partials/chapitre_detail.html', context)
+    return render(request, 'apprentissage/gerer_chapitre.html', context)
 
 
 @login_required
@@ -363,20 +365,30 @@ def liste_cours(request):
         
     cours_list = cours_list.order_by('-date_creation').distinct()
     
+    # Pagination
+    from django.core.paginator import Paginator
+    paginator = Paginator(cours_list, 12) # 12 items per page for grids
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
+
     # Récupérer les niveaux pour le filtre
     niveaux = Niveau.objects.all()
     
+    # HTMX Partial Rendering for search/filters/pagination
+    if request.headers.get('HX-Target') == 'catalog-grid':
+        return render(request, 'apprentissage/partials/liste_cours.html', {
+            'cours_list': page_obj,
+            'page_obj': page_obj
+        })
+    
     context = {
-        'cours_list': cours_list,
+        'cours_list': page_obj,
+        'page_obj': page_obj,
+        'niveaux': niveaux,
         'titre_page': 'Catalogue des cours',
         'q': q,
-        'niveaux': niveaux,
         'niveau_filter_id': niveau_filter_id
     }
-    
-    if request.headers.get('HX-Request') == 'true' and request.headers.get('HX-Target') == 'catalog-grid':
-        return render(request, 'apprentissage/partials/liste_cours.html', context)
-    
     return render(request, 'apprentissage/liste_cours.html', context)
 
 
@@ -475,6 +487,16 @@ def detail_cours(request, cours_id):
                 etudiant=request.user,
                 chapitre=chapitre_initial
             ).exists()
+            
+            progression_obj = Progression.objects.filter(
+                etudiant=request.user,
+                cours=cours
+            ).first()
+            progression_totale = progression_obj.pourcentage if progression_obj else 0
+        else:
+            progression_totale = 0
+    else:
+        progression_totale = 0
 
     context = {
         'cours': cours,
@@ -488,9 +510,10 @@ def detail_cours(request, cours_id):
         'chapitre_initial_precedent': chapitre_precedent,
         'chapitre_initial_suivant': chapitre_suivant,
         'chapitre_initial_is_complete': chapitre_initial_is_complete,
+        'progression_totale': progression_totale,
     }
     
-    if request.headers.get('HX-Request') == 'true':
+    if request.headers.get('HX-Request') == 'true' and request.headers.get('HX-Target') != 'zone-principale':
         return render(request, 'apprentissage/partials/detail_cours.html', context)
     
     return render(request, 'apprentissage/detail_cours.html', context)
@@ -576,7 +599,7 @@ def detail_chapitre(request, cours_id, chapitre_id):
         'session_assistant': session_assistant,
     }
     
-    if request.headers.get('HX-Request') == 'true':
+    if request.headers.get('HX-Request') == 'true' and request.headers.get('HX-Target') != 'zone-principale':
         return render(request, 'apprentissage/partials/detail_chapitre.html', context)
     
     return render(request, 'apprentissage/detail_chapitre.html', context)
@@ -1148,16 +1171,41 @@ def formateur_analytics_dashboard(request):
     
     # Trouver les élèves en difficulté pour chaque cours
     from apprentissage.models import Cours
+    import json
     mes_cours = Cours.objects.filter(createur=request.user)
     diff_students = []
     for cours in mes_cours:
         diff_students.extend(stats_eleves_en_difficulte(cours))
-        
+    
+    # Pre-serialize chart data as JSON to avoid Django template hyphen issue
+    chart_labels = []
+    chart_completion = []
+    chart_rep_0_25 = 0
+    chart_rep_25_50 = 0
+    chart_rep_50_75 = 0
+    chart_rep_75_100 = 0
+    for item in stats.get('details_cours', []):
+        chart_labels.append(item['titre'][:30])
+        chart_completion.append(item['taux_completion_moyen'])
+        rep = item.get('repartition', {})
+        chart_rep_0_25   += rep.get('0-25', 0)
+        chart_rep_25_50  += rep.get('25-50', 0)
+        chart_rep_50_75  += rep.get('50-75', 0)
+        chart_rep_75_100 += rep.get('75-100', 0)
+
+    chart_data_json = json.dumps({
+        'labels': chart_labels,
+        'completion': chart_completion,
+        'repartition': [chart_rep_0_25, chart_rep_25_50, chart_rep_50_75, chart_rep_75_100],
+    })
+
     return render(request, 'apprentissage/analytics_formateur.html', {
         'stats': stats,
         'diff_students': diff_students,
         'titre_page': "Tableau de Bord Analytics Formateur",
+        'chart_data_json': chart_data_json,
     })
+
 
 @login_required
 def formateur_analytics_data(request):
@@ -1221,6 +1269,61 @@ def calendrier_view(request):
         'can_manage': can_manage,
     })
 
+
+@login_required
+def calendrier_events_json(request):
+    from django.http import JsonResponse
+    user = request.user
+    if user.is_superuser or user.role == 'ADMIN':
+        events = Evenement.objects.all().select_related('cours', 'classe', 'createur')
+    elif user.is_formateur:
+        events = Evenement.objects.filter(
+            Q(createur=user) | Q(cours__createur=user)
+        ).select_related('cours', 'classe', 'createur')
+    else:
+        # Élève
+        classe = getattr(user, 'classe', None)
+        niveau = getattr(classe, 'niveau', None) if classe else None
+        if niveau:
+            events = Evenement.objects.filter(
+                Q(classe=classe) | Q(cours__niveau=niveau, cours__actif=True)
+            ).select_related('cours', 'classe', 'createur')
+        else:
+            events = Evenement.objects.filter(
+                classe__isnull=True,
+                cours__isnull=True
+            ).select_related('cours', 'classe', 'createur')
+            
+    events_data = []
+    can_manage_global = user.is_superuser or user.role == 'ADMIN' or user.is_formateur
+    
+    color_map = {
+        'ECHEANCE_DEVOIR': '#ef4444',
+        'SESSION':         '#3b82f6',
+        'EXAMEN':          '#f59e0b',
+        'AUTRE':           '#10b981',
+    }
+
+    for ev in events:
+        can_manage_ev = can_manage_global and (user.is_superuser or user.role == 'ADMIN' or ev.createur == user)
+        events_data.append({
+            'id': str(ev.id),
+            'title': ev.titre,
+            'start': ev.date_debut.isoformat() if ev.date_debut else None,
+            'end': ev.date_fin.isoformat() if ev.date_fin else None,
+            'backgroundColor': color_map.get(ev.type, '#10b981'),
+            'extendedProps': {
+                'rawType': ev.type,
+                'type': ev.get_type_display(),
+                'description': ev.description,
+                'cours': ev.cours.titre if ev.cours else None,
+                'classe': ev.classe.nom if ev.classe else None,
+                'can_manage': can_manage_ev,
+                'edit_url': reverse('apprentissage:modifier_evenement', args=[ev.id]) if can_manage_ev else '',
+                'delete_url': reverse('apprentissage:supprimer_evenement', args=[ev.id]) if can_manage_ev else '',
+            }
+        })
+    return JsonResponse(events_data, safe=False)
 
 @login_required
 def creer_evenement(request):

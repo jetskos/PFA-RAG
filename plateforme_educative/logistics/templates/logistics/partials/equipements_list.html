@@ -1,5 +1,5 @@
-{% if equipements.exists %}
-    {% for eq in equipements %}
+{% if page_obj.object_list %}
+    {% for eq in page_obj %}
     <div class="eq-item">
         <div class="eq-item-indicator 
             {% if not eq.est_actif %}ind-en_panne
@@ -45,6 +45,9 @@
         {% endif %}
     </div>
     {% endfor %}
+    
+    {% include 'core/partials/pagination.html' with hx_target='#equipements-list' %}
+
 {% else %}
     <div class="logi-empty" style="min-height: 200px;">
         <div class="logi-empty-ring" style="width: 50px; height: 50px; font-size: 1.2rem;"><i class="ti ti-package"></i></div>

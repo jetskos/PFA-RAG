@@ -1,5 +1,5 @@
-{% if cours_list %}
-    {% for cours in cours_list %}
+{% if page_obj.object_list %}
+    {% for cours in page_obj %}
     <div class="course-cover-card">
         <!-- Cover Image -->
         <div class="cover-image">
@@ -49,6 +49,10 @@
         </div>
     </div>
     {% endfor %}
+    
+    <div style="grid-column: 1 / -1; width: 100%;">
+        {% include 'core/partials/pagination.html' with hx_target='#catalog-grid' %}
+    </div>
 {% else %}
     <div style="grid-column: 1 / -1; text-align: center; padding: 5rem 2rem; background: var(--bg-surface, white); border-radius: 20px; border: 2px dashed var(--border-default, #cbd5e1);">
         <div style="width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg, rgba(13,148,136,0.1), rgba(59,130,246,0.1)); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem;">
