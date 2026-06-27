@@ -1,6 +1,6 @@
-{% if ateliers.exists %}
+{% if page_obj.object_list %}
 <div class="logi-eq-list">
-    {% for atelier in ateliers %}
+    {% for atelier in page_obj %}
     <div class="eq-item">
         <!-- Status indicator line on top -->
         <div class="eq-item-status-bar
@@ -73,6 +73,8 @@
     </div>
     {% endfor %}
 </div>
+
+{% include 'core/partials/pagination.html' with hx_target='#ateliers-list' %}
 
 {% else %}
 <div class="eq-empty-state">

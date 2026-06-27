@@ -1,160 +1,792 @@
 {% extends 'base.html' %}
-
-{% block title %}Espace Formateur{% endblock %}
+{% load static %}
+{% block title %}Espace Formateur | EduTech{% endblock %}
 
 {% block content %}
-<section class="page-shell formateur-shell">
-    <div class="page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0;">
-        <div>
-            <p class="eyebrow">Apprentissage</p>
-            <h1>Espace Formateur</h1>
-            <p>Gérez vos cours, devoirs et évaluations pédagogiques.</p>
+<style>
+    /* ═══════════════════════════════════════════
+       ESPACE FORMATEUR — PREMIUM REDESIGN
+    ═══════════════════════════════════════════ */
+
+    /* ── HERO BANNER ── */
+    .formateur-hero {
+        position: relative;
+        border-radius: 24px;
+        overflow: hidden;
+        padding: 2.5rem 2.5rem 2rem;
+        margin-bottom: 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 2rem;
+        background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #1a3a2a 100%);
+        box-shadow: 0 20px 60px -10px rgba(13, 148, 136, 0.3);
+    }
+    .formateur-hero::before {
+        content: '';
+        position: absolute;
+        top: -80px; right: -80px;
+        width: 320px; height: 320px;
+        background: radial-gradient(circle, rgba(13,148,136,0.25) 0%, transparent 70%);
+        border-radius: 50%;
+        animation: glowPulse 5s ease-in-out infinite alternate;
+    }
+    .formateur-hero::after {
+        content: '';
+        position: absolute;
+        bottom: -60px; left: 30%;
+        width: 200px; height: 200px;
+        background: radial-gradient(circle, rgba(59,130,246,0.18) 0%, transparent 70%);
+        border-radius: 50%;
+        animation: glowPulse 7s ease-in-out infinite alternate-reverse;
+    }
+    @keyframes glowPulse {
+        from { transform: scale(1); opacity: 0.5; }
+        to   { transform: scale(1.3); opacity: 1; }
+    }
+    .hero-left { position: relative; z-index: 2; }
+    .hero-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(13,148,136,0.2);
+        border: 1px solid rgba(13,148,136,0.4);
+        color: #2dd4bf;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        padding: 4px 12px;
+        border-radius: 999px;
+        margin-bottom: 0.75rem;
+        backdrop-filter: blur(8px);
+    }
+    .hero-title {
+        font-size: 2.2rem;
+        font-weight: 900;
+        color: #fff;
+        letter-spacing: -0.03em;
+        line-height: 1.2;
+        margin: 0 0 0.5rem;
+    }
+    .hero-title span {
+        background: linear-gradient(90deg, #2dd4bf, #60a5fa);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    .hero-subtitle {
+        color: rgba(255,255,255,0.65);
+        font-size: 0.95rem;
+        margin: 0;
+        line-height: 1.5;
+    }
+
+    /* Hero stats */
+    .hero-stats-row {
+        display: flex;
+        gap: 1.25rem;
+        margin-top: 1.5rem;
+    }
+    .hero-stat-pill {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255,255,255,0.07);
+        border: 1px solid rgba(255,255,255,0.12);
+        border-radius: 12px;
+        padding: 0.5rem 1rem;
+        backdrop-filter: blur(8px);
+    }
+    .hero-stat-pill i { color: #2dd4bf; font-size: 1.1rem; }
+    .hero-stat-pill span { color: rgba(255,255,255,0.9); font-size: 0.88rem; font-weight: 600; }
+    .hero-stat-pill strong { color: #fff; font-weight: 800; }
+
+    /* Hero actions */
+    .hero-right {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        flex-shrink: 0;
+    }
+    .btn-hero-primary {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0.75rem 1.5rem;
+        border-radius: 14px;
+        background: linear-gradient(135deg, #0D9488, #0F766E);
+        color: white;
+        font-weight: 700;
+        font-size: 0.9rem;
+        text-decoration: none;
+        transition: all 0.25s;
+        box-shadow: 0 6px 20px rgba(13,148,136,0.35);
+        white-space: nowrap;
+    }
+    .btn-hero-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 28px rgba(13,148,136,0.45);
+        filter: brightness(1.08);
+    }
+    .btn-hero-secondary {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0.7rem 1.5rem;
+        border-radius: 14px;
+        background: rgba(255,255,255,0.08);
+        border: 1.5px solid rgba(255,255,255,0.18);
+        color: rgba(255,255,255,0.9);
+        font-weight: 600;
+        font-size: 0.88rem;
+        text-decoration: none;
+        backdrop-filter: blur(8px);
+        transition: all 0.2s;
+        white-space: nowrap;
+    }
+    .btn-hero-secondary:hover {
+        background: rgba(255,255,255,0.15);
+        border-color: rgba(45,212,191,0.4);
+        color: #2dd4bf;
+    }
+
+    /* ── TAB NAV ── */
+    .tabs-nav {
+        display: flex;
+        gap: 0.5rem;
+        border-bottom: 2px solid var(--border-light, #e8edf3);
+        margin-bottom: 2rem;
+        padding-bottom: 0;
+    }
+    .tab-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0.75rem 1.5rem;
+        border-radius: 12px 12px 0 0;
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: var(--text-muted, #64748b);
+        cursor: pointer;
+        border: none;
+        background: transparent;
+        transition: all 0.2s;
+        position: relative;
+        margin-bottom: -2px;
+        border-bottom: 2px solid transparent;
+    }
+    .tab-item:hover {
+        color: #0D9488;
+        background: rgba(13,148,136,0.05);
+    }
+    .tab-item.active {
+        color: #0D9488;
+        border-bottom: 2px solid #0D9488;
+        background: rgba(13,148,136,0.06);
+    }
+    .tab-item .tab-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 20px;
+        height: 20px;
+        padding: 0 6px;
+        border-radius: 999px;
+        font-size: 0.7rem;
+        font-weight: 800;
+        background: var(--bg-surface-alt, #f1f5f9);
+        color: var(--text-muted, #64748b);
+    }
+    .tab-item.active .tab-badge {
+        background: #0D9488;
+        color: white;
+    }
+    .tab-item.has-alert .tab-badge {
+        background: #ef4444;
+        color: white;
+        animation: pulseRed 2s ease infinite;
+    }
+    @keyframes pulseRed {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
+        50% { box-shadow: 0 0 0 4px rgba(239,68,68,0.2); }
+    }
+
+    /* ── COURSE CARDS GRID ── */
+    .formateur-courses-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .fc-card {
+        background: var(--bg-surface, #fff);
+        border-radius: 20px;
+        overflow: hidden;
+        border: 1.5px solid var(--border-light, #e8edf3);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+        display: flex;
+        flex-direction: column;
+        position: relative;
+    }
+    .fc-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 16px 40px rgba(0,0,0,0.1);
+        border-color: rgba(13,148,136,0.3);
+    }
+
+    /* Cover */
+    .fc-cover {
+        position: relative;
+        height: 170px;
+        background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+        overflow: hidden;
+        display: flex;
+        align-items: flex-end;
+        padding: 1rem;
+    }
+    .fc-cover img {
+        position: absolute;
+        inset: 0;
+        width: 100%; height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s ease;
+    }
+    .fc-card:hover .fc-cover img {
+        transform: scale(1.05);
+    }
+    .fc-cover-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.1) 60%);
+    }
+    .fc-cover-icon {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .fc-cover-icon i {
+        font-size: 3.5rem;
+        color: rgba(255,255,255,0.12);
+    }
+    .fc-cover-meta {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        width: 100%;
+    }
+    .fc-badge-niveau {
+        background: rgba(255,255,255,0.95);
+        color: #0f172a;
+        font-size: 0.68rem;
+        font-weight: 800;
+        padding: 3px 10px;
+        border-radius: 8px;
+        letter-spacing: 0.04em;
+    }
+    .fc-badge-statut {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        padding: 3px 10px;
+        border-radius: 8px;
+    }
+    .fc-badge-statut.published {
+        background: rgba(16,185,129,0.85);
+        color: white;
+    }
+    .fc-badge-statut.draft {
+        background: rgba(0,0,0,0.5);
+        color: rgba(255,255,255,0.8);
+        border: 1px solid rgba(255,255,255,0.15);
+    }
+
+    /* Card body */
+    .fc-body {
+        padding: 1.25rem 1.35rem;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    .fc-title {
+        font-size: 1.05rem;
+        font-weight: 800;
+        color: var(--text-primary, #0f172a);
+        line-height: 1.3;
+        margin: 0;
+    }
+
+    .fc-info-row {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    .fc-info-item {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 0.8rem;
+        color: var(--text-muted, #64748b);
+        font-weight: 500;
+    }
+    .fc-info-item i { font-size: 0.95rem; }
+
+    .fc-progress-bar-wrap {
+        background: var(--bg-surface-alt, #f1f5f9);
+        border-radius: 999px;
+        height: 4px;
+        overflow: hidden;
+    }
+    .fc-progress-bar {
+        height: 100%;
+        background: linear-gradient(90deg, #0D9488, #2dd4bf);
+        border-radius: 999px;
+        transition: width 0.6s ease;
+    }
+
+    /* Card footer */
+    .fc-footer {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        padding: 0.9rem 1.35rem;
+        border-top: 1px solid var(--border-light, #f1f5f9);
+        background: var(--bg-surface-alt, #f8fafc);
+    }
+    .fc-btn-manage {
+        flex: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 0.6rem 1rem;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #0D9488, #0F766E);
+        color: white;
+        font-weight: 700;
+        font-size: 0.85rem;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+    .fc-btn-manage:hover {
+        filter: brightness(1.1);
+        transform: translateY(-1px);
+    }
+    .fc-btn-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px; height: 36px;
+        border-radius: 8px;
+        border: 1.5px solid var(--border-default, #cbd5e1);
+        color: var(--text-secondary, #475569);
+        background: var(--bg-surface, white);
+        text-decoration: none;
+        transition: all 0.2s;
+        cursor: pointer;
+    }
+    .fc-btn-icon:hover {
+        border-color: #0D9488;
+        color: #0D9488;
+        background: rgba(13,148,136,0.05);
+    }
+    .fc-btn-icon.danger:hover {
+        border-color: #ef4444;
+        color: #ef4444;
+        background: rgba(239,68,68,0.05);
+    }
+
+    /* ── DEVOIRS TABLE ── */
+    .devoirs-container {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    .devoir-row {
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        padding: 1.1rem 1.5rem;
+        background: var(--bg-surface, #fff);
+        border: 1.5px solid var(--border-light, #e8edf3);
+        border-radius: 16px;
+        transition: all 0.2s;
+        text-decoration: none;
+        position: relative;
+        overflow: hidden;
+    }
+    .devoir-row:hover {
+        border-color: rgba(13,148,136,0.3);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+        transform: translateX(3px);
+    }
+    .devoir-row.urgent {
+        border-color: rgba(239,68,68,0.3);
+    }
+    .devoir-row.urgent::before {
+        content: '';
+        position: absolute;
+        left: 0; top: 0; bottom: 0;
+        width: 4px;
+        background: linear-gradient(180deg, #ef4444, #dc2626);
+        border-radius: 4px 0 0 4px;
+    }
+    .devoir-icon {
+        width: 44px; height: 44px;
+        border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+        background: rgba(13,148,136,0.1);
+        color: #0D9488;
+    }
+    .devoir-row.urgent .devoir-icon {
+        background: rgba(239,68,68,0.1);
+        color: #ef4444;
+    }
+    .devoir-info { flex: 1; min-width: 0; }
+    .devoir-title {
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: var(--text-primary, #0f172a);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .devoir-meta {
+        font-size: 0.8rem;
+        color: var(--text-muted, #64748b);
+        margin-top: 2px;
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    .devoir-meta-item {
+        display: flex;
+        align-items: center;
+        gap: 3px;
+    }
+    .deadline-badge {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 6px;
+        background: rgba(239,68,68,0.1);
+        color: #ef4444;
+    }
+
+    .devoir-stat {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2px;
+        flex-shrink: 0;
+    }
+    .devoir-stat-num {
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: var(--text-primary, #0f172a);
+        line-height: 1;
+    }
+    .devoir-stat-label {
+        font-size: 0.65rem;
+        font-weight: 600;
+        color: var(--text-muted, #64748b);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    .devoir-action {
+        flex-shrink: 0;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 0.55rem 1.1rem;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #0D9488, #0F766E);
+        color: white;
+        font-weight: 700;
+        font-size: 0.82rem;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+    .devoir-action:hover {
+        filter: brightness(1.1);
+        transform: translateY(-1px);
+    }
+    .badge-to-grade {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 3px 10px;
+        border-radius: 999px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        animation: pulseRed 2s ease infinite;
+        background: rgba(239,68,68,0.12);
+        color: #ef4444;
+        border: 1px solid rgba(239,68,68,0.3);
+    }
+    .badge-ok {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 3px 10px;
+        border-radius: 999px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        background: rgba(16,185,129,0.1);
+        color: #10b981;
+        border: 1px solid rgba(16,185,129,0.25);
+    }
+
+    /* ── EMPTY STATE ── */
+    .ef-empty {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        padding: 4rem 2rem;
+        border: 2px dashed var(--border-light, #e8edf3);
+        border-radius: 20px;
+        background: var(--bg-surface-alt, #f8fafc);
+        grid-column: 1 / -1;
+        text-align: center;
+    }
+    .ef-empty-icon {
+        width: 72px; height: 72px;
+        border-radius: 20px;
+        background: rgba(13,148,136,0.1);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 2rem;
+        color: #0D9488;
+    }
+    .ef-empty h3 {
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: var(--text-primary, #0f172a);
+        margin: 0;
+    }
+    .ef-empty p {
+        color: var(--text-muted, #64748b);
+        font-size: 0.9rem;
+        margin: 0;
+        max-width: 340px;
+    }
+</style>
+
+<div class="page-shell" style="max-width: 1200px; margin: 0 auto; padding-top: 2rem;">
+
+    <!-- ═══════════════════ HERO ═══════════════════ -->
+    <div class="formateur-hero">
+        <div class="hero-left">
+            <span class="hero-eyebrow">
+                <i class="ti ti-school"></i> Espace Formateur
+            </span>
+            <h1 class="hero-title">
+                Bienvenue, <span>{{ request.user.get_full_name|default:request.user.email }}</span>
+            </h1>
+            <p class="hero-subtitle">Gérez vos cours, suivez vos devoirs et pilotez l'apprentissage de vos étudiants.</p>
+
+            <div class="hero-stats-row">
+                <div class="hero-stat-pill">
+                    <i class="ti ti-books"></i>
+                    <span><strong>{{ mes_cours|length }}</strong> cours</span>
+                </div>
+                <div class="hero-stat-pill">
+                    <i class="ti ti-clipboard-list"></i>
+                    <span><strong>{{ devoirs|length }}</strong> devoirs</span>
+                </div>
+                {% with urgent_count=devoirs|length %}
+                <div class="hero-stat-pill">
+                    <i class="ti ti-users"></i>
+                    <span>Mes étudiants</span>
+                </div>
+                {% endwith %}
+            </div>
         </div>
-        <div style="display: flex; gap: 0.75rem;">
-            <a href="{% url 'apprentissage:formateur_notes' %}" class="btn-outline">
-                <i class="ti ti-chart-bar" style="font-size: 1.1rem;"></i>
-                <span>Notes des étudiants</span>
+
+        <div class="hero-right">
+            <a href="{% url 'apprentissage:nouveau_cours' %}" class="btn-hero-primary">
+                <i class="ti ti-plus"></i> Créer un cours
             </a>
-            <a href="{% url 'apprentissage:nouveau_cours' %}" class="btn-primary">
-                <i class="ti ti-plus" style="font-size: 18px;"></i> Créer un cours
+            <a href="{% url 'apprentissage:formateur_notes' %}" class="btn-hero-secondary">
+                <i class="ti ti-chart-bar"></i> Notes des étudiants
             </a>
         </div>
     </div>
 
-    <!-- Onglets de Navigation -->
-    <div class="tabs-container">
-        <button onclick="switchTab('tab-cours', this)" class="tab-btn active">
-            <i class="ti ti-books"></i> Mes Cours
+    <!-- ═══════════════════ TABS NAV ═══════════════════ -->
+    {% with urgent_devoirs=devoirs|length %}
+    <div class="tabs-nav">
+        <button class="tab-item active" onclick="switchFormTab('tab-cours', this)" id="btn-tab-cours">
+            <i class="ti ti-books"></i>
+            Mes Cours
+            <span class="tab-badge">{{ mes_cours|length }}</span>
         </button>
-        <button onclick="switchTab('tab-devoirs', this)" class="tab-btn">
-            <i class="ti ti-clipboard-list"></i> Devoirs reçus
+        <button class="tab-item {% for d in devoirs %}{% if d.soumissions_a_noter > 0 %}has-alert{% endif %}{% endfor %}" onclick="switchFormTab('tab-devoirs', this)" id="btn-tab-devoirs">
+            <i class="ti ti-clipboard-list"></i>
+            Devoirs
+            <span class="tab-badge">{{ devoirs|length }}</span>
         </button>
     </div>
+    {% endwith %}
 
-    <!-- Contenu Onglet : Cours -->
-    <div id="tab-cours" class="tab-content" style="display: block;">
-        <div class="courses-grid">
+    <!-- ═══════════════════ TAB: COURS ═══════════════════ -->
+    <div id="tab-cours" class="tab-pane" style="display: block;">
+        <div class="formateur-courses-grid">
             {% for cours in mes_cours %}
-                <div class="course-card" style="padding: 0; overflow: hidden; display: flex; flex-direction: column;">
+            <div class="fc-card">
+                <!-- Cover -->
+                <div class="fc-cover">
                     {% if cours.image_couverture %}
-                    <img src="{{ cours.image_couverture.url }}" alt="Couverture {{ cours.titre }}" style="width: 100%; height: 160px; object-fit: cover;">
+                        <img src="{{ cours.image_couverture.url }}" alt="{{ cours.titre }}">
+                        <div class="fc-cover-overlay"></div>
                     {% else %}
-                    <div style="width: 100%; height: 160px; background: linear-gradient(135deg, var(--surface), var(--bg-hover)); display: flex; align-items: center; justify-content: center;">
-                        <i class="ti ti-books" style="font-size: 3rem; color: var(--border);"></i>
-                    </div>
+                        <div class="fc-cover-icon"><i class="ti ti-books"></i></div>
                     {% endif %}
-                    <div style="padding: 1.5rem; display: flex; flex-direction: column; flex-grow: 1;">
-                        <div class="course-card-header">
-                            <h3 class="course-card-title" style="margin: 0;">{{ cours.titre }}</h3>
-                        </div>
-                        
-                        <p class="badge badge-secondary" style="align-self: flex-start; margin-bottom: 1rem; margin-top: 0.5rem;">
-                            {{ cours.get_niveau_display }}
-                        </p>
-                        
-                        <div class="course-card-meta" style="margin-bottom: auto;">
-                            <span style="display: flex; align-items: center; gap: 6px;"><i class="ti ti-calendar" style="font-size: 1.1rem; color: var(--text-muted);"></i> Créé le {{ cours.date_creation|date:'d/m/Y' }}</span>
-                            <span style="display: flex; align-items: center; gap: 6px;">
-                                <i class="ti {% if cours.actif %}ti-eye{% else %}ti-eye-off{% endif %}" style="font-size: 1.1rem; color: {% if cours.actif %}#10b981{% else %}var(--text-muted){% endif %};"></i> 
-                                {% if cours.actif %}Publié et visible{% else %}Brouillon masqué{% endif %}
-                            </span>
-                        </div>
-
-                        <div class="course-card-actions" style="margin-top: 1.5rem;">
-                            <a href="{% url 'apprentissage:gerer_cours' cours.pk %}" class="btn-primary" style="flex: 1; justify-content: center;">Gérer le contenu</a>
-                            <a href="{% url 'apprentissage:editer_cours' cours.pk %}" class="btn-ghost" title="Modifier les infos" style="padding: 0.6rem 0.8rem;"><i class="ti ti-pencil"></i></a>
-                            <form method="post" action="{% url 'apprentissage:supprimer_cours' cours.pk %}" style="display:inline;"
-                                  onsubmit="return confirm('⚠️ Supprimer définitivement le cours « {{ cours.titre }} » ?\n\nCette action est irréversible et supprimera tous les chapitres, documents et progressions associés.');">
-                                {% csrf_token %}
-                                <button type="submit" class="btn-ghost" title="Supprimer" style="padding: 0.6rem 0.8rem; color: #ef4444; border-color: #fecaca;">
-                                    <i class="ti ti-trash"></i>
-                                </button>
-                            </form>
-                        </div>
+                    <div class="fc-cover-meta">
+                        <span class="fc-badge-niveau">{{ cours.niveau.nom }}</span>
+                        <span class="fc-badge-statut {% if cours.actif %}published{% else %}draft{% endif %}">
+                            <i class="ti {% if cours.actif %}ti-eye{% else %}ti-eye-off{% endif %}"></i>
+                            {% if cours.actif %}Publié{% else %}Brouillon{% endif %}
+                        </span>
                     </div>
                 </div>
-            {% empty %}
-                <div class="empty-state" style="grid-column: 1 / -1;">
-                    <div class="stat-icon icon-primary" style="margin-bottom: 1rem; width: 64px; height: 64px; font-size: 2rem;"><i class="ti ti-school"></i></div>
-                    <h3 style="color: var(--text-primary); margin-bottom: 0.5rem;">Aucun cours pour le moment</h3>
-                    <p>Commencez par créer votre premier cours et partagez votre savoir.</p>
+
+                <!-- Body -->
+                <div class="fc-body">
+                    <h3 class="fc-title">{{ cours.titre }}</h3>
+                    <div class="fc-info-row">
+                        <div class="fc-info-item">
+                            <i class="ti ti-layout-list"></i>
+                            {{ cours.chapitres.count }} chapitre{{ cours.chapitres.count|pluralize }}
+                        </div>
+                        <div class="fc-info-item">
+                            <i class="ti ti-calendar"></i>
+                            {{ cours.date_creation|date:'d/m/Y' }}
+                        </div>
+                    </div>
+                    {% if cours.resume %}
+                        <p style="font-size: 0.83rem; color: var(--text-muted, #64748b); line-height: 1.55; margin: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                            {{ cours.resume }}
+                        </p>
+                    {% endif %}
                 </div>
+
+                <!-- Footer -->
+                <div class="fc-footer">
+                    <a href="{% url 'apprentissage:gerer_cours' cours.pk %}" class="fc-btn-manage">
+                        <i class="ti ti-layout-grid"></i> Gérer le contenu
+                    </a>
+                    <a href="{% url 'apprentissage:editer_cours' cours.pk %}" class="fc-btn-icon" title="Modifier">
+                        <i class="ti ti-pencil"></i>
+                    </a>
+                    <form method="post" action="{% url 'apprentissage:supprimer_cours' cours.pk %}" style="display:inline; margin:0;"
+                          onsubmit="return confirm('⚠️ Supprimer définitivement le cours « {{ cours.titre }} » ?\n\nCette action est irréversible.');">
+                        {% csrf_token %}
+                        <button type="submit" class="fc-btn-icon danger" title="Supprimer">
+                            <i class="ti ti-trash"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% empty %}
+            <div class="ef-empty">
+                <div class="ef-empty-icon"><i class="ti ti-school"></i></div>
+                <h3>Aucun cours pour le moment</h3>
+                <p>Commencez par créer votre premier cours et partagez votre savoir avec vos étudiants.</p>
+                <a href="{% url 'apprentissage:nouveau_cours' %}" class="btn-hero-primary" style="margin-top: 0.5rem;">
+                    <i class="ti ti-plus"></i> Créer mon premier cours
+                </a>
+            </div>
             {% endfor %}
         </div>
     </div>
 
-    <!-- Contenu Onglet : Devoirs -->
-    <div id="tab-devoirs" class="tab-content" style="display: none;">
+    <!-- ═══════════════════ TAB: DEVOIRS ═══════════════════ -->
+    <div id="tab-devoirs" class="tab-pane" style="display: none;">
         {% if devoirs %}
-            <div class="glass-card" style="padding: 0; overflow: hidden;">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Devoir</th>
-                            <th>Cours / Chapitre</th>
-                            <th style="text-align: center;">Soumissions</th>
-                            <th style="text-align: center;">À corriger</th>
-                            <th style="text-align: right;">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for devoir in devoirs %}
-                        <tr>
-                            <td>
-                                <div style="font-weight: 700; color: var(--text-primary);">{{ devoir.titre }}</div>
-                                {% if devoir.date_limite %}
-                                    <div style="font-size: 0.8rem; color: #ef4444; margin-top: 4px; display: flex; align-items: center; gap: 4px;">
-                                        <i class="ti ti-clock"></i> Limite : {{ devoir.date_limite|date:"d/m/Y H:i" }}
-                                    </div>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <div style="font-size: 0.9rem; font-weight: 600; color: var(--text-primary);">{{ devoir.chapitre.cours.titre }}</div>
-                                <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">{{ devoir.chapitre.titre }}</div>
-                            </td>
-                            <td style="text-align: center;">
-                                <span class="badge badge-primary">
-                                    {{ devoir.total_soumissions }} reçues
-                                </span>
-                            </td>
-                            <td style="text-align: center;">
-                                {% if devoir.soumissions_a_noter > 0 %}
-                                    <span class="badge badge-warning" style="animation: pulse 2s infinite;">
-                                        {{ devoir.soumissions_a_noter }} à noter
-                                    </span>
-                                {% else %}
-                                    <span class="badge badge-success">
-                                        <i class="ti ti-check"></i> À jour
-                                    </span>
-                                {% endif %}
-                            </td>
-                            <td style="text-align: right;">
-                                <a href="{% url 'apprentissage:devoir_detail' devoir_id=devoir.pk %}" class="btn-primary">
-                                    <i class="ti ti-eye"></i> Voir les copies
-                                </a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+        <div class="devoirs-container">
+            {% for devoir in devoirs %}
+            <div class="devoir-row {% if devoir.soumissions_a_noter > 0 %}urgent{% endif %}">
+                <div class="devoir-icon">
+                    <i class="ti ti-{% if devoir.soumissions_a_noter > 0 %}alert-circle{% else %}clipboard-check{% endif %}"></i>
+                </div>
+
+                <div class="devoir-info">
+                    <div class="devoir-title">{{ devoir.titre }}</div>
+                    <div class="devoir-meta">
+                        <div class="devoir-meta-item">
+                            <i class="ti ti-books"></i>
+                            {{ devoir.chapitre.cours.titre }}
+                        </div>
+                        <div class="devoir-meta-item">
+                            <i class="ti ti-bookmark"></i>
+                            {{ devoir.chapitre.titre }}
+                        </div>
+                        {% if devoir.date_limite %}
+                        <span class="deadline-badge">
+                            <i class="ti ti-clock"></i>
+                            {{ devoir.date_limite|date:"d/m/Y H:i" }}
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Stats -->
+                <div class="devoir-stat">
+                    <span class="devoir-stat-num">{{ devoir.total_soumissions }}</span>
+                    <span class="devoir-stat-label">Reçues</span>
+                </div>
+                <div style="width: 1px; height: 32px; background: var(--border-light, #e8edf3);"></div>
+                <div class="devoir-stat">
+                    {% if devoir.soumissions_a_noter > 0 %}
+                        <span class="badge-to-grade"><i class="ti ti-alert-triangle"></i> {{ devoir.soumissions_a_noter }} à noter</span>
+                    {% else %}
+                        <span class="badge-ok"><i class="ti ti-check"></i> À jour</span>
+                    {% endif %}
+                </div>
+
+                <a href="{% url 'apprentissage:devoir_detail' devoir_id=devoir.pk %}" class="devoir-action">
+                    <i class="ti ti-eye"></i> Voir les copies
+                </a>
             </div>
+            {% endfor %}
+        </div>
         {% else %}
-            <div class="empty-state">
-                <div class="stat-icon icon-warning" style="margin-bottom: 1rem; width: 64px; height: 64px; font-size: 2rem;"><i class="ti ti-clipboard-list"></i></div>
-                <h3 style="color: var(--text-primary); margin-bottom: 0.5rem;">Aucun devoir créé</h3>
-                <p>Pour assigner des devoirs, rendez-vous dans la gestion de l'un de vos cours puis ouvrez un chapitre.</p>
+        <div class="ef-empty" style="border-radius: 20px;">
+            <div class="ef-empty-icon" style="background: rgba(245,158,11,0.1); color: #f59e0b;">
+                <i class="ti ti-clipboard-list"></i>
             </div>
+            <h3>Aucun devoir créé</h3>
+            <p>Pour assigner des devoirs, rendez-vous dans la gestion de l'un de vos cours puis ouvrez un chapitre.</p>
+        </div>
         {% endif %}
     </div>
-</section>
+
+</div><!-- /.page-shell -->
 
 <script>
-    function switchTab(tabId, btn) {
-        document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
-        document.getElementById(tabId).style.display = 'block';
-        
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-    }
+function switchFormTab(tabId, btn) {
+    document.querySelectorAll('.tab-pane').forEach(p => p.style.display = 'none');
+    document.getElementById(tabId).style.display = 'block';
+
+    document.querySelectorAll('.tab-item').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+}
 </script>
 {% endblock %}

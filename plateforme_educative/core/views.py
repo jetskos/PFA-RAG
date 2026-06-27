@@ -254,7 +254,7 @@ def admin_structure_page_view(request):
         'active_tab': tab,
         **_admin_dashboard_context(request),
     }
-    if request.headers.get('HX-Request'):
+    if request.headers.get('HX-Request') and request.headers.get('HX-Target') != 'zone-principale':
         return render(request, 'core/partials/admin_structure.html', context)
     return render(request, 'core/dashboard_admin_structure.html', context)
 
@@ -267,7 +267,7 @@ def formateur_dashboard_view(request):
         'active_tab': tab,
         **_formateur_dashboard_context(request),
     }
-    if request.headers.get('HX-Request'):
+    if request.headers.get('HX-Request') and request.headers.get('HX-Target') != 'zone-principale':
         return render(request, 'core/partials/formateur_structure.html', context)
     return render(request, 'core/dashboard_formateur.html', context)
 

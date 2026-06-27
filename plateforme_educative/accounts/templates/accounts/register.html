@@ -1,15 +1,292 @@
 {% extends 'base.html' %}
-
-{% block title %}Inscription | Plateforme Educative{% endblock %}
+{% load static %}
+{% block title %}Inscription | EduTech Platform{% endblock %}
 
 {% block content %}
-<div class="auth-container">
-    <section class="carte auth-carte">
-        <h2>Inscription</h2>
-        {% include 'accounts/partials/register_form.html' %}
-        <p>Deja un compte ?
-            <a href="{% url 'accounts:login' %}" hx-get="{% url 'accounts:login' %}" hx-target="#zone-principale" hx-select="#zone-principale" hx-swap="outerHTML" hx-push-url="true">Se connecter</a>
-        </p>
-    </section>
+<style>
+.auth-page {
+    min-height: calc(100vh - 100px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 1rem 2rem;
+}
+
+/* Split layout */
+.auth-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    max-width: 1150px;
+    width: 100%;
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.12);
+    border: 1px solid var(--border-light, #e8edf3);
+}
+@media (max-width: 720px) { .auth-split { grid-template-columns: 1fr; } }
+
+/* Left Panel (Brand) */
+.auth-brand-panel {
+    background: linear-gradient(160deg, #020c18 0%, #0a1929 50%, #0d2137 100%);
+    padding: 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+}
+.auth-brand-panel::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url('{% static "images/page-circuit-bg.png" %}');
+    background-size: cover;
+    opacity: 0.06;
+}
+.auth-brand-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    pointer-events: none;
+}
+.auth-orb-1 { width: 280px; height: 280px; background: radial-gradient(circle, rgba(13,148,136,0.3) 0%, transparent 70%); top: -80px; right: -80px; }
+.auth-orb-2 { width: 200px; height: 200px; background: radial-gradient(circle, rgba(59,130,246,0.2) 0%, transparent 70%); bottom: -40px; left: -40px; }
+
+.auth-brand-top { position: relative; z-index: 2; }
+.auth-brand-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 3rem;
+}
+.auth-brand-icon {
+    width: 40px; height: 40px;
+    background: linear-gradient(135deg, #0d9488, #0f766e);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+    box-shadow: 0 4px 12px rgba(13,148,136,0.4);
+}
+.auth-brand-name { font-size: 1.1rem; font-weight: 800; color: white; letter-spacing: -0.02em; }
+.auth-brand-name span { color: rgba(255,255,255,0.5); font-weight: 500; }
+
+.auth-brand-headline {
+    font-size: 1.9rem;
+    font-weight: 900;
+    color: white;
+    line-height: 1.2;
+    letter-spacing: -0.04em;
+    margin-bottom: 1rem;
+}
+.auth-brand-headline em {
+    font-style: normal;
+    background: linear-gradient(90deg, #2dd4bf, #60a5fa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+.auth-brand-desc { font-size: 0.88rem; color: rgba(255,255,255,0.5); line-height: 1.65; }
+
+.auth-brand-bottom { position: relative; z-index: 2; }
+.auth-feature-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.75rem; }
+.auth-feature-list li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.82rem;
+    color: rgba(255,255,255,0.65);
+    font-weight: 500;
+}
+.auth-feature-list li i { color: #2dd4bf; font-size: 1rem; flex-shrink: 0; }
+
+/* Right Panel (Form) */
+.auth-form-panel {
+    background: var(--bg-surface, #ffffff);
+    padding: 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.auth-form-header { margin-bottom: 2rem; }
+.auth-form-eyebrow {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #0d9488;
+    margin-bottom: 0.5rem;
+}
+.auth-form-title {
+    font-size: 1.75rem;
+    font-weight: 900;
+    color: var(--text-primary, #0f172a);
+    letter-spacing: -0.04em;
+    margin-bottom: 0.4rem;
+}
+.auth-form-sub {
+    font-size: 0.88rem;
+    color: var(--text-muted, #64748b);
+}
+
+/* Form fields */
+.auth-field { margin-bottom: 1.25rem; }
+.auth-field label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--text-primary, #0f172a);
+    margin-bottom: 0.4rem;
+    letter-spacing: 0.01em;
+}
+.auth-field input, .auth-field select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1.5px solid var(--border-default, #cbd5e1);
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    color: var(--text-primary, #0f172a);
+    background: var(--bg-surface, #ffffff);
+    transition: all 0.2s;
+    box-sizing: border-box;
+}
+.auth-field input:focus, .auth-field select:focus {
+    outline: none;
+    border-color: #0d9488;
+    box-shadow: 0 0 0 3px rgba(13,148,136,0.12);
+}
+.auth-field input::placeholder { color: var(--text-muted, #94a3b8); }
+
+/* Django form auto rendering override */
+.auth-form-panel p { margin: 0 0 1.25rem; }
+.auth-form-panel p label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--text-primary, #0f172a);
+    margin-bottom: 0.4rem;
+}
+.auth-form-panel p input[type="text"],
+.auth-form-panel p input[type="password"],
+.auth-form-panel p input[type="email"],
+.auth-form-panel p select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1.5px solid var(--border-default, #cbd5e1);
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    color: var(--text-primary, #0f172a);
+    background: var(--bg-surface, #ffffff);
+    transition: all 0.2s;
+    box-sizing: border-box;
+}
+.auth-form-panel p input:focus, .auth-form-panel p select:focus {
+    outline: none;
+    border-color: #0d9488;
+    box-shadow: 0 0 0 3px rgba(13,148,136,0.12);
+}
+.auth-form-panel p .helptext {
+    font-size: 0.75rem;
+    color: var(--text-muted, #64748b);
+    display: block;
+    margin-top: 0.25rem;
+}
+
+.btn-auth-submit {
+    width: 100%;
+    padding: 0.9rem;
+    background: linear-gradient(135deg, #0d9488, #0f766e);
+    color: white;
+    font-weight: 700;
+    font-size: 1rem;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 0.5rem;
+    box-shadow: 0 4px 12px rgba(13,148,136,0.25);
+}
+.btn-auth-submit:hover {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(13,148,136,0.35);
+}
+
+.auth-links {
+    margin-top: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--text-muted, #64748b);
+}
+.auth-links a {
+    color: #0d9488;
+    font-weight: 600;
+    text-decoration: none;
+}
+.auth-links a:hover { text-decoration: underline; }
+
+/* Error messages */
+.errorlist { color: #ef4444; font-size: 0.8rem; margin: 4px 0; padding: 0; list-style: none; }
+</style>
+
+<div class="auth-page">
+    <div class="auth-split">
+
+        <!-- Left Brand Panel -->
+        <div class="auth-brand-panel">
+            <div class="auth-brand-orb auth-orb-1"></div>
+            <div class="auth-brand-orb auth-orb-2"></div>
+
+            <div class="auth-brand-top">
+                <div class="auth-brand-logo">
+                    <div class="auth-brand-icon"><i class="ti ti-circuit-board"></i></div>
+                    <span class="auth-brand-name">EduTech <span>IoT & IA</span></span>
+                </div>
+
+                <h2 class="auth-brand-headline">
+                    Rejoignez la<br>plateforme <em>nouvelle<br>génération.</em>
+                </h2>
+                <p class="auth-brand-desc">
+                    Inscrivez-vous pour accéder à vos cours, interagir avec le tuteur IA et soumettre vos travaux.
+                </p>
+            </div>
+
+            <div class="auth-brand-bottom">
+                <ul class="auth-feature-list">
+                    <li><i class="ti ti-robot"></i> Tuteur IA socratique basé sur vos cours</li>
+                    <li><i class="ti ti-books"></i> Cours structurés par niveau</li>
+                    <li><i class="ti ti-clipboard-check"></i> QCM et devoirs automatisés</li>
+                    <li><i class="ti ti-chart-bar"></i> Analytics de progression en temps réel</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Right Form Panel -->
+        <div class="auth-form-panel">
+            <div class="auth-form-header">
+                <p class="auth-form-eyebrow">Nouveau Compte</p>
+                <h1 class="auth-form-title">Inscription</h1>
+                <p class="auth-form-sub">Créez votre compte EduTech pour commencer.</p>
+            </div>
+
+            {% include 'accounts/partials/register_form.html' %}
+
+            <div class="auth-links">
+                <span>Déjà un compte ? <a href="{% url 'accounts:login' %}" hx-get="{% url 'accounts:login' %}" hx-target="#zone-principale" hx-select="#zone-principale" hx-swap="outerHTML" hx-push-url="true">Se connecter</a></span>
+            </div>
+        </div>
+
+    </div>
 </div>
 {% endblock %}

@@ -1,0 +1,87 @@
+{% if page_obj.has_other_pages %}
+<style>
+.c-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 2rem;
+    padding: 1rem 0;
+}
+.c-page-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 36px;
+    padding: 0 0.5rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    border: 1.5px solid var(--border, #e2e8f0);
+    background: var(--surface, #fff);
+    color: var(--ink, #0f172a);
+    text-decoration: none;
+    transition: all 0.15s;
+}
+.c-page-btn:hover {
+    background: var(--bg-hover, #f8fafc);
+    border-color: var(--border-strong, #cbd5e1);
+}
+.c-page-btn.is-active {
+    background: var(--teal, #0f766e);
+    color: #fff;
+    border-color: var(--teal, #0f766e);
+    box-shadow: 0 4px 12px rgba(15,118,110,0.25);
+}
+[data-theme="dark"] .c-page-btn {
+    border-color: #30363d;
+    background: #161b22;
+    color: #e6edf3;
+}
+[data-theme="dark"] .c-page-btn:hover {
+    background: #21262d;
+    border-color: #444c56;
+}
+[data-theme="dark"] .c-page-btn.is-active {
+    background: #3fb950;
+    border-color: #3fb950;
+    color: #0d1117;
+}
+</style>
+
+<div class="c-pagination">
+    {% if page_obj.has_previous %}
+        <button 
+            hx-get="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.etat %}&etat={{ request.GET.etat }}{% endif %}{% if request.GET.statut %}&statut={{ request.GET.statut }}{% endif %}{% if request.GET.niveau_id %}&niveau_id={{ request.GET.niveau_id }}{% endif %}" 
+            hx-target="{{ hx_target|default:'#list-container' }}" 
+            class="c-page-btn">
+            &laquo; Précédent
+        </button>
+    {% endif %}
+
+    {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+            <button class="c-page-btn is-active">{{ num }}</button>
+        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+            <button 
+                hx-get="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.etat %}&etat={{ request.GET.etat }}{% endif %}{% if request.GET.statut %}&statut={{ request.GET.statut }}{% endif %}{% if request.GET.niveau_id %}&niveau_id={{ request.GET.niveau_id }}{% endif %}" 
+                hx-target="{{ hx_target|default:'#list-container' }}" 
+                class="c-page-btn">
+                {{ num }}
+            </button>
+        {% endif %}
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+        <button 
+            hx-get="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.etat %}&etat={{ request.GET.etat }}{% endif %}{% if request.GET.statut %}&statut={{ request.GET.statut }}{% endif %}{% if request.GET.niveau_id %}&niveau_id={{ request.GET.niveau_id }}{% endif %}" 
+            hx-target="{{ hx_target|default:'#list-container' }}" 
+            class="c-page-btn">
+            Suivant &raquo;
+        </button>
+    {% endif %}
+</div>
+{% endif %}

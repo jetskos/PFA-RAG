@@ -17,7 +17,8 @@ from django.http import HttpResponse
 
 
 def _is_htmx(request):
-    return request.headers.get('HX-Request') == 'true' or getattr(request, 'htmx', False)
+    is_htmx_req = request.headers.get('HX-Request') == 'true' or getattr(request, 'htmx', False)
+    return is_htmx_req and request.headers.get('HX-Target') != 'zone-principale'
 
 
 @login_required
@@ -38,26 +39,34 @@ def inventaire_view(request):
 
     equipements_en_alerte = sum(1 for e in equipements if e.en_alerte and e.est_actif)
 
-    # HTMX GET: filter equipments by state or search query
-    if _is_htmx(request) and request.method == 'GET' and ('etat' in request.GET or 'q' in request.GET):
-        etat = request.GET.get('etat', 'TOUS')
-        q = request.GET.get('q', '').strip()
+    # Appliquer les filtres
+    etat = request.GET.get('etat', 'TOUS')
+    q = request.GET.get('q', '').strip()
+    
+    if etat == 'DISPONIBLE':
+        equipements = equipements.filter(est_actif=True)
+    elif etat == 'EN_PANNE':
+        equipements = equipements.filter(est_actif=False)
         
-        if etat == 'DISPONIBLE':
-            equipements = equipements.filter(est_actif=True)
-        elif etat == 'EN_PANNE':
-            equipements = equipements.filter(est_actif=False)
+    if q:
+        from django.db.models import Q
+        equipements = equipements.filter(Q(nom__icontains=q) | Q(reference__icontains=q))
+
+    # Pagination
+    from django.core.paginator import Paginator
+    paginator = Paginator(equipements, 15)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
             
-        if q:
-            from django.db.models import Q
-            equipements = equipements.filter(Q(nom__icontains=q) | Q(reference__icontains=q))
-                
+    if _is_htmx(request) and request.method == 'GET':
         return render(request, 'logistics/partials/equipements_list.html', {
-            'equipements': equipements
+            'equipements': page_obj,
+            'page_obj': page_obj
         })
 
     return render(request, 'logistics/inventaire.html', {
-        'equipements': equipements,
+        'equipements': page_obj,
+        'page_obj': page_obj,
         'equipements_disponibles': total_dispo,
         'equipements_maintenance': en_maintenance,
         'equipements_en_panne': equipements_en_alerte,
@@ -131,7 +140,11 @@ def ajouter_equipement(request):
         if form.is_valid():
             form.save()
             equipements = Equipment.objects.all()
-            return render(request, 'logistics/partials/equipements_list.html', {'equipements': equipements})
+            from django.core.paginator import Paginator
+            paginator = Paginator(equipements, 15)
+            page_number = request.GET.get('page', 1)
+            page_obj = paginator.get_page(page_number)
+            return render(request, 'logistics/partials/equipements_list.html', {'equipements': page_obj, 'page_obj': page_obj})
         else:
             response = render(request, 'logistics/partials/equipement_form.html', {
                 'form': form,
@@ -162,7 +175,11 @@ def editer_equipement(request, pk):
         if form.is_valid():
             form.save()
             equipements = Equipment.objects.all()
-            return render(request, 'logistics/partials/equipements_list.html', {'equipements': equipements})
+            from django.core.paginator import Paginator
+            paginator = Paginator(equipements, 15)
+            page_number = request.GET.get('page', 1)
+            page_obj = paginator.get_page(page_number)
+            return render(request, 'logistics/partials/equipements_list.html', {'equipements': page_obj, 'page_obj': page_obj})
         else:
             response = render(request, 'logistics/partials/equipement_form.html', {
                 'form': form,
@@ -192,7 +209,11 @@ def supprimer_equipement(request, pk):
     equip.est_actif = False
     equip.save()
     equipements = Equipment.objects.all()
-    return render(request, 'logistics/partials/equipements_list.html', {'equipements': equipements})
+    from django.core.paginator import Paginator
+    paginator = Paginator(equipements, 15)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
+    return render(request, 'logistics/partials/equipements_list.html', {'equipements': page_obj, 'page_obj': page_obj})
 
 
 @login_required
@@ -211,15 +232,24 @@ def ateliers_view(request):
     ateliers_en_cours = ateliers.filter(date_debut__lte=now, date_fin__gte=now, est_annule=False).count()
     ateliers_a_venir = ateliers.filter(date_debut__gt=now, est_annule=False).count()
 
+    # Appliquer les filtres
+    q = request.GET.get('q', '').strip()
+    if q:
+        from django.db.models import Q
+        ateliers = ateliers.filter(Q(titre__icontains=q) | Q(salle__icontains=q))
+
+    # Pagination
+    from django.core.paginator import Paginator
+    paginator = Paginator(ateliers, 15)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
+
     if _is_htmx(request) and request.method == 'GET':
-        q = request.GET.get('q', '').strip()
-        if q:
-            from django.db.models import Q
-            ateliers = ateliers.filter(Q(titre__icontains=q) | Q(salle__icontains=q))
-        return render(request, 'logistics/partials/ateliers_list.html', {'ateliers': ateliers})
+        return render(request, 'logistics/partials/ateliers_list.html', {'ateliers': page_obj, 'page_obj': page_obj})
 
     return render(request, 'logistics/ateliers.html', {
-        'ateliers': ateliers,
+        'ateliers': page_obj,
+        'page_obj': page_obj,
         'ateliers_total': ateliers_total,
         'ateliers_en_cours': ateliers_en_cours,
         'ateliers_a_venir': ateliers_a_venir,
@@ -243,7 +273,11 @@ def ajouter_atelier(request):
                 ateliers = Workshop.objects.all()
             else:
                 ateliers = Workshop.objects.filter(createur=request.user)
-            return render(request, 'logistics/partials/ateliers_list.html', {'ateliers': ateliers})
+            from django.core.paginator import Paginator
+            paginator = Paginator(ateliers, 15)
+            page_number = request.GET.get('page', 1)
+            page_obj = paginator.get_page(page_number)
+            return render(request, 'logistics/partials/ateliers_list.html', {'ateliers': page_obj, 'page_obj': page_obj})
         else:
             response = render(request, 'logistics/partials/atelier_form.html', {
                 'form': form,
@@ -279,7 +313,11 @@ def editer_atelier(request, pk):
                 ateliers = Workshop.objects.all()
             else:
                 ateliers = Workshop.objects.filter(createur=request.user)
-            return render(request, 'logistics/partials/ateliers_list.html', {'ateliers': ateliers})
+            from django.core.paginator import Paginator
+            paginator = Paginator(ateliers, 15)
+            page_number = request.GET.get('page', 1)
+            page_obj = paginator.get_page(page_number)
+            return render(request, 'logistics/partials/ateliers_list.html', {'ateliers': page_obj, 'page_obj': page_obj})
         else:
             response = render(request, 'logistics/partials/atelier_form.html', {
                 'form': form,
@@ -323,7 +361,11 @@ def supprimer_atelier(request, pk):
         ateliers = Workshop.objects.all()
     else:
         ateliers = Workshop.objects.filter(createur=request.user)
-    return render(request, 'logistics/partials/ateliers_list.html', {'ateliers': ateliers})
+    from django.core.paginator import Paginator
+    paginator = Paginator(ateliers, 15)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
+    return render(request, 'logistics/partials/ateliers_list.html', {'ateliers': page_obj, 'page_obj': page_obj})
 
 
 @login_required
@@ -340,25 +382,34 @@ def demandes_view(request):
     demandes_approuvees = demandes.filter(statut='APPROVED').count()
     demandes_rejetees = demandes.filter(statut='REJECTED').count()
 
-    if _is_htmx(request) and request.method == 'GET':
-        q = request.GET.get('q', '').strip()
-        statut = request.GET.get('statut', '')
+    # Appliquer les filtres
+    q = request.GET.get('q', '').strip()
+    statut = request.GET.get('statut', '')
+    
+    if statut:
+        demandes = demandes.filter(statut=statut)
         
-        if statut:
-            demandes = demandes.filter(statut=statut)
-            
-        if q:
-            from django.db.models import Q
-            demandes = demandes.filter(
-                Q(formateur__first_name__icontains=q) | 
-                Q(formateur__last_name__icontains=q) |
-                Q(equipement__nom__icontains=q) |
-                Q(atelier_cible__titre__icontains=q)
-            )
-        return render(request, 'logistics/partials/demandes_list.html', {'demandes': demandes})
+    if q:
+        from django.db.models import Q
+        demandes = demandes.filter(
+            Q(formateur__first_name__icontains=q) | 
+            Q(formateur__last_name__icontains=q) |
+            Q(equipement__nom__icontains=q) |
+            Q(atelier_cible__titre__icontains=q)
+        )
+
+    # Pagination
+    from django.core.paginator import Paginator
+    paginator = Paginator(demandes, 15)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
+
+    if _is_htmx(request) and request.method == 'GET':
+        return render(request, 'logistics/partials/demandes_list.html', {'demandes': page_obj, 'page_obj': page_obj})
 
     return render(request, 'logistics/demandes.html', {
-        'demandes': demandes,
+        'demandes': page_obj,
+        'page_obj': page_obj,
         'demandes_total': demandes_total,
         'demandes_en_attente': demandes_en_attente,
         'demandes_approuvees': demandes_approuvees,
@@ -388,7 +439,11 @@ def ajouter_demande(request):
                 demandes = DemandeMateriel.objects.all()
             else:
                 demandes = DemandeMateriel.objects.filter(formateur=request.user)
-            return render(request, 'logistics/partials/demandes_list.html', {'demandes': demandes})
+            from django.core.paginator import Paginator
+            paginator = Paginator(demandes, 15)
+            page_number = request.GET.get('page', 1)
+            page_obj = paginator.get_page(page_number)
+            return render(request, 'logistics/partials/demandes_list.html', {'demandes': page_obj, 'page_obj': page_obj})
         else:
             response = render(request, 'logistics/partials/demande_form.html', {
                 'form': form,
@@ -427,7 +482,11 @@ def editer_demande(request, pk):
                 demandes = DemandeMateriel.objects.all()
             else:
                 demandes = DemandeMateriel.objects.filter(formateur=request.user)
-            return render(request, 'logistics/partials/demandes_list.html', {'demandes': demandes})
+            from django.core.paginator import Paginator
+            paginator = Paginator(demandes, 15)
+            page_number = request.GET.get('page', 1)
+            page_obj = paginator.get_page(page_number)
+            return render(request, 'logistics/partials/demandes_list.html', {'demandes': page_obj, 'page_obj': page_obj})
         else:
             response = render(request, 'logistics/partials/demande_form.html', {
                 'form': form,
@@ -466,7 +525,11 @@ def supprimer_demande(request, pk):
         demandes = DemandeMateriel.objects.all()
     else:
         demandes = DemandeMateriel.objects.filter(formateur=request.user)
-    return render(request, 'logistics/partials/demandes_list.html', {'demandes': demandes})
+    from django.core.paginator import Paginator
+    paginator = Paginator(demandes, 15)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
+    return render(request, 'logistics/partials/demandes_list.html', {'demandes': page_obj, 'page_obj': page_obj})
 
 
 @login_required
@@ -564,7 +627,11 @@ def changer_statut_demande(request, pk):
         demandes = DemandeMateriel.objects.all()
     else:
         demandes = DemandeMateriel.objects.filter(formateur=request.user)
-    return render(request, 'logistics/partials/demandes_list.html', {'demandes': demandes})
+    from django.core.paginator import Paginator
+    paginator = Paginator(demandes, 15)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
+    return render(request, 'logistics/partials/demandes_list.html', {'demandes': page_obj, 'page_obj': page_obj})
 
 
 @login_required

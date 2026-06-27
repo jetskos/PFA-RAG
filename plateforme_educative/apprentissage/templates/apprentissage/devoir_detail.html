@@ -1,222 +1,516 @@
 {% extends 'base.html' %}
-
-{% block title %}{{ devoir.titre }}{% endblock %}
+{% load static %}
+{% block title %}{{ devoir.titre }} | EduTech{% endblock %}
 
 {% block content %}
-<section class="page-shell">
-    <div class="page-header">
-        <p class="eyebrow">
-            <a href="{% url 'apprentissage:devoirs_liste' %}" style="color: var(--accent);">Devoirs</a>
-            › {{ devoir.chapitre.cours.titre }} › {{ devoir.chapitre.titre }}
-        </p>
-        <h1>{{ devoir.titre }}</h1>
+<style>
+    /* ═══════════════════════════════════════
+       DEVOIR DETAIL — PREMIUM REDESIGN
+    ═══════════════════════════════════════ */
+
+    .dd-layout {
+        display: grid;
+        grid-template-columns: 1fr 320px;
+        gap: 1.5rem;
+        align-items: start;
+    }
+    @media (max-width: 900px) { .dd-layout { grid-template-columns: 1fr; } }
+
+    /* ── Breadcrumb ── */
+    .dd-breadcrumb {
+        display: flex; align-items: center; gap: 6px;
+        font-size: 0.82rem; font-weight: 600;
+        color: var(--text-muted, #64748b);
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+    }
+    .dd-breadcrumb a { color: #0D9488; text-decoration: none; transition: opacity 0.15s; }
+    .dd-breadcrumb a:hover { opacity: 0.75; }
+    .dd-breadcrumb i { font-size: 0.75rem; color: var(--text-muted, #94a3b8); }
+
+    /* ── Header card ── */
+    .dd-header-card {
+        background: linear-gradient(135deg, #0f2027, #1a3a2a);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 1.5rem;
+        position: relative;
+        overflow: hidden;
+    }
+    .dd-header-card::before {
+        content: '';
+        position: absolute; top: -50px; right: -50px;
+        width: 200px; height: 200px;
+        background: radial-gradient(circle, rgba(13,148,136,0.2) 0%, transparent 70%);
+        border-radius: 50%; pointer-events: none;
+    }
+    .dd-header-eyebrow {
+        display: inline-flex; align-items: center; gap: 5px;
+        font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+        color: #2dd4bf;
+        background: rgba(13,148,136,0.15); border: 1px solid rgba(13,148,136,0.3);
+        padding: 3px 10px; border-radius: 999px; margin-bottom: 0.75rem;
+        position: relative; z-index: 1;
+    }
+    .dd-header-title {
+        font-size: 1.6rem; font-weight: 900; color: #fff;
+        letter-spacing: -0.025em; line-height: 1.25;
+        margin: 0 0 1rem; position: relative; z-index: 1;
+    }
+    .dd-header-meta {
+        display: flex; gap: 1rem; flex-wrap: wrap;
+        position: relative; z-index: 1;
+    }
+    .dd-meta-pill {
+        display: flex; align-items: center; gap: 6px;
+        background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+        border-radius: 10px; padding: 0.4rem 0.9rem;
+        font-size: 0.82rem; font-weight: 600; color: rgba(255,255,255,0.85);
+        backdrop-filter: blur(8px);
+    }
+    .dd-meta-pill i { color: #2dd4bf; }
+    .dd-meta-pill.deadline { background: rgba(239,68,68,0.15); border-color: rgba(239,68,68,0.3); color: #fca5a5; }
+    .dd-meta-pill.deadline i { color: #f87171; }
+
+    /* ── Consigne card ── */
+    .dd-card {
+        background: var(--bg-surface, #fff);
+        border: 1.5px solid var(--border-light, #e8edf3);
+        border-radius: 20px;
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+    }
+    .dd-card-header {
+        display: flex; align-items: center; gap: 8px;
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid var(--border-light, #e8edf3);
+        background: var(--bg-surface-alt, #f8fafc);
+        font-size: 0.95rem; font-weight: 800;
+        color: var(--text-primary, #0f172a);
+    }
+    .dd-card-header i { color: #0D9488; font-size: 1.05rem; }
+    .dd-card-body { padding: 1.5rem; }
+
+    .consigne-text { white-space: pre-wrap; line-height: 1.75; font-size: 0.92rem; color: var(--text-primary, #0f172a); }
+
+    /* ── Submissions table ── */
+    .submissions-table { width: 100%; border-collapse: collapse; }
+    .submissions-table thead tr {
+        font-size: 0.72rem; text-transform: uppercase;
+        color: var(--text-muted, #94a3b8);
+        letter-spacing: 0.07em;
+        background: var(--bg-surface-alt, #f8fafc);
+        border-bottom: 1px solid var(--border-light, #e8edf3);
+    }
+    .submissions-table th { padding: 0.65rem 1.25rem; text-align: left; font-weight: 700; }
+    .submissions-table th:not(:first-child) { text-align: center; }
+    .submissions-table th:last-child { text-align: right; }
+    .submissions-table tbody tr { border-bottom: 1px solid var(--border-light, #f1f5f9); transition: background 0.15s; }
+    .submissions-table tbody tr:last-child { border-bottom: none; }
+    .submissions-table tbody tr:hover { background: var(--bg-surface-alt, #f8fafc); }
+    .submissions-table td { padding: 0.85rem 1.25rem; font-size: 0.88rem; }
+    .submissions-table td:not(:first-child) { text-align: center; }
+    .submissions-table td:last-child { text-align: right; }
+
+    .student-cell {
+        display: flex; align-items: center; gap: 0.75rem;
+    }
+    .s-avatar {
+        width: 34px; height: 34px; border-radius: 10px;
+        background: linear-gradient(135deg, #0D9488, #0F766E);
+        color: white; display: flex; align-items: center; justify-content: center;
+        font-size: 0.82rem; font-weight: 800; flex-shrink: 0;
+    }
+    .s-name { font-weight: 700; font-size: 0.88rem; color: var(--text-primary, #0f172a); }
+
+    .note-badge {
+        font-weight: 800; font-size: 0.9rem;
+        padding: 2px 10px; border-radius: 8px; display: inline-block;
+    }
+    .note-badge.green { background: rgba(16,185,129,0.1); color: #10b981; }
+    .note-badge.orange { background: rgba(245,158,11,0.1); color: #f59e0b; }
+    .note-badge.red { background: rgba(239,68,68,0.1); color: #ef4444; }
+    .note-badge.none { background: var(--bg-surface-alt, #f1f5f9); color: var(--text-muted, #94a3b8); font-size: 0.8rem; }
+
+    .action-btns { display: flex; gap: 0.4rem; justify-content: flex-end; }
+    .action-btn {
+        display: inline-flex; align-items: center; gap: 5px;
+        padding: 0.4rem 0.85rem; border-radius: 8px;
+        font-size: 0.8rem; font-weight: 700;
+        text-decoration: none; transition: all 0.2s;
+        white-space: nowrap;
+    }
+    .action-btn.view {
+        background: var(--bg-surface-alt, #f1f5f9);
+        border: 1.5px solid var(--border-default, #cbd5e1);
+        color: var(--text-secondary, #475569);
+    }
+    .action-btn.view:hover { background: rgba(13,148,136,0.06); border-color: #0D9488; color: #0D9488; }
+    .action-btn.grade {
+        background: linear-gradient(135deg, #0D9488, #0F766E);
+        color: white;
+        box-shadow: 0 2px 8px rgba(13,148,136,0.25);
+    }
+    .action-btn.grade:hover { filter: brightness(1.08); transform: translateY(-1px); }
+    .action-btn.regrade {
+        background: var(--bg-surface-alt, #f1f5f9);
+        border: 1.5px solid var(--border-default, #cbd5e1);
+        color: var(--text-secondary, #475569);
+    }
+    .action-btn.regrade:hover { border-color: #0D9488; color: #0D9488; }
+
+    /* ── Empty submissions ── */
+    .empty-submissions {
+        padding: 3rem; text-align: center;
+        color: var(--text-muted, #94a3b8);
+        display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+    }
+    .empty-submissions i { font-size: 2.5rem; margin-bottom: 0.25rem; }
+
+    /* ── Student submission form ── */
+    .result-banner {
+        border-radius: 14px;
+        padding: 1.1rem 1.25rem;
+        margin-bottom: 1.25rem;
+        display: flex; gap: 1rem; align-items: flex-start;
+    }
+    .result-banner-icon { font-size: 1.5rem; flex-shrink: 0; }
+    .result-banner-score { font-size: 1.2rem; font-weight: 900; margin-bottom: 2px; }
+    .result-banner-label { font-size: 0.82rem; opacity: 0.8; }
+    .result-banner-feedback { font-size: 0.85rem; font-style: italic; margin-top: 0.6rem; opacity: 0.75; }
+
+    /* Forms */
+    .form-group input[type="file"] {
+        display: block; width: 100%; padding: 0.6rem;
+        background: var(--bg-surface-alt, #f8fafc);
+        border: 1.5px dashed var(--border-default, #cbd5e1);
+        border-radius: 12px; font-size: 0.85rem;
+        color: var(--text-secondary, #475569);
+        cursor: pointer; transition: all 0.2s;
+    }
+    .form-group input[type="file"]:hover { border-color: #0D9488; background: rgba(13,148,136,0.02); }
+    .form-group textarea {
+        width: 100%; padding: 0.85rem; border-radius: 12px;
+        border: 1.5px solid var(--border-default, #cbd5e1);
+        font-family: inherit; font-size: 0.9rem; resize: vertical;
+        min-height: 100px;
+    }
+    .form-group textarea:focus { outline: none; border-color: #0D9488; box-shadow: 0 0 0 3px rgba(13,148,136,0.1); }
+    .dd-btn-submit {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 0.75rem 1.5rem; border-radius: 12px;
+        background: linear-gradient(135deg, #0D9488, #0F766E);
+        color: white; font-weight: 700; font-size: 0.9rem;
+        border: none; cursor: pointer; transition: all 0.2s;
+        box-shadow: 0 4px 12px rgba(13,148,136,0.25);
+    }
+    .dd-btn-submit:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(13,148,136,0.35); }
+    .dd-btn-submit:disabled { opacity: 0.6; cursor: not-allowed; box-shadow: none; }
+
+    /* ── Sidebar ── */
+    .dd-sidebar-card {
+        background: var(--bg-surface, #fff);
+        border: 1.5px solid var(--border-light, #e8edf3);
+        border-radius: 20px;
+        overflow: hidden;
+        margin-bottom: 1rem;
+    }
+    .dd-sidebar-header {
+        padding: 0.85rem 1.25rem;
+        background: var(--bg-surface-alt, #f8fafc);
+        border-bottom: 1px solid var(--border-light, #e8edf3);
+        font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+        letter-spacing: 0.07em; color: var(--text-muted, #94a3b8);
+        display: flex; align-items: center; gap: 6px;
+    }
+    .dd-sidebar-body { padding: 1rem 1.25rem; }
+    .info-row {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 0.55rem 0;
+        border-bottom: 1px solid var(--border-light, #f1f5f9);
+        font-size: 0.88rem;
+    }
+    .info-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .info-row span:first-child { color: var(--text-muted, #64748b); font-weight: 500; }
+    .info-row span:last-child { font-weight: 700; color: var(--text-primary, #0f172a); text-align: right; max-width: 55%; }
+
+    .dd-btn-back {
+        display: flex; align-items: center; justify-content: center; gap: 6px;
+        padding: 0.75rem;
+        border: 1.5px solid var(--border-default, #cbd5e1);
+        border-radius: 14px;
+        background: var(--bg-surface, #fff);
+        color: var(--text-secondary, #475569);
+        font-weight: 700; font-size: 0.88rem;
+        text-decoration: none; transition: all 0.2s;
+        width: 100%;
+    }
+    .dd-btn-back:hover { border-color: #0D9488; color: #0D9488; background: rgba(13,148,136,0.04); }
+
+    .submission-status-card {
+        border-radius: 16px; padding: 1.1rem 1.25rem;
+        margin-bottom: 1rem;
+    }
+    .submission-status-card.pending { background: rgba(59,130,246,0.06); border: 1.5px solid rgba(59,130,246,0.25); }
+    .submission-status-card.graded { border: 1.5px solid; }
+</style>
+
+<div class="page-shell" style="max-width: 1200px; margin: 0 auto; padding-top: 2rem;">
+
+    <!-- Breadcrumb -->
+    <div class="dd-breadcrumb">
+        <a href="{% url 'apprentissage:espace_formateur' %}">Espace Formateur</a>
+        <i class="ti ti-chevron-right"></i>
+        <a href="{% url 'apprentissage:devoirs_liste' %}">Devoirs</a>
+        <i class="ti ti-chevron-right"></i>
+        <span>{{ devoir.chapitre.cours.titre }}</span>
+        <i class="ti ti-chevron-right"></i>
+        <span style="color: var(--text-primary, #0f172a);">{{ devoir.titre }}</span>
     </div>
 
-    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-top: 2rem; align-items: start;">
+    <!-- Header card -->
+    <div class="dd-header-card">
+        <div class="dd-header-eyebrow"><i class="ti ti-clipboard-list"></i> Devoir</div>
+        <h1 class="dd-header-title">{{ devoir.titre }}</h1>
+        <div class="dd-header-meta">
+            <div class="dd-meta-pill">
+                <i class="ti ti-book"></i>
+                {{ devoir.chapitre.cours.titre }}
+            </div>
+            <div class="dd-meta-pill">
+                <i class="ti ti-bookmark"></i>
+                {{ devoir.chapitre.titre }}
+            </div>
+            <div class="dd-meta-pill">
+                <i class="ti ti-star"></i>
+                Note max : {{ devoir.note_max }} pts
+            </div>
+            {% if devoir.date_limite %}
+            <div class="dd-meta-pill deadline">
+                <i class="ti ti-clock"></i>
+                Limite : {{ devoir.date_limite|date:"d/m/Y H:i" }}
+            </div>
+            {% endif %}
+        </div>
+    </div>
 
-        <!-- ── Colonne principale ── -->
+    <!-- Main layout -->
+    <div class="dd-layout">
+
+        <!-- ══ LEFT COLUMN ══ -->
         <div>
             <!-- Consigne -->
-            <div class="carte">
-                <h2 style="font-size: 1.1rem; margin-bottom: 1rem; border-bottom: 1px solid var(--bordure); padding-bottom: .75rem;">
-                    📋 Consigne
-                </h2>
-                <div style="white-space: pre-wrap; line-height: 1.7;">{{ devoir.consigne }}</div>
-                {% if devoir.fichier_consigne %}
-                <div style="margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--bordure);">
-                    <a href="{{ devoir.fichier_consigne.url }}" target="_blank" class="btn">
-                        <i class="ti ti-download"></i> Télécharger la consigne
-                    </a>
+            <div class="dd-card">
+                <div class="dd-card-header">
+                    <i class="ti ti-align-left"></i> Consigne
                 </div>
-                {% endif %}
+                <div class="dd-card-body">
+                    <div class="consigne-text">{{ devoir.consigne }}</div>
+                    {% if devoir.fichier_consigne %}
+                    <div style="margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--border-light, #e8edf3);">
+                        <a href="{{ devoir.fichier_consigne.url }}" target="_blank"
+                           style="display: inline-flex; align-items: center; gap: 6px; padding: 0.55rem 1rem; border-radius: 10px; background: rgba(13,148,136,0.08); border: 1.5px solid rgba(13,148,136,0.2); color: #0D9488; font-weight: 700; font-size: 0.85rem; text-decoration: none; transition: all 0.2s;">
+                            <i class="ti ti-download"></i> Télécharger la consigne
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
             </div>
 
-            <!-- ── Vue formateur : tableau des soumissions ── -->
+            <!-- Formateur: submissions -->
             {% if is_formateur and soumissions_all is not None %}
-            <div class="carte" style="margin-top: 1.5rem; padding: 0; overflow: hidden;">
-                <div style="padding: 1rem 1.5rem; border-bottom: 1px solid var(--bordure); background: var(--surface-alt); display: flex; align-items: center; justify-content: space-between;">
-                    <h2 style="margin: 0; font-size: 1rem;">
-                        <i class="ti ti-users"></i> Soumissions reçues
-                        <span style="font-size:.85rem; color:var(--texte-secondaire); font-weight:400;">({{ soumissions_all|length }})</span>
-                    </h2>
+            <div class="dd-card">
+                <div class="dd-card-header">
+                    <i class="ti ti-users"></i>
+                    Soumissions reçues
+                    <span style="font-size: 0.78rem; font-weight: 600; color: var(--text-muted, #94a3b8); margin-left: 4px;">
+                        ({{ soumissions_all|length }})
+                    </span>
                 </div>
+
                 {% if soumissions_all %}
-                    <table style="width: 100%; border-collapse: collapse;">
-                        <thead>
-                            <tr style="font-size: .8rem; text-transform: uppercase; color: var(--texte-secondaire);">
-                                <th style="padding: .6rem 1.25rem; text-align: left;">Élève</th>
-                                <th style="padding: .6rem 1rem; text-align: center;">Date</th>
-                                <th style="padding: .6rem 1rem; text-align: center;">Note</th>
-                                <th style="padding: .6rem 1.25rem; text-align: right;">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for s in soumissions_all %}
-                            {% with app=s.appreciation_details %}
-                            <tr style="border-top: 1px solid var(--bordure);">
-                                <td style="padding: .75rem 1.25rem; font-weight: 500;">{{ s.etudiant.get_full_name }}</td>
-                                <td style="padding: .75rem 1rem; text-align: center; font-size: .85rem; color: var(--texte-secondaire);">
-                                    {{ s.date_soumission|date:"d/m/Y H:i" }}
-                                </td>
-                                <td style="padding: .75rem 1rem; text-align: center;">
-                                    {% if s.note is not None %}
-                                        <span style="font-weight: 700; color: {{ app.color }};">
-                                            {{ s.note }}/{{ devoir.note_max }}
-                                        </span>
-                                    {% else %}
-                                        <span style="color: var(--texte-secondaire);">—</span>
-                                    {% endif %}
-                                </td>
-                                <td style="padding: .75rem 1.25rem; text-align: right;">
-                                    <div style="display: flex; gap: .5rem; justify-content: flex-end;">
-                                        <a href="{{ s.fichier.url }}" target="_blank" class="btn btn-ghost"
-                                           style="font-size: .8rem; padding: .3rem .7rem;" title="Voir le fichier">
-                                            <i class="ti ti-eye"></i>
-                                        </a>
-                                        <a href="{% url 'apprentissage:soumission_noter' soumission_id=s.pk %}"
-                                           class="btn" style="font-size: .8rem; padding: .3rem .7rem;">
-                                            {% if s.note is not None %}
-                                                <i class="ti ti-pencil"></i> Modifier
-                                            {% else %}
-                                                <i class="ti ti-check"></i> Noter
-                                            {% endif %}
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-                            {% endwith %}
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                <table class="submissions-table">
+                    <thead>
+                        <tr>
+                            <th>Élève</th>
+                            <th>Date</th>
+                            <th>Note</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for s in soumissions_all %}
+                        {% with app=s.appreciation_details %}
+                        <tr>
+                            <td>
+                                <div class="student-cell">
+                                    <div class="s-avatar">{{ s.etudiant.get_full_name|slice:":1"|upper }}</div>
+                                    <div class="s-name">{{ s.etudiant.get_full_name }}</div>
+                                </div>
+                            </td>
+                            <td style="font-size: 0.82rem; color: var(--text-muted, #64748b);">
+                                {{ s.date_soumission|date:"d/m/Y H:i" }}
+                            </td>
+                            <td>
+                                {% if s.note is not None %}
+                                    <span class="note-badge {% if s.note >= devoir.note_max|add:'-2' %}green{% elif s.note >= devoir.note_max|floatformat:0|add:'0'|add:'-5' %}orange{% else %}red{% endif %}">
+                                        {{ s.note }}/{{ devoir.note_max }}
+                                    </span>
+                                {% else %}
+                                    <span class="note-badge none">— À noter</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="action-btns">
+                                    <a href="{{ s.fichier.url }}" target="_blank" class="action-btn view" title="Voir le fichier">
+                                        <i class="ti ti-eye"></i>
+                                    </a>
+                                    <a href="{% url 'apprentissage:soumission_noter' soumission_id=s.pk %}" class="action-btn {% if s.note is not None %}regrade{% else %}grade{% endif %}">
+                                        {% if s.note is not None %}
+                                            <i class="ti ti-pencil"></i> Modifier
+                                        {% else %}
+                                            <i class="ti ti-check"></i> Noter
+                                        {% endif %}
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endwith %}
+                        {% endfor %}
+                    </tbody>
+                </table>
                 {% else %}
-                    <div style="padding: 2.5rem; text-align: center; color: var(--texte-secondaire);">
-                        <i class="ti ti-inbox" style="font-size: 2rem; display:block; margin-bottom:.5rem;"></i>
-                        Aucune soumission reçue pour le moment.
-                    </div>
+                <div class="empty-submissions">
+                    <i class="ti ti-inbox"></i>
+                    <strong style="color: var(--text-primary, #0f172a);">Aucune soumission reçue</strong>
+                    <span style="font-size: 0.85rem;">Les travaux de vos élèves apparaîtront ici.</span>
+                </div>
                 {% endif %}
             </div>
             {% endif %}
 
-            <!-- ── Vue élève : formulaire de soumission ── -->
+            <!-- Student: submit form -->
             {% if not is_formateur %}
-            <div class="carte" style="margin-top: 1.5rem;">
-                <h2 style="font-size: 1.1rem; margin-bottom: 1rem; border-bottom: 1px solid var(--bordure); padding-bottom: .75rem;">
-                    {% if soumission %}📤 Modifier ma soumission{% else %}📤 Déposer mon travail{% endif %}
-                </h2>
-
-                <!-- Résultat corrigé avec couleurs dynamiques -->
-                {% if soumission and soumission.est_corrigee %}
+            <div class="dd-card">
+                <div class="dd-card-header">
+                    <i class="ti ti-upload"></i>
+                    {% if soumission %}Modifier ma soumission{% else %}Déposer mon travail{% endif %}
+                </div>
+                <div class="dd-card-body">
+                    <!-- Result if corrected -->
+                    {% if soumission and soumission.est_corrigee %}
                     {% with app=soumission.appreciation_details %}
-                    <div style="background: {{ app.bg_color }}; border-left: 4px solid {{ app.color }};
-                                padding: 1rem 1.25rem; border-radius: .5rem; margin-bottom: 1.25rem;">
-                        <div style="font-size: 1.05rem; font-weight: 700; color: {{ app.color }}; margin-bottom: .25rem;">
-                            {{ app.text }} !
+                    <div class="result-banner" style="background: {{ app.bg_color }}; border: 1.5px solid {{ app.color }}55;">
+                        <div class="result-banner-icon">🏆</div>
+                        <div>
+                            <div class="result-banner-score" style="color: {{ app.color }};">
+                                {{ soumission.note }} / {{ devoir.note_max }} pts
+                            </div>
+                            <div class="result-banner-label" style="color: {{ app.color }};">{{ app.text }}</div>
+                            {% if soumission.feedback %}
+                            <div class="result-banner-feedback">💬 « {{ soumission.feedback }} »</div>
+                            {% endif %}
                         </div>
-                        <div style="font-size: 1.15rem; font-weight: 800; color: {{ app.color }};">
-                            {{ soumission.note }}<span style="font-size:.85rem; font-weight:500;">/{{ devoir.note_max }}</span>
-                        </div>
-                        {% if soumission.feedback %}
-                        <div style="margin-top: .75rem; padding-top: .75rem; border-top: 1px solid {{ app.border_color }}33;
-                                    font-size: .88rem; font-style: italic; color: var(--texte-secondaire);">
-                            💬 Feedback : « {{ soumission.feedback }} »
-                        </div>
-                        {% endif %}
                     </div>
                     {% endwith %}
-                {% endif %}
+                    {% endif %}
 
-                <form method="post" enctype="multipart/form-data"
-                      style="display: flex; flex-direction: column; gap: 1rem;
-                             {% if soumission and soumission.est_corrigee %}opacity: .6; pointer-events: none;{% endif %}">
-                    {% csrf_token %}
-                    <div class="form-group">
-                        <label class="form-label">{{ form.fichier.label }}
-                            <span style="color: var(--texte-secondaire); font-size: .8rem;">(PDF, DOC, image · max 10 Mo)</span>
-                        </label>
-                        {{ form.fichier }}
-                        {% if form.fichier.errors %}<div class="form-error">{{ form.fichier.errors }}</div>{% endif %}
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">{{ form.commentaire_eleve.label }}</label>
-                        {{ form.commentaire_eleve }}
-                    </div>
-                    <button type="submit" class="btn btn-primary" style="align-self: flex-start;"
-                            {% if soumission and soumission.est_corrigee %}disabled{% endif %}>
-                        <i class="ti ti-upload"></i>
+                    <form method="post" enctype="multipart/form-data"
+                          style="display: flex; flex-direction: column; gap: 1rem;
+                          {% if soumission and soumission.est_corrigee %}opacity: 0.6; pointer-events: none;{% endif %}">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label class="form-label" style="display:block; font-weight:700; margin-bottom:0.5rem; color:var(--text-primary);">
+                                {{ form.fichier.label }}
+                                <span style="color: var(--text-muted, #94a3b8); font-size: 0.78rem; font-weight: normal; margin-left: 5px;">(PDF, DOC, image · max 10 Mo)</span>
+                            </label>
+                            {{ form.fichier }}
+                            {% if form.fichier.errors %}<div class="form-error" style="color: #ef4444; font-size: 0.8rem; margin-top: 4px;">{{ form.fichier.errors }}</div>{% endif %}
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" style="display:block; font-weight:700; margin-bottom:0.5rem; color:var(--text-primary);">{{ form.commentaire_eleve.label }}</label>
+                            {{ form.commentaire_eleve }}
+                        </div>
+                        <button type="submit" class="dd-btn-submit"
+                                {% if soumission and soumission.est_corrigee %}disabled{% endif %}>
+                            <i class="ti ti-upload"></i>
+                            {% if soumission and soumission.est_corrigee %}
+                                Devoir déjà corrigé
+                            {% elif soumission %}
+                                Remplacer ma soumission
+                            {% else %}
+                                Envoyer mon travail
+                            {% endif %}
+                        </button>
                         {% if soumission and soumission.est_corrigee %}
-                            Devoir déjà corrigé
-                        {% elif soumission %}
-                            Remplacer ma soumission
-                        {% else %}
-                            Envoyer mon travail
+                        <p style="font-size: 0.8rem; color: var(--text-muted, #94a3b8); display: flex; align-items: center; gap: 5px; margin: 0;">
+                            <i class="ti ti-lock"></i> Ce devoir a été corrigé. Vous ne pouvez plus le modifier.
+                        </p>
                         {% endif %}
-                    </button>
-                </form>
-
-                {% if soumission and soumission.est_corrigee %}
-                <p style="font-size: .8rem; color: var(--texte-secondaire); margin-top: .75rem;">
-                    <i class="ti ti-lock"></i> Ce devoir a été corrigé. Vous ne pouvez plus le modifier.
-                </p>
-                {% endif %}
+                    </form>
+                </div>
             </div>
             {% endif %}
         </div>
 
-        <!-- ── Colonne droite : infos ── -->
-        <div style="display: flex; flex-direction: column; gap: 1rem;">
-
-            <!-- Informations du devoir -->
-            <div class="carte" style="padding: 1.25rem;">
-                <h3 style="font-size: .88rem; text-transform: uppercase; letter-spacing: .06em;
-                            color: var(--texte-secondaire); margin-bottom: 1rem;">Informations</h3>
-                <div style="display: flex; flex-direction: column; gap: .75rem; font-size: .9rem;">
-                    <div style="display: flex; justify-content: space-between;">
-                        <span style="color: var(--texte-secondaire);">Note max</span>
-                        <strong>/{{ devoir.note_max }}</strong>
+        <!-- ══ RIGHT SIDEBAR ══ -->
+        <div>
+            <!-- Info card -->
+            <div class="dd-sidebar-card">
+                <div class="dd-sidebar-header"><i class="ti ti-info-circle"></i> Informations</div>
+                <div class="dd-sidebar-body">
+                    <div class="info-row">
+                        <span>Note maximale</span>
+                        <span>{{ devoir.note_max }} pts</span>
                     </div>
-                    <div style="display: flex; justify-content: space-between;">
-                        <span style="color: var(--texte-secondaire);">Date limite</span>
-                        <strong>
-                            {% if devoir.date_limite %}{{ devoir.date_limite|date:"d/m/Y H:i" }}{% else %}Pas de limite{% endif %}
-                        </strong>
+                    <div class="info-row">
+                        <span>Date limite</span>
+                        <span>{% if devoir.date_limite %}{{ devoir.date_limite|date:"d/m/Y H:i" }}{% else %}Pas de limite{% endif %}</span>
                     </div>
-                    <div style="display: flex; justify-content: space-between;">
-                        <span style="color: var(--texte-secondaire);">Chapitre</span>
-                        <strong>{{ devoir.chapitre.titre }}</strong>
+                    <div class="info-row">
+                        <span>Chapitre</span>
+                        <span>{{ devoir.chapitre.titre }}</span>
                     </div>
-                    <div style="display: flex; justify-content: space-between;">
-                        <span style="color: var(--texte-secondaire);">Cours</span>
-                        <strong>{{ devoir.chapitre.cours.titre }}</strong>
+                    <div class="info-row">
+                        <span>Cours</span>
+                        <span>{{ devoir.chapitre.cours.titre }}</span>
                     </div>
+                    {% if is_formateur %}
+                    <div class="info-row">
+                        <span>Soumissions</span>
+                        <span style="color: #0D9488;">{{ soumissions_all|length }}</span>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
 
-            <!-- Carte de statut de soumission (élève seulement) -->
+            <!-- Student submission status -->
             {% if not is_formateur and soumission %}
             {% with app=soumission.appreciation_details %}
-            <div class="carte" style="padding: 1.25rem; border: 1px solid {% if soumission.est_corrigee %}{{ app.color }}55{% else %}#2196f355{% endif %};">
-                <h3 style="font-size: .88rem; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 1rem;
-                            color: {% if soumission.est_corrigee %}{{ app.color }}{% else %}#2196f3{% endif %};">
-                    {% if soumission.est_corrigee %}<i class="ti ti-rosette-discount-check"></i> {{ app.text }}
-                    {% else %}<i class="ti ti-upload"></i> Soumis
-                    {% endif %}
-                </h3>
-                <div style="font-size: .85rem; color: var(--texte-secondaire);">
-                    <div>Envoyé le {{ soumission.date_soumission|date:"d/m/Y à H:i" }}</div>
-                    <a href="{{ soumission.fichier.url }}" target="_blank"
-                       style="color: var(--accent); margin-top: .6rem; display: inline-flex; align-items: center; gap: .3rem;">
-                        <i class="ti ti-download"></i> Télécharger mon fichier
-                    </a>
+            <div class="submission-status-card {% if soumission.est_corrigee %}graded{% else %}pending{% endif %}"
+                 style="{% if soumission.est_corrigee %}background: {{ app.bg_color }}; border-color: {{ app.color }}55;{% endif %}">
+                <div style="font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em;
+                            color: {% if soumission.est_corrigee %}{{ app.color }}{% else %}#3b82f6{% endif %}; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 5px;">
+                    <i class="ti ti-{% if soumission.est_corrigee %}rosette-discount-check{% else %}clock{% endif %}"></i>
+                    {% if soumission.est_corrigee %}{{ app.text }}{% else %}En attente de correction{% endif %}
                 </div>
+                <div style="font-size: 0.82rem; color: var(--text-muted, #64748b);">
+                    Envoyé le {{ soumission.date_soumission|date:"d/m/Y à H:i" }}
+                </div>
+                <a href="{{ soumission.fichier.url }}" target="_blank"
+                   style="display: inline-flex; align-items: center; gap: 4px; font-size: 0.8rem; font-weight: 600; color: #0D9488; margin-top: 0.6rem; text-decoration: none;">
+                    <i class="ti ti-download"></i> Mon fichier soumis
+                </a>
             </div>
             {% endwith %}
             {% endif %}
 
-            <!-- Lien retour -->
-            <a href="{% url 'apprentissage:devoirs_liste' %}" class="btn btn-ghost" style="text-align: center;">
+            <!-- Back button -->
+            <a href="{% url 'apprentissage:devoirs_liste' %}" class="dd-btn-back">
                 <i class="ti ti-arrow-left"></i> Retour aux devoirs
             </a>
         </div>
+
     </div>
-</section>
+</div>
 {% endblock %}

@@ -7,31 +7,87 @@
       hx-on::after-request="if(event.detail.successful) document.getElementById('form-modal').style.display='none';">
     {% csrf_token %}
 
-    <div style="margin-bottom: 1.5rem;">
-        <h2 style="margin-top:0; color: var(--primaire);">{% if form.instance.pk %}Modifier{% else %}Ajouter{% endif %} un Document</h2>
-        <p style="color: var(--texte-secondaire); margin:0;">Veuillez remplir les informations du PDF.</p>
+    <div style="margin-bottom: 1.5rem; text-align: center;">
+        <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(59,130,246,0.1); color: #3b82f6; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin: 0 auto 1rem;">
+            <i class="ti ti-file-upload"></i>
+        </div>
+        <h2 style="margin: 0; font-size: 1.4rem; font-weight: 800; color: var(--text-primary, #0f172a);">
+            {% if form.instance.pk %}Modifier le document{% else %}Ajouter un document{% endif %}
+        </h2>
+        <p style="margin: 0.25rem 0 0; font-size: 0.9rem; color: var(--text-muted, #64748b);">
+            Associez un PDF, support ou devoir à ce chapitre.
+        </p>
     </div>
 
     {% if form.non_field_errors %}
-        <div class="messages">
+        <div style="background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #ef4444; padding: 0.75rem; border-radius: 8px; font-size: 0.85rem; margin-bottom: 1rem;">
             {% for error in form.non_field_errors %}
-                <p class="message-item">{{ error }}</p>
+                <div style="margin-bottom: 0.25rem;">{{ error }}</div>
             {% endfor %}
         </div>
     {% endif %}
 
-    {% for field in form %}
-        <p style="margin-bottom: 1rem;">
-            <label for="{{ field.id_for_label }}" style="font-weight: 600; display: block; margin-bottom: 0.4rem;">{{ field.label }}</label>
-            {{ field }}
-            {% if field.errors %}
-                <span class="error-text" style="color: #d32f2f; font-size: 0.85rem; display: block; margin-top: 4px;">{{ field.errors.0 }}</span>
-            {% endif %}
-        </p>
-    {% endfor %}
+    <div style="display: flex; flex-direction: column; gap: 1rem;">
+        {% for field in form %}
+            <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+                <label for="{{ field.id_for_label }}" style="font-weight: 700; font-size: 0.88rem; color: var(--text-primary, #0f172a);">
+                    {{ field.label }}
+                </label>
+                
+                {% if field.field.widget.input_type == 'file' %}
+                    <div style="border: 2px dashed var(--border-default, #cbd5e1); border-radius: 12px; padding: 1.25rem; background: rgba(59,130,246,0.02); text-align: center; position: relative; transition: all 0.2s;" onmouseover="this.style.borderColor='#3b82f6'" onmouseout="this.style.borderColor='var(--border-default, #cbd5e1)'">
+                        <i class="ti ti-upload" style="font-size: 1.5rem; color: #3b82f6; margin-bottom: 0.5rem; display: block;"></i>
+                        {{ field }}
+                        <style>
+                            #{{ field.id_for_label }} { width: 100%; font-size: 0.85rem; }
+                        </style>
+                    </div>
+                {% else %}
+                    {{ field }}
+                    <style>
+                        /* Make form inputs look premium inside modal */
+                        #{{ field.id_for_label }} {
+                            width: 100%;
+                            padding: 0.65rem 1rem;
+                            border-radius: 10px;
+                            border: 1.5px solid var(--border-default, #cbd5e1);
+                            background: var(--bg-surface, #fff);
+                            color: var(--text-primary, #0f172a);
+                            font-family: inherit;
+                            font-size: 0.9rem;
+                            transition: all 0.2s;
+                        }
+                        #{{ field.id_for_label }}:focus {
+                            outline: none;
+                            border-color: #3b82f6;
+                            box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+                        }
+                    </style>
+                {% endif %}
 
-    <div class="actions" style="margin-top: 2rem; border-top: 1px solid var(--bordure); padding-top: 1rem; display: flex; justify-content: flex-end; gap: 1rem;">
-        <button type="button" class="btn btn-ghost" onclick="document.getElementById('form-modal').style.display='none'">Annuler</button>
-        <button type="submit" class="btn">Soumettre</button>
+                {% if field.help_text %}
+                    <span style="font-size: 0.75rem; color: var(--text-muted, #94a3b8);">{{ field.help_text }}</span>
+                {% endif %}
+                {% if field.errors %}
+                    <span style="color: #ef4444; font-size: 0.8rem; font-weight: 600; display: flex; align-items: center; gap: 4px;">
+                        <i class="ti ti-alert-circle"></i> {{ field.errors.0 }}
+                    </span>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+
+    <div style="margin-top: 2rem; display: flex; justify-content: flex-end; gap: 0.75rem;">
+        <button type="button" 
+                onclick="document.getElementById('form-modal').style.display='none'"
+                style="padding: 0.6rem 1.2rem; border-radius: 10px; font-weight: 600; font-size: 0.9rem; background: var(--bg-surface-alt, #f1f5f9); border: 1px solid var(--border-default, #cbd5e1); color: var(--text-secondary, #475569); cursor: pointer; transition: all 0.2s;">
+            Annuler
+        </button>
+        <button type="submit" 
+                style="padding: 0.6rem 1.2rem; border-radius: 10px; font-weight: 700; font-size: 0.9rem; background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(59,130,246,0.25); transition: all 0.2s;"
+                onmouseover="this.style.transform='translateY(-1px)'"
+                onmouseout="this.style.transform='none'">
+            <i class="ti ti-check" style="margin-right: 4px;"></i> {% if form.instance.pk %}Enregistrer{% else %}Ajouter{% endif %}
+        </button>
     </div>
 </form>

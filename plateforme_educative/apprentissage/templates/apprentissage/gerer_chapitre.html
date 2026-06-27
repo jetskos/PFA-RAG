@@ -1,32 +1,32 @@
 {% extends 'base.html' %}
-
-{% block title %}Gérer le chapitre | {{ chapitre.titre }}{% endblock %}
+{% block title %}Gérer le chapitre | EduTech{% endblock %}
 
 {% block content %}
 <style>
-    /* La Modale en pur CSS */
     .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
-    .modal-content { background: var(--surface); padding: 2rem; border-radius: var(--radius-lg); width: 100%; max-width: 500px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+    .modal-content { background: var(--surface, #fff); padding: 2rem; border-radius: 16px; width: 100%; max-width: 500px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
 </style>
 
-<section class="page-shell">
-    <div style="margin-bottom: 2rem;">
-        <a href="{% url 'apprentissage:gerer_cours' pk=chapitre.cours.pk %}" class="btn-ghost" style="padding: 6px 12px; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; border-radius: 6px; border: 1px solid var(--bordure); background: var(--surface);">
-            <i class="ti ti-arrow-left"></i> Retour à la gestion du cours
-        </a>
+<div class="page-shell" style="max-width: 1000px; margin: 0 auto; padding-top: 2rem;">
+    <!-- Breadcrumb -->
+    <div style="font-size: 0.85rem; color: var(--text-muted, #64748b); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+        <a href="{% url 'apprentissage:espace_formateur' %}" style="color: inherit; text-decoration: none; font-weight: 500;">Espace Formateur</a>
+        <i class="ti ti-chevron-right" style="font-size: 0.75rem;"></i>
+        <a href="{% url 'apprentissage:gerer_cours' chapitre.cours.id %}" style="color: inherit; text-decoration: none; font-weight: 500;">{{ chapitre.cours.titre }}</a>
+        <i class="ti ti-chevron-right" style="font-size: 0.75rem;"></i>
+        <span style="color: var(--text-primary, #0f172a);">{{ chapitre.titre }}</span>
     </div>
-    
+
     {% include 'apprentissage/partials/chapitre_detail.html' %}
+</div>
 
-    <div id="form-modal" class="modal-overlay">
-        <div class="modal-content" id="modal-body">
-        </div>
+<!-- Modale dynamique pour l'ajout de document/chapitre -->
+<div id="form-modal" class="modal-overlay">
+    <div class="modal-content" style="position: relative;">
+        <button type="button" class="btn-ghost" onclick="document.getElementById('form-modal').style.display='none'" style="position: absolute; right: 1rem; top: 1rem; padding: 4px; background: none; border: none; cursor: pointer;">
+            <i class="ti ti-x" style="font-size: 1.2rem;"></i>
+        </button>
+        <div id="modal-body"></div>
     </div>
-</section>
-
-<script>
-    document.getElementById('form-modal').addEventListener('click', function(e) {
-        if (e.target === this) this.style.display = 'none';
-    });
-</script>
+</div>
 {% endblock %}

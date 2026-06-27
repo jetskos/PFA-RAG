@@ -1,177 +1,421 @@
 {% extends 'base.html' %}
-
-{% block title %}Notes des étudiants{% endblock %}
+{% load static %}
+{% block title %}Notes des étudiants | EduTech{% endblock %}
 
 {% block content %}
-<section class="page-shell">
-    <div class="page-header" style="display: flex; justify-content: space-between; align-items: center;">
-        <div>
-            <p class="eyebrow">Formateur</p>
-            <h1>Notes de mes étudiants</h1>
-            <p>Scores QCM agrégés pour tous vos élèves.</p>
+<style>
+    /* ═══════════════════════════════════════
+       FORMATEUR NOTES — PREMIUM REDESIGN
+    ═══════════════════════════════════════ */
+
+    .fn-hero {
+        position: relative;
+        border-radius: 24px;
+        overflow: hidden;
+        padding: 2rem 2.5rem;
+        margin-bottom: 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1.5rem;
+        background: linear-gradient(135deg, #0f2027 0%, #1a3a2a 50%, #203a43 100%);
+        box-shadow: 0 16px 48px -8px rgba(13,148,136,0.25);
+    }
+    .fn-hero::before {
+        content: '';
+        position: absolute;
+        top: -60px; right: -60px;
+        width: 260px; height: 260px;
+        background: radial-gradient(circle, rgba(13,148,136,0.22) 0%, transparent 70%);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+    .fn-hero-left { position: relative; z-index: 2; }
+    .fn-eyebrow {
+        display: inline-flex; align-items: center; gap: 6px;
+        background: rgba(13,148,136,0.2);
+        border: 1px solid rgba(13,148,136,0.4);
+        color: #2dd4bf;
+        font-size: 0.72rem; font-weight: 700;
+        letter-spacing: 0.12em; text-transform: uppercase;
+        padding: 4px 12px; border-radius: 999px;
+        margin-bottom: 0.6rem;
+    }
+    .fn-title {
+        font-size: 1.9rem; font-weight: 900;
+        color: #fff; letter-spacing: -0.03em;
+        margin: 0 0 0.4rem; line-height: 1.2;
+    }
+    .fn-title span {
+        background: linear-gradient(90deg, #2dd4bf, #60a5fa);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    .fn-subtitle { color: rgba(255,255,255,0.6); font-size: 0.9rem; margin: 0; }
+    .fn-hero-right { position: relative; z-index: 2; display: flex; gap: 0.75rem; flex-shrink: 0; flex-wrap: wrap; }
+
+    /* Filter bar */
+    .fn-filter-bar {
+        display: flex; gap: 1rem; align-items: center;
+        padding: 1rem 1.25rem;
+        background: var(--bg-surface, #fff);
+        border: 1.5px solid var(--border-light, #e8edf3);
+        border-radius: 16px;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+    }
+    .fn-filter-label { font-size: 0.82rem; font-weight: 700; color: var(--text-muted, #64748b); text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap; }
+    .fn-filter-select {
+        flex: 1; min-width: 200px;
+        appearance: none; -webkit-appearance: none;
+        padding: 0.55rem 2.5rem 0.55rem 1rem;
+        border: 1.5px solid var(--border-default, #cbd5e1);
+        border-radius: 10px;
+        background: var(--bg-surface, #fff) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24'%3E%3Cpath fill='%2394a3b8' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E") no-repeat right 0.75rem center;
+        color: var(--text-primary, #0f172a);
+        font-size: 0.9rem; font-weight: 600; cursor: pointer;
+        transition: border-color 0.2s;
+    }
+    .fn-filter-select:focus { outline: none; border-color: #0D9488; }
+
+    /* Section header */
+    .classe-section-header {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 0.75rem 1.25rem;
+        border-radius: 14px;
+        background: linear-gradient(135deg, rgba(13,148,136,0.08), rgba(59,130,246,0.05));
+        border: 1.5px solid rgba(13,148,136,0.15);
+        margin-bottom: 0.75rem;
+    }
+    .classe-section-title {
+        font-size: 1rem; font-weight: 800;
+        color: var(--text-primary, #0f172a);
+        display: flex; align-items: center; gap: 0.5rem;
+        margin: 0;
+    }
+    .classe-section-title i { color: #0D9488; }
+    .classe-pill {
+        font-size: 0.72rem; font-weight: 700;
+        background: rgba(13,148,136,0.12);
+        color: #0D9488;
+        border: 1px solid rgba(13,148,136,0.25);
+        padding: 3px 10px; border-radius: 999px;
+    }
+
+    /* Student card */
+    .student-card {
+        background: var(--bg-surface, #fff);
+        border: 1.5px solid var(--border-light, #e8edf3);
+        border-radius: 16px;
+        overflow: hidden;
+        margin-bottom: 0.75rem;
+        transition: all 0.25s;
+    }
+    .student-card.alert { border-color: rgba(239,68,68,0.3); }
+    .student-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.07); }
+
+    .student-header {
+        display: flex; align-items: center; gap: 1rem;
+        padding: 1rem 1.5rem;
+        cursor: pointer;
+        transition: background 0.15s;
+        flex-wrap: wrap;
+    }
+    .student-header:hover { background: var(--bg-surface-alt, #f8fafc); }
+
+    .student-avatar {
+        width: 44px; height: 44px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.1rem; font-weight: 800;
+        flex-shrink: 0;
+        color: white;
+        background: linear-gradient(135deg, #0D9488, #0F766E);
+    }
+    .student-card.alert .student-avatar {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+    }
+
+    .student-name { font-weight: 800; font-size: 0.95rem; color: var(--text-primary, #0f172a); display: flex; align-items: center; gap: 0.5rem; }
+    .student-email { font-size: 0.8rem; color: var(--text-muted, #64748b); margin-top: 1px; display: flex; align-items: center; gap: 4px; }
+    .alert-pill {
+        font-size: 0.68rem; font-weight: 800; text-transform: uppercase;
+        background: #ef4444; color: white;
+        padding: 2px 8px; border-radius: 6px;
+        letter-spacing: 0.04em;
+        display: inline-flex; align-items: center; gap: 3px;
+        box-shadow: 0 2px 8px rgba(239,68,68,0.3);
+    }
+
+    .student-score {
+        margin-left: auto;
+        display: flex; align-items: center; gap: 1.5rem;
+    }
+    .score-block { text-align: right; }
+    .score-label { font-size: 0.68rem; font-weight: 700; color: var(--text-muted, #64748b); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 2px; }
+    .score-value {
+        font-size: 1.1rem; font-weight: 900;
+        padding: 2px 10px; border-radius: 8px;
+        display: inline-block;
+    }
+    .score-value.green { background: rgba(16,185,129,0.1); color: #10b981; }
+    .score-value.orange { background: rgba(245,158,11,0.1); color: #f59e0b; }
+    .score-value.red { background: rgba(239,68,68,0.1); color: #ef4444; }
+    .score-value.muted { background: var(--bg-surface-alt, #f1f5f9); color: var(--text-muted, #94a3b8); font-size: 0.85rem; font-style: italic; }
+
+    .toggle-chevron {
+        width: 32px; height: 32px;
+        border-radius: 8px;
+        background: var(--bg-surface-alt, #f1f5f9);
+        display: flex; align-items: center; justify-content: center;
+        color: var(--text-muted, #94a3b8);
+        flex-shrink: 0;
+        transition: all 0.3s;
+    }
+    .toggle-chevron.open { transform: rotate(180deg); background: rgba(13,148,136,0.1); color: #0D9488; }
+
+    /* Details panel */
+    .student-details { background: var(--bg-surface-alt, #f8fafc); border-top: 1px solid var(--border-light, #e8edf3); }
+    .cours-detail-section { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-light, #e8edf3); }
+    .cours-detail-section:last-child { border-bottom: none; }
+
+    .cours-detail-header {
+        display: flex; justify-content: space-between; align-items: center;
+        margin-bottom: 1rem; gap: 1rem; flex-wrap: wrap;
+    }
+    .cours-detail-title {
+        font-weight: 700; font-size: 0.9rem;
+        color: var(--text-primary, #0f172a);
+        display: flex; align-items: center; gap: 6px;
+    }
+    .cours-detail-title i { color: var(--text-muted, #94a3b8); }
+    .cours-detail-stats { display: flex; gap: 1.25rem; align-items: center; flex-wrap: wrap; }
+    .cours-stat-mini {
+        display: flex; flex-direction: column;
+        align-items: flex-end;
+        gap: 1px;
+    }
+    .cours-stat-mini span:first-child { font-size: 0.68rem; color: var(--text-muted, #94a3b8); text-transform: uppercase; font-weight: 600; }
+    .cours-stat-mini span:last-child { font-size: 0.9rem; font-weight: 800; color: var(--text-primary, #0f172a); }
+
+    /* Chapter chips */
+    .chapitres-grid { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .ch-chip {
+        font-size: 0.78rem; font-weight: 700;
+        padding: 4px 12px; border-radius: 8px;
+        display: inline-flex; align-items: center; gap: 5px;
+        transition: all 0.15s;
+    }
+    .ch-chip.success { background: rgba(16,185,129,0.1); color: #10b981; border: 1px solid rgba(16,185,129,0.25); }
+    .ch-chip.fail { background: rgba(239,68,68,0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.2); }
+    .ch-chip.none { background: var(--bg-surface, #fff); color: var(--text-muted, #94a3b8); border: 1px solid var(--border-light, #e8edf3); }
+
+    /* Classe group */
+    .classe-group { margin-bottom: 2.5rem; }
+
+    /* Empty */
+    .fn-empty {
+        text-align: center; padding: 4rem 2rem;
+        border: 2px dashed var(--border-light, #e8edf3);
+        border-radius: 20px;
+        background: var(--bg-surface-alt, #f8fafc);
+        margin-top: 1.5rem;
+    }
+    .fn-empty i { font-size: 3rem; color: var(--text-muted, #94a3b8); margin-bottom: 1rem; display: block; }
+    .fn-empty h3 { font-weight: 800; color: var(--text-primary, #0f172a); margin: 0 0 0.5rem; }
+    .fn-empty p { color: var(--text-muted, #64748b); font-size: 0.9rem; margin: 0; }
+
+    /* Button helpers */
+    .btn-hero-primary {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 0.7rem 1.4rem; border-radius: 12px;
+        background: linear-gradient(135deg, #0D9488, #0F766E);
+        color: white; font-weight: 700; font-size: 0.88rem;
+        text-decoration: none; transition: all 0.2s;
+        box-shadow: 0 4px 14px rgba(13,148,136,0.3);
+        white-space: nowrap;
+    }
+    .btn-hero-primary:hover { filter: brightness(1.08); transform: translateY(-2px); }
+    .btn-hero-secondary {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 0.65rem 1.3rem; border-radius: 12px;
+        background: rgba(255,255,255,0.08);
+        border: 1.5px solid rgba(255,255,255,0.18);
+        color: rgba(255,255,255,0.9); font-weight: 600; font-size: 0.85rem;
+        text-decoration: none; backdrop-filter: blur(8px); transition: all 0.2s;
+        white-space: nowrap;
+    }
+    .btn-hero-secondary:hover { background: rgba(255,255,255,0.15); color: #2dd4bf; }
+</style>
+
+<div class="page-shell" style="max-width: 1200px; margin: 0 auto; padding-top: 2rem;">
+
+    <!-- ═══════════════════ HERO ═══════════════════ -->
+    <div class="fn-hero">
+        <div class="fn-hero-left">
+            <span class="fn-eyebrow"><i class="ti ti-chart-bar"></i> Suivi pédagogique</span>
+            <h1 class="fn-title">Notes de mes <span>étudiants</span></h1>
+            <p class="fn-subtitle">Scores QCM agrégés, progression par cours et détection des élèves en difficulté.</p>
+        </div>
+        <div class="fn-hero-right">
+            <a href="{% url 'apprentissage:exporter_notes_classe_csv' %}?classe={{ classe_selectionnee|default:'' }}" class="btn-hero-primary">
+                <i class="ti ti-download"></i> Exporter CSV
+            </a>
+            <a href="{% url 'apprentissage:espace_formateur' %}" class="btn-hero-secondary">
+                <i class="ti ti-arrow-left"></i> Retour
+            </a>
         </div>
     </div>
 
-    <!-- Filtre par classe -->
-    <div class="carte" style="margin-top: 1rem; padding: 1rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; background: var(--surface-alt); border: 1px solid var(--bordure);">
-        <form method="GET" style="display: flex; align-items: center; gap: 0.75rem; margin: 0; width: fit-content;">
-            <label for="classe-select" style="font-weight: 600; font-size: 0.9rem; margin-bottom: 0;">Filtrer par classe :</label>
-            <select name="classe" id="classe-select" onchange="this.form.submit()" style="padding: 0.45rem 1rem; border-radius: 6px; border: 1px solid var(--bordure); background: var(--surface); color: var(--text-primary); font-size: 0.9rem; font-weight: 600; cursor: pointer; outline: none;">
-                <option value="">Toutes les classes</option>
-                {% for cl in classes %}
-                    <option value="{{ cl.id }}" {% if classe_selectionnee == cl.id|stringformat:"s" %}selected{% endif %}>
-                        {{ cl.nom }} ({{ cl.niveau.nom }})
-                    </option>
-                {% endfor %}
-            </select>
-        </form>
-        <a href="{% url 'apprentissage:exporter_notes_classe_csv' %}?classe={{ classe_selectionnee|default:'' }}" class="btn" style="text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem; background: var(--bg-surface); border: 1px solid var(--border-color);">
-            <i class="ti ti-download"></i> Exporter CSV
-        </a>
-    </div>
+    <!-- ═══════════════════ FILTER ═══════════════════ -->
+    <form method="GET" class="fn-filter-bar">
+        <span class="fn-filter-label"><i class="ti ti-filter"></i> Classe :</span>
+        <select name="classe" class="fn-filter-select" onchange="this.form.submit()">
+            <option value="">Toutes les classes</option>
+            {% for cl in classes %}
+                <option value="{{ cl.id }}" {% if classe_selectionnee == cl.id|stringformat:"s" %}selected{% endif %}>
+                    {{ cl.nom }} — {{ cl.niveau.nom }}
+                </option>
+            {% endfor %}
+        </select>
+    </form>
 
+    <!-- ═══════════════════ STUDENT CARDS ═══════════════════ -->
     {% if notes_etudiants %}
         {% regroup notes_etudiants by etudiant.classe.nom as classes_groupes %}
-        
-        <div class="classes-container" style="display: flex; flex-direction: column; gap: 2.5rem; margin-top: 2rem;">
+
         {% for groupe in classes_groupes %}
-            <div class="classe-section">
-                <h2 style="font-size: 1.25rem; font-weight: 800; border-bottom: 2px solid var(--bordure); padding-bottom: 0.5rem; margin-bottom: 1.25rem; color: var(--text-primary); display: flex; align-items: center; justify-content: space-between;">
-                    <span style="display: flex; align-items: center; gap: 0.5rem;"><i class="ti ti-users" style="color: var(--texte-secondaire);"></i> {% if groupe.grouper %}{{ groupe.grouper }}{% else %}Sans classe{% endif %}</span>
-                    <span style="font-size: 0.85rem; font-weight: 600; background: var(--surface-alt); padding: 0.2rem 0.6rem; border-radius: 999px; border: 1px solid var(--bordure);">{{ groupe.list|length }} élève{{ groupe.list|length|pluralize }}</span>
+        <div class="classe-group">
+            <!-- Classe header -->
+            <div class="classe-section-header">
+                <h2 class="classe-section-title">
+                    <i class="ti ti-users"></i>
+                    {% if groupe.grouper %}{{ groupe.grouper }}{% else %}Sans classe{% endif %}
                 </h2>
-                
-                <div class="etudiants-grid" style="display: flex; flex-direction: column; gap: 1rem;">
-                    {% for etudiant_data in groupe.list %}
-                    <div class="carte etudiant-card" style="padding: 0; overflow: hidden; border: 1px solid {% if etudiant_data.en_difficulte %}#f4433655{% else %}var(--bordure){% endif %}; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: box-shadow 0.2s;">
-                        <!-- En-tête étudiant (Clickable pour l'accordéon) -->
-                        <div class="etudiant-header" onclick="toggleDetails('details-{{ etudiant_data.etudiant.id }}')" style="padding: 1rem 1.5rem; border-bottom: 1px solid var(--bordure); background: {% if etudiant_data.en_difficulte %}rgba(244,67,54,0.03){% else %}#fff{% endif %}; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; cursor: pointer;">
-                            <div style="display: flex; align-items: center; gap: 1rem;">
-                                <div class="feat-icon" style="width: 44px; height: 44px; font-size: 1.1rem; flex-shrink: 0; background: {% if etudiant_data.en_difficulte %}rgba(244,67,54,0.15){% else %}var(--surface-alt){% endif %}; color: {% if etudiant_data.en_difficulte %}#f44336{% else %}var(--text-primary){% endif %}; border-radius: 50%;">
-                                    <i class="ti ti-user"></i>
-                                </div>
-                                <div>
-                                    <div style="font-weight: 700; font-size: 1rem; color: var(--text-primary); display: flex; align-items: center; gap: 0.5rem;">
-                                        {{ etudiant_data.etudiant.get_full_name }}
-                                        {% if etudiant_data.en_difficulte %}
-                                            <span style="font-size: 0.72rem; font-weight: 800; text-transform: uppercase; background: #f44336; color: white; padding: 0.2rem 0.6rem; border-radius: 6px; letter-spacing: 0.05em; display: inline-flex; align-items: center; gap: 0.25rem; box-shadow: 0 2px 4px rgba(244,67,54,0.3);">
-                                                ⚠️ En difficulté
-                                            </span>
-                                        {% endif %}
-                                    </div>
-                                    <div style="font-size: 0.85rem; color: var(--texte-secondaire); margin-top: 0.2rem;">
-                                        <i class="ti ti-mail"></i> {{ etudiant_data.etudiant.email }}
-                                    </div>
-                                </div>
+                <span class="classe-pill">{{ groupe.list|length }} élève{{ groupe.list|length|pluralize }}</span>
+            </div>
+
+            <!-- Students -->
+            {% for etudiant_data in groupe.list %}
+            <div class="student-card {% if etudiant_data.en_difficulte %}alert{% endif %}" id="card-{{ etudiant_data.etudiant.id }}">
+
+                <!-- Header (clickable) -->
+                <div class="student-header" onclick="toggleStudent('{{ etudiant_data.etudiant.id }}')">
+                    <div class="student-avatar">
+                        {{ etudiant_data.etudiant.get_full_name|slice:":1"|upper }}
+                    </div>
+
+                    <div style="flex: 1; min-width: 0;">
+                        <div class="student-name">
+                            {{ etudiant_data.etudiant.get_full_name }}
+                            {% if etudiant_data.en_difficulte %}
+                            <span class="alert-pill"><i class="ti ti-alert-triangle"></i> En difficulté</span>
+                            {% endif %}
+                        </div>
+                        <div class="student-email">
+                            <i class="ti ti-mail"></i> {{ etudiant_data.etudiant.email }}
+                        </div>
+                    </div>
+
+                    <div class="student-score">
+                        <div class="score-block">
+                            <div class="score-label">Moy. Générale</div>
+                            {% if etudiant_data.moyenne_generale is not None %}
+                                <span class="score-value {% if etudiant_data.moyenne_generale >= 80 %}green{% elif etudiant_data.moyenne_generale >= 50 %}orange{% else %}red{% endif %}">
+                                    {{ etudiant_data.moyenne_generale }}/100
+                                </span>
+                            {% else %}
+                                <span class="score-value muted">Pas de note</span>
+                            {% endif %}
+                        </div>
+                        <div class="toggle-chevron" id="chevron-{{ etudiant_data.etudiant.id }}">
+                            <i class="ti ti-chevron-down"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Details (hidden by default) -->
+                <div class="student-details" id="details-{{ etudiant_data.etudiant.id }}" style="display: none;">
+                    {% for cours_data in etudiant_data.cours %}
+                    <div class="cours-detail-section">
+                        <div class="cours-detail-header">
+                            <div class="cours-detail-title">
+                                <i class="ti ti-book"></i>
+                                {{ cours_data.cours.titre }}
+                                {% for cid, moy in moyenne_classe_par_cours.items %}
+                                    {% if cid == cours_data.cours.id|stringformat:"s" and moy is not None %}
+                                    <span style="font-size: 0.72rem; font-weight: 600; color: var(--text-muted, #94a3b8); background: var(--bg-surface-alt, #f1f5f9); padding: 2px 8px; border-radius: 6px; border: 1px solid var(--border-light, #e8edf3); margin-left: 4px;">
+                                        Moy. classe : {{ moy }}/100
+                                    </span>
+                                    {% endif %}
+                                {% endfor %}
                             </div>
-                            <div style="display: flex; align-items: center; gap: 1.5rem;">
-                                {% if etudiant_data.moyenne_generale is not None %}
-                                    <div style="text-align: right;">
-                                        <div style="font-size: 0.75rem; font-weight: 700; color: var(--texte-secondaire); text-transform: uppercase; margin-bottom: 0.2rem;">Moy. Générale</div>
-                                        <span style="
-                                            font-weight: 800; font-size: 1.05rem; padding: 0.2rem 0.8rem;
-                                            border-radius: 6px; display: inline-block;
-                                            background: {% if etudiant_data.moyenne_generale >= 80 %}rgba(76,175,80,0.1){% elif etudiant_data.moyenne_generale >= 50 %}rgba(255,152,0,0.1){% else %}rgba(244,67,54,0.1){% endif %};
-                                            color: {% if etudiant_data.moyenne_generale >= 80 %}#4caf50{% elif etudiant_data.moyenne_generale >= 50 %}#ff9800{% else %}#f44336{% endif %};">
-                                            {{ etudiant_data.moyenne_generale }}/100
-                                        </span>
-                                    </div>
-                                {% else %}
-                                    <span style="font-size: 0.9rem; color: var(--texte-secondaire); font-style: italic;">Pas de note</span>
-                                {% endif %}
-                                <div style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: var(--surface-alt); border-radius: 50%; border: 1px solid var(--bordure);">
-                                    <i class="ti ti-chevron-down toggle-icon" id="icon-{{ etudiant_data.etudiant.id }}" style="font-size: 1.1rem; color: var(--text-primary); transition: transform 0.3s;"></i>
+                            <div class="cours-detail-stats">
+                                <div class="cours-stat-mini">
+                                    <span>Progression</span>
+                                    <span>{{ cours_data.progression }}%</span>
                                 </div>
+                                {% if cours_data.moyenne_cours is not None %}
+                                <div class="cours-stat-mini">
+                                    <span>Note cours</span>
+                                    <span style="color: {% if cours_data.moyenne_cours >= 80 %}#10b981{% elif cours_data.moyenne_cours >= 50 %}#f59e0b{% else %}#ef4444{% endif %};">
+                                        {{ cours_data.moyenne_cours }}/100
+                                    </span>
+                                </div>
+                                {% endif %}
                             </div>
                         </div>
 
-                        <!-- Détails des cours (Cachés par défaut) -->
-                        <div id="details-{{ etudiant_data.etudiant.id }}" class="etudiant-details" style="display: none; background: #fdfdfd;">
-                            {% for cours_data in etudiant_data.cours %}
-                            <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--bordure);">
-                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 1rem;">
-                                    <div>
-                                        <span style="font-weight: 700; font-size: 0.95rem; color: var(--text-primary); display: flex; align-items: center; gap: 0.5rem;"><i class="ti ti-book" style="color: var(--texte-secondaire);"></i>{{ cours_data.cours.titre }}</span>
-                                        <div style="margin-top: 0.4rem;">
-                                        {% for cid, moy in moyenne_classe_par_cours.items %}
-                                            {% if cid == cours_data.cours.id|stringformat:"s" and moy is not None %}
-                                                <span style="font-size: 0.75rem; font-weight: 600; color: var(--texte-secondaire); background: #fff; padding: 0.2rem 0.5rem; border-radius: 4px; border: 1px solid var(--bordure);">
-                                                    Moy. de la classe : <strong>{{ moy }}/100</strong>
-                                                </span>
-                                            {% endif %}
-                                        {% endfor %}
-                                        </div>
-                                    </div>
-                                    <div style="text-align: right; display: flex; gap: 1.5rem; align-items: center;">
-                                        <div>
-                                            <div style="font-size: 0.75rem; color: var(--texte-secondaire); margin-bottom: 0.2rem; text-transform: uppercase; font-weight: 600;">Progression</div>
-                                            <div style="font-size: 0.95rem; font-weight: 700; color: var(--text-primary);">{{ cours_data.progression }}%</div>
-                                        </div>
-                                        {% if cours_data.moyenne_cours is not None %}
-                                        <div>
-                                            <div style="font-size: 0.75rem; color: var(--texte-secondaire); margin-bottom: 0.2rem; text-transform: uppercase; font-weight: 600;">Note du cours</div>
-                                            <div style="font-size: 1rem; font-weight: 800; color: {% if cours_data.moyenne_cours >= 80 %}#4caf50{% elif cours_data.moyenne_cours >= 50 %}#ff9800{% else %}#f44336{% endif %};">
-                                                {{ cours_data.moyenne_cours }}/100
-                                            </div>
-                                        </div>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                                
-                                {% if cours_data.chapitres %}
-                                <div style="background: #fff; border: 1px solid var(--bordure); border-radius: 8px; padding: 0.85rem; margin-top: 0.75rem;">
-                                    <div style="font-size: 0.75rem; font-weight: 700; color: var(--texte-secondaire); text-transform: uppercase; margin-bottom: 0.6rem; letter-spacing: 0.05em;"><i class="ti ti-list-check" style="margin-right: 4px;"></i> Détail des chapitres</div>
-                                    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
-                                        {% for ch in cours_data.chapitres %}
-                                            <span title="{{ ch.chapitre.titre }}" style="
-                                                font-size: 0.8rem; font-weight: 600; padding: 0.3rem 0.75rem; border-radius: 6px;
-                                                background: {% if ch.statut == 'REUSSI' %}rgba(76,175,80,0.1){% elif ch.statut == 'ECHOUE' %}rgba(244,67,54,0.1){% else %}var(--surface-alt){% endif %};
-                                                color: {% if ch.statut == 'REUSSI' %}#4caf50{% elif ch.statut == 'ECHOUE' %}#f44336{% else %}var(--texte-secondaire){% endif %};
-                                                border: 1px solid {% if ch.statut == 'REUSSI' %}rgba(76,175,80,0.2){% elif ch.statut == 'ECHOUE' %}rgba(244,67,54,0.2){% else %}var(--bordure){% endif %};">
-                                                Chapitre {{ ch.chapitre.ordre }}
-                                                <span style="opacity: 0.4; margin: 0 0.3rem;">|</span>
-                                                {% if ch.meilleur_score is not None %}{{ ch.meilleur_score }}%{% else %}—{% endif %}
-                                            </span>
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                                {% endif %}
+                        {% if cours_data.chapitres %}
+                        <div>
+                            <div style="font-size: 0.72rem; font-weight: 700; color: var(--text-muted, #94a3b8); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.5rem;">
+                                <i class="ti ti-list-check"></i> Chapitres
                             </div>
-                            {% endfor %}
-                            <div style="padding: 0.75rem; text-align: center; background: #fff;">
-                                <button onclick="toggleDetails('details-{{ etudiant_data.etudiant.id }}')" style="background: transparent; border: none; font-size: 0.8rem; font-weight: 600; color: var(--texte-secondaire); cursor: pointer; display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.4rem 0.8rem; border-radius: 4px; transition: background 0.2s;" onmouseover="this.style.background='var(--surface-alt)'" onmouseout="this.style.background='transparent'"><i class="ti ti-chevron-up"></i> Refermer les détails</button>
+                            <div class="chapitres-grid">
+                                {% for ch in cours_data.chapitres %}
+                                <span class="ch-chip {% if ch.statut == 'REUSSI' %}success{% elif ch.statut == 'ECHOUE' %}fail{% else %}none{% endif %}"
+                                      title="{{ ch.chapitre.titre }}">
+                                    <i class="ti ti-{% if ch.statut == 'REUSSI' %}check{% elif ch.statut == 'ECHOUE' %}x{% else %}minus{% endif %}"></i>
+                                    Chap. {{ ch.chapitre.ordre }}
+                                    <span style="opacity: 0.5;">·</span>
+                                    {% if ch.meilleur_score is not None %}{{ ch.meilleur_score }}%{% else %}—{% endif %}
+                                </span>
+                                {% endfor %}
                             </div>
                         </div>
+                        {% endif %}
                     </div>
                     {% endfor %}
+
+                    <div style="padding: 0.6rem; text-align: center; background: var(--bg-surface, #fff); border-top: 1px solid var(--border-light, #e8edf3);">
+                        <button onclick="toggleStudent('{{ etudiant_data.etudiant.id }}')"
+                                style="background: transparent; border: none; font-size: 0.8rem; font-weight: 600; color: var(--text-muted, #64748b); cursor: pointer; display: inline-flex; align-items: center; gap: 5px; padding: 0.3rem 0.75rem; border-radius: 6px; transition: background 0.15s;"
+                                onmouseover="this.style.background='var(--bg-surface-alt, #f1f5f9)'" onmouseout="this.style.background='transparent'">
+                            <i class="ti ti-chevron-up"></i> Réduire
+                        </button>
+                    </div>
                 </div>
             </div>
-        {% endfor %}
+            {% endfor %}
         </div>
-        
-        <script>
-        function toggleDetails(id) {
-            const el = document.getElementById(id);
-            const iconId = id.replace('details-', 'icon-');
-            const iconEl = document.getElementById(iconId);
-            
-            if (el.style.display === 'none' || el.style.display === '') {
-                el.style.display = 'block';
-                if (iconEl) iconEl.style.transform = 'rotate(180deg)';
-                // Optionnel: Faire défiler la vue légèrement si la carte est trop bas
-                // setTimeout(() => el.parentElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
-            } else {
-                el.style.display = 'none';
-                if (iconEl) iconEl.style.transform = 'rotate(0deg)';
-            }
-        }
-        </script>
+        {% endfor %}
+
     {% else %}
-        <div class="carte" style="text-align: center; padding: 4rem 2rem; margin-top: 2rem;">
-            <div class="feat-icon" style="margin: 0 auto 1rem;"><i class="ti ti-users"></i></div>
+        <div class="fn-empty">
+            <i class="ti ti-users"></i>
             <h3>Aucun étudiant trouvé</h3>
-            <p class="message-empty">Aucun élève ne correspond aux critères sélectionnés ou aucun élève n'a débuté vos cours.</p>
+            <p>Aucun élève ne correspond aux critères sélectionnés ou aucun élève n'a débuté vos cours.</p>
         </div>
     {% endif %}
-</section>
+
+</div>
+
+<script>
+function toggleStudent(id) {
+    const details = document.getElementById('details-' + id);
+    const chevron = document.getElementById('chevron-' + id);
+    const isOpen = details.style.display !== 'none';
+    details.style.display = isOpen ? 'none' : 'block';
+    chevron.classList.toggle('open', !isOpen);
+}
+</script>
 {% endblock %}

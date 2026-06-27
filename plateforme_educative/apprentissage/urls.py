@@ -54,6 +54,7 @@ urlpatterns = [
 
     # ── Calendrier et Événements ──────────────────────────────────────────────
     path('calendrier/', views.calendrier_view, name='calendrier'),
+    path('calendrier/events/', views.calendrier_events_json, name='calendrier_events_json'),
     path('calendrier/creer/', views.creer_evenement, name='creer_evenement'),
     path('calendrier/<uuid:pk>/modifier/', views.modifier_evenement, name='modifier_evenement'),
     path('calendrier/<uuid:pk>/supprimer/', views.supprimer_evenement, name='supprimer_evenement'),
