@@ -35,33 +35,42 @@
     <div id="tab-cours" class="tab-content" style="display: block;">
         <div class="courses-grid">
             {% for cours in mes_cours %}
-                <div class="course-card">
-                    <div class="course-card-header">
-                        <h3 class="course-card-title">{{ cours.titre }}</h3>
+                <div class="course-card" style="padding: 0; overflow: hidden; display: flex; flex-direction: column;">
+                    {% if cours.image_couverture %}
+                    <img src="{{ cours.image_couverture.url }}" alt="Couverture {{ cours.titre }}" style="width: 100%; height: 160px; object-fit: cover;">
+                    {% else %}
+                    <div style="width: 100%; height: 160px; background: linear-gradient(135deg, var(--surface), var(--bg-hover)); display: flex; align-items: center; justify-content: center;">
+                        <i class="ti ti-books" style="font-size: 3rem; color: var(--border);"></i>
                     </div>
-                    
-                    <p class="badge badge-secondary" style="align-self: flex-start; margin-bottom: 1rem;">
-                        {{ cours.get_niveau_display }}
-                    </p>
-                    
-                    <div class="course-card-meta">
-                        <span style="display: flex; align-items: center; gap: 6px;"><i class="ti ti-calendar" style="font-size: 1.1rem; color: var(--text-muted);"></i> Créé le {{ cours.date_creation|date:'d/m/Y' }}</span>
-                        <span style="display: flex; align-items: center; gap: 6px;">
-                            <i class="ti {% if cours.actif %}ti-eye{% else %}ti-eye-off{% endif %}" style="font-size: 1.1rem; color: {% if cours.actif %}#10b981{% else %}var(--text-muted){% endif %};"></i> 
-                            {% if cours.actif %}Publié et visible{% else %}Brouillon masqué{% endif %}
-                        </span>
-                    </div>
+                    {% endif %}
+                    <div style="padding: 1.5rem; display: flex; flex-direction: column; flex-grow: 1;">
+                        <div class="course-card-header">
+                            <h3 class="course-card-title" style="margin: 0;">{{ cours.titre }}</h3>
+                        </div>
+                        
+                        <p class="badge badge-secondary" style="align-self: flex-start; margin-bottom: 1rem; margin-top: 0.5rem;">
+                            {{ cours.get_niveau_display }}
+                        </p>
+                        
+                        <div class="course-card-meta" style="margin-bottom: auto;">
+                            <span style="display: flex; align-items: center; gap: 6px;"><i class="ti ti-calendar" style="font-size: 1.1rem; color: var(--text-muted);"></i> Créé le {{ cours.date_creation|date:'d/m/Y' }}</span>
+                            <span style="display: flex; align-items: center; gap: 6px;">
+                                <i class="ti {% if cours.actif %}ti-eye{% else %}ti-eye-off{% endif %}" style="font-size: 1.1rem; color: {% if cours.actif %}#10b981{% else %}var(--text-muted){% endif %};"></i> 
+                                {% if cours.actif %}Publié et visible{% else %}Brouillon masqué{% endif %}
+                            </span>
+                        </div>
 
-                    <div class="course-card-actions">
-                        <a href="{% url 'apprentissage:gerer_cours' cours.pk %}" class="btn-primary" style="flex: 1; justify-content: center;">Gérer le contenu</a>
-                        <a href="{% url 'apprentissage:editer_cours' cours.pk %}" class="btn-ghost" title="Modifier les infos" style="padding: 0.6rem 0.8rem;"><i class="ti ti-pencil"></i></a>
-                        <form method="post" action="{% url 'apprentissage:supprimer_cours' cours.pk %}" style="display:inline;"
-                              onsubmit="return confirm('⚠️ Supprimer définitivement le cours « {{ cours.titre }} » ?\n\nCette action est irréversible et supprimera tous les chapitres, documents et progressions associés.');">
-                            {% csrf_token %}
-                            <button type="submit" class="btn-ghost" title="Supprimer" style="padding: 0.6rem 0.8rem; color: #ef4444; border-color: #fecaca;">
-                                <i class="ti ti-trash"></i>
-                            </button>
-                        </form>
+                        <div class="course-card-actions" style="margin-top: 1.5rem;">
+                            <a href="{% url 'apprentissage:gerer_cours' cours.pk %}" class="btn-primary" style="flex: 1; justify-content: center;">Gérer le contenu</a>
+                            <a href="{% url 'apprentissage:editer_cours' cours.pk %}" class="btn-ghost" title="Modifier les infos" style="padding: 0.6rem 0.8rem;"><i class="ti ti-pencil"></i></a>
+                            <form method="post" action="{% url 'apprentissage:supprimer_cours' cours.pk %}" style="display:inline;"
+                                  onsubmit="return confirm('⚠️ Supprimer définitivement le cours « {{ cours.titre }} » ?\n\nCette action est irréversible et supprimera tous les chapitres, documents et progressions associés.');">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-ghost" title="Supprimer" style="padding: 0.6rem 0.8rem; color: #ef4444; border-color: #fecaca;">
+                                    <i class="ti ti-trash"></i>
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             {% empty %}

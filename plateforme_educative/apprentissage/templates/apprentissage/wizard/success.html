@@ -1,0 +1,25 @@
+<div id="current-step-data" data-step="5"></div>
+
+<div style="text-align: center; padding: 20px 0;">
+    <div style="width: 80px; height: 80px; background: #10b981; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px;">
+        <i class="bi bi-check-lg" style="color: white; font-size: 3rem;"></i>
+    </div>
+    
+    <h2 class="wiz-title" style="color: #10b981;">Félicitations !</h2>
+    <p style="font-size: 1.1rem; color: var(--ink-muted, #6b7280); margin-bottom: 30px;">
+        Votre cours <strong>{{ cours.titre }}</strong> a été créé avec succès.<br>
+        {% if docs_ajoutes > 0 %}
+        <span style="display: inline-block; background: rgba(16, 185, 129, 0.1); color: #059669; padding: 4px 12px; border-radius: 999px; font-size: 0.9rem; font-weight: 600; margin-top: 10px;">
+            <i class="bi bi-robot"></i> {{ docs_ajoutes }} document(s) en cours d'indexation IA
+        </span>
+        {% endif %}
+    </p>
+
+    <a href="{% url 'apprentissage:gerer_cours' cours.id %}" class="wiz-btn wiz-btn-success" style="text-decoration: none; max-width: 300px;">
+        Gérer mon cours
+    </a>
+    <br><br>
+    <a href="{% url 'apprentissage:espace_formateur' %}" style="color: #3b82f6; text-decoration: none; font-weight: 600;">
+        <i class="bi bi-arrow-left"></i> Retour au tableau de bord
+    </a>
+</div>

@@ -1,0 +1,54 @@
+<div id="current-step-data" data-step="4"></div>
+
+<div style="text-align: center; margin-bottom: 24px;">
+    <h2 style="font-size: 1.5rem; margin-bottom: 8px;">Documents du chapitre</h2>
+    <p style="color: var(--ink-faint, #6b7280);">Ajoutez vos PDF. Notre IA (Tuteur RAG) va les indexer automatiquement en arrière-plan.</p>
+</div>
+
+<form hx-post="{% url 'apprentissage:wizard_step4' %}" hx-target="#wizard-content" hx-swap="innerHTML" hx-encoding="multipart/form-data">
+    {% csrf_token %}
+    <input type="hidden" name="chapitre_id" value="{{ chapitre.id }}">
+    
+    <div class="wiz-form-group">
+        <label class="wiz-label">Fichiers PDF (Plusieurs possibles)</label>
+        <div style="border: 2px dashed var(--border, #d1d5db); border-radius: 12px; padding: 40px; text-align: center; background: var(--bg, #f9fafb);">
+            <i class="bi bi-file-earmark-pdf" style="font-size: 3rem; color: #ef4444; margin-bottom: 16px;"></i>
+            <div id="pdf-list" style="margin-bottom: 16px; font-weight: 600; color: #10b981; font-size: 0.95rem; text-align: left; display: none; max-width: 80%; margin-left: auto; margin-right: auto; background: white; padding: 12px; border-radius: 8px; border: 1px solid #e5e7eb;"></div>
+            <br>
+            <input type="file" name="documents" accept="application/pdf" multiple class="wiz-input" style="border: none; background: transparent; padding: 0;" onchange="previewPDFs(event)">
+            <p style="font-size: 0.85rem; color: var(--ink-muted, #6b7280); margin-top: 10px;">Vous pouvez sélectionner plusieurs fichiers PDF en même temps.</p>
+        </div>
+    </div>
+
+    <script>
+        function previewPDFs(event) {
+            const input = event.target;
+            const listDiv = document.getElementById('pdf-list');
+            if (input.files && input.files.length > 0) {
+                let html = '<ul style="margin: 0; padding-left: 20px;">';
+                for (let i = 0; i < input.files.length; i++) {
+                    html += `<li style="margin-bottom: 4px;">${input.files[i].name}</li>`;
+                }
+                html += '</ul>';
+                listDiv.innerHTML = html;
+                listDiv.style.display = 'block';
+            } else {
+                listDiv.style.display = 'none';
+            }
+        }
+    </script>
+
+    <div style="display: flex; gap: 16px;">
+        <button type="submit" class="wiz-btn" style="background: transparent; color: var(--ink-muted, #6b7280); border: 1px solid var(--border, #d1d5db); flex: 1;">
+            Terminer sans PDF
+        </button>
+        <button type="submit" class="wiz-btn wiz-btn-success" style="flex: 2;">
+            <i class="bi bi-cloud-upload" style="margin-right: 8px;"></i> Envoyer & Terminer
+        </button>
+    </div>
+    
+    <div class="wiz-loading">
+        <div class="loader-spinner"></div>
+        <span>Upload et indexation en cours... Veuillez patienter.</span>
+    </div>
+</form>

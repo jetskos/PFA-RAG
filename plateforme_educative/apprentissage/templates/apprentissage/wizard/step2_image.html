@@ -1,0 +1,58 @@
+<div id="current-step-data" data-step="2"></div>
+
+<div style="text-align: center; margin-bottom: 24px;">
+    <h2 style="font-size: 1.5rem; margin-bottom: 8px;">Image de couverture</h2>
+    <p style="color: var(--ink-faint, #6b7280);">Rendez votre cours attractif avec une belle image (optionnel).</p>
+</div>
+
+<form hx-post="{% url 'apprentissage:wizard_step2' %}" hx-target="#wizard-content" hx-swap="innerHTML" hx-encoding="multipart/form-data">
+    {% csrf_token %}
+    <input type="hidden" name="cours_id" value="{{ cours.id }}">
+    
+    <div class="wiz-form-group">
+        <label class="wiz-label">Image (JPG, PNG)</label>
+        <div style="border: 2px dashed var(--border, #d1d5db); border-radius: 12px; padding: 40px; text-align: center; background: var(--bg, #f9fafb); position: relative; overflow: hidden;" id="image-preview-container">
+            <i class="bi bi-image" style="font-size: 3rem; color: #9ca3af; margin-bottom: 16px;" id="image-icon"></i>
+            <img id="image-preview" src="#" alt="Aperçu" style="display: none; max-width: 100%; max-height: 250px; border-radius: 8px; margin: 0 auto 16px;">
+            <br>
+            <input type="file" name="couverture" accept="image/*" class="wiz-input" style="border: none; background: transparent; padding: 0;" onchange="previewImage(event)">
+        </div>
+    </div>
+
+    <script>
+        function previewImage(event) {
+            const input = event.target;
+            const preview = document.getElementById('image-preview');
+            const icon = document.getElementById('image-icon');
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    icon.style.display = 'none';
+                }
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                preview.src = '#';
+                preview.style.display = 'none';
+                icon.style.display = 'block';
+            }
+        }
+    </script>
+
+    <div style="display: flex; gap: 16px;">
+        <!-- Option to skip -->
+        <button type="submit" class="wiz-btn" style="background: transparent; color: var(--ink-muted, #6b7280); border: 1px solid var(--border, #d1d5db); flex: 1;">
+            Passer cette étape
+        </button>
+        <button type="submit" class="wiz-btn" style="flex: 2;">
+            Étape suivante : Chapitre <i class="bi bi-arrow-right" style="margin-left: 8px;"></i>
+        </button>
+    </div>
+    
+    <div class="wiz-loading">
+        <div class="loader-spinner"></div>
+        <span>Enregistrement...</span>
+    </div>
+</form>

@@ -8,7 +8,7 @@ from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.db.models import Q, Prefetch, Count
-from .models import Cours, Chapitre, Document, Progression, ChapitreVisite, ChapitreComplete, Devoir, Soumission, Evenement
+from .models import Cours, Chapitre, Document, Progression, ChapitreVisite, ChapitreComplete, Devoir, Soumission, Evenement, Niveau
 from django.contrib import messages
 from .forms import CoursForm, ChapitreForm, DocumentForm
 from apprentissage.mixins import (
@@ -330,6 +330,7 @@ def supprimer_document(request, document_id):
 def liste_cours(request):
     """Affiche la liste de tous les cours actifs (et brouillons pour les créateurs)."""
     q = request.GET.get('q', '').strip()
+    niveau_filter_id = request.GET.get('niveau_id', '').strip()
     
     if request.user.is_superuser:
         cours_list = Cours.objects.select_related('createur', 'niveau').all()
@@ -355,13 +356,22 @@ def liste_cours(request):
             Q(createur__first_name__icontains=q) |
             Q(createur__last_name__icontains=q)
         )
+
+    # Application du filtre par niveau si présent
+    if niveau_filter_id:
+        cours_list = cours_list.filter(niveau_id=niveau_filter_id)
         
     cours_list = cours_list.order_by('-date_creation').distinct()
+    
+    # Récupérer les niveaux pour le filtre
+    niveaux = Niveau.objects.all()
     
     context = {
         'cours_list': cours_list,
         'titre_page': 'Catalogue des cours',
-        'q': q
+        'q': q,
+        'niveaux': niveaux,
+        'niveau_filter_id': niveau_filter_id
     }
     
     if request.headers.get('HX-Request') == 'true' and request.headers.get('HX-Target') == 'catalog-grid':

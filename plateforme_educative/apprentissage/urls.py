@@ -1,5 +1,5 @@
 from django.urls import path
-from . import views
+from . import views, views_wizard
 
 app_name = 'apprentissage'
 
@@ -11,8 +11,17 @@ urlpatterns = [
     path('document/<uuid:document_id>/telecharger/', views.telecharger_document, name='telecharger_document'),
     path('chapitre/<uuid:chapitre_id>/valider/', views.valider_chapitre, name='valider_chapitre'),
 
-    # ── Espace formateur ──────────────────────────────────────────────────────
+    # 👨‍🏫 Espace formateur ────────────────────────────────────────────────────────
     path('formateur/', views.espace_formateur, name='espace_formateur'),
+    
+    # --- WIZARD COURS ---
+    path('formateur/wizard/start/', views_wizard.wizard_start, name='wizard_start'),
+    path('formateur/wizard/step1/', views_wizard.wizard_step1_cours, name='wizard_step1'),
+    path('formateur/wizard/step2/', views_wizard.wizard_step2_image, name='wizard_step2'),
+    path('formateur/wizard/step3/', views_wizard.wizard_step3_chapitre, name='wizard_step3'),
+    path('formateur/wizard/step4/', views_wizard.wizard_step4_pdfs, name='wizard_step4'),
+    # --------------------
+    
     path('formateur/cours/nouveau/', views.nouveau_cours, name='nouveau_cours'),
     path('formateur/cours/<uuid:pk>/', views.gerer_cours, name='gerer_cours'),
     path('formateur/cours/<uuid:pk>/editer/', views.editer_cours, name='editer_cours'),
