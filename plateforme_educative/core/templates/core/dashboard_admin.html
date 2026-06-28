@@ -774,31 +774,5 @@ Admin
         }
     });
 </script>
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        var bgWrapper = document.createElement('div');
-        bgWrapper.style.position = 'fixed';
-        bgWrapper.style.top = '0';
-        bgWrapper.style.left = '0';
-        bgWrapper.style.width = '100vw';
-        bgWrapper.style.height = '100vh';
-        bgWrapper.style.zIndex = '-9999';
-        bgWrapper.style.backgroundImage = 'url("{% static "images/michael-fortsch-F6jTkr9T_zI-unsplash.jpg" %}")';
-        bgWrapper.style.backgroundSize = 'cover';
-        bgWrapper.style.backgroundPosition = 'center';
 
-        var overlay = document.createElement('div');
-        overlay.style.position = 'absolute';
-        overlay.style.inset = '0';
-        overlay.style.background = 'transparent'; /* Removed white filter */
-        
-        bgWrapper.appendChild(overlay);
-        document.body.appendChild(bgWrapper);
-
-        document.body.style.setProperty('background-color', 'transparent', 'important');
-        document.documentElement.style.setProperty('background-color', 'transparent', 'important');
-        var main = document.querySelector('.site-main');
-        if (main) main.style.setProperty('background-color', 'transparent', 'important');
-    });
-</script>
 {% endblock %}
