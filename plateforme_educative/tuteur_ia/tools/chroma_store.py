@@ -44,16 +44,23 @@ def _get_embedding_function():
     global _embedding_fn
     if _embedding_fn is None:
         try:
-            from chromadb.utils.embedding_functions import (
-                SentenceTransformerEmbeddingFunction,
-            )
-            _embedding_fn = SentenceTransformerEmbeddingFunction(
-                model_name=EMBEDDING_MODEL
-            )
-            logger.info(f"Modèle d'embedding chargé : {EMBEDDING_MODEL}")
+            hf_api_key = os.getenv("HUGGINGFACE_API_KEY")
+            if hf_api_key:
+                from chromadb.utils.embedding_functions import HuggingFaceEmbeddingFunction
+                _embedding_fn = HuggingFaceEmbeddingFunction(
+                    api_key=hf_api_key,
+                    model_name=EMBEDDING_MODEL
+                )
+                logger.info(f"Utilisation de l'API HuggingFace ({EMBEDDING_MODEL}) - 0 RAM utilisée !")
+            else:
+                from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
+                _embedding_fn = SentenceTransformerEmbeddingFunction(
+                    model_name=EMBEDDING_MODEL
+                )
+                logger.info(f"Modèle d'embedding chargé en local : {EMBEDDING_MODEL}")
         except ImportError:
             raise ImportError(
-                "sentence-transformers non installé. "
+                "Dépendances manquantes. "
                 "Lancez : pip install sentence-transformers"
             )
     return _embedding_fn
