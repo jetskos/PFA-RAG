@@ -216,12 +216,21 @@ def _formateur_dashboard_context(request):
     ).order_by('-date_creation')
     
     from logistics.models import Workshop
+    from apprentissage.models import Chapitre
+    
     mes_ateliers = Workshop.objects.filter(createur=request.user).order_by('-date_debut')
+    
+    total_cours = mes_cours.count()
+    total_chapitres = Chapitre.objects.filter(cours__createur=request.user).count()
+    demandes_en_attente = DemandeMateriel.objects.filter(formateur=request.user, statut='PENDING').count()
     
     return {
         'mes_cours': mes_cours,
         'mes_demandes': mes_demandes,
         'mes_ateliers': mes_ateliers,
+        'total_cours': total_cours,
+        'total_chapitres': total_chapitres,
+        'demandes_en_attente': demandes_en_attente,
         'demande_form': DemandeMaterielForm(),
     }
 
