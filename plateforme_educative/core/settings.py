@@ -42,7 +42,9 @@ def _env_list(name: str, default: list[str]) -> list[str]:
     return [item.strip() for item in raw_value.split(',') if item.strip()]
 
 
-ALLOWED_HOSTS = _env_list('DJANGO_ALLOWED_HOSTS', ['127.0.0.1', 'localhost'])
+ALLOWED_HOSTS = _env_list('DJANGO_ALLOWED_HOSTS', ['127.0.0.1', 'localhost', '*'])
+
+CSRF_TRUSTED_ORIGINS = _env_list('DJANGO_CSRF_TRUSTED_ORIGINS', ['https://*.up.railway.app', 'https://*.railway.app'])
 
 INSTALLED_APPS = [
     'django.contrib.admin',
