@@ -402,6 +402,9 @@
 
     <!-- ═══════ HERO ═══════ -->
     <section class="home-hero">
+        <div style="position: absolute; inset: 0; z-index: -1;">
+            <img src="{% static 'images/hero_bg_generated.png' %}" alt="" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.15;">
+        </div>
         <div class="hero-glow-teal"></div>
         <div class="hero-glow-blue"></div>
 
@@ -459,12 +462,12 @@
             </div>
             <div class="vis-mini-row">
                 <div class="vis-mini-card">
-                    <div class="vis-mini-icon">📡</div>
+                    <div class="vis-mini-icon" style="background: none; padding: 0;"><img src="{% static 'images/icon_iot_generated.png' %}" alt="IoT" style="width: 100%; height: 100%; object-fit: contain;"></div>
                     <h4>Cours IoT</h4>
                     <p>PDFs & chapitres indexés</p>
                 </div>
                 <div class="vis-mini-card">
-                    <div class="vis-mini-icon">🏗️</div>
+                    <div class="vis-mini-icon" style="background: none; padding: 0;"><img src="{% static 'images/icon_workshop_generated.png' %}" alt="Ateliers" style="width: 100%; height: 100%; object-fit: contain;"></div>
                     <h4>Ateliers</h4>
                     <p>Gestion logistique</p>
                 </div>
@@ -477,8 +480,8 @@
         <div class="home-pillars" style="margin: 0;">
             <!-- Plain feature card -->
             <div class="pillar-feat">
-                <div class="pillar-feat-icon" style="background:rgba(13,148,136,0.1); color:#0d9488;">
-                    <i class="ti ti-book-2"></i>
+                <div class="pillar-feat-icon" style="background: none; padding: 0; width: 60px; height: 60px; margin-bottom: 1.5rem;">
+                    <img src="{% static 'images/icon_courses_generated.png' %}" alt="Cours" style="width: 100%; height: 100%; object-fit: contain;">
                 </div>
                 <h3>Cours structurés</h3>
                 <p>Chapitres progressifs avec documents, vidéos et QCM auto-générés par l'IA.</p>
@@ -506,8 +509,8 @@
 
             <!-- Plain feature card -->
             <div class="pillar-feat">
-                <div class="pillar-feat-icon" style="background:rgba(139,92,246,0.1); color:#8b5cf6;">
-                    <i class="ti ti-robot"></i>
+                <div class="pillar-feat-icon" style="background: none; padding: 0; width: 60px; height: 60px; margin-bottom: 1.5rem;">
+                    <img src="{% static 'images/icon_ai_tutor_generated.png' %}" alt="IA" style="width: 100%; height: 100%; object-fit: contain;">
                 </div>
                 <h3>Tuteur IA Dédié</h3>
                 <p>Assistant 100% basé sur les supports de cours fournis par les formateurs.</p>
