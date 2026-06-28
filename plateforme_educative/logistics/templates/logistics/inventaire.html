@@ -2,671 +2,393 @@
 {% block title %}Inventaire — Logistics{% endblock %}
 {% block content %}
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-
-  :root {
-    --teal:        #0f766e;
-    --teal-hover:  #0d6460;
-    --teal-light:  #14b8a6;
-    --teal-pale:   #f0fdfa;
-    --teal-glow:   rgba(15,118,110,0.12);
-    --emerald:     #10b981;
-    --amber:       #f59e0b;
-    --red:         #ef4444;
-    --blue:        #3b82f6;
-    --ink:         #0f172a;
-    --ink-mid:     #334155;
-    --ink-muted:   #64748b;
-    --ink-faint:   #94a3b8;
-    --border:      #e2e8f0;
-    --border-strong:#cbd5e1;
-    --surface:     #ffffff;
-    --bg:          #f8fafc;
-    --r-sm: 8px; --r-md: 12px; --r-lg: 16px;
-    --sh-sm: 0 1px 3px rgba(0,0,0,0.06);
-    --sh-md: 0 4px 20px rgba(0,0,0,0.08);
-    --sh-lg: 0 8px 32px rgba(0,0,0,0.1);
-  }
-
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  .logi-page {
-    font-family: 'Inter', system-ui, sans-serif;
-    background: var(--bg);
-    min-height: 100vh;
-    color: var(--ink);
-  }
-
-  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-     TOP NAV BAR
-  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-  .logi-nav {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    position: sticky;
-    top: 0;
-    z-index: 50;
-    box-shadow: var(--sh-sm);
-  }
-  .logi-nav-inner {
-    max-width: 1400px;
+  /* ═══════════════════════════════════════════════════
+     LOGISTICS SHARED — tokens mapped to base.html vars
+  ═══════════════════════════════════════════════════ */
+  .logi-shell {
+    max-width: 1320px;
     margin: 0 auto;
-    padding: 0 2rem;
-    height: 64px;
+    padding: 0 1.5rem 3rem;
+  }
+
+  /* ── HERO BANNER ── */
+  .logi-hero {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    padding: 2rem 2.5rem;
+    margin: 1.5rem 0 2rem;
     display: flex;
-    align-items: center;
     justify-content: space-between;
+    align-items: center;
     gap: 2rem;
-  }
-  .logi-brand {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    flex-shrink: 0;
-  }
-  .logi-brand-icon {
-    width: 36px; height: 36px;
-    background: var(--teal);
-    border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    color: #fff;
-    font-size: 1.1rem;
-  }
-  .logi-brand-text {
-    font-size: 1rem;
-    font-weight: 800;
-    color: var(--ink);
-    letter-spacing: -0.02em;
-  }
-  .logi-brand-text span {
-    font-weight: 500;
-    color: var(--ink-muted);
-    margin-left: 0.1rem;
-  }
-
-  /* Tab nav */
-  .logi-tabs {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-    height: 100%;
-  }
-  .logi-tab {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.45rem 1rem;
-    border-radius: var(--r-sm);
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: var(--ink-muted);
-    text-decoration: none;
-    transition: all 0.15s;
-    border: 1.5px solid transparent;
-  }
-  .logi-tab i { font-size: 1rem; }
-  .logi-tab:hover { background: var(--bg); color: var(--ink); }
-  .logi-tab.active {
-    background: var(--teal-pale);
-    color: var(--teal);
-    border-color: rgba(15,118,110,0.2);
-    font-weight: 700;
-  }
-
-  /* Right side actions in nav */
-  .logi-nav-right {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    flex-shrink: 0;
-  }
-  .logi-nav-badge {
-    display: flex; align-items: center; gap: 0.4rem;
-    font-size: 0.78rem; font-weight: 700;
-    color: var(--ink-mid);
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 999px;
-    padding: 0.3rem 0.85rem;
-  }
-  .logi-nav-badge .dot {
-    width: 7px; height: 7px; border-radius: 50%;
-    background: var(--emerald);
-    animation: blink 2s ease-in-out infinite;
-  }
-  @keyframes blink {
-    0%,100% { opacity: 1; } 50% { opacity: 0.4; }
-  }
-
-  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-     PAGE HEADER STRIP
-  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-  .logi-header {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    padding: 1.5rem 2rem;
-  }
-  .logi-header-inner {
-    max-width: 1400px;
-    margin: 0 auto;
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 1.5rem;
     flex-wrap: wrap;
+    background: linear-gradient(135deg, #0f2027 0%, #203a43 55%, #1a3a2a 100%);
+    box-shadow: 0 16px 48px -8px rgba(13, 148, 136, 0.28);
   }
-  .logi-header-left {}
+  .logi-hero::before {
+    content: '';
+    position: absolute; top: -70px; right: -70px;
+    width: 280px; height: 280px;
+    background: radial-gradient(circle, rgba(13,148,136,0.22) 0%, transparent 70%);
+    border-radius: 50%; pointer-events: none;
+  }
+  .logi-hero::after {
+    content: '';
+    position: absolute; bottom: -50px; left: 25%;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(59,130,246,0.14) 0%, transparent 70%);
+    border-radius: 50%; pointer-events: none;
+    animation: logi-orb 8s ease-in-out infinite alternate;
+  }
+  @keyframes logi-orb { from{transform:scale(1);} to{transform:scale(1.2);} }
+
+  .logi-hero-left { position: relative; z-index: 2; }
+  .logi-hero-right { position: relative; z-index: 2; display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; }
+
   .logi-eyebrow {
-    font-size: 0.7rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--teal);
-    margin-bottom: 0.3rem;
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(13,148,136,0.2); border: 1px solid rgba(13,148,136,0.4);
+    color: #2dd4bf; font-size: 0.7rem; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 4px 12px; border-radius: 999px; margin-bottom: 0.5rem;
+    backdrop-filter: blur(8px);
   }
   .logi-page-title {
-    font-size: 1.75rem;
-    font-weight: 900;
-    color: var(--ink);
-    letter-spacing: -0.03em;
-    line-height: 1;
-    margin-bottom: 0.3rem;
+    font-size: 1.75rem; font-weight: 900; color: #fff;
+    letter-spacing: -0.03em; line-height: 1.15; margin: 0 0 0.3rem;
   }
-  .logi-page-sub {
-    font-size: 0.875rem;
-    color: var(--ink-muted);
-    font-weight: 500;
+  .logi-page-sub { font-size: 0.875rem; color: rgba(255,255,255,0.6); margin: 0; }
+
+  /* ── SUB-TABS (inside hero) ── */
+  .logi-subtabs {
+    display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 1rem;
   }
-  .logi-header-actions {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
+  .logi-subtab {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.4rem 1rem;
+    border-radius: 8px;
+    font-size: 0.82rem; font-weight: 600;
+    color: rgba(255,255,255,0.65);
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    text-decoration: none;
+    transition: all 0.18s;
+  }
+  .logi-subtab:hover { background: rgba(255,255,255,0.14); color: #fff; }
+  .logi-subtab.active {
+    background: rgba(13,148,136,0.25); border-color: rgba(13,148,136,0.5);
+    color: #2dd4bf; font-weight: 700;
   }
 
-  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-     STAT CARDS ROW
-  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-  .logi-content {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 2rem;
+  /* ── HERO ACTIONS ── */
+  .logi-btn-primary {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.55rem 1.1rem;
+    background: linear-gradient(135deg, #0D9488, #0F766E);
+    color: #fff; border: none; border-radius: 10px;
+    font-size: 0.85rem; font-weight: 700; font-family: inherit;
+    cursor: pointer; text-decoration: none;
+    transition: all 0.2s;
+    box-shadow: 0 4px 12px rgba(13,148,136,0.3);
+    white-space: nowrap;
   }
+  .logi-btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); }
+  .logi-btn-ghost {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.55rem 1rem;
+    background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.85);
+    border: 1.5px solid rgba(255,255,255,0.18); border-radius: 10px;
+    font-size: 0.85rem; font-weight: 600; font-family: inherit;
+    cursor: pointer; text-decoration: none; transition: all 0.18s;
+    white-space: nowrap; backdrop-filter: blur(8px);
+  }
+  .logi-btn-ghost:hover { background: rgba(255,255,255,0.15); color: #fff; }
+
+  /* ── STAT TILES ── */
   .logi-stats {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 1rem;
-    margin-bottom: 2rem;
+    gap: 1rem; margin-bottom: 2rem;
   }
   @media (max-width: 900px) { .logi-stats { grid-template-columns: repeat(2,1fr); } }
   @media (max-width: 540px) { .logi-stats { grid-template-columns: 1fr; } }
 
   .stat-tile {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--r-lg);
-    box-shadow: var(--sh-sm);
+    background: var(--bg-surface, #fff);
+    border: 1px solid var(--border-light, #e2e8f0);
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     padding: 1.25rem 1.4rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.85rem;
-    transition: box-shadow 0.15s, transform 0.15s;
+    display: flex; flex-direction: column; gap: 0.85rem;
+    transition: box-shadow 0.2s, transform 0.2s;
   }
-  .stat-tile:hover { box-shadow: var(--sh-md); transform: translateY(-1px); }
-  .stat-tile-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
+  .stat-tile:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.1); transform: translateY(-2px); }
+  .stat-tile-top { display: flex; align-items: center; justify-content: space-between; }
   .stat-tile-icon {
-    width: 40px; height: 40px;
-    border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.15rem;
-    flex-shrink: 0;
+    width: 40px; height: 40px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center; font-size: 1.15rem; flex-shrink: 0;
   }
-  .stat-tile-trend {
-    font-size: 0.72rem;
-    font-weight: 700;
-    padding: 2px 7px;
-    border-radius: 999px;
-  }
-  .stat-tile-val {
-    font-size: 2rem;
-    font-weight: 900;
-    color: var(--ink);
-    line-height: 1;
-    letter-spacing: -0.03em;
-  }
-  .stat-tile-lbl {
-    font-size: 0.78rem;
-    font-weight: 600;
-    color: var(--ink-muted);
-  }
-  .stat-tile-bar {
-    height: 3px;
-    border-radius: 999px;
-    background: var(--border);
-    overflow: hidden;
-  }
-  .stat-tile-bar-fill {
-    height: 100%;
-    border-radius: 999px;
-  }
+  .stat-tile-trend { font-size: 0.72rem; font-weight: 700; padding: 2px 8px; border-radius: 999px; }
+  .stat-tile-val { font-size: 2rem; font-weight: 900; color: var(--text-primary, #0f172a); line-height: 1; letter-spacing: -0.03em; }
+  .stat-tile-lbl { font-size: 0.78rem; font-weight: 600; color: var(--text-muted, #64748b); }
+  .stat-tile-bar { height: 3px; border-radius: 999px; background: var(--border-light, #e2e8f0); overflow: hidden; }
+  .stat-tile-bar-fill { height: 100%; border-radius: 999px; }
 
-  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-     MAIN GRID: LIST + FORM
-  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-  .logi-main-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1.25rem;
-    align-items: start;
-  }
-  @media (max-width: 960px) { .logi-main-grid { grid-template-columns: 1fr; } }
-
-  /* ── PANEL base ── */
+  /* ── PANEL ── */
   .logi-panel {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--r-lg);
-    box-shadow: var(--sh-sm);
+    background: var(--bg-surface, #fff);
+    border: 1px solid var(--border-light, #e2e8f0);
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     overflow: hidden;
   }
   .logi-panel-head {
     padding: 1rem 1.25rem;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem;
-    background: var(--bg);
+    border-bottom: 1px solid var(--border-light, #e2e8f0);
+    display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+    background: var(--bg-body, #f8fafc);
   }
   .logi-panel-title {
-    font-size: 0.875rem;
-    font-weight: 800;
-    color: var(--ink);
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
+    font-size: 0.875rem; font-weight: 800; color: var(--text-primary, #0f172a);
+    display: flex; align-items: center; gap: 0.4rem;
   }
-  .logi-panel-title i { color: var(--teal); font-size: 1rem; }
+  .logi-panel-title i { color: #0D9488; font-size: 1rem; }
   .logi-panel-count {
-    font-size: 0.72rem;
-    font-weight: 700;
-    background: var(--teal-glow);
-    color: var(--teal);
-    border: 1px solid rgba(15,118,110,0.15);
-    border-radius: 999px;
-    padding: 2px 8px;
+    font-size: 0.72rem; font-weight: 700;
+    background: rgba(13,148,136,0.08); color: #0D9488;
+    border: 1px solid rgba(13,148,136,0.15); border-radius: 999px; padding: 2px 8px;
   }
 
   /* ── FILTER PILLS ── */
   .logi-filter-row {
     padding: 0.75rem 1.25rem;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    gap: 0.35rem;
-    flex-wrap: wrap;
+    border-bottom: 1px solid var(--border-light, #e2e8f0);
+    display: flex; gap: 0.35rem; flex-wrap: wrap;
+    justify-content: space-between; align-items: center;
   }
   .logi-fpill {
-    padding: 0.3rem 0.8rem;
-    border-radius: 999px;
-    border: 1.5px solid var(--border);
-    background: transparent;
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: var(--ink-muted);
-    cursor: pointer;
-    font-family: inherit;
-    transition: all 0.15s;
-    display: flex; align-items: center; gap: 0.3rem;
+    padding: 0.3rem 0.85rem; border-radius: 999px;
+    border: 1.5px solid var(--border-light, #e2e8f0);
+    background: transparent; font-size: 0.75rem; font-weight: 700;
+    color: var(--text-muted, #64748b); cursor: pointer; font-family: inherit;
+    transition: all 0.15s; display: flex; align-items: center; gap: 0.3rem;
   }
-  .logi-fpill:hover { border-color: var(--teal); color: var(--teal); background: var(--teal-pale); }
-  .logi-fpill.is-active { background: var(--teal); border-color: var(--teal); color: #fff; }
-  .logi-fpill .pill-dot {
-    width: 6px; height: 6px; border-radius: 50%;
-    background: currentColor; opacity: 0.7;
-    flex-shrink: 0;
-  }
-
-  /* ── ADD BUTTON AREA ── */
-  .logi-add-row {
-    padding: 0.75rem 1.25rem;
-    border-bottom: 1px solid var(--border);
-  }
+  .logi-fpill:hover { border-color: #0D9488; color: #0D9488; background: rgba(13,148,136,0.05); }
+  .logi-fpill.is-active { background: #0D9488; border-color: #0D9488; color: #fff; }
+  .pill-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: 0.7; flex-shrink: 0; }
 
   /* ── EQUIPMENT GRID ── */
   .logi-eq-list {
     padding: 1.25rem;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 1rem;
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem;
   }
-  .logi-eq-list::-webkit-scrollbar { width: 3px; }
-  .logi-eq-list::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 2px; }
 
   /* ── EQUIPMENT CARD ── */
   .eq-item {
-    border-radius: var(--r-md);
-    border: 1.5px solid var(--border);
-    background: var(--surface);
-    padding: 0.85rem 1rem;
-    cursor: pointer;
-    transition: all 0.15s;
-    display: flex;
-    gap: 0.75rem;
-    align-items: center;
+    border-radius: 12px; border: 1.5px solid var(--border-light, #e2e8f0);
+    background: var(--bg-surface, #fff); padding: 0.85rem 1rem;
+    cursor: pointer; transition: all 0.2s; display: flex; gap: 0.75rem; align-items: center;
   }
-  .eq-item:hover { border-color: var(--teal); box-shadow: 0 0 0 3px var(--teal-glow); }
-  .eq-item-indicator {
-    width: 3px;
-    border-radius: 2px;
-    align-self: stretch;
-    flex-shrink: 0;
-    min-height: 36px;
-  }
-  .ind-disponible    { background: var(--emerald); }
-  .ind-en_panne      { background: var(--red); }
-  .ind-en_maintenance{ background: var(--amber); }
-  .ind-default       { background: var(--ink-faint); }
+  .eq-item:hover { border-color: #0D9488; box-shadow: 0 0 0 3px rgba(13,148,136,0.1); transform: translateY(-1px); }
+  .eq-item-indicator { width: 3px; border-radius: 2px; align-self: stretch; flex-shrink: 0; min-height: 36px; }
+  .ind-disponible { background: #10b981; }
+  .ind-en_panne   { background: #ef4444; }
+  .ind-default    { background: #94a3b8; }
 
   .eq-item-body { flex: 1; min-width: 0; }
-  .eq-item-name {
-    font-size: 0.875rem;
-    font-weight: 700;
-    color: var(--ink);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .eq-item-serial {
-    font-size: 0.75rem;
-    color: var(--ink-muted);
-    font-weight: 500;
-    margin-top: 0.15rem;
-  }
+  .eq-item-name { font-size: 0.875rem; font-weight: 700; color: var(--text-primary, #0f172a); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .eq-item-serial { font-size: 0.75rem; color: var(--text-muted, #64748b); font-weight: 500; margin-top: 0.15rem; }
   .eq-item-status {
-    font-size: 0.7rem;
-    font-weight: 700;
-    padding: 2px 7px;
-    border-radius: 999px;
-    margin-top: 0.35rem;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-    width: fit-content;
+    font-size: 0.7rem; font-weight: 700; padding: 2px 7px; border-radius: 999px;
+    margin-top: 0.35rem; display: inline-flex; align-items: center; gap: 0.25rem; width: fit-content;
   }
-  .st-disponible     { background: rgba(16,185,129,0.1); color: #059669; }
-  .st-en_panne       { background: rgba(239,68,68,0.1); color: #dc2626; }
-  .st-en_maintenance { background: rgba(245,158,11,0.1); color: #d97706; }
+  .st-disponible { background: rgba(16,185,129,0.1); color: #059669; }
+  .st-en_panne   { background: rgba(239,68,68,0.1); color: #dc2626; }
 
-  .eq-item-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
-    flex-shrink: 0;
-  }
+  .eq-item-actions { display: flex; flex-direction: column; gap: 0.3rem; flex-shrink: 0; }
   .eq-action {
-    padding: 0.25rem 0.6rem;
-    border-radius: 6px;
-    border: 1px solid var(--border);
-    background: var(--bg);
-    font-size: 0.7rem;
-    font-weight: 700;
-    cursor: pointer;
-    font-family: inherit;
-    transition: all 0.15s;
-    white-space: nowrap;
+    padding: 0.25rem 0.6rem; border-radius: 6px; border: 1px solid var(--border-light, #e2e8f0);
+    background: var(--bg-body, #f8fafc); font-size: 0.7rem; font-weight: 700;
+    cursor: pointer; font-family: inherit; transition: all 0.15s; white-space: nowrap;
   }
-  .eq-action.mod { color: var(--teal); }
-  .eq-action.mod:hover { background: var(--teal-pale); border-color: var(--teal); }
-  .eq-action.del { color: var(--red); }
-  .eq-action.del:hover { background: rgba(239,68,68,0.08); border-color: var(--red); }
+  .eq-action.mod { color: #0D9488; }
+  .eq-action.mod:hover { background: rgba(13,148,136,0.08); border-color: #0D9488; }
+  .eq-action.del { color: #ef4444; }
+  .eq-action.del:hover { background: rgba(239,68,68,0.08); border-color: #ef4444; }
 
-  /* Legend footer */
+  /* Legend */
   .logi-legend {
-    padding: 0.65rem 1.25rem;
-    border-top: 1px solid var(--border);
-    background: var(--bg);
-    display: flex; gap: 1rem; flex-wrap: wrap;
+    padding: 0.65rem 1.25rem; border-top: 1px solid var(--border-light, #e2e8f0);
+    background: var(--bg-body, #f8fafc); display: flex; gap: 1rem; flex-wrap: wrap;
   }
-  .leg-item { display: flex; align-items: center; gap: 0.35rem; font-size: 0.72rem; font-weight: 600; color: var(--ink-muted); }
+  .leg-item { display: flex; align-items: center; gap: 0.35rem; font-size: 0.72rem; font-weight: 600; color: var(--text-muted, #64748b); }
   .leg-dot  { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 
-  /* ── FORM PANEL RIGHT ── */
-  .logi-form-head {
-    padding: 1.25rem 1.5rem;
-    border-bottom: 1px solid var(--border);
-    background: var(--bg);
-    display: flex; align-items: center; justify-content: space-between;
+  /* ── FILTER SEARCH ── */
+  .logi-filter-search { position: relative; width: 280px; flex-shrink: 0; }
+  .logi-filter-search i {
+    position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+    color: var(--text-muted, #64748b); font-size: 1.05rem; pointer-events: none;
   }
-  .logi-form-title { font-size: 0.95rem; font-weight: 800; color: var(--ink); display: flex; align-items: center; gap: 0.4rem; }
-  .logi-form-title i { color: var(--teal); }
-  .logi-form-hint { font-size: 0.78rem; color: var(--ink-muted); font-weight: 500; }
-  .logi-form-body { padding: 2rem 1.75rem; min-height: 420px; }
-
-  /* Placeholder */
-  .logi-empty {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 380px;
-    gap: 1.25rem;
-    text-align: center;
+  .logi-filter-search input[type="text"] {
+    width: 100%; padding: 0.55rem 1rem 0.55rem 2.6rem;
+    border: 1.5px solid var(--border-light, #e2e8f0);
+    border-radius: 999px; background: var(--bg-surface, #fff);
+    font-size: 0.85rem; color: var(--text-primary, #0f172a);
+    transition: all 0.2s; outline: none; font-family: inherit;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
   }
-  .logi-empty-ring {
-    width: 80px; height: 80px;
-    border-radius: 50%;
-    border: 2px dashed var(--border-strong);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 2rem;
-    color: var(--ink-faint);
-    background: var(--bg);
+  .logi-filter-search input[type="text"]:focus {
+    border-color: #0D9488; box-shadow: 0 0 0 3px rgba(13,148,136,0.15); background: var(--bg-surface, #fff);
   }
-  .logi-empty h3 { font-size: 1.05rem; font-weight: 700; color: var(--ink-mid); }
-  .logi-empty p  { font-size: 0.85rem; color: var(--ink-muted); max-width: 240px; line-height: 1.6; }
-
-  /* ── BUTTONS ── */
-  .btn-primary {
-    display: inline-flex; align-items: center; gap: 0.4rem;
-    padding: 0.55rem 1.1rem;
-    background: var(--teal); color: #fff;
-    border: none; border-radius: var(--r-sm);
-    font-size: 0.825rem; font-weight: 700; font-family: inherit;
-    cursor: pointer; text-decoration: none;
-    transition: background 0.15s, transform 0.1s;
-    white-space: nowrap;
-  }
-  .btn-primary:hover { background: var(--teal-hover); }
-  .btn-primary i { font-size: 0.95rem; }
-
-  .btn-ghost {
-    display: inline-flex; align-items: center; gap: 0.4rem;
-    padding: 0.55rem 1rem;
-    background: transparent; color: var(--ink-mid);
-    border: 1.5px solid var(--border); border-radius: var(--r-sm);
-    font-size: 0.825rem; font-weight: 700; font-family: inherit;
-    cursor: pointer; text-decoration: none;
-    transition: all 0.15s;
-  }
-  .btn-ghost:hover { border-color: var(--ink-mid); color: var(--ink); background: var(--bg); }
+  @media (max-width: 640px) { .logi-filter-search { width: 100%; } }
 </style>
 
-<div class="logi-page">
+<div class="logi-shell">
 
-  <!-- ━━ TOP NAV ━━ -->
-  <nav class="logi-nav">
-    <div class="logi-nav-inner">
-      <div class="logi-brand">
-        <div class="logi-brand-icon"><i class="ti ti-package"></i></div>
-        <span class="logi-brand-text">Logistics<span> · Plateforme</span></span>
-      </div>
-
-      <div class="logi-tabs">
-        <a href="{% url 'logistics:inventaire' %}" class="logi-tab active">
+  <!-- ══ HERO BANNER ══ -->
+  <div class="logi-hero">
+    <div class="logi-hero-left">
+      <span class="logi-eyebrow"><i class="ti ti-package"></i> Logistics</span>
+      <h1 class="logi-page-title">Inventaire des équipements</h1>
+      <p class="logi-page-sub">Consultez, filtrez et gérez tout le parc matériel IoT.</p>
+      <div class="logi-subtabs">
+        <a href="{% url 'logistics:inventaire' %}" class="logi-subtab active">
           <i class="ti ti-package"></i> Inventaire
         </a>
-        <a href="{% url 'logistics:tickets' %}" class="logi-tab">
+        <a href="{% url 'logistics:tickets' %}" class="logi-subtab">
           <i class="ti ti-ticket"></i> Tickets
         </a>
-        <a href="{% url 'logistics:ateliers' %}" class="logi-tab">
+        <a href="{% url 'logistics:ateliers' %}" class="logi-subtab">
           <i class="ti ti-building-community"></i> Ateliers
         </a>
-        <a href="{% url 'logistics:demandes' %}" class="logi-tab">
+        <a href="{% url 'logistics:demandes' %}" class="logi-subtab">
           <i class="ti ti-truck-delivery"></i> Demandes
         </a>
       </div>
-
-      <div class="logi-nav-right">
-        <div class="logi-nav-badge">
-          <div class="dot"></div> Système actif
-        </div>
-      </div>
     </div>
-  </nav>
+    <div class="logi-hero-right">
+      <a href="{% url 'logistics:exporter_equipements' %}" class="logi-btn-ghost" title="Exporter en Excel">
+        <i class="ti ti-download"></i> Exporter
+      </a>
+      {% if user.is_staff or user.role == "ADMIN" or user.is_formateur %}
+      <button class="logi-btn-primary" type="button"
+        hx-get="{% url 'logistics:ajouter_equipement' %}"
+        hx-target="#form-equipement-container"
+        hx-swap="innerHTML">
+        <i class="ti ti-plus"></i> Ajouter un équipement
+      </button>
+      {% endif %}
+    </div>
+  </div>
 
-  <!-- ━━ PAGE HEADER ━━ -->
-  <div class="logi-header">
-    <div class="logi-header-inner">
-      <div class="logi-header-left">
-        <p class="logi-eyebrow">Logistics · Inventaire</p>
-        <h1 class="logi-page-title">Gestion des équipements</h1>
-        <p class="logi-page-sub">Consultez, filtrez et gérez tout le parc matériel.</p>
+  <!-- ══ STAT TILES ══ -->
+  <div class="logi-stats">
+    <div class="stat-tile">
+      <div class="stat-tile-top">
+        <div class="stat-tile-icon" style="background:rgba(13,148,136,0.1);color:#0D9488;">
+          <i class="ti ti-package"></i>
+        </div>
+        <span class="stat-tile-trend" style="background:rgba(13,148,136,0.08);color:#0D9488;">Total</span>
       </div>
-      <div class="logi-header-actions">
-          <a href="{% url 'logistics:exporter_equipements' %}" class="btn-primary" title="Exporter en Excel" style="background:var(--primary); color:white; text-decoration:none; display:inline-flex; align-items:center; gap:6px; padding:0.5rem 1rem; border-radius:10px; font-weight:600; font-size:0.9rem;">
-            <i class="ti ti-download"></i> Exporter
-          </a>
+      <div>
+        <div class="stat-tile-val">{{ equipements|length }}</div>
+        <div class="stat-tile-lbl">Équipements</div>
+      </div>
+      <div class="stat-tile-bar"><div class="stat-tile-bar-fill" style="width:100%;background:#0D9488;"></div></div>
+    </div>
+    <div class="stat-tile">
+      <div class="stat-tile-top">
+        <div class="stat-tile-icon" style="background:rgba(16,185,129,0.1);color:#10b981;">
+          <i class="ti ti-circle-check"></i>
+        </div>
+        <span class="stat-tile-trend" style="background:rgba(16,185,129,0.1);color:#059669;">Opérationnel</span>
+      </div>
+      <div>
+        <div class="stat-tile-val">{{ equipements_disponibles|default:"—" }}</div>
+        <div class="stat-tile-lbl">Disponibles</div>
+      </div>
+      <div class="stat-tile-bar"><div class="stat-tile-bar-fill" style="width:70%;background:#10b981;"></div></div>
+    </div>
+    <div class="stat-tile">
+      <div class="stat-tile-top">
+        <div class="stat-tile-icon" style="background:rgba(245,158,11,0.1);color:#f59e0b;">
+          <i class="ti ti-tool"></i>
+        </div>
+        <span class="stat-tile-trend" style="background:rgba(245,158,11,0.1);color:#d97706;">En cours</span>
+      </div>
+      <div>
+        <div class="stat-tile-val">{{ equipements_maintenance|default:"—" }}</div>
+        <div class="stat-tile-lbl">En maintenance</div>
+      </div>
+      <div class="stat-tile-bar"><div class="stat-tile-bar-fill" style="width:40%;background:#f59e0b;"></div></div>
+    </div>
+    <div class="stat-tile">
+      <div class="stat-tile-top">
+        <div class="stat-tile-icon" style="background:rgba(239,68,68,0.1);color:#ef4444;">
+          <i class="ti ti-alert-triangle"></i>
+        </div>
+        <span class="stat-tile-trend" style="background:rgba(239,68,68,0.08);color:#dc2626;">Alerte</span>
+      </div>
+      <div>
+        <div class="stat-tile-val">{{ equipements_en_panne|default:"—" }}</div>
+        <div class="stat-tile-lbl">En panne</div>
+      </div>
+      <div class="stat-tile-bar"><div class="stat-tile-bar-fill" style="width:20%;background:#ef4444;"></div></div>
+    </div>
+  </div>
 
-        {% if user.is_staff or user.role == "ADMIN" or user.is_formateur %}
-        <button class="btn-primary" type="button"
-          hx-get="{% url 'logistics:ajouter_equipement' %}"
-          hx-target="#form-equipement-container"
-          hx-swap="innerHTML">
-          <i class="ti ti-plus"></i> Ajouter un équipement
+  <!-- ══ EQUIPMENT PANEL ══ -->
+  <div class="logi-panel">
+    <div class="logi-panel-head">
+      <span class="logi-panel-title"><i class="ti ti-list-details"></i> Équipements</span>
+      <span class="logi-panel-count">{{ equipements|length }} au total</span>
+    </div>
+
+    <!-- Filters & Search -->
+    <form id="filter-form"
+          hx-get="{% url 'logistics:inventaire' %}"
+          hx-target="#equipements-list"
+          hx-swap="innerHTML"
+          class="logi-filter-row">
+      <input type="hidden" name="etat" id="etat-input" value="TOUS">
+      <div style="display:flex;gap:0.35rem;flex-wrap:wrap;">
+        <button type="button" class="logi-fpill is-active"
+          onclick="document.getElementById('etat-input').value='TOUS'; document.querySelectorAll('.logi-fpill').forEach(b=>b.classList.remove('is-active')); this.classList.add('is-active'); htmx.trigger('#filter-form','submit')">
+          Tous
         </button>
-        {% endif %}
+        <button type="button" class="logi-fpill"
+          onclick="document.getElementById('etat-input').value='DISPONIBLE'; document.querySelectorAll('.logi-fpill').forEach(b=>b.classList.remove('is-active')); this.classList.add('is-active'); htmx.trigger('#filter-form','submit')">
+          <span class="pill-dot" style="background:#10b981;opacity:1;"></span> Actifs
+        </button>
+        <button type="button" class="logi-fpill"
+          onclick="document.getElementById('etat-input').value='EN_PANNE'; document.querySelectorAll('.logi-fpill').forEach(b=>b.classList.remove('is-active')); this.classList.add('is-active'); htmx.trigger('#filter-form','submit')">
+          <span class="pill-dot" style="background:#ef4444;opacity:1;"></span> Inactifs
+        </button>
       </div>
+      <div class="logi-filter-search">
+        <i class="ti ti-search"></i>
+        <input type="text" name="q" placeholder="Rechercher (S/N, Nom...)"
+               hx-trigger="keyup changed delay:300ms">
+      </div>
+    </form>
+
+    <!-- Equipment list -->
+    <div class="logi-eq-list" id="equipements-list">
+      {% include 'logistics/partials/equipements_list.html' with equipements=equipements %}
+    </div>
+
+    <!-- Legend -->
+    <div class="logi-legend">
+      <span class="leg-item"><span class="leg-dot" style="background:#10b981;"></span> Actif</span>
+      <span class="leg-item"><span class="leg-dot" style="background:#ef4444;"></span> Inactif / En panne</span>
     </div>
   </div>
 
-  <!-- ━━ CONTENT ━━ -->
-  <div class="logi-content">
-
-    <!-- Stat tiles -->
-    <div class="logi-stats">
-      <div class="stat-tile">
-        <div class="stat-tile-top">
-          <div class="stat-tile-icon" style="background:rgba(15,118,110,0.1);color:var(--teal);">
-            <i class="ti ti-package"></i>
-          </div>
-          <span class="stat-tile-trend" style="background:rgba(15,118,110,0.08);color:var(--teal);">Total</span>
-        </div>
-        <div>
-          <div class="stat-tile-val">{{ equipements|length }}</div>
-          <div class="stat-tile-lbl">Équipements</div>
-        </div>
-        <div class="stat-tile-bar"><div class="stat-tile-bar-fill" style="width:100%;background:var(--teal);"></div></div>
-      </div>
-      <div class="stat-tile">
-        <div class="stat-tile-top">
-          <div class="stat-tile-icon" style="background:rgba(16,185,129,0.1);color:var(--emerald);">
-            <i class="ti ti-circle-check"></i>
-          </div>
-          <span class="stat-tile-trend" style="background:rgba(16,185,129,0.1);color:#059669;">Opérationnel</span>
-        </div>
-        <div>
-          <div class="stat-tile-val">{{ equipements_disponibles|default:"—" }}</div>
-          <div class="stat-tile-lbl">Disponibles</div>
-        </div>
-        <div class="stat-tile-bar"><div class="stat-tile-bar-fill" style="width:70%;background:var(--emerald);"></div></div>
-      </div>
-      <div class="stat-tile">
-        <div class="stat-tile-top">
-          <div class="stat-tile-icon" style="background:rgba(245,158,11,0.1);color:var(--amber);">
-            <i class="ti ti-tool"></i>
-          </div>
-          <span class="stat-tile-trend" style="background:rgba(245,158,11,0.1);color:#d97706;">En cours</span>
-        </div>
-        <div>
-          <div class="stat-tile-val">{{ equipements_maintenance|default:"—" }}</div>
-          <div class="stat-tile-lbl">En maintenance</div>
-        </div>
-        <div class="stat-tile-bar"><div class="stat-tile-bar-fill" style="width:40%;background:var(--amber);"></div></div>
-      </div>
-      <div class="stat-tile">
-        <div class="stat-tile-top">
-          <div class="stat-tile-icon" style="background:rgba(239,68,68,0.1);color:var(--red);">
-            <i class="ti ti-alert-triangle"></i>
-          </div>
-          <span class="stat-tile-trend" style="background:rgba(239,68,68,0.08);color:#dc2626;">Alerte</span>
-        </div>
-        <div>
-          <div class="stat-tile-val">{{ equipements_en_panne|default:"—" }}</div>
-          <div class="stat-tile-lbl">En panne</div>
-        </div>
-        <div class="stat-tile-bar"><div class="stat-tile-bar-fill" style="width:20%;background:var(--red);"></div></div>
-      </div>
-    </div>
-
-    <!-- Main 2-col grid -->
-    <div class="logi-main-grid">
-
-      <!-- LEFT: Equipment list panel -->
-      <div class="logi-panel">
-        <div class="logi-panel-head">
-          <span class="logi-panel-title"><i class="ti ti-list-details"></i> Équipements</span>
-          <span class="logi-panel-count">{{ equipements|length }} au total</span>
-        </div>
-
-        <!-- Filters & Search Form -->
-        <form id="filter-form" hx-get="{% url 'logistics:inventaire' %}" hx-target="#equipements-list" hx-swap="innerHTML" class="logi-filter-row" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
-          <input type="hidden" name="etat" id="etat-input" value="TOUS">
-          
-          <div style="display: flex; gap: 0.35rem; flex-wrap: wrap;">
-            <button type="button" class="logi-fpill is-active"
-              onclick="document.getElementById('etat-input').value='TOUS'; document.querySelectorAll('.logi-fpill').forEach(b=>b.classList.remove('is-active')); this.classList.add('is-active'); htmx.trigger('#filter-form', 'submit')">
-              Tous
-            </button>
-            <button type="button" class="logi-fpill"
-              onclick="document.getElementById('etat-input').value='DISPONIBLE'; document.querySelectorAll('.logi-fpill').forEach(b=>b.classList.remove('is-active')); this.classList.add('is-active'); htmx.trigger('#filter-form', 'submit')">
-              <span class="pill-dot" style="background:var(--emerald);opacity:1;"></span> Actif
-            </button>
-            <button type="button" class="logi-fpill"
-              onclick="document.getElementById('etat-input').value='EN_PANNE'; document.querySelectorAll('.logi-fpill').forEach(b=>b.classList.remove('is-active')); this.classList.add('is-active'); htmx.trigger('#filter-form', 'submit')">
-              <span class="pill-dot" style="background:var(--red);opacity:1;"></span> Inactif
-            </button>
-          </div>
-          
-          <div style="position: relative; width: 100%; max-width: 250px;">
-            <i class="ti ti-search" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--ink-muted); font-size: 0.9rem;"></i>
-            <input type="text" name="q" placeholder="Rechercher (S/N, Nom...)" 
-                   hx-trigger="keyup changed delay:300ms"
-                   style="width: 100%; padding: 0.4rem 0.5rem 0.4rem 2rem; border-radius: 999px; border: 1px solid var(--border); background: var(--bg); font-size: 0.8rem; outline: none; transition: all 0.15s;"
-                   onfocus="this.style.borderColor='var(--teal)'; this.style.boxShadow='0 0 0 2px var(--teal-glow)';"
-                   onblur="this.style.borderColor='var(--border)'; this.style.boxShadow='none';">
-          </div>
-        </form>
-
-        <!-- Scrollable list -->
-        <div class="logi-eq-list" id="equipements-list">
-          {% include 'logistics/partials/equipements_list.html' with equipements=equipements %}
-        </div>
-
-        <!-- Legend -->
-        <div class="logi-legend">
-          <span class="leg-item"><span class="leg-dot" style="background:var(--emerald);"></span> Actif</span>
-          <span class="leg-item"><span class="leg-dot" style="background:var(--red);"></span> Inactif</span>
-        </div>
-      </div>
-
-      </div>
-    </div>
-  </div>
 </div>
 
-<!-- Modal Container (Empty by default) -->
+<!-- Modal Container -->
 <div id="form-equipement-container"></div>
 
 {% endblock %}

@@ -2,201 +2,207 @@
 {% block title %}Tickets — Logistics{% endblock %}
 {% block content %}
 <style>
-  :root {
-    --teal:       #0f766e;
-    --teal-light: #14b8a6;
-    --teal-glow:  rgba(15,118,110,0.1);
-    --emerald:    #10b981;
-    --amber:      #f59e0b;
-    --red:        #ef4444;
-    --purple:     #8b5cf6;
-    --ink:        #0f172a;
-    --ink-mid:    #334155;
-    --ink-muted:  #64748b;
-    --ink-faint:  #94a3b8;
-    --border:     #e2e8f0;
-    --surface:    #ffffff;
-    --bg:         #f1f5f9;
-    --radius-sm:  8px;
-    --radius-md:  12px;
-    --radius-lg:  18px;
-    --shadow-sm:  0 1px 3px rgba(0,0,0,0.06);
-    --shadow-md:  0 4px 16px rgba(0,0,0,0.08);
-  }
-  *, *::before, *::after { box-sizing: border-box; }
-
-  .tick-shell {
-    min-height: 100vh;
-    background: var(--bg);
-    font-family: 'Inter', system-ui, sans-serif;
-  }
-  .tick-topbar {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    padding: 1.5rem 2rem 0;
-  }
-  .tick-topbar-inner { max-width: 1320px; margin: 0 auto; }
-  .tick-eyebrow {
-    font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em;
-    text-transform: uppercase; color: var(--teal); margin-bottom: 0.3rem;
-  }
-  .tick-title { font-size: 1.9rem; font-weight: 900; color: var(--ink); margin: 0 0 0.2rem; line-height: 1.1; }
-  .tick-subtitle { font-size: 0.875rem; color: var(--ink-muted); margin: 0 0 1.25rem; }
-  .tick-tabs { display: flex; gap: 0; border-bottom: none; margin-bottom: -1px; }
-  .tick-tab {
-    display: inline-flex; align-items: center; gap: 0.45rem;
-    padding: 0.65rem 1.25rem; font-size: 0.875rem; font-weight: 700;
-    color: var(--ink-muted); text-decoration: none;
-    border-bottom: 2px solid transparent; transition: color 0.15s, border-color 0.15s;
-  }
-  .tick-tab:hover { color: var(--ink); border-color: var(--border); }
-  .tick-tab.active { color: var(--teal); border-color: var(--teal); }
-
-  /* Body */
-  .tick-body {
-    max-width: 1320px; margin: 0 auto; padding: 1.75rem 2rem 3rem;
+  /* ═══════════════════════════════════════════════════
+     LOGISTICS / TICKETS — tokens mapped to base.html vars
+  ═══════════════════════════════════════════════════ */
+  .logi-shell {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 0 1.5rem 3rem;
   }
 
-  /* Summary stats */
-  .tick-stats {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 1rem;
-    margin-bottom: 1.75rem;
+  /* ── HERO BANNER ── */
+  .logi-hero {
+    position: relative; border-radius: 20px; overflow: hidden;
+    padding: 2rem 2.5rem; margin: 1.5rem 0 2rem;
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 2rem; flex-wrap: wrap;
+    background: linear-gradient(135deg, #0f2027 0%, #203a43 55%, #1a3a2a 100%);
+    box-shadow: 0 16px 48px -8px rgba(13,148,136,0.28);
   }
-  .tick-stat {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-sm);
+  .logi-hero::before {
+    content: ''; position: absolute; top: -70px; right: -70px;
+    width: 280px; height: 280px;
+    background: radial-gradient(circle, rgba(13,148,136,0.22) 0%, transparent 70%);
+    border-radius: 50%; pointer-events: none;
+  }
+  .logi-hero-left { position: relative; z-index: 2; }
+  .logi-hero-right { position: relative; z-index: 2; display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; }
+
+  .logi-eyebrow {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(13,148,136,0.2); border: 1px solid rgba(13,148,136,0.4);
+    color: #2dd4bf; font-size: 0.7rem; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 4px 12px; border-radius: 999px; margin-bottom: 0.5rem;
+    backdrop-filter: blur(8px);
+  }
+  .logi-page-title {
+    font-size: 1.75rem; font-weight: 900; color: #fff;
+    letter-spacing: -0.03em; line-height: 1.15; margin: 0 0 0.3rem;
+  }
+  .logi-page-sub { font-size: 0.875rem; color: rgba(255,255,255,0.6); margin: 0; }
+
+  .logi-subtabs { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 1rem; }
+  .logi-subtab {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.4rem 1rem; border-radius: 8px;
+    font-size: 0.82rem; font-weight: 600;
+    color: rgba(255,255,255,0.65); background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12); text-decoration: none; transition: all 0.18s;
+  }
+  .logi-subtab:hover { background: rgba(255,255,255,0.14); color: #fff; }
+  .logi-subtab.active { background: rgba(13,148,136,0.25); border-color: rgba(13,148,136,0.5); color: #2dd4bf; font-weight: 700; }
+
+  .logi-btn-primary {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.55rem 1.1rem;
+    background: linear-gradient(135deg, #0D9488, #0F766E); color: #fff;
+    border: none; border-radius: 10px;
+    font-size: 0.85rem; font-weight: 700; font-family: inherit;
+    cursor: pointer; text-decoration: none; transition: all 0.2s;
+    box-shadow: 0 4px 12px rgba(13,148,136,0.3); white-space: nowrap;
+  }
+  .logi-btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+  /* ── FILTER SEARCH ── */
+  .logi-filter-search { position: relative; width: 280px; flex-shrink: 0; }
+  .logi-filter-search i {
+    position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+    color: var(--text-muted, #64748b); font-size: 1.05rem; pointer-events: none;
+  }
+  .logi-filter-search input[type="text"] {
+    width: 100%; padding: 0.55rem 1rem 0.55rem 2.6rem;
+    border: 1.5px solid var(--border-light, #e2e8f0);
+    border-radius: 999px; background: var(--bg-surface, #fff);
+    font-size: 0.85rem; color: var(--text-primary, #0f172a);
+    transition: all 0.2s; outline: none; font-family: inherit;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+  }
+  .logi-filter-search input[type="text"]:focus {
+    border-color: #0D9488; box-shadow: 0 0 0 3px rgba(13,148,136,0.15); background: var(--bg-surface, #fff);
+  }
+  @media (max-width: 640px) { .logi-filter-search { width: 100%; } }
+
+  /* ── STAT TILES ── */
+  .logi-stats {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem; margin-bottom: 2rem;
+  }
+  .stat-tile {
+    background: var(--bg-surface, #fff); border: 1px solid var(--border-light, #e2e8f0);
+    border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     padding: 1.1rem 1.25rem;
     display: flex; align-items: center; gap: 0.9rem;
+    transition: box-shadow 0.2s, transform 0.2s;
   }
-  .tick-stat-icon {
-    width: 42px; height: 42px; border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.2rem; flex-shrink: 0;
-  }
-  .tick-stat-val { font-size: 1.5rem; font-weight: 900; color: var(--ink); line-height: 1; }
-  .tick-stat-lbl { font-size: 0.75rem; font-weight: 600; color: var(--ink-muted); margin-top: 0.15rem; }
+  .stat-tile:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.1); transform: translateY(-2px); }
+  .stat-tile-icon { width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
+  .stat-tile-val { font-size: 1.6rem; font-weight: 900; color: var(--text-primary, #0f172a); line-height: 1; }
+  .stat-tile-lbl { font-size: 0.75rem; font-weight: 600; color: var(--text-muted, #64748b); margin-top: 0.2rem; }
 
-  /* Main card */
-  .tick-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-sm);
-    overflow: hidden;
+  /* ── TICKET PANEL ── */
+  .logi-panel { background: var(--bg-surface, #fff); border: 1px solid var(--border-light, #e2e8f0); border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); overflow: hidden; }
+  .logi-panel-head {
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    padding: 1.25rem 1.75rem; border-bottom: 1px solid var(--border-light, #e2e8f0); flex-wrap: wrap;
   }
-  .tick-card-header {
-    display: flex; align-items: center; justify-content: space-between;
-    gap: 1rem; padding: 1.25rem 1.75rem;
-    border-bottom: 1px solid var(--border);
-    flex-wrap: wrap;
-  }
-  .tick-card-title {
-    font-size: 1rem; font-weight: 800; color: var(--ink);
-    display: flex; align-items: center; gap: 0.4rem; margin: 0;
-  }
-  .tick-card-title i { color: var(--teal); }
-  .btn-new-ticket {
-    display: inline-flex; align-items: center; gap: 0.4rem;
-    padding: 0.55rem 1.15rem;
-    background: var(--teal); color: #fff;
-    border: none; border-radius: var(--radius-sm);
-    font-size: 0.85rem; font-weight: 700;
-    font-family: inherit; cursor: pointer; text-decoration: none;
-    transition: background 0.15s, transform 0.1s;
-  }
-  .btn-new-ticket:hover { background: var(--ink); transform: scale(1.02); }
+  .logi-panel-title { font-size: 1rem; font-weight: 800; color: var(--text-primary, #0f172a); display: flex; align-items: center; gap: 0.4rem; margin: 0; }
+  .logi-panel-title i { color: #0D9488; }
 
-  /* Tickets list inside card */
+  /* Ticket list body */
   .tick-list-body { padding: 1rem 1.25rem; }
   #tickets-list { display: flex; flex-direction: column; gap: 0.75rem; }
 </style>
 
-<div class="tick-shell">
-  <!-- TOP BAR -->
-  <div class="tick-topbar">
-    <div class="tick-topbar-inner">
-      <p class="tick-eyebrow">Logistics</p>
-      <h1 class="tick-title">Support</h1>
-      <p class="tick-subtitle">Suivi des tickets de maintenance et signalements.</p>
-      <nav class="tick-tabs">
-        <a href="{% url 'logistics:inventaire' %}" class="tick-tab">
+<div class="logi-shell">
+
+  <!-- ══ HERO BANNER ══ -->
+  <div class="logi-hero">
+    <div class="logi-hero-left">
+      <span class="logi-eyebrow"><i class="ti ti-ticket"></i> Logistics · Support</span>
+      <h1 class="logi-page-title">Tickets de maintenance</h1>
+      <p class="logi-page-sub">Suivi des signalements et demandes de maintenance.</p>
+      <div class="logi-subtabs">
+        <a href="{% url 'logistics:inventaire' %}" class="logi-subtab">
           <i class="ti ti-package"></i> Inventaire
         </a>
-        <a href="{% url 'logistics:tickets' %}" class="tick-tab active">
+        <a href="{% url 'logistics:tickets' %}" class="logi-subtab active">
           <i class="ti ti-ticket"></i> Tickets
         </a>
-        <a href="{% url 'logistics:ateliers' %}" class="tick-tab">
+        <a href="{% url 'logistics:ateliers' %}" class="logi-subtab">
           <i class="ti ti-building-community"></i> Ateliers
         </a>
-        <a href="{% url 'logistics:demandes' %}" class="tick-tab">
+        <a href="{% url 'logistics:demandes' %}" class="logi-subtab">
           <i class="ti ti-truck-delivery"></i> Demandes
         </a>
-      </nav>
+      </div>
+    </div>
+    <div class="logi-hero-right">
+      <a href="{% url 'logistics:nuevo_ticket' %}" class="logi-btn-primary">
+        <i class="ti ti-plus"></i> Nouveau ticket
+      </a>
     </div>
   </div>
 
-  <!-- BODY -->
-  <div class="tick-body">
-
-    <!-- Stat strip -->
-    <div class="tick-stats">
-      <div class="tick-stat">
-        <div class="tick-stat-icon" style="background:rgba(59,130,246,0.1);color:#3b82f6;">
-          <i class="ti ti-ticket"></i>
-        </div>
-        <div>
-          <div class="tick-stat-val">{{ tickets|length }}</div>
-          <div class="tick-stat-lbl">Tickets actifs</div>
-        </div>
+  <!-- ══ STAT TILES ══ -->
+  <div class="logi-stats">
+    <div class="stat-tile">
+      <div class="stat-tile-icon" style="background:rgba(59,130,246,0.1);color:#3b82f6;">
+        <i class="ti ti-ticket"></i>
       </div>
-      <div class="tick-stat">
-        <div class="tick-stat-icon" style="background:rgba(245,158,11,0.1);color:#f59e0b;">
-          <i class="ti ti-clock"></i>
-        </div>
-        <div>
-          <div class="tick-stat-val">{{ tickets_en_attente|default:"0" }}</div>
-          <div class="tick-stat-lbl">En attente</div>
-        </div>
-      </div>
-      <div class="tick-stat">
-        <div class="tick-stat-icon" style="background:rgba(139,92,246,0.1);color:#8b5cf6;">
-          <i class="ti ti-settings"></i>
-        </div>
-        <div>
-          <div class="tick-stat-val">{{ tickets_en_cours|default:"0" }}</div>
-          <div class="tick-stat-lbl">En traitement</div>
-        </div>
-      </div>
-      <div class="tick-stat">
-        <div class="tick-stat-icon" style="background:rgba(16,185,129,0.1);color:#10b981;">
-          <i class="ti ti-circle-check"></i>
-        </div>
-        <div>
-          <div class="tick-stat-val">{{ tickets_resolus|default:"0" }}</div>
-          <div class="tick-stat-lbl">Résolus</div>
-        </div>
+      <div>
+        <div class="stat-tile-val">{{ tickets|length }}</div>
+        <div class="stat-tile-lbl">Tickets actifs</div>
       </div>
     </div>
-
-    <!-- Tickets card -->
-    <div class="tick-card">
-      <div class="tick-card-header">
-        <h2 class="tick-card-title"><i class="ti ti-list-details"></i> Tickets actifs</h2>
-        <a href="{% url 'logistics:nuevo_ticket' %}" class="btn-new-ticket">
-          <i class="ti ti-plus"></i> Nouveau ticket
-        </a>
+    <div class="stat-tile">
+      <div class="stat-tile-icon" style="background:rgba(245,158,11,0.1);color:#f59e0b;">
+        <i class="ti ti-clock"></i>
       </div>
-      <div class="tick-list-body">
-        <div id="tickets-list">
-          {% include 'logistics/partials/tickets_list.html' with tickets=tickets resolve_url=resolve_url %}
-        </div>
+      <div>
+        <div class="stat-tile-val">{{ tickets_en_attente|default:"0" }}</div>
+        <div class="stat-tile-lbl">En attente</div>
       </div>
     </div>
-
+    <div class="stat-tile">
+      <div class="stat-tile-icon" style="background:rgba(139,92,246,0.1);color:#8b5cf6;">
+        <i class="ti ti-settings"></i>
+      </div>
+      <div>
+        <div class="stat-tile-val">{{ tickets_en_cours|default:"0" }}</div>
+        <div class="stat-tile-lbl">En traitement</div>
+      </div>
+    </div>
+    <div class="stat-tile">
+      <div class="stat-tile-icon" style="background:rgba(16,185,129,0.1);color:#10b981;">
+        <i class="ti ti-circle-check"></i>
+      </div>
+      <div>
+        <div class="stat-tile-val">{{ tickets_resolus|default:"0" }}</div>
+        <div class="stat-tile-lbl">Résolus</div>
+      </div>
+    </div>
   </div>
+
+  <!-- ══ TICKETS PANEL ══ -->
+  <div class="logi-panel">
+    <div class="logi-panel-head">
+      <h2 class="logi-panel-title"><i class="ti ti-list-details"></i> Tickets actifs</h2>
+      <div class="logi-filter-search">
+        <i class="ti ti-search"></i>
+        <input type="text" name="q" placeholder="Rechercher un ticket..."
+               hx-get="{% url 'logistics:tickets' %}"
+               hx-target="#tickets-list"
+               hx-trigger="keyup changed delay:300ms">
+      </div>
+    </div>
+    <div class="tick-list-body">
+      <div id="tickets-list">
+        {% include 'logistics/partials/tickets_list.html' with tickets=tickets resolve_url=resolve_url %}
+      </div>
+    </div>
+  </div>
+
 </div>
 {% endblock %}

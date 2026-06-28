@@ -1,13 +1,13 @@
-<div class="modal-backdrop-premium" id="demande-modal-backdrop" onclick="document.getElementById('form-demande-container').innerHTML=''" style="position: fixed; inset: 0; background: rgba(15,23,42,0.5); backdrop-filter: blur(6px); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 1.5rem;">
-    <div class="modal-card-premium" onclick="event.stopPropagation()" style="background: var(--surface); width: 100%; max-width: 550px; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.15); overflow: hidden; animation: modalSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); display: flex; flex-direction: column; max-height: 90vh;">
+<div class="modal-backdrop-premium" id="demande-modal-backdrop" onclick="document.getElementById('form-demande-container').innerHTML=''" style="position: fixed; inset: 0; background: rgba(15,23,42,0.5); backdrop-filter: blur(6px); z-index: 1000; display: flex; align-items: flex-start; justify-content: center; padding: 2rem; overflow-y: auto;">
+    <div class="modal-card-premium" onclick="event.stopPropagation()" style="background: var(--surface); width: 100%; max-width: 600px; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.15); animation: modalSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); display: flex; flex-direction: column; margin: auto;">
         
         <div style="padding: 1.75rem 2rem 1rem; border-bottom: none; display: flex; align-items: flex-start; justify-content: space-between; flex-shrink: 0;">
             <div>
                 <h2 style="margin: 0; font-size: 1.4rem; font-weight: 900; color: var(--ink); margin-bottom: 0.4rem;">
-                    Nouvelle Demande Logistique
+                    {% if form %}Éditer la Demande{% else %}Panier de Matériel{% endif %}
                 </h2>
                 <p style="margin: 0; font-size: 0.85rem; color: var(--ink-muted); line-height: 1.5;">
-                    Sélectionnez le matériel nécessaire pour votre prochain atelier.
+                    {% if form %}Modifiez les informations de la demande.{% else %}Ajoutez plusieurs équipements pour votre atelier.{% endif %}
                 </p>
             </div>
             <button type="button" onclick="document.getElementById('form-demande-container').innerHTML=''" style="background: var(--bg); border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: var(--ink-muted); cursor: pointer; transition: all 0.15s;" onmouseover="this.style.color='var(--ink)'; this.style.background='var(--border)'" onmouseout="this.style.color='var(--ink-muted)'; this.style.background='var(--bg)'">
@@ -23,50 +23,94 @@
               style="display: flex; flex-direction: column; min-height: 0;">
             {% csrf_token %}
 
-            <div style="padding: 1rem 2rem 2rem; overflow-y: auto; flex-grow: 1; display: flex; flex-direction: column; gap: 1.5rem;">
-                {% if form.non_field_errors %}
-                    <div style="padding: 1rem; border-radius: 8px; background: rgba(239,68,68,0.1); color: var(--red); border: 1px solid rgba(239,68,68,0.2);">
-                        {% for error in form.non_field_errors %}
-                            <p style="margin: 0; font-size: 0.85rem; font-weight: 600;">{{ error }}</p>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-
-                <!-- Equipement -->
-                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                    <label for="{{ form.equipement.id_for_label }}" style="font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-mid); display: flex; align-items: center; gap: 0.4rem;">
-                        <i class="ti ti-package"></i> ÉQUIPEMENT REQUIS
-                    </label>
-                    {{ form.equipement }}
-                    {% if form.equipement.errors %}
-                        <span style="font-size: 0.75rem; color: var(--red); font-weight: 600;">{{ form.equipement.errors.0 }}</span>
+            <div style="padding: 1rem 2rem 2rem; flex-grow: 1; display: flex; flex-direction: column; gap: 1.5rem;">
+                
+                {% if form %}
+                    <!-- Single Form Edit Mode -->
+                    {% if form.non_field_errors %}
+                        <div style="padding: 1rem; border-radius: 8px; background: rgba(239,68,68,0.1); color: var(--red); border: 1px solid rgba(239,68,68,0.2);">
+                            {% for error in form.non_field_errors %}
+                                <p style="margin: 0; font-size: 0.85rem; font-weight: 600;">{{ error }}</p>
+                            {% endfor %}
+                        </div>
                     {% endif %}
-                </div>
-
-                <!-- Atelier Cible & Quantité in 2 columns -->
-                <div style="display: grid; grid-template-columns: 3fr 2fr; gap: 1rem;">
-                    <!-- Atelier -->
+                    
                     <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                        <label for="{{ form.atelier_cible.id_for_label }}" style="font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-mid); display: flex; align-items: center; gap: 0.4rem;">
-                            <i class="ti ti-building-community"></i> ATELIER CIBLE
-                        </label>
-                        {{ form.atelier_cible }}
-                        {% if form.atelier_cible.errors %}
-                            <span style="font-size: 0.75rem; color: var(--red); font-weight: 600;">{{ form.atelier_cible.errors.0 }}</span>
-                        {% endif %}
+                        <label for="{{ form.equipement.id_for_label }}" style="font-size: 0.8rem; font-weight: 800; text-transform: uppercase; color: var(--ink-mid);"><i class="ti ti-package"></i> ÉQUIPEMENT</label>
+                        {{ form.equipement }}
+                        {% if form.equipement.errors %}<span style="font-size: 0.75rem; color: var(--red); font-weight: 600;">{{ form.equipement.errors.0 }}</span>{% endif %}
+                    </div>
+                    <div style="display: grid; grid-template-columns: 3fr 2fr; gap: 1rem;">
+                        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                            <label for="{{ form.atelier_cible.id_for_label }}" style="font-size: 0.8rem; font-weight: 800; text-transform: uppercase; color: var(--ink-mid);"><i class="ti ti-building-community"></i> ATELIER</label>
+                            {{ form.atelier_cible }}
+                            {% if form.atelier_cible.errors %}<span style="font-size: 0.75rem; color: var(--red); font-weight: 600;">{{ form.atelier_cible.errors.0 }}</span>{% endif %}
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                            <label for="{{ form.quantite.id_for_label }}" style="font-size: 0.8rem; font-weight: 800; text-transform: uppercase; color: var(--ink-mid);"><i class="ti ti-123"></i> QUANTITÉ</label>
+                            {{ form.quantite }}
+                            {% if form.quantite.errors %}<span style="font-size: 0.75rem; color: var(--red); font-weight: 600;">{{ form.quantite.errors.0 }}</span>{% endif %}
+                        </div>
+                    </div>
+                {% else %}
+                    <!-- Dynamic Bulk Add Mode -->
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem; background: var(--bg); padding: 1rem; border-radius: 12px; border: 1px solid var(--border);">
+                        <label for="atelier_cible" style="font-size: 0.8rem; font-weight: 800; text-transform: uppercase; color: var(--ink-mid);"><i class="ti ti-building-community"></i> Atelier concerné</label>
+                        <select name="atelier_cible" id="atelier_cible" required class="custom-ts tomselected">
+                            <option value="">Sélectionnez l'atelier...</option>
+                            {% for atelier in ateliers %}
+                                <option value="{{ atelier.id }}">{{ atelier.titre }} ({{ atelier.date_debut|date:"d M Y" }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div id="equipements-cart" style="display: flex; flex-direction: column; gap: 1rem;">
+                        <!-- First item row -->
+                        <div class="cart-item" style="display: grid; grid-template-columns: 3fr 1fr auto; gap: 1rem; align-items: end;">
+                            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                                <label style="font-size: 0.8rem; font-weight: 800; text-transform: uppercase; color: var(--ink-mid);"><i class="ti ti-package"></i> Équipement</label>
+                                <select name="equipement[]" required class="custom-ts tomselected">
+                                    <option value="">Choisir...</option>
+                                    {% for eq in equipements %}
+                                        <option value="{{ eq.id }}">{{ eq.nom }} (Dispo: {{ eq.stock_disponible }})</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                                <label style="font-size: 0.8rem; font-weight: 800; text-transform: uppercase; color: var(--ink-mid);">Qté</label>
+                                <input type="number" name="quantite[]" min="1" required style="width: 100%; padding: 0.7rem; border-radius: 8px; border: 1.5px solid var(--border); text-align: center;">
+                            </div>
+                            <div>
+                                <button type="button" class="remove-btn" style="height: 42px; width: 42px; border-radius: 8px; background: rgba(239,68,68,0.1); color: var(--red); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; opacity: 0; pointer-events: none;"><i class="ti ti-trash"></i></button>
+                            </div>
+                        </div>
                     </div>
                     
-                    <!-- Quantité -->
-                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                        <label for="{{ form.quantite.id_for_label }}" style="font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-mid); display: flex; align-items: center; gap: 0.4rem;">
-                            <i class="ti ti-123"></i> QUANTITÉ
-                        </label>
-                        {{ form.quantite }}
-                        {% if form.quantite.errors %}
-                            <span style="font-size: 0.75rem; color: var(--red); font-weight: 600;">{{ form.quantite.errors.0 }}</span>
-                        {% endif %}
-                    </div>
-                </div>
+                    <button type="button" onclick="addCartRow()" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.75rem; border: 1.5px dashed var(--border); border-radius: 8px; background: transparent; color: var(--ink-mid); font-weight: 600; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--blue)'; this.style.color='var(--blue)'" onmouseout="this.style.borderColor='var(--border)'; this.style.color='var(--ink-mid)'">
+                        <i class="ti ti-plus"></i> Ajouter un autre équipement
+                    </button>
+                    
+                    <!-- Template for new rows -->
+                    <template id="cart-item-template">
+                        <div class="cart-item" style="display: grid; grid-template-columns: 3fr 1fr auto; gap: 1rem; align-items: end; animation: slideDown 0.2s ease-out;">
+                            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                                <select name="equipement[]" required class="custom-ts tomselected">
+                                    <option value="">Choisir...</option>
+                                    {% for eq in equipements %}
+                                        <option value="{{ eq.id }}">{{ eq.nom }} (Dispo: {{ eq.stock_disponible }})</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                                <input type="number" name="quantite[]" min="1" required style="width: 100%; padding: 0.7rem; border-radius: 8px; border: 1.5px solid var(--border); text-align: center;">
+                            </div>
+                            <div>
+                                <button type="button" onclick="this.closest('.cart-item').remove()" class="remove-btn" style="height: 42px; width: 42px; border-radius: 8px; background: rgba(239,68,68,0.1); color: var(--red); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;"><i class="ti ti-trash"></i></button>
+                            </div>
+                        </div>
+                    </template>
+                {% endif %}
+
             </div>
 
             <!-- Footer Buttons -->
@@ -74,7 +118,7 @@
                 <button type="button" style="display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.75rem 1.5rem; background: transparent; color: var(--ink-mid); border: none; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: color 0.15s;" onclick="document.getElementById('form-demande-container').innerHTML=''" onmouseover="this.style.color='var(--ink)'" onmouseout="this.style.color='var(--ink-mid)'">
                     Annuler
                 </button>
-                <button type="submit" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 2rem; background: var(--blue); color: #fff; border: none; border-radius: 12px; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: background 0.15s, transform 0.1s; box-shadow: 0 4px 12px rgba(59,130,246,0.25);" onmouseover="this.style.background='#2563eb'; this.style.transform='translateY(-1px)'" onmouseout="this.style.background='var(--blue)'; this.style.transform='translateY(0)'">
+                <button type="submit" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 2rem; background: linear-gradient(135deg, #0D9488, #0F766E); color: #fff; border: none; border-radius: 12px; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(13,148,136,0.3);" onmouseover="this.style.filter='brightness(1.1)'; this.style.transform='translateY(-1px)'" onmouseout="this.style.filter='none'; this.style.transform='translateY(0)'">
                     {{ submit_label|default:'Envoyer la demande' }} <i class="ti ti-send"></i>
                 </button>
             </div>
@@ -87,55 +131,67 @@
         from { opacity: 0; transform: translateY(20px) scale(0.98); }
         to { opacity: 1; transform: translateY(0) scale(1); }
     }
-    #demande-form input[type="number"] {
-        width: 100%;
-        padding: 0.7rem 1rem;
-        border-radius: 8px;
-        border: 1.5px solid var(--border);
-        font-family: inherit;
-        font-size: 0.95rem;
-        color: var(--ink);
-        background: var(--surface);
-        transition: all 0.15s;
+    @keyframes slideDown {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
     }
-    #demande-form input[type="number"]:focus {
-        outline: none;
-        border-color: var(--blue);
-        box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+    #demande-form select, #demande-form input[type="number"], #demande-form .form-control {
+        width: 100%; padding: 0.7rem 1rem; border-radius: 8px; border: 1.5px solid var(--border); font-family: inherit; font-size: 0.95rem; background: var(--surface); transition: all 0.15s;
     }
+    #demande-form select:focus, #demande-form input[type="number"]:focus {
+        outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+    }
+    .remove-btn:hover { background: rgba(239,68,68,0.2) !important; }
 </style>
 
-<!-- TomSelect Integration -->
-<link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.default.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+<script>
+    function addCartRow() {
+        const cart = document.getElementById('equipements-cart');
+        const template = document.getElementById('cart-item-template');
+        cart.appendChild(template.content.cloneNode(true));
+    }
+</script>
+
+<!-- Custom TomSelect Initialization -->
 <script>
   (function() {
-      const initTomSelect = () => {
-          const equipSelect = document.getElementById("{{ form.equipement.id_for_label }}");
-          if (equipSelect && !equipSelect.tomselect) {
-              new TomSelect(equipSelect, {
+      const initTomSelect = (el) => {
+          if (el && !el.tomselect) {
+              new TomSelect(el, {
                   create: false,
-                  placeholder: "Rechercher un équipement...",
-                  maxOptions: 100,
+                  placeholder: "Rechercher...",
+                  maxOptions: 50,
                   sortField: { field: "text", direction: "asc" }
               });
           }
-          
-          const atelierSelect = document.getElementById("{{ form.atelier_cible.id_for_label }}");
-          if (atelierSelect && !atelierSelect.tomselect) {
-              new TomSelect(atelierSelect, {
-                  create: false,
-                  placeholder: "Rechercher un atelier...",
-                  maxOptions: 50
-              });
-          }
       };
-      initTomSelect();
+      
+      const initAll = () => {
+          document.querySelectorAll('#demande-form select.custom-ts').forEach(initTomSelect);
+      };
+      
+      // Initialize immediately
+      initAll();
+      // And with a slight delay to ensure DOM is fully painted by HTMX
+      setTimeout(initAll, 50);
+
+      // Override addCartRow to initialize TomSelect on the new row
+      window.addCartRow = function() {
+          const cart = document.getElementById('equipements-cart');
+          const template = document.getElementById('cart-item-template');
+          const clone = template.content.cloneNode(true);
+          cart.appendChild(clone);
+          
+          const newRows = cart.querySelectorAll('.cart-item');
+          const lastRow = newRows[newRows.length - 1];
+          const newSelect = lastRow.querySelector('select.custom-ts');
+          if(newSelect) initTomSelect(newSelect);
+      }
   })();
 </script>
 <style>
-  /* Customize TomSelect for the Demande form to match screenshot */
-  #demande-form .ts-control {
+  /* Customize TomSelect for the form */
+  .ts-control {
         padding: 0.7rem 1rem !important;
         border: 1.5px solid var(--border) !important;
         border-radius: 8px !important;
@@ -145,19 +201,23 @@
         box-shadow: none !important;
         transition: all 0.15s !important;
   }
-  #demande-form .ts-control.focus {
-        border-color: var(--blue) !important;
-        box-shadow: 0 0 0 3px rgba(59,130,246,0.15) !important;
+  .ts-control.focus {
+        border-color: #0D9488 !important;
+        box-shadow: 0 0 0 3px rgba(13,148,136,0.15) !important;
   }
-  #demande-form .ts-dropdown {
+  .ts-dropdown {
     border: 1px solid var(--border) !important;
     border-radius: 8px !important;
     box-shadow: 0 4px 16px rgba(0,0,0,0.08) !important;
     font-size: 0.95rem !important;
-    z-index: 1060 !important;
+    z-index: 10050 !important;
   }
-  #demande-form .ts-dropdown .active {
-    background-color: rgba(59,130,246,0.1) !important;
-    color: var(--blue) !important;
+  .ts-dropdown .active {
+    background-color: rgba(13,148,136,0.1) !important;
+    color: #0D9488 !important;
+  }
+  /* Hide the original select completely to avoid double borders if tomselect fails */
+  #demande-form select.tomselected {
+      display: none !important;
   }
 </style>

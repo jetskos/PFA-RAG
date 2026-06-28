@@ -1,14 +1,16 @@
-<div class="modal-backdrop-premium" id="atelier-modal-backdrop" onclick="document.getElementById('form-atelier-container').innerHTML=''" style="position: fixed; inset: 0; background: rgba(15,23,42,0.5); backdrop-filter: blur(6px); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 1.5rem;">
-    <div class="modal-card-premium" onclick="event.stopPropagation()" style="background: var(--surface); width: 100%; max-width: 600px; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.15); overflow: hidden; animation: modalSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); display: flex; flex-direction: column; max-height: 90vh;">
+<div class="modal-backdrop-premium" id="atelier-modal-backdrop" onclick="document.getElementById('form-atelier-container').innerHTML=''" style="position: fixed; inset: 0; background: rgba(15,23,42,0.5); backdrop-filter: blur(6px); z-index: 1000; display: flex; align-items: flex-start; justify-content: center; padding: 2rem; overflow-y: auto;">
+    <div class="modal-card-premium" onclick="event.stopPropagation()" style="background: var(--surface); width: 100%; max-width: 650px; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.15); animation: modalSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); display: flex; flex-direction: column; margin: auto;">
         
-        <div style="padding: 1.25rem 1.75rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;">
-            <h2 style="margin: 0; font-size: 1.1rem; font-weight: 800; color: var(--ink); display: flex; align-items: center; gap: 0.5rem;">
-                <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(15,118,110,0.1); color: var(--teal); display: flex; align-items: center; justify-content: center;">
-                    <i class="ti ti-edit"></i>
-                </div>
-                Formulaire atelier
-            </h2>
-            <button type="button" onclick="document.getElementById('form-atelier-container').innerHTML=''" style="background: transparent; border: none; font-size: 1.25rem; color: var(--ink-muted); cursor: pointer; padding: 0.2rem; transition: color 0.15s;" onmouseover="this.style.color='var(--ink)'" onmouseout="this.style.color='var(--ink-muted)'">
+        <div style="padding: 1.75rem 2rem 1rem; border-bottom: none; display: flex; align-items: flex-start; justify-content: space-between; flex-shrink: 0;">
+            <div>
+                <h2 style="margin: 0; font-size: 1.4rem; font-weight: 900; color: var(--ink); margin-bottom: 0.4rem;">
+                    {% if form.instance.pk %}Modifier l'atelier{% else %}Planifier un atelier{% endif %}
+                </h2>
+                <p style="margin: 0; font-size: 0.85rem; color: var(--ink-muted); line-height: 1.5;">
+                    Renseignez les détails de la session de formation IoT.
+                </p>
+            </div>
+            <button type="button" onclick="document.getElementById('form-atelier-container').innerHTML=''" style="background: var(--bg); border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: var(--ink-muted); cursor: pointer; transition: all 0.15s;" onmouseover="this.style.color='var(--ink)'; this.style.background='var(--border)'" onmouseout="this.style.color='var(--ink-muted)'; this.style.background='var(--bg)'">
                 <i class="ti ti-x"></i>
             </button>
         </div>
@@ -21,7 +23,8 @@
               style="display: flex; flex-direction: column; min-height: 0;">
             {% csrf_token %}
 
-            <div style="padding: 1.75rem; overflow-y: auto; flex-grow: 1; display: flex; flex-direction: column; gap: 1.25rem;">
+            <div style="padding: 1rem 2rem 2rem; flex-grow: 1; display: flex; flex-direction: column; gap: 1.5rem;">
+                
                 {% if form.non_field_errors %}
                     <div style="padding: 1rem; border-radius: 8px; background: rgba(239,68,68,0.1); color: var(--red); border: 1px solid rgba(239,68,68,0.2);">
                         {% for error in form.non_field_errors %}
@@ -30,25 +33,69 @@
                     </div>
                 {% endif %}
 
-                {% for field in form %}
-                    <div style="display: flex; flex-direction: column; gap: 0.4rem;">
-                        <label for="{{ field.id_for_label }}" style="font-size: 0.85rem; font-weight: 700; color: var(--ink-mid);">
-                            {{ field.label }}
-                        </label>
-                        {{ field }}
-                        {% if field.errors %}
-                            <span style="font-size: 0.75rem; color: var(--red); font-weight: 600;"><i class="ti ti-alert-circle"></i> {{ field.errors.0 }}</span>
-                        {% endif %}
+                <!-- Titre -->
+                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    <label for="{{ form.titre.id_for_label }}" style="font-size: 0.8rem; font-weight: 800; text-transform: uppercase; color: var(--ink-mid);"><i class="ti ti-writing"></i> TITRE DE L'ATELIER</label>
+                    {{ form.titre }}
+                    {% if form.titre.errors %}<span style="font-size: 0.75rem; color: var(--red); font-weight: 600;">{{ form.titre.errors.0 }}</span>{% endif %}
+                </div>
+
+                <!-- Dates Grid -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <label for="{{ form.date_debut.id_for_label }}" style="font-size: 0.8rem; font-weight: 800; text-transform: uppercase; color: var(--ink-mid);"><i class="ti ti-calendar-plus"></i> DATE DE DÉBUT</label>
+                        {{ form.date_debut }}
+                        {% if form.date_debut.errors %}<span style="font-size: 0.75rem; color: var(--red); font-weight: 600;">{{ form.date_debut.errors.0 }}</span>{% endif %}
                     </div>
-                {% endfor %}
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <label for="{{ form.date_fin.id_for_label }}" style="font-size: 0.8rem; font-weight: 800; text-transform: uppercase; color: var(--ink-mid);"><i class="ti ti-calendar-minus"></i> DATE DE FIN</label>
+                        {{ form.date_fin }}
+                        {% if form.date_fin.errors %}<span style="font-size: 0.75rem; color: var(--red); font-weight: 600;">{{ form.date_fin.errors.0 }}</span>{% endif %}
+                    </div>
+                </div>
+
+                <!-- Salle & Niveau -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <label for="{{ form.salle.id_for_label }}" style="font-size: 0.8rem; font-weight: 800; text-transform: uppercase; color: var(--ink-mid);"><i class="ti ti-map-pin"></i> SALLE</label>
+                        {{ form.salle }}
+                        {% if form.salle.errors %}<span style="font-size: 0.75rem; color: var(--red); font-weight: 600;">{{ form.salle.errors.0 }}</span>{% endif %}
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <label for="{{ form.niveau_cible.id_for_label }}" style="font-size: 0.8rem; font-weight: 800; text-transform: uppercase; color: var(--ink-mid);"><i class="ti ti-stairs-up"></i> NIVEAU CIBLE</label>
+                        {{ form.niveau_cible }}
+                        {% if form.niveau_cible.errors %}<span style="font-size: 0.75rem; color: var(--red); font-weight: 600;">{{ form.niveau_cible.errors.0 }}</span>{% endif %}
+                    </div>
+                </div>
+
+                <!-- Tuteur -->
+                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    <label for="{{ form.tuteur.id_for_label }}" style="font-size: 0.8rem; font-weight: 800; text-transform: uppercase; color: var(--ink-mid);"><i class="ti ti-user-check"></i> TUTEUR</label>
+                    {% if request.user.is_staff or request.user.role == 'ADMIN' %}
+                        <select name="{{ form.tuteur.name }}" id="{{ form.tuteur.id_for_label }}" required class="custom-ts tomselected">
+                            <option value="">Sélectionnez un tuteur...</option>
+                            {% for value, label in form.tuteur.field.choices %}
+                                <option value="{{ value }}" {% if form.tuteur.value|stringformat:"s" == value|stringformat:"s" %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    {% else %}
+                        <div style="padding: 0.7rem 1rem; border-radius: 8px; border: 1.5px solid var(--border); background: var(--bg); font-weight: 600;">
+                            {{ request.user.get_full_name }} (Vous)
+                        </div>
+                        <input type="hidden" name="{{ form.tuteur.name }}" value="{{ request.user.id }}">
+                    {% endif %}
+                    {% if form.tuteur.errors %}<span style="font-size: 0.75rem; color: var(--red); font-weight: 600;">{{ form.tuteur.errors.0 }}</span>{% endif %}
+                </div>
+
             </div>
 
-            <div style="padding: 1.25rem 1.75rem; border-top: 1px solid var(--border); background: var(--bg); display: flex; justify-content: flex-end; gap: 0.75rem; flex-shrink: 0;">
-                <button type="button" style="display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.65rem 1.1rem; background: transparent; color: var(--ink-muted); border: 1.5px solid var(--border); border-radius: 8px; font-size: 0.875rem; font-weight: 700; cursor: pointer; transition: all 0.15s;" onclick="document.getElementById('form-atelier-container').innerHTML=''" onmouseover="this.style.borderColor='var(--ink-mid)'; this.style.color='var(--ink)'" onmouseout="this.style.borderColor='var(--border)'; this.style.color='var(--ink-muted)'">
+            <!-- Footer Buttons -->
+            <div style="padding: 1.5rem 2rem; border-top: 1px solid var(--border); display: flex; justify-content: center; gap: 1rem; flex-shrink: 0; background: var(--surface);">
+                <button type="button" style="display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.75rem 1.5rem; background: transparent; color: var(--ink-mid); border: none; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: color 0.15s;" onclick="document.getElementById('form-atelier-container').innerHTML=''" onmouseover="this.style.color='var(--ink)'" onmouseout="this.style.color='var(--ink-mid)'">
                     Annuler
                 </button>
-                <button type="submit" style="display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.65rem 1.4rem; background: var(--teal); color: #fff; border: none; border-radius: 8px; font-size: 0.875rem; font-weight: 700; cursor: pointer; transition: background 0.15s;" onmouseover="this.style.background='var(--ink)'" onmouseout="this.style.background='var(--teal)'">
-                    {{ submit_label|default:'Enregistrer' }} <i class="ti ti-check"></i>
+                <button type="submit" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 2rem; background: linear-gradient(135deg, #0D9488, #0F766E); color: #fff; border: none; border-radius: 12px; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(13,148,136,0.3);" onmouseover="this.style.filter='brightness(1.1)'; this.style.transform='translateY(-1px)'" onmouseout="this.style.filter='none'; this.style.transform='translateY(0)'">
+                    {{ submit_label|default:'Créer l\'atelier' }} <i class="ti ti-calendar-event"></i>
                 </button>
             </div>
         </form>
@@ -62,37 +109,33 @@
     }
     #atelier-form input, #atelier-form select, #atelier-form textarea {
         width: 100%;
-        padding: 0.65rem 1rem;
+        padding: 0.7rem 1rem;
         border-radius: 8px;
         border: 1.5px solid var(--border);
         font-family: inherit;
-        font-size: 0.9rem;
+        font-size: 0.95rem;
         color: var(--ink);
         background: var(--surface);
         transition: all 0.15s;
     }
     #atelier-form input:focus, #atelier-form select:focus, #atelier-form textarea:focus {
         outline: none;
-        border-color: var(--teal);
-        box-shadow: 0 0 0 3px var(--teal-glow);
-    }
-    #atelier-form input[type="checkbox"] {
-        width: auto;
+        border-color: var(--blue);
+        box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
     }
 </style>
 
-<!-- Add TomSelect for Tuteur if desired -->
-<link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.default.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+<!-- Custom TomSelect Initialization for Tuteur -->
 <script>
   (function() {
       const initTomSelect = () => {
-          const tuteurSelect = document.getElementById("{{ form.tuteur.id_for_label }}");
-          if (tuteurSelect && !tuteurSelect.tomselect) {
-              new TomSelect(tuteurSelect, {
+          const el = document.getElementById('{{ form.tuteur.id_for_label }}');
+          if (el && !el.tomselect) {
+              new TomSelect(el, {
                   create: false,
-                  placeholder: "Rechercher un tuteur...",
-                  maxOptions: 50
+                  placeholder: "Rechercher...",
+                  maxOptions: 50,
+                  sortField: { field: "text", direction: "asc" }
               });
           }
       };
@@ -102,28 +145,29 @@
 <style>
   /* Customize TomSelect for the form */
   .ts-control {
-        padding: 0.65rem 1rem !important;
+        padding: 0.7rem 1rem !important;
         border: 1.5px solid var(--border) !important;
         border-radius: 8px !important;
         background: var(--surface) !important;
         font-family: inherit !important;
-        font-size: 0.9rem !important;
+        font-size: 0.95rem !important;
         box-shadow: none !important;
         transition: all 0.15s !important;
   }
   .ts-control.focus {
-        border-color: var(--teal) !important;
-        box-shadow: 0 0 0 3px var(--teal-glow) !important;
+        border-color: var(--blue) !important;
+        box-shadow: 0 0 0 3px rgba(59,130,246,0.15) !important;
   }
   .ts-dropdown {
     border: 1px solid var(--border) !important;
     border-radius: 8px !important;
     box-shadow: 0 4px 16px rgba(0,0,0,0.08) !important;
-    font-size: 0.9rem !important;
-    z-index: 1060 !important;
+    font-size: 0.95rem !important;
+    z-index: 10050 !important;
   }
   .ts-dropdown .active {
-    background-color: var(--teal-glow) !important;
-    color: var(--teal) !important;
+    background-color: rgba(13,148,136,0.1) !important;
+    color: #0D9488 !important;
   }
+  #form-atelier-container select.tomselected { display: none !important; }
 </style>

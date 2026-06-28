@@ -2,302 +2,270 @@
 {% block title %}Nouveau Ticket — Logistics{% endblock %}
 {% block content %}
 <style>
-  :root {
-    --teal:       #0f766e;
-    --teal-light: #14b8a6;
-    --teal-glow:  rgba(15,118,110,0.1);
-    --red:        #ef4444;
-    --ink:        #0f172a;
-    --ink-mid:    #334155;
-    --ink-muted:  #64748b;
-    --border:     #e2e8f0;
-    --surface:    #ffffff;
-    --bg:         #f1f5f9;
-    --radius-sm:  8px;
-    --radius-md:  12px;
-    --radius-lg:  18px;
-    --shadow-sm:  0 1px 3px rgba(0,0,0,0.06);
-    --shadow-md:  0 6px 24px rgba(0,0,0,0.09);
-  }
-  *, *::before, *::after { box-sizing: border-box; }
-
-  .nt-shell {
-    min-height: 100vh;
-    background: var(--bg);
-    font-family: 'Inter', system-ui, sans-serif;
-    display: flex;
-    flex-direction: column;
-  }
-  .nt-topbar {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    padding: 1.5rem 2rem 1.5rem;
-  }
-  .nt-topbar-inner { max-width: 700px; margin: 0 auto; }
-  .nt-back {
-    display: inline-flex; align-items: center; gap: 0.35rem;
-    font-size: 0.82rem; font-weight: 700; color: var(--ink-muted);
-    text-decoration: none; margin-bottom: 1rem;
-    transition: color 0.15s;
-  }
-  .nt-back:hover { color: var(--teal); }
-  .nt-eyebrow {
-    font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em;
-    text-transform: uppercase; color: var(--teal); margin-bottom: 0.3rem;
-  }
-  .nt-title { font-size: 1.75rem; font-weight: 900; color: var(--ink); margin: 0 0 0.2rem; }
-  .nt-subtitle { font-size: 0.875rem; color: var(--ink-muted); margin: 0; }
-
-  .nt-body {
-    flex: 1;
-    max-width: 700px;
-    margin: 1.75rem auto 3rem;
-    padding: 0 2rem;
-    width: 100%;
+  /* ═══════════════════════════════════════════════════
+     LOGISTICS / TICKET FORM — tokens mapped to base.html vars
+  ═══════════════════════════════════════════════════ */
+  .logi-shell {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 1.5rem 3rem;
   }
 
-  /* Form card */
-  .nt-form-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-md);
+  /* ── PAGE HERO (compact) ── */
+  .logi-hero {
+    position: relative; border-radius: 20px; overflow: hidden;
+    padding: 1.75rem 2.5rem; margin: 1.5rem 0 2rem;
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 2rem; flex-wrap: wrap;
+    background: linear-gradient(135deg, #0f2027 0%, #203a43 55%, #1a3a2a 100%);
+    box-shadow: 0 16px 48px -8px rgba(13,148,136,0.28);
+  }
+  .logi-hero::before {
+    content: ''; position: absolute; top: -60px; right: -60px;
+    width: 240px; height: 240px;
+    background: radial-gradient(circle, rgba(13,148,136,0.22) 0%, transparent 70%);
+    border-radius: 50%; pointer-events: none;
+  }
+  .logi-hero-left { position: relative; z-index: 2; }
+  .logi-hero-right { position: relative; z-index: 2; }
+
+  .logi-eyebrow {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(13,148,136,0.2); border: 1px solid rgba(13,148,136,0.4);
+    color: #2dd4bf; font-size: 0.7rem; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 4px 12px; border-radius: 999px; margin-bottom: 0.5rem;
+    backdrop-filter: blur(8px);
+  }
+  .logi-page-title {
+    font-size: 1.6rem; font-weight: 900; color: #fff;
+    letter-spacing: -0.03em; line-height: 1.15; margin: 0 0 0.25rem;
+  }
+  .logi-page-sub { font-size: 0.875rem; color: rgba(255,255,255,0.6); margin: 0; }
+
+  .logi-btn-ghost {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.55rem 1.1rem;
+    background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.85);
+    border: 1.5px solid rgba(255,255,255,0.18); border-radius: 10px;
+    font-size: 0.85rem; font-weight: 600; font-family: inherit;
+    cursor: pointer; text-decoration: none; transition: all 0.18s;
+    backdrop-filter: blur(8px);
+  }
+  .logi-btn-ghost:hover { background: rgba(255,255,255,0.15); color: #fff; }
+
+  /* ── FORM CARD ── */
+  .logi-form-card {
+    background: var(--bg-surface, #fff);
+    border: 1px solid var(--border-light, #e2e8f0);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.08);
     overflow: hidden;
   }
-  .nt-form-card-header {
+  .logi-form-card-header {
     padding: 1.25rem 1.75rem;
-    border-bottom: 1px solid var(--border);
-    background: var(--bg);
+    border-bottom: 1px solid var(--border-light, #e2e8f0);
+    background: var(--bg-body, #f8fafc);
     display: flex; align-items: center; gap: 0.5rem;
   }
-  .nt-form-card-header h2 {
-    font-size: 0.95rem; font-weight: 800; color: var(--ink); margin: 0;
+  .logi-form-card-header h2 {
+    font-size: 0.95rem; font-weight: 800;
+    color: var(--text-primary, #0f172a); margin: 0;
     display: flex; align-items: center; gap: 0.4rem;
   }
-  .nt-form-card-header i { color: var(--teal); }
-  .nt-form-body { padding: 1.75rem; }
+  .logi-form-card-header i { color: #0D9488; }
+  .logi-form-body { padding: 1.75rem; }
 
-  /* Field styles */
-  .nt-field { margin-bottom: 1.4rem; }
-  .nt-field:last-of-type { margin-bottom: 0; }
-  .nt-label {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    font-size: 0.72rem; 
-    font-weight: 800;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    color: var(--ink-mid);
+  /* ── FIELD STYLES ── */
+  .logi-field { margin-bottom: 1.4rem; }
+  .logi-field:last-of-type { margin-bottom: 0; }
+  .logi-label {
+    display: flex; align-items: center; gap: 0.4rem;
+    font-size: 0.72rem; font-weight: 800; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--text-secondary, #334155);
     margin-bottom: 0.5rem;
   }
-  .nt-label i {
-    font-size: 1.05rem;
-    color: var(--ink-muted);
+  .logi-label i { font-size: 1rem; color: var(--text-muted, #64748b); }
+
+  .logi-field input,
+  .logi-field textarea,
+  .logi-field select {
+    width: 100%; padding: 0.75rem 1rem;
+    border: 1.5px solid var(--border-default, #cbd5e1);
+    border-radius: 10px;
+    background: var(--bg-surface, #fff);
+    font-size: 0.9rem; font-family: inherit;
+    color: var(--text-primary, #0f172a);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none; appearance: none;
   }
-  .nt-field input,
-  .nt-field textarea,
-  .nt-field select {
-    width: 100%;
-    padding: 0.7rem 0.9rem;
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-sm);
-    background: var(--surface);
-    font-size: 0.9rem;
-    font-family: inherit;
-    color: var(--ink);
-    transition: border-color 0.15s, box-shadow 0.15s;
-    outline: none;
-    appearance: none;
+  .logi-field input:focus,
+  .logi-field textarea:focus,
+  .logi-field select:focus {
+    border-color: #0D9488;
+    box-shadow: 0 0 0 3px rgba(13,148,136,0.12);
   }
-  .nt-field input:focus,
-  .nt-field textarea:focus,
-  .nt-field select:focus {
-    border-color: var(--teal);
-    box-shadow: 0 0 0 3px var(--teal-glow);
-  }
-  .nt-field textarea { resize: vertical; min-height: 110px; }
-  .nt-error {
-    font-size: 0.78rem; font-weight: 600; color: var(--red);
+  .logi-field textarea { resize: vertical; min-height: 110px; }
+
+  .logi-error {
+    font-size: 0.78rem; font-weight: 600; color: #ef4444;
     margin-top: 0.35rem; display: flex; align-items: center; gap: 0.3rem;
   }
-  .nt-error::before { content: "⚠"; }
+  .logi-error::before { content: "⚠"; }
 
-  /* Global errors */
-  .nt-alert {
-    background: rgba(239,68,68,0.08);
-    border: 1px solid rgba(239,68,68,0.2);
-    border-radius: var(--radius-sm);
-    padding: 0.85rem 1rem;
-    margin-bottom: 1.25rem;
-    font-size: 0.85rem; font-weight: 600; color: var(--red);
+  .logi-alert {
+    background: rgba(239,68,68,0.07); border: 1px solid rgba(239,68,68,0.2);
+    border-radius: 10px; padding: 0.85rem 1rem; margin-bottom: 1.25rem;
+    font-size: 0.85rem; font-weight: 600; color: #ef4444;
+    display: flex; align-items: center; gap: 0.5rem;
   }
 
-  /* Divider before actions */
-  .nt-form-footer {
-    padding: 1.25rem 1.75rem;
-    border-top: 1px solid var(--border);
+  /* ── FORM FOOTER ── */
+  .logi-form-footer {
+    padding: 1.25rem 1.75rem; border-top: 1px solid var(--border-light, #e2e8f0);
     display: flex; gap: 0.75rem; align-items: center;
-    background: var(--bg);
-    flex-wrap: wrap;
+    background: var(--bg-body, #f8fafc); flex-wrap: wrap;
   }
   .btn-submit {
     display: inline-flex; align-items: center; gap: 0.4rem;
-    padding: 0.65rem 1.4rem;
-    background: var(--teal); color: #fff;
-    border: none; border-radius: var(--radius-sm);
-    font-size: 0.875rem; font-weight: 700; font-family: inherit;
-    cursor: pointer; transition: background 0.15s, transform 0.1s;
+    padding: 0.65rem 1.5rem;
+    background: linear-gradient(135deg, #0D9488, #0F766E); color: #fff;
+    border: none; border-radius: 10px;
+    font-size: 0.9rem; font-weight: 700; font-family: inherit;
+    cursor: pointer; transition: all 0.2s;
+    box-shadow: 0 4px 12px rgba(13,148,136,0.3);
   }
-  .btn-submit:hover { background: var(--ink); transform: scale(1.02); }
+  .btn-submit:hover { filter: brightness(1.1); transform: translateY(-1px); }
   .btn-cancel {
     display: inline-flex; align-items: center; gap: 0.4rem;
     padding: 0.65rem 1.1rem;
-    background: transparent; color: var(--ink-muted);
-    border: 1.5px solid var(--border); border-radius: var(--radius-sm);
-    font-size: 0.875rem; font-weight: 700; font-family: inherit;
-    cursor: pointer; text-decoration: none;
-    transition: all 0.15s;
+    background: transparent; color: var(--text-muted, #64748b);
+    border: 1.5px solid var(--border-default, #cbd5e1); border-radius: 10px;
+    font-size: 0.9rem; font-weight: 600; font-family: inherit;
+    cursor: pointer; text-decoration: none; transition: all 0.2s;
   }
-  .btn-cancel:hover { border-color: var(--ink-mid); color: var(--ink); }
+  .btn-cancel:hover { border-color: var(--text-secondary, #334155); color: var(--text-primary, #0f172a); }
 
-  /* 2-col grid for smaller fields */
-  .nt-row-2 {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
+  /* ── 2-COL GRID ── */
+  .logi-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  @media (max-width: 540px) { .logi-row-2 { grid-template-columns: 1fr; } }
+
+  /* ── TOM SELECT OVERRIDES ── */
+  .ts-control {
+    padding: 0.75rem 1rem !important;
+    border: 1.5px solid var(--border-default, #cbd5e1) !important;
+    border-radius: 10px !important;
+    background: var(--bg-surface, #fff) !important;
+    font-size: 0.9rem !important; font-family: 'Inter', system-ui, sans-serif !important;
+    color: var(--text-primary, #0f172a) !important;
+    transition: border-color 0.2s, box-shadow 0.2s !important; box-shadow: none !important;
   }
-  @media (max-width: 540px) { .nt-row-2 { grid-template-columns: 1fr; } }
+  .ts-control.focus { border-color: #0D9488 !important; box-shadow: 0 0 0 3px rgba(13,148,136,0.12) !important; }
+  .ts-dropdown {
+    border: 1px solid var(--border-light, #e2e8f0) !important; border-radius: 10px !important;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08) !important;
+    font-family: 'Inter', system-ui, sans-serif !important; font-size: 0.9rem !important;
+  }
+  .ts-dropdown .option { padding: 0.5rem 0.9rem !important; }
+  .ts-dropdown .active { background-color: rgba(13,148,136,0.08) !important; color: #0D9488 !important; }
 </style>
 
-<div class="nt-shell">
-  <!-- TOP BAR -->
-  <div class="nt-topbar">
-    <div class="nt-topbar-inner">
-      <a href="{% url 'logistics:tickets' %}" class="nt-back">
+<div class="logi-shell">
+
+  <!-- ══ HERO (compact) ══ -->
+  <div class="logi-hero">
+    <div class="logi-hero-left">
+      <span class="logi-eyebrow"><i class="ti ti-ticket"></i> Logistics · Support</span>
+      <h1 class="logi-page-title">Nouveau ticket</h1>
+      <p class="logi-page-sub">Signalez un problème ou une demande de maintenance.</p>
+    </div>
+    <div class="logi-hero-right">
+      <a href="{% url 'logistics:tickets' %}" class="logi-btn-ghost">
         <i class="ti ti-arrow-left"></i> Retour aux tickets
       </a>
-      <p class="nt-eyebrow">Logistics · Support</p>
-      <h1 class="nt-title">Nouveau ticket</h1>
-      <p class="nt-subtitle">Signalez un problème ou une demande de maintenance.</p>
     </div>
   </div>
 
-  <!-- BODY -->
-  <div class="nt-body">
-    <div class="nt-form-card">
-      <div class="nt-form-card-header">
-        <h2><i class="ti ti-file-description"></i> Informations du ticket</h2>
+  <!-- ══ FORM CARD ══ -->
+  <div class="logi-form-card">
+    <div class="logi-form-card-header">
+      <h2><i class="ti ti-file-description"></i> Informations du ticket</h2>
+    </div>
+
+    <form method="post">
+      {% csrf_token %}
+      <div class="logi-form-body">
+
+        {% if form.non_field_errors %}
+        <div class="logi-alert">
+          <i class="ti ti-alert-circle"></i>
+          {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Titre -->
+        <div class="logi-field">
+          <label class="logi-label" for="{{ form.titre.id_for_label }}">
+            <i class="ti ti-heading"></i> Titre du ticket
+          </label>
+          {{ form.titre }}
+          {% if form.titre.errors %}<p class="logi-error">{{ form.titre.errors.0 }}</p>{% endif %}
+        </div>
+
+        <!-- Description -->
+        <div class="logi-field">
+          <label class="logi-label" for="{{ form.description.id_for_label }}">
+            <i class="ti ti-align-left"></i> Description
+          </label>
+          {{ form.description }}
+          {% if form.description.errors %}<p class="logi-error">{{ form.description.errors.0 }}</p>{% endif %}
+        </div>
+
+        <!-- Équipement + Atelier in 2 cols -->
+        <div class="logi-row-2">
+          <div class="logi-field">
+            <label class="logi-label" for="{{ form.equipement.id_for_label }}">
+              <i class="ti ti-package"></i> Équipement concerné
+            </label>
+            {{ form.equipement }}
+            {% if form.equipement.errors %}<p class="logi-error">{{ form.equipement.errors.0 }}</p>{% endif %}
+          </div>
+          <div class="logi-field">
+            <label class="logi-label" for="{{ form.atelier.id_for_label }}">
+              <i class="ti ti-building-community"></i> Atelier cible
+            </label>
+            {{ form.atelier }}
+            {% if form.atelier.errors %}<p class="logi-error">{{ form.atelier.errors.0 }}</p>{% endif %}
+          </div>
+        </div>
+
       </div>
 
-      <form method="post">
-        {% csrf_token %}
-        <div class="nt-form-body">
-
-          {% if form.non_field_errors %}
-          <div class="nt-alert">
-            {% for error in form.non_field_errors %}{{ error }}{% endfor %}
-          </div>
-          {% endif %}
-
-          <!-- Titre -->
-          <div class="nt-field">
-            <label class="nt-label" for="{{ form.titre.id_for_label }}"><i class="ti ti-heading"></i> Titre du ticket</label>
-            {{ form.titre }}
-            {% if form.titre.errors %}<p class="nt-error">{{ form.titre.errors.0 }}</p>{% endif %}
-          </div>
-
-          <!-- Description -->
-          <div class="nt-field">
-            <label class="nt-label" for="{{ form.description.id_for_label }}"><i class="ti ti-align-left"></i> Description</label>
-            {{ form.description }}
-            {% if form.description.errors %}<p class="nt-error">{{ form.description.errors.0 }}</p>{% endif %}
-          </div>
-
-          <!-- Equipement + Atelier in 2 cols -->
-          <div class="nt-row-2">
-            <div class="nt-field">
-              <label class="nt-label" for="{{ form.equipement.id_for_label }}"><i class="ti ti-package"></i> Équipement concerné</label>
-              {{ form.equipement }}
-              {% if form.equipement.errors %}<p class="nt-error">{{ form.equipement.errors.0 }}</p>{% endif %}
-            </div>
-            <div class="nt-field">
-              <label class="nt-label" for="{{ form.atelier.id_for_label }}"><i class="ti ti-building-community"></i> Atelier cible</label>
-              {{ form.atelier }}
-              {% if form.atelier.errors %}<p class="nt-error">{{ form.atelier.errors.0 }}</p>{% endif %}
-            </div>
-          </div>
-
-        </div>
-
-        <div class="nt-form-footer">
-          <button type="submit" class="btn-submit">
-            <i class="ti ti-send"></i> Soumettre le ticket
-          </button>
-          <a href="{% url 'logistics:tickets' %}" class="btn-cancel">
-            <i class="ti ti-x"></i> Annuler
-          </a>
-        </div>
-      </form>
-    </div>
+      <div class="logi-form-footer">
+        <button type="submit" class="btn-submit">
+          <i class="ti ti-send"></i> Soumettre le ticket
+        </button>
+        <a href="{% url 'logistics:tickets' %}" class="btn-cancel">
+          <i class="ti ti-x"></i> Annuler
+        </a>
+      </div>
+    </form>
   </div>
+
 </div>
 
-<!-- TomSelect for searchable dropdowns -->
-<link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.default.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+<!-- TomSelect (already loaded by base.html but init here) -->
 <script>
   document.addEventListener("DOMContentLoaded", function() {
     const atelierSelect = document.getElementById("{{ form.atelier.id_for_label }}");
     if (atelierSelect) {
-      new TomSelect(atelierSelect, {
-        create: false,
-        placeholder: "Rechercher un atelier...",
-        maxOptions: 50
-      });
+      new TomSelect(atelierSelect, { create: false, placeholder: "Rechercher un atelier...", maxOptions: 50 });
     }
-
     const equipementSelect = document.getElementById("{{ form.equipement.id_for_label }}");
     if (equipementSelect) {
-      new TomSelect(equipementSelect, {
-        create: false,
-        placeholder: "Rechercher un équipement...",
-        maxOptions: 50
-      });
+      new TomSelect(equipementSelect, { create: false, placeholder: "Rechercher un équipement...", maxOptions: 50 });
     }
   });
 </script>
 
-<style>
-  /* Customize TomSelect to match our theme */
-  .ts-control {
-    padding: 0.7rem 0.9rem !important;
-    border: 1.5px solid var(--border) !important;
-    border-radius: var(--radius-sm) !important;
-    background: var(--surface) !important;
-    font-size: 0.9rem !important;
-    font-family: 'Inter', system-ui, sans-serif !important;
-    color: var(--ink) !important;
-    transition: border-color 0.15s, box-shadow 0.15s !important;
-    box-shadow: none !important;
-  }
-  .ts-control.focus {
-    border-color: var(--teal) !important;
-    box-shadow: 0 0 0 3px var(--teal-glow) !important;
-  }
-  .ts-dropdown {
-    border: 1px solid var(--border) !important;
-    border-radius: var(--radius-sm) !important;
-    box-shadow: var(--shadow-sm) !important;
-    font-family: 'Inter', system-ui, sans-serif !important;
-    font-size: 0.9rem !important;
-  }
-  .ts-dropdown .option {
-    padding: 0.5rem 0.9rem !important;
-  }
-  .ts-dropdown .active {
-    background-color: var(--teal-glow) !important;
-    color: var(--teal) !important;
-  }
-</style>
 {% endblock %}

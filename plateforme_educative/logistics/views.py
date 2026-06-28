@@ -22,6 +22,32 @@ def _is_htmx(request):
 
 
 @login_required
+@require_http_methods(['GET', 'POST'])
+def creer_ticket_formateur(request, demande_id):
+    """Permet à un formateur de signaler une panne sur un équipement qu'il a emprunté."""
+    demande = get_object_or_404(DemandeMateriel, id=demande_id, formateur=request.user, statut='APPROVED')
+    
+    if request.method == 'POST':
+        titre = request.POST.get('titre')
+        description = request.POST.get('description')
+        if titre and description:
+            Ticket.objects.create(
+                titre=titre,
+                description=description,
+                equipement=demande.equipement,
+                atelier=demande.atelier_cible,
+                ouvert_par=request.user,
+                statut='OUVERT'
+            )
+            # Optionnel: changer le statut de la demande ? Pour l'instant on garde juste le ticket.
+            return HttpResponse('<div class="alert alert-success">Ticket créé avec succès ! La logistique est prévenue.</div>')
+        return HttpResponseBadRequest("Titre et description requis.")
+    
+    # Rendu du formulaire HTMX
+    return render(request, 'logistics/partials/ticket_formateur_form.html', {'demande': demande})
+
+
+@login_required
 @user_passes_test(lambda u: getattr(u, 'is_staff', False) or getattr(u, 'role', '') == 'ADMIN')
 def inventaire_view(request):
     """Page inventaire avec HTMX pour filtrer les équipements."""
@@ -422,12 +448,22 @@ def demandes_view(request):
 @require_http_methods(['GET', 'POST'])
 def ajouter_demande(request):
     if request.method == 'POST':
-        form = DemandeMaterielForm(request.POST, request=request)
-        if form.is_valid():
-            demande = form.save(commit=False)
-            demande.formateur = request.user
-            demande.statut = 'PENDING'
-            demande.save()
+        atelier_id = request.POST.get('atelier_cible')
+        equipements_ids = request.POST.getlist('equipement[]')
+        quantites = request.POST.getlist('quantite[]')
+        
+        if atelier_id and equipements_ids:
+            atelier = get_object_or_404(Workshop, pk=atelier_id)
+            for eq_id, q in zip(equipements_ids, quantites):
+                if eq_id and q and int(q) > 0:
+                    eq = get_object_or_404(Equipment, pk=eq_id)
+                    DemandeMateriel.objects.create(
+                        formateur=request.user,
+                        equipement=eq,
+                        atelier_cible=atelier,
+                        quantite=int(q),
+                        statut='PENDING'
+                    )
             
             if 'dashboard' in request.META.get('HTTP_REFERER', ''):
                 from django.http import HttpResponse
@@ -444,21 +480,20 @@ def ajouter_demande(request):
             page_number = request.GET.get('page', 1)
             page_obj = paginator.get_page(page_number)
             return render(request, 'logistics/partials/demandes_list.html', {'demandes': page_obj, 'page_obj': page_obj})
-        else:
-            response = render(request, 'logistics/partials/demande_form.html', {
-                'form': form,
-                'action_url': reverse('logistics:ajouter_demande'),
-                'submit_label': 'Envoyer la demande'
-            })
-            response['HX-Retarget'] = '#form-demande-container'
-            return response
+        
+        # If error, return to form (could add messages here)
+        return HttpResponseBadRequest("Données invalides")
+
     else:
-        form = DemandeMaterielForm(request=request)
+        # Afficher tous les ateliers actifs, même pour les formateurs, pour éviter un menu vide.
+        ateliers = Workshop.objects.filter(est_annule=False).order_by('-date_debut')
+        equipements = Equipment.objects.filter(est_actif=True).order_by('nom')
 
     return render(request, 'logistics/partials/demande_form.html', {
-        'form': form,
+        'ateliers': ateliers,
+        'equipements': equipements,
         'action_url': reverse('logistics:ajouter_demande'),
-        'submit_label': 'Envoyer la demande'
+        'submit_label': 'Envoyer la demande de lot'
     })
 
 

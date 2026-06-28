@@ -64,6 +64,10 @@
                     <span class="eq-meta-lbl"><i class="ti ti-user"></i> Tuteur</span>
                     <span class="eq-meta-val">{{ atelier.tuteur.get_full_name|default:atelier.tuteur.email }}</span>
                 </div>
+                <div class="eq-meta-item">
+                    <span class="eq-meta-lbl"><i class="ti ti-stairs-up"></i> Niveau</span>
+                    <span class="eq-meta-val">{{ atelier.niveau_cible|default:"Non spécifié" }}</span>
+                </div>
                 <div class="eq-meta-item" style="grid-column: span 2;">
                     <span class="eq-meta-lbl"><i class="ti ti-calendar-time"></i> Période</span>
                     <span class="eq-meta-val">{{ atelier.date_debut|date:"d M Y, H:i" }} → {{ atelier.date_fin|date:"d M Y, H:i" }}</span>

@@ -13,22 +13,48 @@
     margin: 0 auto;
     padding: 1.5rem 1.25rem 2rem;
 }
-.cal-top {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
+/* ── HERO BANNER ── */
+.cal-hero {
+    position: relative; border-radius: 20px; overflow: hidden;
+    padding: 2rem 2.5rem; margin: 0 0 2rem;
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 2rem; flex-wrap: wrap;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f2027 100%);
+    box-shadow: 0 16px 48px -8px rgba(13,148,136,0.22);
 }
-.cal-top h1 {
-    font-size: 1.6rem;
-    font-weight: 900;
-    letter-spacing: -0.03em;
-    color: var(--text-primary);
-    margin: 0 0 0.2rem;
+.cal-hero::before {
+    content: ''; position: absolute; top: -80px; right: -60px;
+    width: 320px; height: 320px;
+    background: radial-gradient(circle, rgba(79,70,229,0.18) 0%, transparent 65%);
+    border-radius: 50%; pointer-events: none;
 }
-.cal-top p { margin: 0; font-size: 0.85rem; color: var(--text-muted); }
+.cal-hero-left { position: relative; z-index: 2; }
+.cal-hero-right { position: relative; z-index: 2; display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; }
+
+.cal-eyebrow {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(13,148,136,0.2); border: 1px solid rgba(13,148,136,0.4);
+    color: #2dd4bf; font-size: 0.7rem; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 4px 12px; border-radius: 999px; margin-bottom: 0.5rem;
+    backdrop-filter: blur(8px);
+}
+.cal-page-title {
+    font-size: 1.75rem; font-weight: 900; color: #fff;
+    letter-spacing: -0.03em; line-height: 1.15; margin: 0 0 0.3rem;
+}
+.cal-page-sub { font-size: 0.875rem; color: rgba(255,255,255,0.6); margin: 0; }
+
+.cal-btn-primary {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.6rem 1.2rem;
+    background: linear-gradient(135deg, #0D9488, #0F766E); color: #fff;
+    border: none; border-radius: 10px;
+    font-size: 0.875rem; font-weight: 700; font-family: inherit;
+    cursor: pointer; text-decoration: none; transition: all 0.2s;
+    box-shadow: 0 4px 12px rgba(13,148,136,0.3); white-space: nowrap;
+}
+.cal-btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); color: #fff; }
 
 .cal-layout {
     display: grid;
@@ -178,34 +204,32 @@
 .stat-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 0.75rem;
+    gap: 1rem;
 }
 .stat-card {
-    background: var(--bg-surface, #fff);
-    border: 1px solid var(--border-light, #e8edf3);
-    border-radius: 14px;
-    padding: 1rem 1.1rem 0.9rem;
+    background: var(--bg-surface, #fff); border: 1px solid var(--border-light, #e2e8f0);
+    border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    padding: 1.25rem 1.4rem; display: flex; flex-direction: column; justify-content: center;
+    transition: box-shadow 0.2s, transform 0.2s;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.03);
 }
+.stat-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.1); transform: translateY(-2px); }
+
 .stat-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-    border-radius: 14px 14px 0 0;
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
 }
-.stat-card.red::before   { background: #ef4444; }
-.stat-card.blue::before  { background: #3b82f6; }
-.stat-card.amber::before { background: #f59e0b; }
-.stat-card.teal::before  { background: #10b981; }
+.stat-card.red::before   { background: linear-gradient(90deg, #ef4444, #f87171); }
+.stat-card.blue::before  { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+.stat-card.amber::before { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+.stat-card.teal::before  { background: linear-gradient(90deg, #10b981, #34d399); }
 
 .stat-num {
-    font-size: 1.8rem;
+    font-size: 2rem;
     font-weight: 900;
     line-height: 1;
-    margin-bottom: 0.2rem;
+    margin-bottom: 0.4rem;
+    letter-spacing: -0.03em;
 }
 .stat-card.red   .stat-num { color: #ef4444; }
 .stat-card.blue  .stat-num { color: #3b82f6; }
@@ -213,50 +237,50 @@
 .stat-card.teal  .stat-num { color: #10b981; }
 
 .stat-label {
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: var(--text-muted);
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-muted, #64748b);
 }
 
 /* Legend card */
 .legend-card {
     background: var(--bg-surface, #fff);
-    border: 1px solid var(--border-light, #e8edf3);
-    border-radius: 14px;
-    padding: 1rem 1.25rem;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+    border: 1px solid var(--border-light, #e2e8f0);
+    border-radius: 16px;
+    padding: 1.25rem 1.4rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 .legend-card h4 {
-    font-size: 0.68rem;
+    font-size: 0.75rem;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: var(--text-muted);
+    color: var(--text-muted, #64748b);
     margin: 0 0 0.75rem;
 }
 .legend-row {
     display: flex;
     align-items: center;
     gap: 0.6rem;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.6rem;
     font-size: 0.8rem;
     font-weight: 600;
-    color: var(--text-secondary);
+    color: var(--text-secondary, #475569);
 }
 .legend-row:last-child { margin-bottom: 0; }
 .ldot {
     width: 10px; height: 10px;
-    border-radius: 3px;
+    border-radius: 50%;
     flex-shrink: 0;
 }
 
 /* Date detail card */
 .detail-card {
     background: var(--bg-surface, #fff);
-    border: 1px solid var(--border-light, #e8edf3);
-    border-radius: 14px;
-    padding: 1rem 1.25rem;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+    border: 1px solid var(--border-light, #e2e8f0);
+    border-radius: 16px;
+    padding: 1.25rem 1.4rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     min-height: 120px;
 }
 .detail-date-num {
@@ -391,17 +415,20 @@
 
 <div class="cal-page">
 
-    <!-- Top header -->
-    <div class="cal-top">
-        <div>
-            <h1>Calendrier</h1>
-            <p>Visualisez les devoirs, examens et sessions planifiés.</p>
+    <!-- ══ HERO BANNER ══ -->
+    <div class="cal-hero">
+        <div class="cal-hero-left">
+            <div class="cal-eyebrow"><i class="ti ti-calendar-event"></i> PLANNING</div>
+            <h1 class="cal-page-title">Calendrier Scolaire</h1>
+            <p class="cal-page-sub">Visualisez et gérez les devoirs, examens et sessions planifiés.</p>
         </div>
-        {% if can_manage %}
-        <a href="{% url 'apprentissage:creer_evenement' %}" class="btn-new">
-            <i class="ti ti-plus"></i> Créer un événement
-        </a>
-        {% endif %}
+        <div class="cal-hero-right">
+            {% if can_manage %}
+            <a href="{% url 'apprentissage:creer_evenement' %}" class="cal-btn-primary">
+                <i class="ti ti-plus" style="font-size: 15px;"></i> Nouvel événement
+            </a>
+            {% endif %}
+        </div>
     </div>
 
     <!-- Two-column layout -->
