@@ -26,11 +26,17 @@ LETTRES = ['A', 'B', 'C', 'D']
 
 # ── Génération du QCM par IA ──────────────────────────────────────────────────
 
+# Limite de contexte envoyé au LLM pour la génération QCM.
+# Un prompt trop long ralentit massivement la génération (tokens ∝ temps).
+# 4 000 chars ≈ 1 000 tokens — largement suffisant pour 8 questions pédagogiques.
+_QCM_MAX_CONTENT_CHARS = 4_000
+
+
 def _get_pdf_content_for_qcm(chapitre) -> str:
     """
-    Récupère tout le contenu réel du PDF indexé pour ce chapitre depuis ChromaDB.
-    Fait une recherche directe par filtre de métadonnées, sans passer par
-    le modèle d'embeddings pour garantir un temps de réponse instantané (0-1ms).
+    Récupère le contenu du PDF indexé pour ce chapitre depuis ChromaDB.
+    Retourne au maximum _QCM_MAX_CONTENT_CHARS caractères (premiers chunks)
+    pour garder le prompt LLM court et la génération rapide.
     """
     from tuteur_ia.tools.chroma_store import get_collection
     try:
@@ -41,7 +47,7 @@ def _get_pdf_content_for_qcm(chapitre) -> str:
         )
         docs = res.get("documents", [])
         metas = res.get("metadatas", [])
-        
+
         if docs:
             # Tri par index de chunk pour respecter l'ordre d'origine
             indexed_docs = []
@@ -51,38 +57,46 @@ def _get_pdf_content_for_qcm(chapitre) -> str:
                 except (ValueError, TypeError):
                     idx = 0
                 indexed_docs.append((idx, doc))
-            
+
             indexed_docs.sort(key=lambda x: x[0])
             sorted_docs = [doc for _, doc in indexed_docs]
-            
-            logger.info(f"QCM content loaded directly from ChromaDB: {len(sorted_docs)} chunks")
-            return "\n\n---\n\n".join(sorted_docs)
+
+            # Concaténer les chunks et tronquer à la limite
+            full_content = "\n\n---\n\n".join(sorted_docs)
+            if len(full_content) > _QCM_MAX_CONTENT_CHARS:
+                full_content = full_content[:_QCM_MAX_CONTENT_CHARS]
+                logger.info(
+                    f"QCM content tronqué à {_QCM_MAX_CONTENT_CHARS} chars "
+                    f"({len(sorted_docs)} chunks disponibles)"
+                )
+            else:
+                logger.info(f"QCM content chargé depuis ChromaDB : {len(sorted_docs)} chunks")
+            return full_content
     except Exception as e:
         logger.error(f"Erreur extraction directe ChromaDB : {e}", exc_info=True)
-    
+
     return ""
 
 
 def _generer_questions_ia(chapitre, n_questions: int = 8) -> list[dict]:
     """
     Génère n questions QCM depuis le contenu ChromaDB du chapitre.
-    Les questions sont basées STRICTEMENT sur le contenu des chunks PDF,
-    pas sur le nom/titre du chapitre.
-    Utilise le modèle Groq rapide llama-3.1-8b-instant.
+    Utilise le modèle Groq rapide llama-3.1-8b-instant avec un prompt court
+    et un contexte limité pour minimiser le temps de génération.
     """
     from tuteur_ia.agents.llm_factory import get_llm
     from langchain_core.messages import SystemMessage, HumanMessage
 
-    # Récupérer le contenu réel du PDF (lecture directe)
+    # Récupérer le contenu réel du PDF (tronqué à _QCM_MAX_CONTENT_CHARS)
     contenu = _get_pdf_content_for_qcm(chapitre)
 
     if not contenu or contenu.startswith('['):
         logger.warning(f"Contenu PDF vide ou non indexé pour le chapitre {chapitre.id}")
         return []
 
-    # Utilisation du modèle rapide de Groq avec contrôle de tokens
+    # Modèle rapide + timeout de 25 secondes pour éviter tout blocage infini
     llm = get_llm(temperature=0.4, model_name="llama-3.1-8b-instant")
-    
+
     # Activer le format JSON si supporté par langchain_groq
     if hasattr(llm, 'bind'):
         try:
@@ -90,39 +104,25 @@ def _generer_questions_ia(chapitre, n_questions: int = 8) -> list[dict]:
         except Exception as e:
             logger.warning(f"Impossible d'activer le response_format JSON : {e}")
 
-    system_prompt = f"""Tu es un créateur de QCM pédagogique pour des élèves de primaire.
-Tu crées des questions SIMPLES, CLAIRES et STRICTEMENT tirées du CONTENU TEXTUEL fourni.
+    # Prompt système court (≈80 tokens au lieu de ≈250) pour réduire la latence
+    system_prompt = (
+        f"Tu crées exactement {n_questions} questions QCM en JSON basées STRICTEMENT "
+        "sur le texte fourni. Chaque question a 4 options courtes (max 5 mots), "
+        "1 bonne réponse, 1 explication ≤6 mots. "
+        'Format : {"questions":[{"question":"...","options":["A","B","C","D"],'
+        '"reponse_correcte":"...","explication":"..."}]}'
+    )
 
-RÈGLES ABSOLUES :
-1. Tes questions DOIVENT être basées UNIQUEMENT sur le contenu textuel ci-dessous.
-2. NE PAS inventer des questions à partir du titre du chapitre ou du cours.
-3. NE PAS poser des questions sur des sujets non présents dans le texte fourni.
-4. Chaque question doit avoir une réponse correcte qui se trouve EXPLICITEMENT dans le texte.
-5. Exactement {n_questions} questions au total.
-6. Chaque question a exactement 4 options (A, B, C, D) très courtes (maximum 5 mots par option).
-7. Une seule bonne réponse par question.
-8. Explication TRÈS COURTE (maximum 6 mots), tirée du texte.
-9. Des questions simples et directes (maximum 10 mots par question).
-
-Réponds UNIQUEMENT en JSON valide, sans texte avant ou après :
-{{
-  "questions": [
-    {{
-      "question": "Question courte ?",
-      "options": ["Option A", "Option B", "Option C", "Option D"],
-      "reponse_correcte": "Option A",
-      "explication": "Explication courte."
-    }}
-  ]
-}}"""
-
-    user_prompt = f"""CONTENU DU PDF (source unique pour tes questions) :
-{contenu}
-
-Génère exactement {n_questions} questions QCM basées UNIQUEMENT sur ce contenu textuel.
-Ne te base PAS sur le titre '{chapitre.titre}' pour inventer des questions."""
+    user_prompt = (
+        f"TEXTE SOURCE :\n{contenu}\n\n"
+        f"Génère exactement {n_questions} questions QCM tirées de ce texte."
+    )
 
     try:
+        logger.info(
+            f"[QCM IA] Appel LLM pour '{chapitre.titre}' "
+            f"({len(contenu)} chars de contexte, {n_questions} questions)"
+        )
         response = llm.invoke([
             SystemMessage(content=system_prompt),
             HumanMessage(content=user_prompt),
@@ -134,12 +134,13 @@ Ne te base PAS sur le titre '{chapitre.titre}' pour inventer des questions."""
         if start != -1 and end > start:
             data = json.loads(content[start:end])
             questions = data.get('questions', [])
-            valid = []
-            for q in questions:
+            valid = [
+                q for q in questions
                 if (q.get('question') and
                     isinstance(q.get('options'), list) and len(q['options']) == 4 and
-                    q.get('reponse_correcte') and q.get('explication')):
-                    valid.append(q)
+                    q.get('reponse_correcte') and q.get('explication'))
+            ]
+            logger.info(f"[QCM IA] {len(valid)} questions valides générées.")
             return valid[:n_questions]
 
     except Exception as e:
