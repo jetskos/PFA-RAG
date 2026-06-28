@@ -4,10 +4,10 @@ from django.db import models
 
 class GraphCheckpoint(models.Model):
     """Persistance LangGraph : snapshots du workflow (remplace MemorySaver)."""
-    thread_id            = models.CharField(max_length=255, db_index=True)
-    checkpoint_ns        = models.CharField(max_length=255, default="")
-    checkpoint_id        = models.CharField(max_length=255)
-    parent_checkpoint_id = models.CharField(max_length=255, blank=True, null=True)
+    thread_id            = models.CharField(max_length=128, db_index=True)
+    checkpoint_ns        = models.CharField(max_length=128, default="")
+    checkpoint_id        = models.CharField(max_length=128)
+    parent_checkpoint_id = models.CharField(max_length=128, blank=True, null=True)
     type                 = models.CharField(max_length=50, default="json")
     checkpoint           = models.BinaryField()
     metadata             = models.BinaryField()
@@ -25,12 +25,12 @@ class GraphCheckpoint(models.Model):
 
 class GraphWrite(models.Model):
     """Persistance LangGraph : pending writes entre nœuds."""
-    thread_id     = models.CharField(max_length=255, db_index=True)
-    checkpoint_ns = models.CharField(max_length=255, default="")
-    checkpoint_id = models.CharField(max_length=255, db_index=True)
-    task_id       = models.CharField(max_length=255)
+    thread_id     = models.CharField(max_length=128, db_index=True)
+    checkpoint_ns = models.CharField(max_length=128, default="")
+    checkpoint_id = models.CharField(max_length=128, db_index=True)
+    task_id       = models.CharField(max_length=128)
     idx           = models.IntegerField()
-    channel       = models.CharField(max_length=255)
+    channel       = models.CharField(max_length=128)
     type          = models.CharField(max_length=50)
     value         = models.BinaryField()
 
