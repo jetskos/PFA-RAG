@@ -1,5 +1,8 @@
-import pymysql
-pymysql.install_as_MySQLdb()
+try:
+    import pymysql
+    pymysql.install_as_MySQLdb()
+except ImportError:
+    pass
 
 from datetime import timedelta
 from pathlib import Path
@@ -99,7 +102,7 @@ else:
 DATABASES = {
     'default': {
         'ENGINE': db_engine,
-        'NAME': os.getenv('DB_NAME', 'rag_platform1'),
+        'NAME': os.getenv('DB_NAME', 'rag_platforme1'),
         'USER': os.getenv('DB_USER', 'root'),
         'PASSWORD': os.getenv('DB_PASSWORD', 'jatski'),
         'HOST': os.getenv('DB_HOST', '127.0.0.1'),
@@ -184,5 +187,5 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = TIME_ZONE
-CELERY_TASK_ALWAYS_EAGER = DEBUG
-CELERY_TASK_EAGER_PROPAGATES = DEBUG
+CELERY_TASK_ALWAYS_EAGER = os.getenv('CELERY_TASK_ALWAYS_EAGER', 'False').lower() in {'1', 'true', 'yes', 'on'}
+CELERY_TASK_EAGER_PROPAGATES = os.getenv('CELERY_TASK_ALWAYS_EAGER', 'False').lower() in {'1', 'true', 'yes', 'on'}

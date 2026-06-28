@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: pfarag_db
+    restart: always
+    environment:
+      MYSQL_DATABASE: ${DB_NAME:-rag_platforme1}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-jatski}
+    ports:
+      - "3308:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - pfa_network
+
+  redis:
+    image: redis:7-alpine
+    container_name: pfarag_redis
+    restart: always
+    ports:
+      - "6380:6379"
+    networks:
+      - pfa_network
+
+  web:
+    build: .
+    container_name: pfarag_web
+    restart: always
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_HOST=db
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - DJANGO_DEBUG=True
+    env_file:
+      - .env.docker
+    depends_on:
+      - db
+      - redis
+    networks:
+      - pfa_network
+
+  celery:
+    build: .
+    container_name: pfarag_celery
+    restart: always
+    command: celery -A core worker -l info
+    volumes:
+      - .:/app
+    environment:
+      - DB_HOST=db
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    env_file:
+      - .env.docker
+    depends_on:
+      - db
+      - redis
+      - web
+    networks:
+      - pfa_network
+
+networks:
+  pfa_network:
+    driver: bridge
+
+volumes:
+  mysql_data:
