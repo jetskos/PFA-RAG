@@ -3,771 +3,459 @@
 {% block title %}Administration Pédagogique{% endblock %}
 
 {% block content %}
-<style>
-    /* Premium background grid & ambient orbs */
-    .admin-wrapper {
-        position: relative;
-        width: 100%;
-        overflow: visible;
+<style>    /* ═══════════════════════════════════════════════════
+       ADMIN DASHBOARD / USERS — Premium redesign
+    ═══════════════════════════════════════════════════ */
+
+    .admin-shell {
+        max-width: 1320px;
+        margin: 0 auto;
+        padding: 0 1.5rem 3rem;
     }
-    
 
+    /* ── HERO BANNER ── */
+    .admin-hero {
+        position: relative; border-radius: 20px; overflow: hidden;
+        padding: 2rem 2.5rem; margin: 1.5rem 0 2rem;
+        display: flex; justify-content: space-between; align-items: center;
+        gap: 2rem; flex-wrap: wrap;
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f2027 100%);
+        box-shadow: 0 16px 48px -8px rgba(13,148,136,0.22);
+    }
+    .admin-hero::before {
+        content: ''; position: absolute; top: -80px; right: -60px;
+        width: 320px; height: 320px;
+        background: radial-gradient(circle, rgba(79,70,229,0.18) 0%, transparent 65%);
+        border-radius: 50%; pointer-events: none;
+    }
+    .admin-hero::after {
+        content: ''; position: absolute; bottom: -60px; left: 30%;
+        width: 240px; height: 240px;
+        background: radial-gradient(circle, rgba(13,148,136,0.16) 0%, transparent 65%);
+        border-radius: 50%; pointer-events: none;
+        animation: heroOrb 7s ease-in-out infinite alternate;
+    }
+    @keyframes heroOrb { from{transform:scale(1);} to{transform:scale(1.2);} }
 
-    /* Stats Dashboard Grid */
+    .admin-hero-left { position: relative; z-index: 2; }
+    .admin-eyebrow {
+        display: inline-flex; align-items: center; gap: 6px;
+        background: rgba(79,70,229,0.18); border: 1px solid rgba(79,70,229,0.35);
+        color: #a5b4fc; font-size: 0.7rem; font-weight: 700;
+        letter-spacing: 0.12em; text-transform: uppercase;
+        padding: 4px 12px; border-radius: 999px; margin-bottom: 0.5rem;
+        backdrop-filter: blur(8px);
+    }
+    .admin-hero-title {
+        font-size: 1.75rem; font-weight: 900; color: #fff;
+        letter-spacing: -0.03em; line-height: 1.15; margin: 0 0 0.3rem;
+    }
+    .admin-hero-sub { font-size: 0.875rem; color: rgba(255,255,255,0.55); margin: 0; }
+
+    /* ── STAT CARDS ── */
     .admin-stats-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
         gap: 1.25rem;
         margin-bottom: 2rem;
-        position: relative;
-        z-index: 2;
     }
-    
     .admin-stat-card {
         background: var(--bg-surface, #ffffff);
         border: 1px solid var(--border-light, #e2e8f0);
-        border-radius: 16px;
-        padding: 1.25rem;
-        display: flex;
-        align-items: center;
-        gap: 1.25rem;
-        box-shadow: var(--shadow-sm, 0 1px 2px rgba(0,0,0,0.05));
-        transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), 
-                    box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1),
-                    border-color 0.22s ease;
-        position: relative;
-        overflow: hidden;
+        border-radius: 16px; padding: 1.25rem;
+        display: flex; align-items: center; gap: 1.25rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        transition: transform 0.22s cubic-bezier(0.16,1,0.3,1), box-shadow 0.22s;
+        position: relative; overflow: hidden;
     }
-    
-    .admin-stat-card:hover {
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-md, 0 4px 6px rgba(0,0,0,0.05));
-        border-color: var(--border-default);
-    }
-    
+    .admin-stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
     .admin-stat-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 4px;
-        height: 100%;
+        content: ''; position: absolute; top: 0; left: 0;
+        width: 4px; height: 100%;
     }
-    
-    .stat-total::before { background: var(--primary, #0d9488); }
-    .stat-student::before { background: var(--secondary, #4f46e5); }
+    .stat-total::before   { background: #0D9488; }
+    .stat-student::before { background: #4f46e5; }
     .stat-formateur::before { background: #f59e0b; }
-    .stat-admin::before { background: #ef4444; }
-    
+    .stat-admin::before   { background: #ef4444; }
+
     .admin-stat-icon {
-        width: 44px;
-        height: 44px;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.35rem;
-        flex-shrink: 0;
+        width: 44px; height: 44px; border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.35rem; flex-shrink: 0;
     }
-    
-    .stat-total .admin-stat-icon { background: rgba(13, 148, 136, 0.08); color: var(--primary, #0d9488); }
-    .stat-student .admin-stat-icon { background: rgba(79, 70, 229, 0.08); color: var(--secondary, #4f46e5); }
-    .stat-formateur .admin-stat-icon { background: rgba(245, 158, 11, 0.08); color: #f59e0b; }
-    .stat-admin .admin-stat-icon { background: rgba(239, 68, 68, 0.08); color: #ef4444; }
-    
-    .admin-stat-content {
-        flex: 1;
-        min-width: 0;
-    }
-    
-    .admin-stat-title {
-        font-size: 0.76rem;
-        font-weight: 750;
-        text-transform: uppercase;
-        color: var(--text-muted);
-        letter-spacing: 0.04em;
-        margin: 0;
-    }
-    
-    .admin-stat-value {
-        font-size: 1.65rem;
-        font-weight: 800;
-        color: var(--text-primary);
-        line-height: 1.2;
-        margin: 0.1rem 0;
-    }
-    
-    .admin-stat-desc {
-        font-size: 0.76rem;
-        color: var(--text-secondary);
-        margin: 0;
-    }
+    .stat-total .admin-stat-icon     { background: rgba(13,148,136,0.08); color: #0D9488; }
+    .stat-student .admin-stat-icon   { background: rgba(79,70,229,0.08); color: #4f46e5; }
+    .stat-formateur .admin-stat-icon { background: rgba(245,158,11,0.08); color: #f59e0b; }
+    .stat-admin .admin-stat-icon     { background: rgba(239,68,68,0.08); color: #ef4444; }
 
-    .admin-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 2rem;
-        flex-wrap: wrap;
-        gap: 1rem;
-        position: relative;
-        z-index: 2;
-    }
-    
+    .admin-stat-content { flex: 1; min-width: 0; }
+    .admin-stat-title { font-size: 0.76rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted, #64748b); letter-spacing: 0.04em; margin: 0; }
+    .admin-stat-value { font-size: 1.65rem; font-weight: 800; color: var(--text-primary, #0f172a); line-height: 1.2; margin: 0.1rem 0; }
+    .admin-stat-desc  { font-size: 0.76rem; color: var(--text-secondary, #475569); margin: 0; }
+
+    /* ── CONTROLS BAR (Moved buttons here) ── */
     .admin-controls {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 1.25rem;
-        flex-wrap: wrap;
-        background: var(--bg-surface);
-        padding: 1.25rem;
-        border-radius: 20px;
-        box-shadow: var(--shadow-md, 0 4px 6px rgba(0,0,0,0.05));
-        border: 1px solid var(--border-light);
-        margin-bottom: 2rem;
-        position: relative;
-        z-index: 2;
-    }
-
-    .search-bar {
-        position: relative;
-        flex: 1;
-        min-width: 280px;
-        max-width: 480px;
-    }
-
-    .search-bar .search-icon {
-        position: absolute;
-        left: 15px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: var(--text-muted);
-        font-size: 1.1rem;
-        pointer-events: none;
-        transition: color 0.25s ease;
-    }
-
-    .search-bar input {
-        width: 100%;
-        padding: 12px 16px 12px 42px;
-        border-radius: 12px;
-        border: 1px solid var(--border-default);
-        font-family: inherit;
-        background: var(--bg-page);
-        color: var(--text-primary);
-        font-size: 0.9rem;
-        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .search-bar input:focus {
-        border-color: var(--primary);
-        background: var(--bg-surface);
-        outline: none;
-        box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.12);
+        display: flex; justify-content: space-between; align-items: center;
+        gap: 1.25rem; flex-wrap: wrap;
+        background: var(--bg-surface, #fff);
+        padding: 1.25rem; border-radius: 16px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        border: 1px solid var(--border-light, #e2e8f0);
+        margin-bottom: 1.5rem;
     }
     
-    .search-bar input:focus ~ .search-icon {
-        color: var(--primary);
-    }
+    .admin-controls-left { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; flex: 1; }
+    .admin-controls-right { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; }
 
-    .filter-group {
-        display: flex;
-        gap: 1rem;
-        align-items: center;
-        flex-wrap: wrap;
+    .search-bar { position: relative; min-width: 250px; max-width: 350px; }
+    .search-bar .search-icon {
+        position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+        color: var(--text-muted, #64748b); font-size: 1.1rem; pointer-events: none;
     }
+    .search-bar input {
+        width: 100%; padding: 11px 16px 11px 40px;
+        border-radius: 10px; border: 1.5px solid var(--border-default, #cbd5e1);
+        font-family: inherit; background: var(--bg-body, #f8fafc);
+        color: var(--text-primary, #0f172a); font-size: 0.9rem;
+        transition: all 0.2s; outline: none;
+    }
+    .search-bar input:focus { border-color: #0D9488; background: var(--bg-surface, #fff); box-shadow: 0 0 0 3px rgba(13,148,136,0.1); }
 
     .admin-filter-group {
-        display: inline-flex;
-        background: var(--bg-page);
-        border: 1px solid var(--border-light);
-        padding: 4px;
-        border-radius: 14px;
-        gap: 4px;
-        align-items: center;
+        display: inline-flex; background: var(--bg-body, #f1f5f9);
+        border: 1px solid var(--border-light, #e2e8f0);
+        padding: 4px; border-radius: 12px; gap: 3px; align-items: center;
     }
-    
     .admin-filter-btn {
-        background: transparent;
-        border: none;
-        padding: 8px 14px;
-        border-radius: 10px;
-        color: var(--text-secondary);
-        font-size: 0.85rem;
-        font-weight: 600;
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-        user-select: none;
+        background: transparent; border: none;
+        padding: 7px 13px; border-radius: 9px;
+        color: var(--text-secondary, #475569); font-size: 0.83rem; font-weight: 600;
+        cursor: pointer; display: inline-flex; align-items: center; gap: 5px;
+        transition: all 0.18s; user-select: none;
+    }
+    .admin-filter-btn:hover { color: var(--text-primary, #0f172a); background: rgba(0,0,0,0.04); }
+    .admin-filter-btn.active { background: var(--bg-surface, #fff); color: #0D9488; box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
+
+    /* Action Buttons in Controls */
+    .admin-btn-primary {
+        display: inline-flex; align-items: center; gap: 0.4rem;
+        padding: 0.6rem 1.2rem;
+        background: linear-gradient(135deg, #0D9488, #0F766E); color: #fff;
+        border: none; border-radius: 10px;
+        font-size: 0.875rem; font-weight: 700; font-family: inherit;
+        cursor: pointer; text-decoration: none; transition: all 0.2s;
+        box-shadow: 0 4px 12px rgba(13,148,136,0.3); white-space: nowrap;
+    }
+    .admin-btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+    /* ── CUSTOM DROPDOWN (EXPORT) ── */
+    .custom-dropdown { position: relative; display: inline-block; }
+    .btn-export-select {
+        display: inline-flex; align-items: center; justify-content: space-between; gap: 8px;
+        padding: 0.6rem 1.2rem; border-radius: 10px;
+        border: 1.5px solid #0D9488;
+        background: var(--bg-surface, #fff);
+        color: #0D9488;
+        font-family: inherit; font-size: 0.875rem; font-weight: 700;
+        cursor: pointer; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: 0 4px 12px rgba(13,148,136,0.08);
+        min-width: 170px;
+    }
+    .btn-export-select:hover { background: rgba(13,148,136,0.04); box-shadow: 0 6px 16px rgba(13,148,136,0.15); transform: translateY(-1px); }
+    .btn-export-select i { font-size: 1.1rem; transition: transform 0.2s; }
+    .btn-export-select:hover i { transform: translateY(-1px); }
+    
+    .custom-dropdown-menu {
+        position: absolute; top: calc(100% + 8px); right: 0;
+        background: var(--bg-surface, #fff);
+        border: 1px solid var(--border-light, #e2e8f0);
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        min-width: 220px;
+        z-index: 100;
+        opacity: 0; visibility: hidden; transform: translateY(-10px);
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        padding: 0.5rem;
+    }
+    .custom-dropdown.active .custom-dropdown-menu {
+        opacity: 1; visibility: visible; transform: translateY(0);
     }
     
-    .admin-filter-btn i {
-        font-size: 1.05rem;
-        transition: transform 0.2s ease;
+    .dropdown-item {
+        padding: 0.6rem 1rem;
+        border-radius: 8px;
+        font-size: 0.85rem; font-weight: 600; color: var(--text-primary, #0f172a);
+        cursor: pointer; transition: all 0.15s;
     }
-    
-    .admin-filter-btn:hover {
-        color: var(--text-primary);
-        background: rgba(0, 0, 0, 0.03);
-    }
-    
-    [data-theme="dark"] .admin-filter-btn:hover {
-        background: rgba(255, 255, 255, 0.05);
-    }
-    
-    .admin-filter-btn.active {
-        background: var(--bg-surface);
-        color: var(--primary);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-    }
-    
-    [data-theme="dark"] .admin-filter-btn.active {
-        background: var(--gray-700);
-        color: var(--text-primary);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    }
-    
-    .admin-filter-btn.active i {
-        transform: scale(1.1);
+    .dropdown-item:hover {
+        background: rgba(13,148,136,0.08); color: #0D9488; padding-left: 1.2rem;
     }
 
-    .custom-select-wrapper {
-        position: relative;
-        display: inline-flex;
-        align-items: center;
-    }
-    
-    .custom-select-wrapper select {
-        appearance: none;
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        padding: 9px 38px 9px 16px;
-        border-radius: 14px;
-        border: 1px solid var(--border-default);
-        background: var(--bg-surface);
-        color: var(--text-primary);
-        font-family: inherit;
-        font-size: 0.88rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-        min-width: 190px;
-    }
-    
-    .custom-select-wrapper select:hover {
-        border-color: var(--text-muted);
-    }
-    
-    .custom-select-wrapper select:focus {
-        border-color: var(--primary);
-        outline: none;
-        box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.12);
-    }
-    
-    .custom-select-wrapper::after {
-        content: '\ea5f';
-        font-family: 'tabler-icons' !important;
-        speak: none;
-        font-style: normal;
-        font-weight: normal;
-        font-variant: normal;
-        text-transform: none;
-        line-height: 1;
-        -webkit-font-smoothing: antialiased;
-        position: absolute;
-        right: 14px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: var(--text-muted);
-        pointer-events: none;
-        font-size: 1rem;
-        transition: color 0.2s ease, transform 0.2s ease;
-    }
-    
-    .custom-select-wrapper:hover::after {
-        color: var(--text-primary);
-    }
-    
-    .custom-select-wrapper:focus-within::after {
-        transform: translateY(-50%) rotate(180deg);
-        color: var(--primary);
-    }
-
+    /* ── TABLE ── */
     .table-container {
-        overflow-x: auto;
-        background: var(--bg-surface);
-        border-radius: var(--radius-lg);
-        border: 1px solid var(--border-light);
-        box-shadow: var(--shadow-sm);
-        position: relative;
-        z-index: 2;
+        overflow-x: auto; background: var(--bg-surface, #fff);
+        border-radius: 16px; border: 1px solid var(--border-light, #e2e8f0);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     }
-
-    .admin-table {
-        width: 100%;
-        border-collapse: collapse;
-        text-align: left;
-    }
-
+    .admin-table { width: 100%; border-collapse: collapse; text-align: left; }
     .admin-table th {
-        background: var(--bg-page);
-        padding: 14px 18px;
-        font-size: 0.78rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: var(--text-muted);
-        border-bottom: 1px solid var(--border-default);
+        background: var(--bg-body, #f8fafc); padding: 13px 18px;
+        font-size: 0.78rem; font-weight: 700; text-transform: uppercase;
+        letter-spacing: 0.05em; color: var(--text-muted, #64748b);
+        border-bottom: 1px solid var(--border-light, #e2e8f0);
     }
+    .admin-table td { padding: 13px 18px; border-bottom: 1px solid var(--border-light, #e2e8f0); vertical-align: middle; }
+    .admin-table tr:last-child td { border-bottom: none; }
+    .admin-table tr:hover td { background: rgba(13,148,136,0.02); }
 
-    .admin-table td {
-        padding: 14px 18px;
-        border-bottom: 1px solid var(--border-light);
-        vertical-align: middle;
-    }
-
-    .admin-table tr:last-child td {
-        border-bottom: none;
-    }
-
-    .admin-table tr:hover {
-        background: rgba(0,0,0,0.01);
-    }
-
-    .user-info-cell {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
+    /* ── USER CELL ── */
+    .user-info-cell { display: flex; align-items: center; gap: 12px; }
     .user-avatar-mini {
-        width: 38px;
-        height: 38px;
-        border-radius: 12px;
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 800;
-        font-size: 0.9rem;
-        box-shadow: var(--shadow-sm);
-        overflow: hidden;
-        position: relative;
+        width: 38px; height: 38px; border-radius: 12px;
+        color: white; display: flex; align-items: center; justify-content: center;
+        font-weight: 800; font-size: 0.9rem; flex-shrink: 0;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1); overflow: hidden;
     }
+    .avatar-img-mini { width: 100%; height: 100%; object-fit: cover; }
+    .avatar-eleve     { background: linear-gradient(135deg, #3b82f6, #4f46e5); }
+    .avatar-formateur { background: linear-gradient(135deg, #f59e0b, #d97706); }
+    .avatar-admin     { background: linear-gradient(135deg, #ef4444, #7c3aed); }
+    .avatar-default   { background: linear-gradient(135deg, #94a3b8, #64748b); }
 
-    .avatar-img-mini {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-    
-    /* Role-based avatar gradients */
-    .avatar-eleve {
-        background: linear-gradient(135deg, #3b82f6, #4f46e5);
-    }
-    .avatar-formateur {
-        background: linear-gradient(135deg, #f59e0b, #d97706);
-    }
-    .avatar-admin {
-        background: linear-gradient(135deg, #ef4444, #7c3aed);
-    }
-    .avatar-default {
-        background: linear-gradient(135deg, var(--gray-400), var(--gray-600));
-    }
+    .user-details { display: flex; flex-direction: column; gap: 2px; }
+    .user-name       { font-weight: 700; color: var(--text-primary, #0f172a); font-size: 0.9rem; }
+    .user-email-text { font-size: 0.78rem; color: var(--text-muted, #64748b); }
 
-    /* Premium User Details Panel styling */
-    .details-container {
-        display: grid;
-        grid-template-columns: 240px 1fr;
-        gap: 2rem;
-        margin-top: 1.5rem;
-    }
-
-    @media (max-width: 768px) {
-        .details-container {
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
-        }
-    }
-
-    .details-profile-sidebar {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        background: rgba(13, 148, 136, 0.04);
-        border: 1px solid var(--border-light);
-        padding: 2rem 1.5rem;
-        border-radius: 16px;
-    }
-
-    .details-avatar-large {
-        width: 100px;
-        height: 100px;
-        border-radius: 24px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 2.25rem;
-        font-weight: 800;
-        color: white;
-        box-shadow: var(--shadow-md);
-        margin-bottom: 1.25rem;
-        overflow: hidden;
-        position: relative;
-        border: 3px solid var(--primary);
-    }
-
-    .details-avatar-large img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    .details-info-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        gap: 1.25rem;
-    }
-
-    .info-field-card {
-        background: var(--bg-surface);
-        border: 1px solid var(--border-light);
-        padding: 1.15rem;
-        border-radius: 12px;
-        box-shadow: var(--shadow-sm);
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-        word-break: break-word;
-    }
-
-    .info-field-card:hover {
-        transform: translateY(-1px);
-        box-shadow: var(--shadow);
-        border-color: var(--border-default);
-    }
-
-    .info-field-card .field-label {
-        font-size: 0.75rem;
-        color: var(--text-muted);
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-    }
-
-    .info-field-card .field-value {
-        font-size: 0.95rem;
-        color: var(--text-primary);
-        font-weight: 700;
-    }
-
-    .status-dot {
-        display: inline-block;
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        margin-right: 6px;
-    }
-    
-    .status-active {
-        background-color: #10b981;
-        box-shadow: 0 0 8px #10b981;
-    }
-    
-    .status-pending {
-        background-color: #f59e0b;
-        box-shadow: 0 0 8px #f59e0b;
-    }
-
-    .user-details {
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
-    }
-
-    .user-name {
-        font-weight: 700;
-        color: var(--text-primary);
-        font-size: 0.95rem;
-    }
-
-    .user-email-text {
-        font-size: 0.8rem;
-        color: var(--text-muted);
-    }
-
+    /* ── INLINE SELECT ── */
     .inline-select {
-        appearance: none;
-        -webkit-appearance: none;
-        -moz-appearance: none;
+        appearance: none; -webkit-appearance: none;
         background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-        background-repeat: no-repeat;
-        background-position: right 8px center;
-        background-size: 14px;
-        padding: 6px 28px 6px 10px;
-        border-radius: 8px;
-        border: 1px solid var(--border-default);
-        background-color: var(--bg-surface);
-        color: var(--text-primary);
-        font-size: 0.85rem;
-        font-weight: 550;
-        cursor: pointer;
-        transition: all 0.2s ease;
+        background-repeat: no-repeat; background-position: right 8px center; background-size: 14px;
+        padding: 6px 28px 6px 10px; border-radius: 8px;
+        border: 1.5px solid var(--border-light, #e2e8f0);
+        background-color: var(--bg-surface, #fff);
+        color: var(--text-primary, #0f172a);
+        font-family: inherit; font-size: 0.83rem; font-weight: 600;
+        cursor: pointer; transition: all 0.15s;
     }
-    .inline-select:hover {
-        border-color: var(--text-muted);
-    }
-    .inline-select:focus {
-        border-color: var(--primary);
-        outline: none;
-        box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.1);
-    }
+    .inline-select:focus { border-color: #0D9488; outline: none; box-shadow: 0 0 0 3px rgba(13,148,136,0.1); }
 
-    .action-buttons {
-        display: flex;
-        gap: 0.4rem;
-        justify-content: flex-end;
-    }
-
+    /* ── ACTION BUTTONS ── */
+    .action-buttons { display: flex; gap: 0.4rem; justify-content: flex-end; }
     .action-btn {
-        padding: 6px 10px;
-        border-radius: 8px;
-        font-size: 0.82rem;
-        font-weight: 600;
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 4px;
-        border: 1px solid transparent;
-        transition: all 0.2s ease;
+        padding: 6px 10px; border-radius: 8px;
+        font-size: 0.82rem; font-weight: 600; cursor: pointer;
+        display: inline-flex; align-items: center; justify-content: center; gap: 4px;
+        border: 1px solid transparent; transition: all 0.18s;
     }
+    .btn-save { background: rgba(13,148,136,0.06); border-color: rgba(13,148,136,0.15); color: #0D9488; }
+    .btn-save:hover { background: #0D9488 !important; color: white !important; transform: translateY(-1px); box-shadow: 0 4px 8px rgba(13,148,136,0.25); }
+    .btn-view { background: rgba(79,70,229,0.06); border-color: rgba(79,70,229,0.15); color: #4f46e5; }
+    .btn-view:hover { background: #4f46e5 !important; color: white !important; transform: translateY(-1px); }
+    .btn-del  { background: rgba(239,68,68,0.05); border-color: rgba(239,68,68,0.15); color: #ef4444; }
+    .btn-del:hover  { background: #ef4444 !important; color: white !important; transform: translateY(-1px); }
 
-    .btn-save {
-        background: rgba(13, 148, 136, 0.05);
-        border-color: rgba(13, 148, 136, 0.15);
-        color: var(--primary, #0D9488);
-    }
-    .btn-save:hover {
-        background: var(--primary, #0D9488) !important;
-        color: white !important;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 8px rgba(13, 148, 136, 0.25);
-    }
-
-    .btn-view {
-        background: rgba(79, 70, 229, 0.05);
-        border-color: rgba(79, 70, 229, 0.15);
-        color: var(--secondary, #4F46E5);
-    }
-    .btn-view:hover {
-        background: var(--secondary, #4F46E5) !important;
-        color: white !important;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 8px rgba(79, 70, 229, 0.25);
-    }
-
-    .btn-del {
-        background: rgba(239, 68, 68, 0.05);
-        border-color: rgba(239, 68, 68, 0.15);
-        color: #ef4444;
-    }
-    .btn-del:hover {
-        background: #ef4444 !important;
-        color: white !important;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 8px rgba(239, 68, 68, 0.25);
-    }
-
+    /* ── CREATE DRAWER (Inline) ── */
     .create-drawer {
-        background: var(--bg-surface);
-        padding: 1.5rem;
-        border-radius: var(--radius-lg);
-        border: 1px solid var(--border-light);
-        margin-bottom: 1.5rem;
-        display: none; /* toggled via JS */
-        animation: slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        position: relative;
-        z-index: 3;
-        box-shadow: var(--shadow-sm);
+        background: var(--bg-surface, #fff); padding: 1.5rem;
+        border-radius: 16px; border: 1px solid var(--border-light, #e2e8f0);
+        margin-bottom: 1.5rem; display: none;
+        animation: slideDown 0.3s cubic-bezier(0.16,1,0.3,1);
+        position: relative; z-index: 3; box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     }
+    @keyframes slideDown { from{opacity:0;transform:translateY(-10px);} to{opacity:1;transform:translateY(0);} }
+    .drawer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.25rem; align-items: end; }
+    .drawer-grid label { display: flex; flex-direction: column; gap: 0.4rem; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); }
+    .drawer-grid input, .drawer-grid select {
+        padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-default, #cbd5e1);
+        background: var(--bg-body, #f8fafc); color: var(--text-primary); transition: border-color 0.2s; font-family: inherit;
+    }
+    .drawer-grid input:focus, .drawer-grid select:focus { border-color: #0D9488; outline: none; }
 
-    @keyframes slideDown {
-        from { opacity: 0; transform: translateY(-10px); }
-        to { opacity: 1; transform: translateY(0); }
+    /* ── USER DETAILS PANEL ── */
+    .details-container { display: grid; grid-template-columns: 240px 1fr; gap: 2rem; margin-top: 1.5rem; }
+    @media (max-width: 768px) { .details-container { grid-template-columns: 1fr; } }
+    .details-profile-sidebar {
+        display: flex; flex-direction: column; align-items: center; text-align: center;
+        background: rgba(13,148,136,0.04); border: 1px solid var(--border-light, #e2e8f0);
+        padding: 2rem 1.5rem; border-radius: 16px;
     }
+    .details-avatar-large {
+        width: 100px; height: 100px; border-radius: 24px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 2.25rem; font-weight: 800; color: white;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        margin-bottom: 1.25rem; overflow: hidden; position: relative;
+        border: 3px solid #0D9488;
+    }
+    .details-avatar-large img { width: 100%; height: 100%; object-fit: cover; }
+    .details-info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 1.25rem; }
+    .info-field-card {
+        background: var(--bg-surface, #fff); border: 1px solid var(--border-light, #e2e8f0);
+        padding: 1.15rem; border-radius: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+        display: flex; flex-direction: column; gap: 6px;
+        transition: transform 0.2s ease; word-break: break-word;
+    }
+    .info-field-card:hover { transform: translateY(-1px); }
+    .info-field-card .field-label { font-size: 0.74rem; color: var(--text-muted, #64748b); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 5px; }
+    .info-field-card .field-value { font-size: 0.95rem; color: var(--text-primary, #0f172a); font-weight: 700; }
+    .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+    .status-active  { background-color: #10b981; box-shadow: 0 0 8px #10b981; }
+    .status-pending { background-color: #f59e0b; box-shadow: 0 0 8px #f59e0b; }
 
-    .drawer-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1.25rem;
-        align-items: end;
+    /* ── PAGINATION ── */
+    .admin-pagination { display: flex; justify-content: center; gap: 10px; margin-top: 1.25rem; }
+    .admin-page-btn {
+        padding: 8px 14px; border-radius: 8px; font-size: 0.875rem; font-weight: 600;
+        border: 1.5px solid var(--border-default, #cbd5e1); background: var(--bg-surface, #fff);
+        color: var(--text-primary, #0f172a); text-decoration: none; cursor: pointer; transition: all 0.15s;
     }
-
-    .drawer-grid label {
-        display: flex;
-        flex-direction: column;
-        gap: 0.4rem;
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: var(--text-secondary);
-    }
-
-    .drawer-grid input[type="text"],
-    .drawer-grid input[type="email"],
-    .drawer-grid input[type="password"],
-    .drawer-grid select {
-        padding: 8px 12px;
-        border-radius: 8px;
-        border: 1px solid var(--border-default);
-        background: var(--bg-surface);
-        color: var(--text-primary);
-        transition: border-color 0.2s;
-    }
-    
-    .drawer-grid input:focus,
-    .drawer-grid select:focus {
-        border-color: var(--primary);
-        outline: none;
-    }
+    .admin-page-btn:hover { border-color: #0D9488; color: #0D9488; }}
 
 </style>
 
-<div class="admin-wrapper">
-    <!-- Ambient background glows -->
+<div class="admin-shell">
+    
+    <!-- ══ HERO BANNER ══ -->
+    <div class="admin-hero">
+        <div class="admin-hero-left">
+            <span class="admin-eyebrow"><i class="ti ti-shield-lock"></i> Administration</span>
+            <h1 class="admin-hero-title">Gestion des utilisateurs</h1>
+            <p class="admin-hero-sub">Gérez l'accès, les rôles et les profils de votre plateforme.</p>
+        </div>
+        <div class="admin-hero-right">
+            <!-- Emptied to move buttons down -->
+        </div>
+    </div>
 
-    <section class="page-shell" style="position: relative; z-index: 1;">
-        <div class="admin-header">
-            <div>
-                <p class="eyebrow">Administration</p>
-                <h1>Gestion des utilisateurs</h1>
-                <p style="color: var(--text-muted); margin-top: 0.25rem;">Gérez l'accès, les rôles et les profils de votre plateforme.</p>
-            </div>
-            <button class="btn btn-primary" onclick="toggleDrawer()" style="border-radius: 10px; padding: 0.6rem 1.25rem; display: inline-flex; align-items: center; gap: 6px;">
-                <i class="ti ti-user-plus" style="font-size: 15px;"></i> Nouvel utilisateur
+    <!-- Details Modal / In-line view -->
+    <div id="details-box" class="carte" style="margin-bottom:2rem; display:none; background: var(--bg-surface); border-left: 4px solid #0D9488; padding: 1.5rem; border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.08); position: relative; z-index: 10;"></div>
+
+    <!-- Create User Drawer -->
+    <div id="create-drawer" class="create-drawer">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+            <h3 style="margin: 0; font-size: 1.1rem; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 6px;"><i class="ti ti-user-circle" style="color: #0D9488;"></i> Création de profil</h3>
+            <button type="button" class="btn btn-ghost" onclick="toggleDrawer()" style="padding: 4px; border-radius: 6px; color: var(--text-muted);"><i class="ti ti-x"></i></button>
+        </div>
+        <div class="drawer-grid">
+            <label>Prénom <input id="create-first_name" type="text" placeholder="Ex: Jean"></label>
+            <label>Nom <input id="create-last_name" type="text" placeholder="Ex: Dupont"></label>
+            <label>Email <input id="create-email" type="email" placeholder="jean.dupont@email.com" required></label>
+            <label>Mot de passe <input id="create-password" type="password" placeholder="********" required></label>
+            <label>Rôle
+                <select id="create-role">
+                    {% for val, label in role_choices %}
+                        <option value="{{ val }}">{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label>Niveau (Optionnel)
+                <select id="create-niveau">
+                    <option value="">-- Aucun --</option>
+                    {% for val, label in niveau_choices %}
+                        <option value="{{ val }}">{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            
+            <button id="create-user" class="admin-btn-primary" style="height: 38px; border-radius: 8px;">
+                <i class="ti ti-check"></i> Confirmer
             </button>
         </div>
+    </div>
 
-        <!-- Create User Drawer -->
-        <div id="create-drawer" class="create-drawer">
-            <h3 style="margin: 0 0 1.25rem 0; font-size: 1.1rem; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 6px;"><i class="ti ti-user-circle" style="color: var(--primary);"></i> Création de profil</h3>
-            <div class="drawer-grid">
-                <label>Prénom <input id="create-first_name" type="text" placeholder="Ex: Jean"></label>
-                <label>Nom <input id="create-last_name" type="text" placeholder="Ex: Dupont"></label>
-                <label>Email <input id="create-email" type="email" placeholder="jean.dupont@email.com" required></label>
-                <label>Mot de passe <input id="create-password" type="password" placeholder="********" required></label>
-                <label>Rôle
-                    <select id="create-role">
-                        {% for val, label in role_choices %}
-                            <option value="{{ val }}">{{ label }}</option>
-                        {% endfor %}
-                    </select>
-                </label>
-                <label>Niveau (Optionnel)
-                    <select id="create-niveau">
-                        <option value="">-- Aucun --</option>
-                        {% for val, label in niveau_choices %}
-                            <option value="{{ val }}">{{ label }}</option>
-                        {% endfor %}
-                    </select>
-                </label>
-                <label style="flex-direction: row; align-items: center; padding-bottom: 8px; cursor: pointer; gap: 8px;">
-                    <input id="create-formateur" type="checkbox" style="width:18px; height:18px; cursor: pointer;">
-                    Statut Formateur Actif
-                </label>
-                <button id="create-user" class="btn btn-primary" style="height: 38px; border-radius: 8px;">
-                    <i class="ti ti-check"></i> Confirmer
-                </button>
+    <!-- User Statistics Dashboard -->
+    <div class="admin-stats-grid">
+        <div class="admin-stat-card stat-total">
+            <div class="admin-stat-icon">
+                <i class="ti ti-users"></i>
+            </div>
+            <div class="admin-stat-content">
+                <p class="admin-stat-title">Utilisateurs</p>
+                <p class="admin-stat-value">{{ total_users|default:"0" }}</p>
+                <p class="admin-stat-desc">Comptes enregistrés</p>
             </div>
         </div>
-
-        <!-- User Statistics Dashboard -->
-        <div class="admin-stats-grid">
-            <div class="admin-stat-card stat-total">
-                <div class="admin-stat-icon">
-                    <i class="ti ti-users"></i>
-                </div>
-                <div class="admin-stat-content">
-                    <p class="admin-stat-title">Utilisateurs</p>
-                    <p class="admin-stat-value">{{ total_users|default:"0" }}</p>
-                    <p class="admin-stat-desc">Comptes enregistrés</p>
-                </div>
+        <div class="admin-stat-card stat-student">
+            <div class="admin-stat-icon">
+                <i class="ti ti-school"></i>
             </div>
-            <div class="admin-stat-card stat-student">
-                <div class="admin-stat-icon">
-                    <i class="ti ti-school"></i>
-                </div>
-                <div class="admin-stat-content">
-                    <p class="admin-stat-title">Élèves</p>
-                    <p class="admin-stat-value">{{ student_count|default:"0" }}</p>
-                    <p class="admin-stat-desc">Profils étudiants</p>
-                </div>
-            </div>
-            <div class="admin-stat-card stat-formateur">
-                <div class="admin-stat-icon">
-                    <i class="ti ti-user-check"></i>
-                </div>
-                <div class="admin-stat-content">
-                    <p class="admin-stat-title">Formateurs</p>
-                    <p class="admin-stat-value">{{ formateur_count|default:"0" }}</p>
-                    <p class="admin-stat-desc">Enseignants & tuteurs</p>
-                </div>
-            </div>
-            <div class="admin-stat-card stat-admin">
-                <div class="admin-stat-icon">
-                    <i class="ti ti-shield-lock"></i>
-                </div>
-                <div class="admin-stat-content">
-                    <p class="admin-stat-title">Administrateurs</p>
-                    <p class="admin-stat-value">{{ admin_count|default:"0" }}</p>
-                    <p class="admin-stat-desc">Accès supervision</p>
-                </div>
+            <div class="admin-stat-content">
+                <p class="admin-stat-title">Élèves</p>
+                <p class="admin-stat-value">{{ student_count|default:"0" }}</p>
+                <p class="admin-stat-desc">Profils étudiants</p>
             </div>
         </div>
+        <div class="admin-stat-card stat-formateur">
+            <div class="admin-stat-icon">
+                <i class="ti ti-user-check"></i>
+            </div>
+            <div class="admin-stat-content">
+                <p class="admin-stat-title">Formateurs</p>
+                <p class="admin-stat-value">{{ formateur_count|default:"0" }}</p>
+                <p class="admin-stat-desc">Enseignants & tuteurs</p>
+            </div>
+        </div>
+        <div class="admin-stat-card stat-admin">
+            <div class="admin-stat-icon">
+                <i class="ti ti-shield-lock"></i>
+            </div>
+            <div class="admin-stat-content">
+                <p class="admin-stat-title">Administrateurs</p>
+                <p class="admin-stat-value">{{ admin_count|default:"0" }}</p>
+                <p class="admin-stat-desc">Accès supervision</p>
+            </div>
+        </div>
+    </div>
 
-
-    <!-- Toolbar: Search & Filter -->
+    <!-- Toolbar: Search & Filter & Actions -->
     <div class="admin-controls">
-        <div class="search-bar">
-            <input type="text" id="searchInput" placeholder="Rechercher par nom, email..." oninput="filterTable()">
-            <i class="ti ti-search search-icon"></i>
-        </div>
-        <div class="filter-group">
-            <div class="admin-filter-group" id="rolePillGroup">
-                <button type="button" class="admin-filter-btn active" data-role="ALL" onclick="setRoleFilter('ALL', this)">
-                    <i class="ti ti-users"></i>
-                    <span>Tous les rôles</span>
-                </button>
-                {% for val, label in role_choices %}
-                    <button type="button" class="admin-filter-btn" data-role="{{ val }}" onclick="setRoleFilter('{{ val }}', this)">
-                        {% if val == 'ELEVE' %}
-                            <i class="ti ti-school"></i>
-                        {% elif val == 'FORMATEUR' %}
-                            <i class="ti ti-user-check"></i>
-                        {% elif val == 'ADMIN' %}
-                            <i class="ti ti-shield-lock"></i>
-                        {% else %}
-                            <i class="ti ti-user"></i>
-                        {% endif %}
-                        <span>{{ label }}</span>
+        <div class="admin-controls-left">
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Rechercher par nom, email..." oninput="filterTable()">
+                <i class="ti ti-search search-icon"></i>
+            </div>
+            <div class="filter-group">
+                <div class="admin-filter-group" id="rolePillGroup">
+                    <button type="button" class="admin-filter-btn active" data-role="ALL" onclick="setRoleFilter('ALL', this)">
+                        <i class="ti ti-users"></i>
+                        <span>Tous les rôles</span>
                     </button>
-                {% endfor %}
+                    {% for val, label in role_choices %}
+                        <button type="button" class="admin-filter-btn" data-role="{{ val }}" onclick="setRoleFilter('{{ val }}', this)">
+                            {% if val == 'ELEVE' %}
+                                <i class="ti ti-school"></i>
+                            {% elif val == 'FORMATEUR' %}
+                                <i class="ti ti-user-check"></i>
+                            {% elif val == 'ADMIN' %}
+                                <i class="ti ti-shield-lock"></i>
+                            {% else %}
+                                <i class="ti ti-user"></i>
+                            {% endif %}
+                            <span>{{ label }}</span>
+                        </button>
+                    {% endfor %}
+                </div>
             </div>
-            <div class="custom-select-wrapper">
-                <select id="formateurFilter" class="no-tomselect" onchange="filterTable()">
-                    <option value="ALL">Statut Formateur</option>
-                    <option value="TRUE">Formateur: Oui</option>
-                    <option value="FALSE">Formateur: Non</option>
-                </select>
+        </div>
+        
+        <div class="admin-controls-right">
+            <div class="custom-dropdown" id="exportDropdown">
+                <button class="btn-export-select" onclick="toggleExportMenu()">
+                    <span>Exporter Excel...</span>
+                    <i class="ti ti-download"></i>
+                </button>
+                <div class="custom-dropdown-menu" id="exportMenu">
+                    <div class="dropdown-item" onclick="handleExport('ALL')">Tous les utilisateurs</div>
+                    <div class="dropdown-item" onclick="handleExport('VISIBLE')">Vue filtrée actuelle</div>
+                    <div class="dropdown-item" onclick="handleExport('ELEVE')">Élèves</div>
+                    <div class="dropdown-item" onclick="handleExport('FORMATEUR')">Formateurs</div>
+                    <div class="dropdown-item" onclick="handleExport('ADMIN')">Administrateurs</div>
+                </div>
             </div>
+            <button class="admin-btn-primary" onclick="toggleDrawer()">
+                <i class="ti ti-user-plus" style="font-size: 15px;"></i> Nouvel utilisateur
+            </button>
         </div>
     </div>
 
@@ -778,7 +466,7 @@
                 <tr>
                     <th>Utilisateur</th>
                     <th>Rôle Principal</th>
-                    <th style="text-align:center;">Formateur</th>
+                    
                     <th>Niveau Assigné</th>
                     <th style="text-align:right;">Actions</th>
                 </tr>
@@ -811,9 +499,7 @@
                             {% endfor %}
                         </select>
                     </td>
-                    <td style="text-align:center;">
-                        <input type="checkbox" name="is_formateur" style="width:16px; height:16px; cursor:pointer;" {% if user.is_formateur %}checked{% endif %}>
-                    </td>
+                    
                     <td>
                         <select name="niveau" class="inline-select">
                             <option value="">-- Aucun --</option>
@@ -846,9 +532,22 @@
         </div>
     </div>
 
-    <!-- Details Modal -->
-    <div id="details-box" class="carte" style="margin-top:2rem; display:none; border-left: 4px solid var(--primary); padding: 1.5rem; border-radius: 16px; box-shadow: var(--shadow-md);"></div>
-</section>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <div class="admin-pagination">
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}" class="admin-page-btn">&laquo; Précédent</a>
+        {% endif %}
+        <span style="display: flex; align-items: center; font-weight: 600; color: var(--text-primary); margin: 0 10px;">
+            Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+        </span>
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="admin-page-btn">Suivant &raquo;</a>
+        {% endif %}
+    </div>
+    {% endif %}
+
 </div>
 
 <script>
@@ -863,6 +562,22 @@ function toggleDrawer() {
     const drawer = document.getElementById('create-drawer');
     drawer.style.display = drawer.style.display === 'block' ? 'none' : 'block';
 }
+
+// Export Menu Toggle
+function toggleExportMenu() {
+    document.getElementById('exportDropdown').classList.toggle('active');
+}
+function handleExport(value) {
+    document.getElementById('exportDropdown').classList.remove('active');
+    if(value) exportCSV(value);
+}
+// Close dropdown when clicking outside
+document.addEventListener('click', function(e) {
+    const dropdown = document.getElementById('exportDropdown');
+    if (dropdown && !dropdown.contains(e.target)) {
+        dropdown.classList.remove('active');
+    }
+});
 
 let currentRoleFilter = 'ALL';
 
@@ -881,7 +596,6 @@ function setRoleFilter(role, btn) {
 function filterTable() {
     const query = document.getElementById('searchInput').value.toLowerCase();
     const roleFilter = currentRoleFilter;
-    const formateurFilter = document.getElementById('formateurFilter').value;
     
     const rows = document.querySelectorAll('.user-row');
     let visibleCount = 0;
@@ -889,13 +603,11 @@ function filterTable() {
     rows.forEach(row => {
         const textToSearch = row.querySelector('.user-info-cell').textContent.toLowerCase();
         const rowRole = row.getAttribute('data-role');
-        const rowFormateur = row.getAttribute('data-formateur');
         
         let matchQuery = textToSearch.includes(query);
         let matchRole = (roleFilter === 'ALL' || roleFilter === rowRole);
-        let matchFormateur = (formateurFilter === 'ALL' || formateurFilter === rowFormateur);
         
-        if (matchQuery && matchRole && matchFormateur) {
+        if (matchQuery && matchRole) {
             row.style.display = '';
             visibleCount++;
         } else {
@@ -938,7 +650,7 @@ function buildUserRow(user) {
             '</div>' +
         '</td>' +
         '<td><select name="role" class="inline-select">' + roleOptions + '</select></td>' +
-        '<td style="text-align:center;"><input type="checkbox" name="is_formateur" style="width:16px; height:16px; cursor:pointer;"' + (user.is_formateur ? ' checked' : '') + '></td>' +
+        '' +
         '<td><select name="niveau" class="inline-select">' + niveauOptions + '</select></td>' +
         '<td>' +
             '<div class="action-buttons">' +
@@ -957,7 +669,7 @@ document.getElementById('create-user').addEventListener('click', function(){
     var password = document.getElementById('create-password').value;
     var role = document.getElementById('create-role').value;
     var niveauId = document.getElementById('create-niveau').value;
-    var isFormateur = document.getElementById('create-formateur').checked;
+    
 
     if (!email || !password) {
         alert("Email et mot de passe sont obligatoires.");
@@ -972,7 +684,7 @@ document.getElementById('create-user').addEventListener('click', function(){
     data.append('password', password);
     data.append('role', role);
     data.append('niveau', niveauId);
-    data.append('is_formateur', isFormateur);
+    
 
     const btn = this;
     const originalHtml = btn.innerHTML;
@@ -993,7 +705,7 @@ document.getElementById('create-user').addEventListener('click', function(){
             document.getElementById('create-email').value = '';
             document.getElementById('create-password').value = '';
             document.getElementById('create-niveau').value = '';
-            document.getElementById('create-formateur').checked = false;
+            
             toggleDrawer(); // Hide drawer on success
             filterTable(); // Re-apply filters
         } else {
@@ -1011,7 +723,7 @@ document.addEventListener('click', function(e){
     if (modifyBtn) {
         var row = modifyBtn.closest('tr');
         var userId = row.dataset.userId;
-        var isFormateur = row.querySelector('input[name="is_formateur"]').checked;
+        var isFormateur = (role === 'FORMATEUR');
         var niveau = row.querySelector('select[name="niveau"]').value;
         var role = row.querySelector('select[name="role"]').value;
 
@@ -1021,7 +733,7 @@ document.addEventListener('click', function(e){
 
         var data = new FormData();
         data.append('user_id', userId);
-        data.append('is_formateur', isFormateur);
+        
         data.append('niveau', niveau); // might be empty string
         data.append('role', role);
 
@@ -1210,7 +922,7 @@ document.addEventListener('click', function(e){
                         '</div>' +
                     '</div>' +
                 '</div>';
-            box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }).catch(function(err){ console.error(err); alert('Erreur details: ' + err.message); });
     }
 });
@@ -1221,5 +933,88 @@ style.textContent = `
     @keyframes spin { 100% { transform: rotate(360deg); } }
 `;
 document.head.appendChild(style);
+</script>
+
+<!-- SheetJS for Excel export -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+function exportCSV(roleFilter) {
+    const rows = document.querySelectorAll('.user-row');
+    const data = [];
+
+    rows.forEach(row => {
+        const role      = row.getAttribute('data-role');
+        const isVisible = row.style.display !== 'none';
+        if (roleFilter === 'VISIBLE' && !isVisible) return;
+        if (roleFilter !== 'ALL' && roleFilter !== 'VISIBLE' && role !== roleFilter) return;
+
+        const nameEl   = row.querySelector('.user-name');
+        const emailEl  = row.querySelector('.user-email-text');
+        const roleEl   = row.querySelector('select[name="role"]');
+        const niveauEl = row.querySelector('select[name="niveau"]');
+        
+        const roleText = roleEl ? roleEl.options[roleEl.selectedIndex]?.text : role;
+
+        data.push({
+            nom:        (nameEl  ? nameEl.textContent.trim()  : ''),
+            email:      (emailEl ? emailEl.textContent.trim() : ''),
+            role:       roleText,
+            formateur:  (role === 'FORMATEUR' ? 'Oui' : 'Non'),
+            niveau:     (niveauEl ? (niveauEl.options[niveauEl.selectedIndex]?.text || '—') : '—'),
+        });
+    });
+
+    if (!data.length) { alert('Aucun utilisateur à exporter.'); return; }
+
+    const roleNames  = { ALL:'Tous les utilisateurs', ELEVE:'Élèves', FORMATEUR:'Formateurs', ADMIN:'Administrateurs', VISIBLE:'Vue filtrée' };
+    const today = new Date().toLocaleDateString('fr-FR');
+
+    const wb = XLSX.utils.book_new();
+    const wsData = [];
+
+    wsData.push([`Export — ${roleNames[roleFilter] || roleFilter}`, '', '', '', '']);
+    wsData.push([`Généré le ${today}`, '', '', '', '']);
+    wsData.push(['', '', '', '', '']);
+    wsData.push(['Nom complet', 'Adresse email', 'Rôle', 'Formateur actif', 'Niveau assigné']);
+    data.forEach(u => wsData.push([u.nom, u.email, u.role, u.formateur, u.niveau]));
+
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
+
+    ws['!cols'] = [{ wch: 28 }, { wch: 34 }, { wch: 18 }, { wch: 18 }, { wch: 20 }];
+    ws['!merges'] = [
+        { s: { r: 0, c: 0 }, e: { r: 0, c: 4 } },
+        { s: { r: 1, c: 0 }, e: { r: 1, c: 4 } },
+    ];
+
+    const titleStyle = { font: { name: 'Calibri', sz: 16, bold: true, color: { rgb: 'FFFFFF' } }, fill: { fgColor: { rgb: '0F766E' } }, alignment: { horizontal: 'center', vertical: 'center' } };
+    const subStyle = { font: { name: 'Calibri', sz: 10, italic: true, color: { rgb: 'C7F9F4' } }, fill: { fgColor: { rgb: '0D6460' } }, alignment: { horizontal: 'center', vertical: 'center' } };
+    const headerStyle = { font: { name: 'Calibri', sz: 11, bold: true, color: { rgb: 'FFFFFF' } }, fill: { fgColor: { rgb: '134E4A' } }, alignment: { horizontal: 'center', vertical: 'center' }, border: { bottom: { style: 'medium', color: { rgb: '0F766E' } } } };
+    const evenStyle = { font: { name: 'Calibri', sz: 10, color: { rgb: '1E293B' } }, fill: { fgColor: { rgb: 'F0FDFA' } }, alignment: { vertical: 'center' }, border: { bottom: { style: 'thin', color: { rgb: 'CCFBF1' } } } };
+    const oddStyle = { font: { name: 'Calibri', sz: 10, color: { rgb: '1E293B' } }, fill: { fgColor: { rgb: 'FFFFFF' } }, alignment: { vertical: 'center' }, border: { bottom: { style: 'thin', color: { rgb: 'E2E8F0' } } } };
+    const badgeOui = { font: { name: 'Calibri', sz: 10, bold: true, color: { rgb: '065F46' } }, fill: { fgColor: { rgb: 'D1FAE5' } }, alignment: { horizontal: 'center', vertical: 'center' } };
+    const badgeNon = { font: { name: 'Calibri', sz: 10, color: { rgb: '64748B' } }, fill: { fgColor: { rgb: 'F1F5F9' } }, alignment: { horizontal: 'center', vertical: 'center' } };
+
+    if (ws['A1']) ws['A1'].s = titleStyle;
+    if (ws['A2']) ws['A2'].s = subStyle;
+
+    ['A','B','C','D','E'].forEach((col, i) => { const ref = col + '4'; if (ws[ref]) ws[ref].s = headerStyle; });
+
+    for (let i = 0; i < data.length; i++) {
+        const rowNum = 5 + i;
+        const base = i % 2 === 0 ? evenStyle : oddStyle;
+        ['A','B','C','D','E'].forEach(col => {
+            const ref = col + rowNum;
+            if (ws[ref]) {
+                if (col === 'D') { ws[ref].s = ws[ref].v === 'Oui' ? badgeOui : badgeNon; }
+                else { ws[ref].s = JSON.parse(JSON.stringify(base)); }
+            }
+        });
+    }
+
+    ws['!rows'] = [{ hpt: 32 }, { hpt: 18 }, { hpt: 8 }, { hpt: 26 }, ...data.map(() => ({ hpt: 20 }))];
+
+    XLSX.utils.book_append_sheet(wb, ws, roleNames[roleFilter] || 'Export');
+    XLSX.writeFile(wb, `EduTech_${roleFilter}_${today.replace(/\//g,'-')}.xlsx`);
+}
 </script>
 {% endblock %}

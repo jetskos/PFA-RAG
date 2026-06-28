@@ -391,4 +391,13 @@
 <!-- Modal Container -->
 <div id="form-equipement-container"></div>
 
+<script>
+  document.body.addEventListener('closeModal', function() {
+      const container = document.getElementById('form-equipement-container');
+      if (container) {
+          container.innerHTML = '';
+      }
+  });
+</script>
+
 {% endblock %}

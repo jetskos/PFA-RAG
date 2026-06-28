@@ -170,7 +170,9 @@ def ajouter_equipement(request):
             paginator = Paginator(equipements, 15)
             page_number = request.GET.get('page', 1)
             page_obj = paginator.get_page(page_number)
-            return render(request, 'logistics/partials/equipements_list.html', {'equipements': page_obj, 'page_obj': page_obj})
+            response = render(request, 'logistics/partials/equipements_list.html', {'equipements': page_obj, 'page_obj': page_obj})
+            response['HX-Trigger'] = 'closeModal'
+            return response
         else:
             response = render(request, 'logistics/partials/equipement_form.html', {
                 'form': form,
@@ -205,7 +207,9 @@ def editer_equipement(request, pk):
             paginator = Paginator(equipements, 15)
             page_number = request.GET.get('page', 1)
             page_obj = paginator.get_page(page_number)
-            return render(request, 'logistics/partials/equipements_list.html', {'equipements': page_obj, 'page_obj': page_obj})
+            response = render(request, 'logistics/partials/equipements_list.html', {'equipements': page_obj, 'page_obj': page_obj})
+            response['HX-Trigger'] = 'closeModal'
+            return response
         else:
             response = render(request, 'logistics/partials/equipement_form.html', {
                 'form': form,

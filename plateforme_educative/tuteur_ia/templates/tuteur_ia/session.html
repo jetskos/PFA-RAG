@@ -5,88 +5,514 @@
 
 {% block content %}
 <script>
-    const CHAPITRE_ID  = "{{ chapitre.id }}";
-    const COURS_ID     = "{{ cours.id }}";
-    const CSRF_TOKEN   = "{{ csrf_token }}";
-    const COURS_URL    = "/apprentissage/cours/{{ cours.id }}/";
-    const QCM_URL      = "/tuteur/qcm/{{ chapitre.id }}/";
+    const CHAPITRE_ID   = "{{ chapitre.id }}";
+    const COURS_ID      = "{{ cours.id }}";
+    const CSRF_TOKEN    = "{{ csrf_token }}";
+    const COURS_URL     = "/apprentissage/cours/{{ cours.id }}/";
+    const QCM_URL       = "/tuteur/qcm/{{ chapitre.id }}/";
     const MAX_QUESTIONS = 15;
     const MIN_QUESTIONS = 12;
 </script>
 
+<style>
+/* ══════════════════════════════════════════════════
+   TUTEUR IA — PREMIUM CHAT REDESIGN
+══════════════════════════════════════════════════ */
+.ia-shell {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 1.5rem;
+    height: calc(100vh - 120px);
+    max-width: 1300px;
+    margin: 0 auto;
+}
+@media (max-width: 900px) { .ia-shell { grid-template-columns: 1fr; height: auto; } }
+
+/* ── SIDEBAR ── */
+.ia-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    overflow-y: auto;
+}
+
+.ia-sidebar-card {
+    background: var(--bg-surface, #ffffff);
+    border: 1.5px solid var(--border-light, #e8edf3);
+    border-radius: 18px;
+    padding: 1.25rem;
+    transition: box-shadow 0.2s;
+}
+
+/* Chapitre info card */
+.ia-chapter-card {
+    background: linear-gradient(135deg, #0a1929, #0d2137);
+    border: 1px solid rgba(13,148,136,0.2);
+    border-radius: 18px;
+    padding: 1.25rem;
+    position: relative;
+    overflow: hidden;
+}
+.ia-chapter-card::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 180px; height: 180px;
+    background: radial-gradient(circle, rgba(13,148,136,0.2) 0%, transparent 70%);
+    border-radius: 50%;
+}
+.ia-chapter-eyebrow {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #2dd4bf;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    position: relative;
+    z-index: 1;
+}
+.ia-chapter-name {
+    font-size: 1rem;
+    font-weight: 800;
+    color: white;
+    line-height: 1.35;
+    margin-bottom: 0.35rem;
+    position: relative;
+    z-index: 1;
+}
+.ia-chapter-course {
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.5);
+    font-weight: 500;
+    position: relative;
+    z-index: 1;
+}
+
+/* Score card */
+.ia-score-card {
+    background: var(--bg-surface, #ffffff);
+    border: 1.5px solid var(--border-light, #e8edf3);
+    border-radius: 18px;
+    padding: 1.25rem;
+}
+.ia-score-lbl {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted, #64748b);
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.ia-score-val {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: var(--text-primary, #0f172a);
+    letter-spacing: -0.04em;
+    line-height: 1;
+    margin-bottom: 0.75rem;
+}
+.ia-progress-track {
+    height: 8px;
+    background: var(--bg-hover, #f1f5f9);
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+.ia-progress-fill {
+    height: 100%;
+    border-radius: 999px;
+    width: 0%;
+    background: linear-gradient(90deg, #0d9488, #2dd4bf);
+    transition: width 0.6s cubic-bezier(0.16,1,0.3,1), background 0.4s;
+}
+.ia-score-sub {
+    font-size: 0.75rem;
+    color: var(--text-muted, #64748b);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Progress dots card */
+.ia-progress-card {
+    background: var(--bg-surface, #ffffff);
+    border: 1.5px solid var(--border-light, #e8edf3);
+    border-radius: 18px;
+    padding: 1.25rem;
+}
+.ia-dots-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 5px;
+    margin-bottom: 1rem;
+}
+.ia-dot {
+    height: 8px;
+    border-radius: 999px;
+    background: var(--border-default, #e2e8f0);
+    transition: all 0.3s;
+}
+.ia-dot.done    { background: linear-gradient(90deg, #0d9488, #2dd4bf); }
+.ia-dot.current { background: linear-gradient(90deg, #3b82f6, #60a5fa); animation: dotPulse 1.5s ease-in-out infinite; }
+@keyframes dotPulse { 0%,100%{opacity:1;} 50%{opacity:0.5;} }
+
+.ia-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    background: rgba(13,148,136,0.1);
+    color: #0d9488;
+    border: 1px solid rgba(13,148,136,0.2);
+}
+.ia-q-counter {
+    font-size: 0.78rem;
+    color: var(--text-muted, #64748b);
+    margin-top: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.ia-q-counter strong { color: var(--text-primary, #0f172a); }
+
+/* Back button */
+.ia-back-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0.75rem 1rem;
+    background: var(--bg-surface, #ffffff);
+    border: 1.5px solid var(--border-light, #e8edf3);
+    border-radius: 12px;
+    color: var(--text-muted, #64748b);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+.ia-back-btn:hover {
+    border-color: #0d9488;
+    color: #0d9488;
+    background: rgba(13,148,136,0.04);
+}
+
+/* ── CHAT AREA ── */
+.ia-chat-area {
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-surface, #ffffff);
+    border: 1.5px solid var(--border-light, #e8edf3);
+    border-radius: 24px;
+    overflow: hidden;
+}
+
+/* Chat header */
+.ia-chat-header {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border-light, #e8edf3);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: var(--bg-surface, #ffffff);
+    flex-shrink: 0;
+}
+.ia-avatar {
+    width: 44px; height: 44px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #0d9488, #0f766e);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem;
+    box-shadow: 0 4px 12px rgba(13,148,136,0.25);
+    flex-shrink: 0;
+}
+.ia-chat-hdr-info h3 {
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--text-primary, #0f172a);
+    margin: 0 0 2px;
+}
+.ia-chat-hdr-info p {
+    font-size: 0.78rem;
+    color: var(--text-muted, #64748b);
+    margin: 0;
+}
+.ia-q-pill {
+    margin-left: auto;
+    background: var(--bg-hover, #f1f5f9);
+    color: var(--text-muted, #64748b);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--border-default, #e2e8f0);
+}
+
+/* Messages area */
+.ia-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    scroll-behavior: smooth;
+}
+.ia-messages::-webkit-scrollbar { width: 5px; }
+.ia-messages::-webkit-scrollbar-track { background: transparent; }
+.ia-messages::-webkit-scrollbar-thumb { background: var(--border-default, #e2e8f0); border-radius: 999px; }
+
+/* Message bubbles */
+.bubble {
+    max-width: 78%;
+    padding: 0.85rem 1.15rem;
+    border-radius: 18px;
+    font-size: 0.92rem;
+    line-height: 1.65;
+    word-break: break-word;
+    animation: msgIn 0.25s cubic-bezier(0.16,1,0.3,1);
+}
+@keyframes msgIn {
+    from { opacity: 0; transform: translateY(10px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0)   scale(1); }
+}
+.bubble.ai {
+    align-self: flex-start;
+    background: var(--bg-hover, #f8fafc);
+    border: 1.5px solid var(--border-light, #e8edf3);
+    color: var(--text-primary, #0f172a);
+    border-bottom-left-radius: 6px;
+}
+.bubble.user {
+    align-self: flex-end;
+    background: linear-gradient(135deg, #0d9488, #0f766e);
+    color: white;
+    border-bottom-right-radius: 6px;
+    box-shadow: 0 4px 12px rgba(13,148,136,0.2);
+}
+.bubble.err {
+    align-self: flex-start;
+    background: rgba(239,68,68,0.08);
+    border: 1px solid rgba(239,68,68,0.2);
+    color: #dc2626;
+}
+
+/* Typing indicator */
+.typing {
+    align-self: flex-start;
+    background: var(--bg-hover, #f8fafc);
+    border: 1.5px solid var(--border-light, #e8edf3);
+    border-radius: 18px;
+    border-bottom-left-radius: 6px;
+    padding: 0.85rem 1.15rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.typing span {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: #0d9488;
+    animation: typingBounce 1.4s ease-in-out infinite;
+    opacity: 0.6;
+}
+.typing span:nth-child(2) { animation-delay: 0.2s; }
+.typing span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes typingBounce {
+    0%,60%,100% { transform: translateY(0); }
+    30% { transform: translateY(-6px); opacity: 1; }
+}
+
+/* Input bar */
+.ia-input-area {
+    padding: 1rem 1.25rem;
+    border-top: 1px solid var(--border-light, #e8edf3);
+    background: var(--bg-surface, #ffffff);
+    flex-shrink: 0;
+}
+.ia-input-row {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-end;
+    background: var(--bg-hover, #f8fafc);
+    border: 1.5px solid var(--border-default, #e2e8f0);
+    border-radius: 16px;
+    padding: 0.75rem 0.75rem 0.75rem 1.25rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.ia-input-row:focus-within {
+    border-color: #0d9488;
+    box-shadow: 0 0 0 3px rgba(13,148,136,0.1);
+    background: var(--bg-surface, #ffffff);
+}
+.ia-textarea {
+    flex: 1;
+    border: none;
+    background: transparent;
+    resize: none;
+    font-family: inherit;
+    font-size: 0.92rem;
+    color: var(--text-primary, #0f172a);
+    line-height: 1.5;
+    max-height: 120px;
+    outline: none;
+}
+.ia-textarea::placeholder { color: var(--text-muted, #94a3b8); }
+.ia-textarea:disabled { opacity: 0.5; }
+
+.ia-send-btn {
+    width: 40px; height: 40px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #0d9488, #0f766e);
+    border: none;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(13,148,136,0.25);
+}
+.ia-send-btn:hover:not(:disabled) {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(13,148,136,0.35);
+}
+.ia-send-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+.ia-hint {
+    font-size: 0.72rem;
+    color: var(--text-muted, #94a3b8);
+    text-align: center;
+    margin-top: 0.5rem;
+}
+
+/* Final panel */
+.fin-panel {
+    background: var(--bg-hover, #f8fafc);
+    border: 1.5px solid var(--border-light, #e8edf3);
+    border-radius: 18px;
+    padding: 1.5rem;
+    text-align: center;
+    margin: 0 1.5rem 1rem;
+    display: none;
+}
+.fin-panel h3 { font-size: 1.25rem; font-weight: 900; color: var(--text-primary, #0f172a); margin-bottom: 0.5rem; }
+.fin-panel p  { font-size: 0.88rem; color: var(--text-muted, #64748b); margin-bottom: 1.5rem; }
+.fin-actions { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
+.btn-success { background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 0.7rem 1.5rem; border-radius: 10px; font-weight: 700; text-decoration: none; font-size: 0.9rem; transition: all 0.2s; }
+.btn-success:hover { filter: brightness(1.1); transform: translateY(-1px); }
+.btn-outline { background: white; color: var(--text-secondary, #475569); border: 1.5px solid var(--border-default, #cbd5e1); padding: 0.7rem 1.5rem; border-radius: 10px; font-weight: 600; text-decoration: none; font-size: 0.9rem; transition: all 0.2s; }
+.btn-outline:hover { border-color: #0d9488; color: #0d9488; }
+.btn-danger { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; padding: 0.7rem 1.5rem; border-radius: 10px; font-weight: 700; text-decoration: none; font-size: 0.9rem; transition: all 0.2s; }
+.btn-danger:hover { filter: brightness(1.1); transform: translateY(-1px); }
+</style>
+
 <div class="ia-shell">
 
-    <!-- Sidebar Info & Progress Tracker -->
+    <!-- ══ SIDEBAR ══ -->
     <aside class="ia-sidebar">
-        <div class="ia-card">
-            <p class="lbl">Chapitre</p>
-            <h2>{{ chapitre.titre }}</h2>
-            <p>{{ cours.titre }}</p>
+
+        <!-- Chapter Info -->
+        <div class="ia-chapter-card">
+            <p class="ia-chapter-eyebrow"><i class="ti ti-sparkles"></i> Session Active</p>
+            <h2 class="ia-chapter-name">{{ chapitre.titre }}</h2>
+            <p class="ia-chapter-course">{{ cours.titre }}</p>
         </div>
 
-        <div class="ia-card">
-            <p class="lbl">Score de maîtrise</p>
-            <div class="score-val" id="score-val">0%</div>
-            <div class="prog-track"><div class="prog-fill" id="prog-fill"></div></div>
-            <div class="score-lbl">Seuil de validation : 75%</div>
+        <!-- Score -->
+        <div class="ia-score-card">
+            <p class="ia-score-lbl"><i class="ti ti-trophy" style="color:#f59e0b;"></i> Score de maîtrise</p>
+            <div class="ia-score-val" id="score-val">0%</div>
+            <div class="ia-progress-track">
+                <div class="ia-progress-fill" id="prog-fill"></div>
+            </div>
+            <div class="ia-score-sub">
+                <span>Seuil de validation</span>
+                <span style="font-weight:700; color:#0d9488;">75%</span>
+            </div>
         </div>
 
-        <div class="ia-card">
-            <p class="lbl">Progression</p>
-            <div class="iter-wrap" id="iter-dots">
+        <!-- Progress Dots -->
+        <div class="ia-progress-card">
+            <p class="ia-score-lbl"><i class="ti ti-layout-list" style="color:#3b82f6;"></i> Progression</p>
+            <div class="ia-dots-grid" id="iter-dots">
                 {% for i in "123456789012345" %}
-                <div class="iter-dot" id="dot-{{ forloop.counter }}"></div>
+                <div class="ia-dot" id="dot-{{ forloop.counter }}"></div>
                 {% endfor %}
             </div>
-            <p style="margin: .75rem 0 .25rem; font-size: .8rem; font-weight: 600; color: var(--text-secondary);">Statut</p>
-            <span class="role-badge" id="status-badge" style="background-color: var(--brand-light); color: var(--brand-primary); border-color: rgba(99, 102, 241, 0.2);">● En cours</span>
-            <p style="margin: .75rem 0 0; font-size: .75rem; color: var(--text-muted);">
-                Question <span id="q-current" style="font-weight: 700;">0</span> / <span id="q-max" style="font-weight: 700;">—</span>
+            <span class="ia-status-badge" id="status-badge">
+                <span style="width:6px;height:6px;border-radius:50%;background:#0d9488;"></span>
+                En cours
+            </span>
+            <p class="ia-q-counter">
+                Question <strong id="q-current">0</strong> / <strong id="q-max">—</strong>
             </p>
         </div>
 
-        <a href="/apprentissage/cours/{{ cours.id }}/" class="ia-back">
+        <!-- Back button -->
+        <a href="/apprentissage/cours/{{ cours.id }}/" class="ia-back-btn">
             <i class="ti ti-arrow-left"></i> Retour au cours
         </a>
+
     </aside>
 
-    <!-- Chat Conversational Area -->
+    <!-- ══ CHAT AREA ══ -->
     <div class="ia-chat-area">
-        <div class="ia-chat-hdr">
-            <div class="av">🤖</div>
-            <div class="inf">
+
+        <!-- Header -->
+        <div class="ia-chat-header">
+            <div class="ia-avatar">🤖</div>
+            <div class="ia-chat-hdr-info">
                 <h3>Tuteur IA</h3>
                 <p>Session socratique · {{ chapitre.titre }}</p>
             </div>
-            <span class="qcount" id="q-badge">Chargement…</span>
+            <span class="ia-q-pill" id="q-badge">Chargement…</span>
         </div>
 
-        <div class="ia-msgs" id="chat-msgs">
-            <!-- Les messages s'affichent ici -->
+        <!-- Messages -->
+        <div class="ia-messages" id="chat-msgs"></div>
+
+        <!-- Final Panel -->
+        <div class="fin-panel" id="fin-panel">
+            <h3 id="fin-titre"></h3>
+            <p id="fin-msg"></p>
+            <div class="fin-actions" id="fin-actions"></div>
         </div>
 
-        <div class="ia-input-bar">
-            <textarea id="msg-input" placeholder="Écris ta réponse… (Entrée pour envoyer, Maj+Entrée = nouvelle ligne)" rows="2" disabled></textarea>
-            <button class="ia-send" id="send-btn" disabled onclick="envoyer()">
-                <i class="ti ti-send" style="font-size: 16px;"></i>
-            </button>
+        <!-- Input Area -->
+        <div class="ia-input-area">
+            <div class="ia-input-row">
+                <textarea
+                    class="ia-textarea"
+                    id="msg-input"
+                    placeholder="Écris ta réponse… (Entrée pour envoyer, Maj+Entrée = nouvelle ligne)"
+                    rows="2"
+                    disabled></textarea>
+                <button class="ia-send-btn" id="send-btn" disabled onclick="envoyer()">
+                    <i class="ti ti-send"></i>
+                </button>
+            </div>
+            <p class="ia-hint">Entrée pour envoyer · Maj+Entrée pour saut de ligne</p>
         </div>
-        <p class="ia-hint">Entrée pour envoyer · Maj+Entrée pour saut de ligne</p>
 
-        <!-- Dynamic Final Panel (Appears at the end) -->
-        <div class="fin-panel" id="fin-panel" style="display: none; margin-top: 1rem;">
-            <h3 id="fin-titre" style="font-weight: 800;"></h3>
-            <p id="fin-msg" style="margin-top: 0.5rem; margin-bottom: 1.5rem;"></p>
-            <div id="fin-actions" style="display: flex; gap: 0.75rem; justify-content: center;"></div>
-        </div>
     </div>
 </div>
 
 <script>
 // ── State ──────────────────────────────────────────────────────────────────
-let sessionId   = null;
-let finie       = false;
-let iteration   = 0;
+let sessionId    = null;
+let finie        = false;
+let iteration    = 0;
 let maxQuestions = 0;
 
 const URL_INIT    = `/tuteur/session/${CHAPITRE_ID}/`;
@@ -122,21 +548,26 @@ function updateStats(score, iter, maxQ) {
     const pct = Math.round((score||0)*100);
     document.getElementById('score-val').textContent = pct + '%';
     const fill = document.getElementById('prog-fill');
-    fill.style.width      = pct + '%';
-    fill.style.background = pct>=75 ? 'var(--accent-emerald)' : pct>=40 ? 'var(--accent-warning)' : 'var(--accent-danger)';
+    fill.style.width = pct + '%';
+    if (pct >= 75) {
+        fill.style.background = 'linear-gradient(90deg, #10b981, #2dd4bf)';
+    } else if (pct >= 40) {
+        fill.style.background = 'linear-gradient(90deg, #f59e0b, #fbbf24)';
+    } else {
+        fill.style.background = 'linear-gradient(90deg, #0d9488, #2dd4bf)';
+    }
 
-    iteration   = iter || 0;
+    iteration    = iter || 0;
     maxQuestions = maxQ || maxQuestions || MAX_QUESTIONS;
 
     document.getElementById('q-current').textContent = iteration;
     document.getElementById('q-max').textContent     = maxQuestions;
     document.getElementById('q-badge').textContent   = `Q ${iteration}/${maxQuestions}`;
 
-    // Update dots
     for (let i=1; i<=15; i++) {
         const dot = document.getElementById(`dot-${i}`);
         if (!dot) continue;
-        dot.className = 'iter-dot' + (i<iteration?' done': i===iteration?' current':'');
+        dot.className = 'ia-dot' + (i<iteration?' done': i===iteration?' current':'');
     }
 }
 
@@ -160,55 +591,50 @@ function afficherFin(score, mastery) {
     panel.style.display = 'block';
 
     if (mastery >= 0.75) {
-        badge.className = 'role-badge';
-        badge.style.backgroundColor = 'var(--accent-emerald-light)';
-        badge.style.color = 'var(--accent-emerald)';
-        badge.style.borderColor = 'rgba(16, 185, 129, 0.2)';
-        badge.textContent = '✓ Maîtrisé';
-        
+        badge.style.background   = 'rgba(16,185,129,0.1)';
+        badge.style.color        = '#059669';
+        badge.style.borderColor  = 'rgba(16,185,129,0.2)';
+        badge.innerHTML          = `<span style="width:6px;height:6px;border-radius:50%;background:#059669;"></span> ✓ Maîtrisé`;
+
         titre.textContent = `🎉 Félicitations ! Score : ${pct}%`;
         msg.textContent   = 'Tu maîtrises bien ce chapitre ! Teste tes connaissances avec le QCM.';
         actions.innerHTML = `
-            <a href="${QCM_URL}" class="btn btn-success">📝 Faire le QCM</a>
-            <a href="${COURS_URL}" class="btn btn-outline">Retour au cours</a>`;
+            <a href="${QCM_URL}" class="btn-success">📝 Faire le QCM</a>
+            <a href="${COURS_URL}" class="btn-outline">Retour au cours</a>`;
     } else {
-        badge.className = 'role-badge';
-        badge.style.backgroundColor = 'var(--accent-warning-light)';
-        badge.style.color = 'var(--accent-warning)';
-        badge.style.borderColor = 'rgba(245, 158, 11, 0.2)';
-        badge.textContent = '↺ À revoir';
-        
+        badge.style.background   = 'rgba(245,158,11,0.1)';
+        badge.style.color        = '#d97706';
+        badge.style.borderColor  = 'rgba(245,158,11,0.2)';
+        badge.innerHTML          = `<span style="width:6px;height:6px;border-radius:50%;background:#d97706;"></span> ↺ À revoir`;
+
         titre.textContent = `Score : ${pct}% — Continue !`;
-        msg.textContent   = 'Tu n\'as pas encore atteint 75%. Relis le chapitre et recommence la session.';
+        msg.textContent   = "Tu n'as pas encore atteint 75%. Relis le chapitre et recommence la session.";
         actions.innerHTML = `
-            <a href="/apprentissage/cours/${COURS_ID}/" class="btn btn-danger">📖 Réviser le chapitre</a>
-            <a href="/tuteur/session/${CHAPITRE_ID}/" class="btn btn-outline">Recommencer</a>`;
+            <a href="/apprentissage/cours/${COURS_ID}/" class="btn-danger">📖 Réviser le chapitre</a>
+            <a href="/tuteur/session/${CHAPITRE_ID}/" class="btn-outline">Recommencer</a>`;
     }
 }
 
 // ── API ───────────────────────────────────────────────────────────────────
 async function demarrer() {
     try {
-        // Afficher le loader de bienvenue
         addTyping('init-loader');
-
         const r    = await fetch(URL_INIT, {
             method:'POST',
             headers:{'Content-Type':'application/json','X-CSRFToken':CSRF_TOKEN},
             body: JSON.stringify({}),
         });
         const data = await r.json();
-
         removeLoader('init-loader');
 
         if (!r.ok) { addMsg(`❌ ${data.error||'Erreur serveur'}`, 'err'); return; }
 
-        sessionId = data.session_id;
+        sessionId    = data.session_id;
         maxQuestions = Math.floor(Math.random()*(MAX_QUESTIONS-MIN_QUESTIONS+1))+MIN_QUESTIONS;
 
         addMsg(data.message, 'ai');
         updateStats(data.mastery_score, data.iteration, maxQuestions);
-        setInput(true);  // Activer l'input dès que le message d'accueil est affiché
+        setInput(true);
     } catch(e) {
         removeLoader('init-loader');
         addMsg(`❌ Erreur réseau : ${e.message}`, 'err');
