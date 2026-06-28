@@ -385,9 +385,9 @@ def create_niveau_view(request):
             'cancel_label': 'Annuler',
             'action_url': reverse('dashboard_admin_create_niveau'),
             'is_create': True
-        }, status=400 if request.method == 'POST' else 200)
+        })
     
-    return _render_admin_structure(request, {'niveau_form': form}, status=400 if request.method == 'POST' else 200, active_tab='niveaux')
+    return _render_admin_structure(request, {'niveau_form': form}, active_tab='niveaux')
 
 
 @role_required('ADMIN')
@@ -412,7 +412,7 @@ def edit_niveau_view(request, niveau_id):
         'submit_label': 'Enregistrer',
         'cancel_label': 'Annuler',
         'action_url': reverse('dashboard_admin_edit_niveau', args=[niveau.id]),
-    }, status=400 if request.method == 'POST' else 200)
+    })
 
 
 @role_required('ADMIN')
@@ -436,9 +436,9 @@ def create_classe_view(request):
             'cancel_label': 'Annuler',
             'action_url': reverse('dashboard_admin_create_classe'),
             'is_create': True
-        }, status=400 if request.method == 'POST' else 200)
+        })
 
-    return _render_admin_structure(request, {'classe_form': form}, status=400 if request.method == 'POST' else 200, active_tab='classes')
+    return _render_admin_structure(request, {'classe_form': form}, active_tab='classes')
 
 
 @role_required('ADMIN')
@@ -463,7 +463,7 @@ def edit_classe_view(request, classe_id):
         'submit_label': 'Enregistrer',
         'cancel_label': 'Annuler',
         'action_url': reverse('dashboard_admin_edit_classe', args=[classe.id]),
-    }, status=400 if request.method == 'POST' else 200)
+    })
 
 
 @role_required('ADMIN')
@@ -699,7 +699,7 @@ def activate_pending_student_view(request):
 
     return _render_admin_structure(request, {
         'pending_error': form.errors.as_text(),
-    }, status=400, active_tab='students')
+    }, active_tab='students')
 
 
 @role_required('FORMATEUR')
@@ -761,7 +761,7 @@ def create_demande_materiel_view(request):
 
     # If GET or invalid POST, render the modal
     context = {'demande_form': form}
-    return render(request, 'core/partials/demande_materiel_modal.html', context, status=400 if request.method == 'POST' else 200)
+    return render(request, 'core/partials/demande_materiel_modal.html', context)
 
 
 from django.db import transaction
@@ -780,7 +780,7 @@ def admin_process_demande_view(request, demande_id):
             
             if action == 'approve':
                 if demande.quantite > equipement.stock_disponible:
-                    return _render_admin_structure(request, {'pending_error': f'Stock insuffisant (Reste: {equipement.stock_disponible}).'}, status=400, active_tab='logistics')
+                    return _render_admin_structure(request, {'pending_error': f'Stock insuffisant (Reste: {equipement.stock_disponible}).'}, active_tab='logistics')
                 equipement.stock_disponible -= demande.quantite
                 equipement.save()
                 demande.statut = 'APPROVED'
@@ -792,11 +792,11 @@ def admin_process_demande_view(request, demande_id):
                     equipement.save()
                 demande.statut = 'RETURNED'
             else:
-                return _render_admin_structure(request, {'pending_error': 'Action invalide.'}, status=400, active_tab='logistics')
+                return _render_admin_structure(request, {'pending_error': 'Action invalide.'}, active_tab='logistics')
 
             demande.save(update_fields=['statut'])
     except Exception as e:
-        return _render_admin_structure(request, {'pending_error': str(e)}, status=400, active_tab='logistics')
+        return _render_admin_structure(request, {'pending_error': str(e)}, active_tab='logistics')
 
     from accounts.notifications import notifier
     if action in ['approve', 'reject']:

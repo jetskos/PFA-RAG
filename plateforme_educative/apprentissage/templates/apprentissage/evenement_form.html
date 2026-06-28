@@ -3,41 +3,331 @@
 {% block title %}{{ titre_page }}{% endblock %}
 
 {% block content %}
-<section class="page-shell" style="max-width: 600px; margin: 2rem auto; padding: 0 1rem;">
-    <div style="margin-bottom: 1.5rem;">
-        <p class="eyebrow">
-            <a href="{% url 'apprentissage:calendrier' %}" style="color: var(--brand-primary); text-decoration: none;">📅 Calendrier</a> › {{ titre_page }}
-        </p>
-        <h1>{{ titre_page }}</h1>
+<style>
+    /* Hero Banner for Form */
+    .form-hero {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f2027 100%);
+        position: relative;
+        border-radius: 20px;
+        overflow: hidden;
+        padding: 2.5rem 3rem;
+        margin: 1.5rem auto 2.5rem;
+        max-width: 800px;
+        text-align: center;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    }
+    .form-hero::before {
+        content: ''; position: absolute; top: -80px; right: -60px;
+        width: 320px; height: 320px;
+        background: radial-gradient(circle, rgba(13,148,136,0.15) 0%, transparent 70%);
+        border-radius: 50%; pointer-events: none;
+    }
+    .form-hero::after {
+        content: ''; position: absolute; bottom: -60px; left: 10%;
+        width: 240px; height: 240px;
+        background: radial-gradient(circle, rgba(79,70,229,0.15) 0%, transparent 70%);
+        border-radius: 50%; pointer-events: none;
+    }
+    .form-eyebrow {
+        display: inline-flex; align-items: center; gap: 6px;
+        background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15);
+        color: #fff; padding: 4px 12px; border-radius: 20px;
+        font-size: 0.75rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+        margin-bottom: 1rem; backdrop-filter: blur(4px);
+        text-decoration: none; transition: background 0.2s;
+    }
+    .form-eyebrow:hover {
+        background: rgba(255,255,255,0.15);
+        color: #fff;
+    }
+    .form-hero-title {
+        font-size: 2rem; font-weight: 900; color: #fff;
+        letter-spacing: -0.03em; line-height: 1.15; margin: 0 0 0.5rem;
+    }
+    .form-hero-sub {
+        font-size: 0.95rem; color: rgba(255,255,255,0.65); margin: 0;
+    }
+
+    /* Form Container */
+    .unified-form-card {
+        background: var(--bg-surface, #ffffff);
+        border: 1px solid var(--border-light, #e2e8f0);
+        border-radius: 16px;
+        padding: 2.5rem;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        max-width: 800px;
+        margin: 0 auto 3rem;
+    }
+    [data-theme="dark"] .unified-form-card {
+        background: var(--bg-elevated, #1e293b);
+        border-color: rgba(255,255,255,0.05);
+    }
+
+    /* Form Sections */
+    .unified-form-section-title {
+        font-size: 0.85rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--brand-primary, #0d9488);
+        margin: 2rem 0 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    .unified-form-section-title::after {
+        content: ''; flex: 1; height: 1px;
+        background: var(--border-light, #e2e8f0);
+    }
+    .unified-form-section-title:first-of-type {
+        margin-top: 0.5rem;
+    }
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.25rem;
+    }
+
+    /* Form Fields */
+    .unified-form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+    .unified-form-label {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: var(--text-primary);
+    }
+    .unified-form-card input, 
+    .unified-form-card select, 
+    .unified-form-card textarea {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border-radius: 10px;
+        border: 1.5px solid var(--border-light, #e2e8f0);
+        font-family: inherit;
+        font-size: 0.95rem;
+        color: var(--text-primary);
+        background: var(--bg-surface, #ffffff);
+        transition: all 0.2s ease;
+        box-sizing: border-box;
+    }
+    [data-theme="dark"] .unified-form-card input, 
+    [data-theme="dark"] .unified-form-card select, 
+    [data-theme="dark"] .unified-form-card textarea {
+        border-color: rgba(255,255,255,0.1);
+        background: rgba(0,0,0,0.2);
+    }
+    .unified-form-card input:focus, 
+    .unified-form-card select:focus, 
+    .unified-form-card textarea:focus {
+        outline: none;
+        border-color: var(--brand-primary);
+        box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.15);
+    }
+    .unified-form-card input[type="checkbox"] {
+        width: auto;
+        padding: 0;
+        cursor: pointer;
+    }
+    .unified-form-card textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+    .unified-form-error {
+        font-size: 0.8rem;
+        color: #ef4444;
+        font-weight: 600;
+        margin-top: 0.25rem;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    /* Actions */
+    .unified-form-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+        align-items: center;
+        border-top: 1px solid var(--border-light, #e2e8f0);
+        padding-top: 1.75rem;
+        margin-top: 1rem;
+    }
+    [data-theme="dark"] .unified-form-actions {
+        border-color: rgba(255,255,255,0.05);
+    }
+    .btn-unified-ghost {
+        padding: 0.75rem 1.5rem;
+        border-radius: 10px;
+        border: 1.5px solid var(--border-light, #e2e8f0);
+        background: transparent;
+        color: var(--text-secondary);
+        font-weight: 700;
+        font-size: 0.95rem;
+        text-decoration: none;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .btn-unified-ghost:hover {
+        border-color: var(--text-primary);
+        color: var(--text-primary);
+    }
+    .btn-unified-submit {
+        padding: 0.75rem 2rem;
+        border-radius: 10px;
+        border: none;
+        background: linear-gradient(135deg, var(--brand-primary), #4338ca);
+        color: #fff;
+        font-weight: 700;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+    }
+    .btn-unified-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(79, 70, 229, 0.35);
+        filter: brightness(1.05);
+    }
+    
+    @media (max-width: 640px) {
+        .form-row { grid-template-columns: 1fr; gap: 0; }
+        .unified-form-actions { flex-direction: column-reverse; align-items: stretch; }
+        .unified-form-actions a, .unified-form-actions button { justify-content: center; }
+    }
+</style>
+
+<section class="page-shell">
+    
+    <div class="form-hero">
+        <a href="{% url 'apprentissage:calendrier' %}" class="form-eyebrow">
+            <i class="ti ti-arrow-left"></i> Retour au calendrier
+        </a>
+        <h1 class="form-hero-title">{{ titre_page }}</h1>
+        <p class="form-hero-sub">Planifiez vos événements, cours et sessions d'apprentissage.</p>
     </div>
 
-    <div class="carte" style="padding: 2rem; background: var(--surface); border: 1px solid var(--bordure); border-radius: 12px;">
-        <form method="POST">
+    <div class="unified-form-card">
+        <form method="POST" novalidate>
             {% csrf_token %}
             
-            <div style="display: flex; flex-direction: column; gap: 1.25rem; margin-bottom: 1.5rem;">
-                {% for field in form %}
-                <div style="display: flex; flex-direction: column; gap: 0.35rem;">
-                    <label for="{{ field.id_for_label }}" style="font-weight: 600; font-size: 0.9rem; color: var(--text-primary);">
-                        {{ field.label }} {% if field.field.required %}<span style="color: #ef4444;">*</span>{% endif %}
-                    </label>
-                    {{ field }}
-                    {% if field.help_text %}
-                    <span style="font-size: 0.78rem; color: var(--texte-secondaire);">{{ field.help_text }}</span>
-                    {% endif %}
-                    {% for error in field.errors %}
-                    <span style="font-size: 0.8rem; color: #ef4444; font-weight: 600;">⚠️ {{ error }}</span>
+            {% if form.non_field_errors %}
+                <div style="padding: 1rem; margin-bottom: 1.5rem; border-radius: 10px; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2);">
+                    {% for error in form.non_field_errors %}
+                        <p style="margin: 0; font-size: 0.9rem; color: #ef4444; font-weight: 600;"><i class="ti ti-alert-circle"></i> {{ error }}</p>
                     {% endfor %}
                 </div>
+            {% endif %}
+
+            <div class="unified-form-section-title"><i class="ti ti-clipboard-text"></i> Informations générales</div>
+
+            <div class="unified-form-group">
+                <label for="{{ form.titre.id_for_label }}" class="unified-form-label">
+                    {{ form.titre.label }} {% if form.titre.field.required %}<span style="color: #ef4444;">*</span>{% endif %}
+                </label>
+                {{ form.titre }}
+                {% if form.titre.help_text %}
+                    <span style="font-size: 0.8rem; color: var(--text-muted, #94a3b8);">{{ form.titre.help_text }}</span>
+                {% endif %}
+                {% for error in form.titre.errors %}
+                    <span class="unified-form-error"><i class="ti ti-alert-triangle"></i> {{ error }}</span>
                 {% endfor %}
             </div>
 
-            <div style="display: flex; gap: 0.75rem; justify-content: flex-end; align-items: center; border-top: 1px solid var(--bordure); padding-top: 1.25rem;">
-                <a href="{% url 'apprentissage:calendrier' %}" class="btn btn-ghost" style="text-decoration: none; padding: 0.6rem 1.2rem; border-radius: 6px; border: 1px solid var(--bordure); font-weight: 600;">
-                    Annuler
+            <div class="unified-form-group">
+                <label for="{{ form.description.id_for_label }}" class="unified-form-label">
+                    {{ form.description.label }} {% if form.description.field.required %}<span style="color: #ef4444;">*</span>{% endif %}
+                </label>
+                {{ form.description }}
+                {% if form.description.help_text %}
+                    <span style="font-size: 0.8rem; color: var(--text-muted, #94a3b8);">{{ form.description.help_text }}</span>
+                {% endif %}
+                {% for error in form.description.errors %}
+                    <span class="unified-form-error"><i class="ti ti-alert-triangle"></i> {{ error }}</span>
+                {% endfor %}
+            </div>
+
+            <div class="unified-form-group">
+                <label for="{{ form.type.id_for_label }}" class="unified-form-label">
+                    {{ form.type.label }} {% if form.type.field.required %}<span style="color: #ef4444;">*</span>{% endif %}
+                </label>
+                {{ form.type }}
+                {% if form.type.help_text %}
+                    <span style="font-size: 0.8rem; color: var(--text-muted, #94a3b8);">{{ form.type.help_text }}</span>
+                {% endif %}
+                {% for error in form.type.errors %}
+                    <span class="unified-form-error"><i class="ti ti-alert-triangle"></i> {{ error }}</span>
+                {% endfor %}
+            </div>
+
+            <div class="unified-form-section-title"><i class="ti ti-calendar-time"></i> Planification</div>
+
+            <div class="form-row">
+                <div class="unified-form-group">
+                    <label for="{{ form.date_debut.id_for_label }}" class="unified-form-label">
+                        {{ form.date_debut.label }} {% if form.date_debut.field.required %}<span style="color: #ef4444;">*</span>{% endif %}
+                    </label>
+                    {{ form.date_debut }}
+                    {% for error in form.date_debut.errors %}
+                        <span class="unified-form-error"><i class="ti ti-alert-triangle"></i> {{ error }}</span>
+                    {% endfor %}
+                </div>
+
+                <div class="unified-form-group">
+                    <label for="{{ form.date_fin.id_for_label }}" class="unified-form-label">
+                        {{ form.date_fin.label }} {% if form.date_fin.field.required %}<span style="color: #ef4444;">*</span>{% endif %}
+                    </label>
+                    {{ form.date_fin }}
+                    {% for error in form.date_fin.errors %}
+                        <span class="unified-form-error"><i class="ti ti-alert-triangle"></i> {{ error }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="unified-form-section-title"><i class="ti ti-school"></i> Association pédagogique</div>
+
+            <div class="form-row">
+                <div class="unified-form-group">
+                    <label for="{{ form.cours.id_for_label }}" class="unified-form-label">
+                        {{ form.cours.label }} {% if form.cours.field.required %}<span style="color: #ef4444;">*</span>{% endif %}
+                    </label>
+                    {{ form.cours }}
+                    {% if form.cours.help_text %}
+                        <span style="font-size: 0.8rem; color: var(--text-muted, #94a3b8);">{{ form.cours.help_text }}</span>
+                    {% endif %}
+                    {% for error in form.cours.errors %}
+                        <span class="unified-form-error"><i class="ti ti-alert-triangle"></i> {{ error }}</span>
+                    {% endfor %}
+                </div>
+
+                <div class="unified-form-group">
+                    <label for="{{ form.classe.id_for_label }}" class="unified-form-label">
+                        {{ form.classe.label }} {% if form.classe.field.required %}<span style="color: #ef4444;">*</span>{% endif %}
+                    </label>
+                    {{ form.classe }}
+                    {% if form.classe.help_text %}
+                        <span style="font-size: 0.8rem; color: var(--text-muted, #94a3b8);">{{ form.classe.help_text }}</span>
+                    {% endif %}
+                    {% for error in form.classe.errors %}
+                        <span class="unified-form-error"><i class="ti ti-alert-triangle"></i> {{ error }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="unified-form-actions">
+                <a href="{% url 'apprentissage:calendrier' %}" class="btn-unified-ghost">
+                    <i class="ti ti-x"></i> Annuler
                 </a>
-                <button type="submit" class="btn" style="background: var(--brand-primary); color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 6px; font-weight: 600; cursor: pointer; transition: background-color 0.2s;">
-                    Enregistrer
+                <button type="submit" class="btn-unified-submit">
+                    <i class="ti ti-check"></i> Enregistrer l'événement
                 </button>
             </div>
         </form>

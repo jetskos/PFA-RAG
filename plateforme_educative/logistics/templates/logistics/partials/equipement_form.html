@@ -47,7 +47,7 @@
                 <button type="button" style="display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.65rem 1.1rem; background: transparent; color: var(--ink-muted); border: 1.5px solid var(--border); border-radius: 8px; font-size: 0.875rem; font-weight: 700; cursor: pointer; transition: all 0.15s;" onclick="document.getElementById('form-equipement-container').innerHTML=''" onmouseover="this.style.borderColor='var(--ink-mid)'; this.style.color='var(--ink)'" onmouseout="this.style.borderColor='var(--border)'; this.style.color='var(--ink-muted)'">
                     Annuler
                 </button>
-                <button type="submit" style="display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.65rem 1.4rem; background: var(--teal); color: #fff; border: none; border-radius: 8px; font-size: 0.875rem; font-weight: 700; cursor: pointer; transition: background 0.15s;" onmouseover="this.style.background='var(--ink)'" onmouseout="this.style.background='var(--teal)'">
+                <button type="submit" style="display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.65rem 1.4rem; background: var(--brand-primary); color: #fff; border: none; border-radius: 8px; font-size: 0.875rem; font-weight: 700; cursor: pointer; transition: background 0.15s;" onmouseover="this.style.background='var(--ink)'" onmouseout="this.style.background='var(--brand-primary)'">
                     {{ submit_label|default:'Enregistrer' }} <i class="ti ti-check"></i>
                 </button>
             </div>
@@ -73,8 +73,8 @@
     }
     #equipement-form input:focus, #equipement-form select:focus, #equipement-form textarea:focus {
         outline: none;
-        border-color: var(--teal);
-        box-shadow: 0 0 0 3px var(--teal-glow);
+        border-color: var(--brand-primary);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.3);
     }
     #equipement-form input[type="checkbox"] {
         width: auto;

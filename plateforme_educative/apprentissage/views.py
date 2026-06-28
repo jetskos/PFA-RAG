@@ -22,7 +22,7 @@ from apprentissage.mixins import (
 
 def _htmx_modal_error_response(request, template_name, context):
     """Render a form back into the modal when an HTMX submission is invalid."""
-    response = render(request, template_name, context, status=400)
+    response = render(request, template_name, context)
     if request.headers.get('HX-Request') == 'true':
         response['HX-Retarget'] = '#modal-body'
     return response
