@@ -327,21 +327,20 @@
 }
 .qa-tile-horiz.qa-featured .qa-label { color: #0f766e; }
 
-/* ── ATELIERS SCROLL ── */
-.ateliers-scroll {
-  display: flex; gap: 1rem; overflow-x: auto;
+/* ── ATELIERS GRID ── */
+.ateliers-grid {
+  display: grid; 
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); 
+  gap: 1.1rem;
   padding: 1.25rem 1.4rem;
-  scrollbar-width: thin; scrollbar-color: #e2e8f0 transparent;
 }
-.ateliers-scroll::-webkit-scrollbar { height: 4px; }
-.ateliers-scroll::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 999px; }
 
 .atelier-card {
-  min-width: 240px; border-radius: 16px; border: 1.5px solid var(--border-light, #e8edf3);
+  border-radius: 16px; border: 1.5px solid var(--border-light, #e8edf3);
   padding: 1.15rem 1.25rem; background: var(--bg-surface, #fff);
   box-shadow: 0 1px 4px rgba(0,0,0,0.04);
   transition: all 0.22s cubic-bezier(0.16,1,0.3,1);
-  flex-shrink: 0; position: relative; overflow: hidden;
+  position: relative; overflow: hidden;
 }
 .atelier-card:hover { transform: translateY(-4px); box-shadow: 0 10px 28px rgba(0,0,0,0.09); border-color: #cbd5e1; }
 .atelier-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; }
@@ -580,7 +579,7 @@
             <a href="{% url 'logistics:ateliers' %}" class="fmt-link">Gérer <i class="ti ti-arrow-right"></i></a>
           </div>
           {% if mes_ateliers %}
-          <div class="ateliers-scroll">
+          <div class="ateliers-grid">
             {% for atelier in mes_ateliers %}
             {% with s=atelier.statut_dynamique %}
             <div class="atelier-card {% if atelier.est_annule %}ac-annule{% elif s == 'En cours' %}ac-en_cours{% elif s == 'À venir' %}ac-a_venir{% else %}ac-termine{% endif %}">
@@ -690,6 +689,11 @@
                 {% elif demande.statut == 'REJECTED' %}Rejeté
                 {% else %}Retourné{% endif %}
               </span>
+              {% if demande.statut == 'APPROVED' %}
+                <button hx-get="{% url 'logistics:creer_ticket_formateur' demande.id %}" hx-target="#form-ticket-container" class="btn-fmt btn-fmt-outline" style="padding: 0.35rem 0.6rem; margin-left: 0.5rem; color: #ef4444; border-color: rgba(239,68,68,0.25); border-radius: 8px;">
+                  <i class="ti ti-alert-triangle"></i> Panne
+                </button>
+              {% endif %}
             </div>
             {% endfor %}
             <div style="padding:0.85rem 1.25rem;border-top:1px solid var(--border-light,#f1f5f9);">
@@ -716,4 +720,5 @@
 </div><!-- /fmt -->
 
 <div id="form-demande-container"></div>
+<div id="form-ticket-container"></div>
 {% endblock %}

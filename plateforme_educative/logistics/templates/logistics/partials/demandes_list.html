@@ -4,10 +4,10 @@
     <div class="eq-item">
         <!-- Status top bar -->
         <div class="eq-item-status-bar
-            {% if demande.statut == 'PENDING' %}bar-a_venir
-            {% elif demande.statut == 'APPROVED' %}bar-en_cours
-            {% elif demande.statut == 'REJECTED' %}bar-annule
-            {% else %}bar-termine{% endif %}">
+            {% if demande.statut == 'PENDING' %}bar-PENDING
+            {% elif demande.statut == 'APPROVED' %}bar-APPROVED
+            {% elif demande.statut == 'REJECTED' %}bar-REJECTED
+            {% else %}bar-RETURNED{% endif %}">
         </div>
 
         <div class="eq-item-body">
@@ -15,10 +15,10 @@
             <div class="eq-item-header">
                 <div class="eq-item-title-group">
                     <div class="eq-item-icon
-                        {% if demande.statut == 'PENDING' %}icon-a_venir
-                        {% elif demande.statut == 'APPROVED' %}icon-en_cours
-                        {% elif demande.statut == 'REJECTED' %}icon-annule
-                        {% else %}icon-termine{% endif %}">
+                        {% if demande.statut == 'PENDING' %}icon-PENDING
+                        {% elif demande.statut == 'APPROVED' %}icon-APPROVED
+                        {% elif demande.statut == 'REJECTED' %}icon-REJECTED
+                        {% else %}icon-RETURNED{% endif %}">
                         {% if demande.statut == 'PENDING' %}<i class="ti ti-clock-pause"></i>
                         {% elif demande.statut == 'APPROVED' %}<i class="ti ti-circle-check"></i>
                         {% elif demande.statut == 'REJECTED' %}<i class="ti ti-ban"></i>
@@ -35,10 +35,10 @@
 
                 <div class="eq-item-right">
                     <span class="eq-status-badge
-                        {% if demande.statut == 'PENDING' %}badge-a_venir
-                        {% elif demande.statut == 'APPROVED' %}badge-en_cours
-                        {% elif demande.statut == 'REJECTED' %}badge-annule
-                        {% else %}badge-termine{% endif %}">
+                        {% if demande.statut == 'PENDING' %}badge-PENDING
+                        {% elif demande.statut == 'APPROVED' %}badge-APPROVED
+                        {% elif demande.statut == 'REJECTED' %}badge-REJECTED
+                        {% else %}badge-RETURNED{% endif %}">
                         {% if demande.statut == 'PENDING' %}En attente
                         {% elif demande.statut == 'APPROVED' %}Approuvée
                         {% elif demande.statut == 'REJECTED' %}Rejetée
@@ -81,6 +81,13 @@
                                 hx-vals='{"statut": "RETURNED"}'
                                 hx-target="#demandes-list">
                             <i class="ti ti-arrow-back-up"></i>
+                        </button>
+                        {% endif %}
+                        {% if demande.statut == 'APPROVED' and not user.is_staff and user == demande.formateur %}
+                        <button type="button" class="eq-action-btn btn-danger" title="Signaler une panne"
+                                hx-get="{% url 'logistics:creer_ticket_formateur' demande.pk %}"
+                                hx-target="#form-demande-container" hx-swap="innerHTML">
+                            <i class="ti ti-alert-triangle"></i>
                         </button>
                         {% endif %}
                     </div>

@@ -86,40 +86,48 @@
     }
 
     .assign-select-field select {
-        padding: 6px 10px;
-        border-radius: 6px;
-        border: 1px solid var(--border-default);
-        background: var(--bg-surface);
-        color: var(--text-primary);
-        font-size: 0.85rem;
+        appearance: none; -webkit-appearance: none;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        background-repeat: no-repeat; background-position: right 10px center; background-size: 14px;
+        padding: 8px 32px 8px 12px;
+        border-radius: 8px;
+        border: 1.5px solid var(--border-light, #e2e8f0);
+        background-color: var(--bg-surface, #fff);
+        color: var(--text-primary, #0f172a);
+        font-size: 0.85rem; font-weight: 600;
         font-family: inherit;
         outline: none;
-        height: 34px;
-        transition: var(--transition);
+        height: 38px;
+        transition: all 0.2s cubic-bezier(0.16,1,0.3,1);
+        cursor: pointer;
     }
 
     .assign-select-field select:focus {
-        border-color: var(--primary);
+        border-color: #0D9488;
+        box-shadow: 0 0 0 3px rgba(13,148,136,0.15);
     }
 
     .assign-submit-btn {
-        height: 34px;
-        padding: 0 14px;
-        font-size: 12px;
+        height: 38px;
+        padding: 0 16px;
+        font-size: 0.85rem;
         font-weight: 700;
-        background: var(--primary);
+        background: linear-gradient(135deg, #0D9488, #0F766E);
         color: white;
         border: none;
-        border-radius: 6px;
+        border-radius: 8px;
         cursor: pointer;
         display: inline-flex;
         align-items: center;
-        gap: 4px;
-        transition: var(--transition);
+        gap: 6px;
+        transition: all 0.2s cubic-bezier(0.16,1,0.3,1);
+        box-shadow: 0 4px 12px rgba(13,148,136,0.25);
     }
 
     .assign-submit-btn:hover {
-        background: var(--primary-dark);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(13,148,136,0.35);
+        filter: brightness(1.1);
     }
 
     @media (max-width: 680px) {

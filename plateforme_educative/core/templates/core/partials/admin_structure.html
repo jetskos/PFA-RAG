@@ -1,147 +1,146 @@
 <style>
-    /* Tabs Layout - SaaS Premium */
-    .tabs-container {
-        display: flex;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-        padding: 0.5rem;
-        background: #f8fafc;
-        border-radius: 12px;
-        border: 1px solid #e2e8f0;
-        width: fit-content;
-    }
+  /* ═══════════════════════════════════════════════════
+     ADMIN STRUCTURE TABS — Premium redesign
+  ═══════════════════════════════════════════════════ */
 
-    .tab-pill {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 10px 24px;
-        border-radius: 8px;
-        font-size: 0.95rem;
-        font-weight: 600;
-        color: #475569;
-        background: transparent;
-        border: none;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        outline: none;
-    }
+  /* ── TAB NAV STRIP ── */
+  .tabs-container {
+    display: flex;
+    gap: 0.3rem;
+    flex-wrap: wrap;
+    padding: 0.35rem;
+    background: var(--bg-surface, #fff);
+    border-radius: 14px;
+    border: 1px solid var(--border-light, #e2e8f0);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    width: fit-content;
+    margin-bottom: 1.5rem;
+  }
 
-    .tab-pill:hover {
-        color: #0f172a;
-        background: rgba(15, 23, 42, 0.05);
-    }
+  .tab-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 0.55rem 1.1rem;
+    border-radius: 10px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-muted, #64748b);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16,1,0.3,1);
+    outline: none;
+    white-space: nowrap;
+  }
 
-    .tab-pill.is-active {
-        background: #ffffff;
-        color: #0f172a !important;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        font-weight: 700;
-    }
+  .tab-pill i { font-size: 1.05rem; transition: transform 0.2s; }
+  .tab-pill:hover { color: var(--text-primary, #0f172a); background: rgba(13,148,136,0.05); }
+  .tab-pill:hover i { transform: translateY(-1px); }
 
-    .tab-badge {
-        font-size: 0.75rem;
-        font-weight: 800;
-        padding: 2px 8px;
-        border-radius: 9999px;
-        background: #e2e8f0;
-        color: #475569;
-        transition: all 0.2s ease;
-        white-space: nowrap;
-        /* Empêche la coupure sur deux lignes */
-    }
+  .tab-pill.is-active {
+    background: linear-gradient(135deg, #0D9488, #0F766E);
+    color: #fff !important;
+    box-shadow: 0 4px 12px rgba(13,148,136,0.28);
+    font-weight: 700;
+  }
+  .tab-pill.is-active i { color: rgba(255,255,255,0.9); }
 
-    [data-theme="dark"] .tab-badge {
-        background: var(--gray-700);
-        color: var(--text-muted);
-    }
+  /* Badge (count) */
+  .tab-badge {
+    font-size: 0.7rem;
+    font-weight: 800;
+    padding: 1px 7px;
+    border-radius: 999px;
+    background: var(--border-light, #e2e8f0);
+    color: var(--text-muted, #64748b);
+    transition: all 0.2s;
+    min-width: 20px;
+    text-align: center;
+  }
 
-    .tab-pill.is-active .tab-badge {
-        background: #0f766e;
-        color: #ffffff;
-    }
+  .tab-pill.is-active .tab-badge {
+    background: rgba(255,255,255,0.22);
+    color: #fff;
+  }
 
-    .structure-content-card {
-        background: #ffffff;
-        border-radius: 16px;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.025);
-        border: 1px solid #e2e8f0;
-        padding: 2rem;
-    }
+  /* Alert badge — red dot for pending items */
+  .tab-pill .badge-alert {
+    background: rgba(239,68,68,0.12);
+    color: #ef4444;
+    font-weight: 800;
+  }
+  .tab-pill.is-active .badge-alert {
+    background: rgba(255,255,255,0.22);
+    color: #fff;
+  }
+
+  /* ── CONTENT CARD ── */
+  .structure-content-card {
+    background: var(--bg-surface, #ffffff);
+    border-radius: 18px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+    border: 1px solid var(--border-light, #e2e8f0);
+    padding: 2rem;
+    width: 100%;
+    animation: tabFadeIn 0.2s ease-out;
+  }
+
+  @keyframes tabFadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
 </style>
 
-<div style="display:grid; gap:0rem; grid-template-columns: 1fr; align-items:start;">
+<div style="display:flex; flex-direction:column; gap:0; align-items:flex-start;">
 
-    <div class="tabs-container">
-        <button hx-get="{% url 'dashboard_admin_structure' %}?tab=niveaux" hx-target="#dashboard-structure"
-            hx-swap="innerHTML" class="tab-pill {% if active_tab == 'niveaux' %}is-active{% endif %}">
-            <i class="ti ti-layers-linked"></i> Niveaux
-            <span class="tab-badge">{{ niveaux|length|default:"0" }}</span>
-        </button>
+  <!-- ══ TAB NAV ══ -->
+  <div class="tabs-container">
 
-        <button hx-get="{% url 'dashboard_admin_structure' %}?tab=classes" hx-target="#dashboard-structure"
-            hx-swap="innerHTML" class="tab-pill {% if active_tab == 'classes' %}is-active{% endif %}">
-            <i class="ti ti-users-group"></i> Classes
-            <span class="tab-badge">{{ classes|length|default:"0" }}</span>
-        </button>
+    <button hx-get="{% url 'dashboard_admin_structure' %}?tab=niveaux"
+            hx-target="#dashboard-structure" hx-swap="innerHTML"
+            class="tab-pill {% if active_tab == 'niveaux' %}is-active{% endif %}">
+      <i class="ti ti-layers-linked"></i> Niveaux
+      <span class="tab-badge">{{ niveaux|length|default:"0" }}</span>
+    </button>
 
-        <button hx-get="{% url 'dashboard_admin_structure' %}?tab=students" hx-target="#dashboard-structure"
-            hx-swap="innerHTML" class="tab-pill {% if active_tab == 'students' %}is-active{% endif %}">
-            <i class="ti ti-user-plus"></i> Étudiants en attente
-            <span class="tab-badge">{{ pending_students|length|default:"0" }}</span>
-        </button>
+    <button hx-get="{% url 'dashboard_admin_structure' %}?tab=classes"
+            hx-target="#dashboard-structure" hx-swap="innerHTML"
+            class="tab-pill {% if active_tab == 'classes' %}is-active{% endif %}">
+      <i class="ti ti-users-group"></i> Classes
+      <span class="tab-badge">{{ classes|length|default:"0" }}</span>
+    </button>
 
-        <button hx-get="{% url 'dashboard_admin_structure' %}?tab=logistics" hx-target="#dashboard-structure"
-            hx-swap="innerHTML" class="tab-pill {% if active_tab == 'logistics' %}is-active{% endif %}">
-            <i class="ti ti-package"></i> Demandes Logistiques
-            <span class="tab-badge">{{ pending_demandes|length|default:"0" }}</span>
-        </button>
+    <button hx-get="{% url 'dashboard_admin_structure' %}?tab=students"
+            hx-target="#dashboard-structure" hx-swap="innerHTML"
+            class="tab-pill {% if active_tab == 'students' %}is-active{% endif %}">
+      <i class="ti ti-user-plus"></i> Étudiants en attente
+      {% if pending_students|length > 0 %}
+        <span class="tab-badge badge-alert">{{ pending_students|length }}</span>
+      {% else %}
+        <span class="tab-badge">0</span>
+      {% endif %}
+    </button>
 
-        <button hx-get="{% url 'dashboard_admin_structure' %}?tab=equipements" hx-target="#dashboard-structure"
-            hx-swap="innerHTML" class="tab-pill {% if active_tab == 'equipements' %}is-active{% endif %}">
-            <i class="ti ti-server"></i> Catalogue Matériel
-        </button>
-    </div>
 
-    <div class="structure-content-card" style="width: 100%;">
-        {% if active_tab == 'students' %}
-        <div style="display: flex; justify-content: center; width: 100%;">
-            <div style="width: 100%;">
-                {% include 'core/partials/pending_students_section.html' %}
-            </div>
-        </div>
-        {% endif %}
+  </div>
 
-        {% if active_tab == 'logistics' %}
-        <div style="display: flex; justify-content: center; width: 100%;">
-            <div style="width: 100%;">
-                {% include 'core/partials/pending_demandes_section.html' %}
-            </div>
-        </div>
-        {% endif %}
+  <!-- ══ CONTENT ══ -->
+  <div class="structure-content-card">
 
-        {% if active_tab == 'equipements' %}
-        <div style="display: flex; justify-content: center; width: 100%;">
-            <div style="width: 100%;">
-                {% include 'core/partials/equipements_section.html' %}
-            </div>
-        </div>
-        {% endif %}
+    {% if active_tab == 'niveaux' %}
+      {% include 'core/partials/niveaux_section.html' %}
+    {% endif %}
 
-        {% if active_tab == 'niveaux' %}
-        <div style="display: flex; justify-content: center; width: 100%;">
-            <div style="width: 100%;">
-                {% include 'core/partials/niveaux_section.html' %}
-            </div>
-        </div>
-        {% endif %}
+    {% if active_tab == 'classes' %}
+      {% include 'core/partials/classes_section.html' %}
+    {% endif %}
 
-        {% if active_tab == 'classes' %}
-        <div style="display: flex; justify-content: center; width: 100%;">
-            <div style="width: 100%;">
-                {% include 'core/partials/classes_section.html' %}
-            </div>
-        </div>
-        {% endif %}
-    </div>
+    {% if active_tab == 'students' %}
+      {% include 'core/partials/pending_students_section.html' %}
+    {% endif %}
+
+
+  </div>
+
 </div>

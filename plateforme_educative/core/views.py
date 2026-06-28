@@ -1,5 +1,7 @@
+import json
+from datetime import timedelta
+from django.utils import timezone
 from functools import wraps
-
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import AccessMixin, LoginRequiredMixin, UserPassesTestMixin
@@ -138,6 +140,42 @@ def _admin_dashboard_context(request=None):
         for student in pending_students_page
     ]
 
+    # === CHART DATA GENERATION ===
+    admins_count = Utilisateur.objects.filter(role='ADMIN').count()
+    users_chart = {
+        'students': eleves_actifs_count + en_attente_count,
+        'formateurs': formateurs_actifs_count,
+        'admins': admins_count
+    }
+
+    tickets_ouvert = DemandeMateriel.objects.filter(statut='PENDING').count()
+    tickets_encours = DemandeMateriel.objects.filter(statut='APPROVED').count()  # Adjust if EN_COURS exists
+    tickets_resolu = DemandeMateriel.objects.filter(statut='REJECTED').count()   # Adjust if RESOLU exists
+    tickets_chart = {
+        'ouvert': tickets_ouvert,
+        'encours': tickets_encours,
+        'resolu': tickets_resolu
+    }
+
+    today = timezone.now().date()
+    labels = []
+    values = []
+    for i in range(6, -1, -1):
+        day = today - timedelta(days=i)
+        count = Utilisateur.objects.filter(date_creation__date=day).count()
+        labels.append(day.strftime('%d/%m'))
+        values.append(count)
+    inscriptions_chart = {
+        'labels': labels,
+        'values': values
+    }
+
+    chart_data = {
+        'users': users_chart,
+        'tickets': tickets_chart,
+        'inscriptions': inscriptions_chart
+    }
+
     return {
         'niveaux': niveaux_page,
         'classes': classes_page,
@@ -158,6 +196,7 @@ def _admin_dashboard_context(request=None):
             'niveaux_actifs': niveaux_actifs_count,
         },
         'timeline': timeline,
+        'chart_data': chart_data,
     }
 
 
