@@ -6,6 +6,7 @@ django-cors-headers>=4.3.0
 python-dotenv>=1.0.0
 asgiref>=3.7.0
 daphne>=4.0.0
+whitenoise[brotli]>=6.6.0
 
 # Database
 mysqlclient>=2.2.0
