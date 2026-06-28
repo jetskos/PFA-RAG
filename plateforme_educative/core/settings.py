@@ -44,7 +44,13 @@ def _env_list(name: str, default: list[str]) -> list[str]:
 
 ALLOWED_HOSTS = _env_list('DJANGO_ALLOWED_HOSTS', ['127.0.0.1', 'localhost', '*'])
 
-CSRF_TRUSTED_ORIGINS = _env_list('DJANGO_CSRF_TRUSTED_ORIGINS', ['https://*.up.railway.app', 'https://*.railway.app'])
+CSRF_TRUSTED_ORIGINS = _env_list('DJANGO_CSRF_TRUSTED_ORIGINS', [
+    'https://*.up.railway.app', 
+    'https://*.railway.app',
+    'https://edutech1.up.railway.app'
+])
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
