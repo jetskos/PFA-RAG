@@ -2,6 +2,9 @@ plateforme_educative/.env
 plateforme_educative/README.md
 
 __pycache__/
+*.pyc
+*.pyo
 db.sqlite3
 media/
 chroma_db/
+staticfiles/
