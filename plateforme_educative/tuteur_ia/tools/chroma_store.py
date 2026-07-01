@@ -39,39 +39,13 @@ def _get_chroma_path() -> str:
         return os.path.join(os.getcwd(), "media", "chroma_db")
 
 
-class RequestsHuggingFaceEmbeddingFunction:
-    """Version personnalisée utilisant `requests` au lieu de `httpx` pour contourner les bugs IPv6/DNS de Railway."""
-    def __init__(self, api_key: str, model_name: str):
-        self.api_url = f"https://api-inference.huggingface.co/pipeline/feature-extraction/{model_name}"
-        self.headers = {"Authorization": f"Bearer {api_key}"}
-
-    def __call__(self, input: list[str]) -> list[list[float]]:
-        import requests
-        response = requests.post(
-            self.api_url, 
-            headers=self.headers, 
-            json={"inputs": input, "options": {"wait_for_model": True}},
-            timeout=30
-        )
-        response.raise_for_status()
-        return response.json()
-
-    def name(self) -> str:
-        return "requests_huggingface_embedding_function"
-
 def _get_embedding_function():
     """Retourne la fonction d'embedding (singleton)."""
     global _embedding_fn
     if _embedding_fn is None:
-        hf_api_key = os.getenv("HUGGINGFACE_API_KEY")
-        if not hf_api_key:
-            raise ValueError("HUGGINGFACE_API_KEY est requise pour les embeddings en production (économie de RAM).")
-            
-        _embedding_fn = RequestsHuggingFaceEmbeddingFunction(
-            api_key=hf_api_key,
-            model_name=EMBEDDING_MODEL
-        )
-        logger.info(f"Utilisation de l'API HuggingFace ({EMBEDDING_MODEL}) via Requests - 0 RAM utilisée !")
+        from chromadb.utils.embedding_functions import DefaultEmbeddingFunction
+        _embedding_fn = DefaultEmbeddingFunction()
+        logger.info("Utilisation de DefaultEmbeddingFunction (local ONNX) - pas de PyTorch, API externe inutile !")
     return _embedding_fn
 
 
