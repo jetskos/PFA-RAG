@@ -32,5 +32,5 @@ EXPOSE 8000
 # Collect static files for production
 RUN python manage.py collectstatic --noinput
 
-# Start daphne using the PORT env variable provided by Railway (or fallback to 8000)
-CMD daphne -b 0.0.0.0 -p ${PORT:-8000} core.asgi:application
+# Start the custom shell script which runs both Celery (with concurrency=1) and Daphne
+CMD ["bash", "start.sh"]

@@ -43,26 +43,16 @@ def _get_embedding_function():
     """Retourne la fonction d'embedding (singleton)."""
     global _embedding_fn
     if _embedding_fn is None:
-        try:
-            hf_api_key = os.getenv("HUGGINGFACE_API_KEY")
-            if hf_api_key:
-                from chromadb.utils.embedding_functions import HuggingFaceEmbeddingFunction
-                _embedding_fn = HuggingFaceEmbeddingFunction(
-                    api_key=hf_api_key,
-                    model_name=EMBEDDING_MODEL
-                )
-                logger.info(f"Utilisation de l'API HuggingFace ({EMBEDDING_MODEL}) - 0 RAM utilisée !")
-            else:
-                from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
-                _embedding_fn = SentenceTransformerEmbeddingFunction(
-                    model_name=EMBEDDING_MODEL
-                )
-                logger.info(f"Modèle d'embedding chargé en local : {EMBEDDING_MODEL}")
-        except ImportError:
-            raise ImportError(
-                "Dépendances manquantes. "
-                "Lancez : pip install sentence-transformers"
-            )
+        hf_api_key = os.getenv("HUGGINGFACE_API_KEY")
+        if not hf_api_key:
+            raise ValueError("HUGGINGFACE_API_KEY est requise pour les embeddings en production (économie de RAM).")
+            
+        from chromadb.utils.embedding_functions import HuggingFaceEmbeddingFunction
+        _embedding_fn = HuggingFaceEmbeddingFunction(
+            api_key=hf_api_key,
+            model_name=EMBEDDING_MODEL
+        )
+        logger.info(f"Utilisation de l'API HuggingFace ({EMBEDDING_MODEL}) - 0 RAM utilisée !")
     return _embedding_fn
 
 
