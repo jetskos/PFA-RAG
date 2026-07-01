@@ -56,6 +56,9 @@ class RequestsHuggingFaceEmbeddingFunction:
         response.raise_for_status()
         return response.json()
 
+    def name(self) -> str:
+        return "requests_huggingface_embedding_function"
+
 def _get_embedding_function():
     """Retourne la fonction d'embedding (singleton)."""
     global _embedding_fn
