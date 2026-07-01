@@ -24,10 +24,10 @@ logger = logging.getLogger(__name__)
 
 def _index_document_async(document_id: str, pdf_path: str):
     """
-    Lance l'indexation via une tâche Celery (ou de manière synchrone si DEBUG=True).
+    Lance l'indexation de manière synchrone pour éviter la corruption multi-processus de ChromaDB.
     """
     from apprentissage.tasks import indexer_document_task
-    indexer_document_task.delay(document_id=document_id, pdf_path=pdf_path)
+    indexer_document_task(document_id=document_id, pdf_path=pdf_path)
 
 
 
