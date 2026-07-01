@@ -61,14 +61,7 @@ class Command(BaseCommand):
             ))
             return
 
-        try:
-            import sentence_transformers  # noqa
-        except ImportError:
-            self.stdout.write(self.style.ERROR(
-                "sentence-transformers non installé. "
-                "Lancez : pip install sentence-transformers"
-            ))
-            return
+
 
         # ── Récupérer les documents à indexer ────────────────────────────────
         qs = Document.objects.filter(actif=True)
