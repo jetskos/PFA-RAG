@@ -374,6 +374,7 @@ def create_niveau_view(request):
             response = _render_admin_structure(request, active_tab='niveaux')
             response['HX-Trigger'] = 'closeModal'
             response['HX-Retarget'] = '#dashboard-structure'
+            response['HX-Reswap'] = 'innerHTML'
             return response
     else:
         form = NiveauForm()
@@ -402,6 +403,7 @@ def edit_niveau_view(request, niveau_id):
             response = _render_admin_structure(request, active_tab='niveaux')
             response['HX-Trigger'] = 'closeModal'
             response['HX-Retarget'] = '#dashboard-structure'
+            response['HX-Reswap'] = 'innerHTML'
             return response
     else:
         form = NiveauForm(instance=niveau)
@@ -425,6 +427,7 @@ def create_classe_view(request):
             response = _render_admin_structure(request, active_tab='classes')
             response['HX-Trigger'] = 'closeModal'
             response['HX-Retarget'] = '#dashboard-structure'
+            response['HX-Reswap'] = 'innerHTML'
             return response
     else:
         form = ClasseForm()
@@ -453,6 +456,7 @@ def edit_classe_view(request, classe_id):
             response = _render_admin_structure(request, active_tab='classes')
             response['HX-Trigger'] = 'closeModal'
             response['HX-Retarget'] = '#dashboard-structure'
+            response['HX-Reswap'] = 'innerHTML'
             return response
     else:
         form = ClasseForm(instance=classe)
