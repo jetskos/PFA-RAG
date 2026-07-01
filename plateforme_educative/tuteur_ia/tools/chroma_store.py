@@ -31,13 +31,30 @@ _embedding_fn = None
 # ── Helpers ──────────────────────────────────────────────────────────────────
 
 def _get_chroma_path() -> str:
-    """Retourne le chemin de persistance ChromaDB (BASE_DIR/chroma_db)."""
+    """Retourne le chemin de persistance ChromaDB (dans media/ pour persistance Railway)."""
     try:
         from django.conf import settings
-        return str(Path(settings.BASE_DIR) / "chroma_db")
+        return str(Path(settings.MEDIA_ROOT) / "chroma_db")
     except Exception:
-        return os.path.join(os.getcwd(), "chroma_db")
+        return os.path.join(os.getcwd(), "media", "chroma_db")
 
+
+class RequestsHuggingFaceEmbeddingFunction:
+    """Version personnalisée utilisant `requests` au lieu de `httpx` pour contourner les bugs IPv6/DNS de Railway."""
+    def __init__(self, api_key: str, model_name: str):
+        self.api_url = f"https://api-inference.huggingface.co/pipeline/feature-extraction/{model_name}"
+        self.headers = {"Authorization": f"Bearer {api_key}"}
+
+    def __call__(self, input: list[str]) -> list[list[float]]:
+        import requests
+        response = requests.post(
+            self.api_url, 
+            headers=self.headers, 
+            json={"inputs": input, "options": {"wait_for_model": True}},
+            timeout=30
+        )
+        response.raise_for_status()
+        return response.json()
 
 def _get_embedding_function():
     """Retourne la fonction d'embedding (singleton)."""
@@ -47,12 +64,11 @@ def _get_embedding_function():
         if not hf_api_key:
             raise ValueError("HUGGINGFACE_API_KEY est requise pour les embeddings en production (économie de RAM).")
             
-        from chromadb.utils.embedding_functions import HuggingFaceEmbeddingFunction
-        _embedding_fn = HuggingFaceEmbeddingFunction(
+        _embedding_fn = RequestsHuggingFaceEmbeddingFunction(
             api_key=hf_api_key,
             model_name=EMBEDDING_MODEL
         )
-        logger.info(f"Utilisation de l'API HuggingFace ({EMBEDDING_MODEL}) - 0 RAM utilisée !")
+        logger.info(f"Utilisation de l'API HuggingFace ({EMBEDDING_MODEL}) via Requests - 0 RAM utilisée !")
     return _embedding_fn
 
 
