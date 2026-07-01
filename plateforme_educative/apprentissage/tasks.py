@@ -57,4 +57,3 @@ def indexer_document_task(self, document_id: str, pdf_path: str):
             f"[ChromaDB] ✗ Erreur indexation {document_id}: {exc}",
             exc_info=True,
         )
-        raise self.retry(exc=exc)

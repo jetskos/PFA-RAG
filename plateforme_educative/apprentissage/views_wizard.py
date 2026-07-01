@@ -101,12 +101,12 @@ def wizard_step4_pdfs(request):
                 fichier_pdf=fichier,
                 type_document='COURS'
             )
-            # Lancer l'indexation de manière asynchrone
+            # Lancer l'indexation de manière synchrone
             try:
-                indexer_document_task.delay(str(doc.id), doc.fichier_pdf.path)
+                indexer_document_task(str(doc.id), doc.fichier_pdf.path)
                 docs_ajoutes += 1
             except Exception as e:
-                # Fallback in case delay is not available (e.g. no celery)
-                print(f"Erreur lancement tâche asynchrone: {e}")
+                # Fallback in case error occurs
+                print(f"Erreur lancement tâche synchrone: {e}")
 
     return render(request, 'apprentissage/wizard/success.html', {'cours': cours, 'docs_ajoutes': docs_ajoutes})
