@@ -123,7 +123,7 @@ L'architecture vise la performance, la maintenabilité, et l'intégration profon
 ## 🤝 Contribution & Équipe
 
 Ce projet a été développé dans le cadre d'un Projet de Fin d'Année (PFA). 
-- **Auteur :** [@jetskos](https://github.com/jetskos)
+- **Auteur :** Youssef Rahahli et Malek Mohamed Aymen
 - **Supervision :** emsi
 
 *Si vous souhaitez contribuer ou suggérer des améliorations, n'hésitez pas à ouvrir une Issue ou soumettre une Pull Request !*
