@@ -7,7 +7,6 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 
 from apprentissage.models import Cours, Chapitre, Document, Niveau
-from apprentissage.tasks import indexer_document_task
 
 @login_required
 def wizard_start(request):
@@ -95,18 +94,14 @@ def wizard_step4_pdfs(request):
     docs_ajoutes = 0
     for fichier in fichiers:
         if fichier.name.lower().endswith('.pdf'):
-            doc = Document.objects.create(
+            # L'indexation RAG est déclenchée automatiquement par le signal
+            # post_save de Document (voir apprentissage/signals.py).
+            Document.objects.create(
                 chapitre=chapitre,
                 titre=fichier.name,
                 fichier_pdf=fichier,
                 type_document='COURS'
             )
-            # Lancer l'indexation de manière synchrone
-            try:
-                indexer_document_task(str(doc.id), doc.fichier_pdf.path)
-                docs_ajoutes += 1
-            except Exception as e:
-                # Fallback in case error occurs
-                print(f"Erreur lancement tâche synchrone: {e}")
+            docs_ajoutes += 1
 
     return render(request, 'apprentissage/wizard/success.html', {'cours': cours, 'docs_ajoutes': docs_ajoutes})

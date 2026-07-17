@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tuteur_ia', '0008_merge_20260629_0208'),
+        ('tuteur_ia', '0006_graphcheckpoint_graphwrite_and_more'),
     ]
 
     operations = [

@@ -24,10 +24,19 @@ logger = logging.getLogger(__name__)
 
 def _index_document_async(document_id: str, pdf_path: str):
     """
-    Lance l'indexation de manière synchrone pour éviter la corruption multi-processus de ChromaDB.
+    Lance l'indexation via Celery (worker à démarrer avec --pool=solo pour ChromaDB).
+    Si le broker est indisponible, retombe en exécution synchrone pour ne pas
+    perdre l'indexation.
     """
     from apprentissage.tasks import indexer_document_task
-    indexer_document_task(document_id=document_id, pdf_path=pdf_path)
+    try:
+        indexer_document_task.delay(document_id=document_id, pdf_path=pdf_path)
+    except Exception as exc:
+        logger.warning(
+            "Celery indisponible (%s) — indexation synchrone du document %s",
+            exc, document_id,
+        )
+        indexer_document_task(document_id=document_id, pdf_path=pdf_path)
 
 
 

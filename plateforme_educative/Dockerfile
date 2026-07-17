@@ -32,5 +32,5 @@ EXPOSE 8000
 # Collect static files for production
 RUN python manage.py collectstatic --noinput
 
-# Start the custom shell script which runs both Celery (with concurrency=1) and Daphne
+# Start the custom shell script which runs both Celery (pool solo) and gunicorn
 CMD ["bash", "start.sh"]

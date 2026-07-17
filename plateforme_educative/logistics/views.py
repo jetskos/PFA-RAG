@@ -1,3 +1,5 @@
+import logging
+
 from django.db import transaction
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.http import require_http_methods
@@ -14,6 +16,8 @@ from .excel_export import (
     export_tickets_excel
 )
 from django.http import HttpResponse
+
+logger = logging.getLogger(__name__)
 
 
 def _is_htmx(request):
@@ -610,16 +614,16 @@ def changer_statut_demande(request, pk):
                 message=f'Votre demande de {demande.quantite}x {demande.equipement.nom} a été {label}.',
                 url=reverse('logistics:demandes'),
             )
-    except Exception as e:
-        print(f"Erreur notification: {e}")
+    except Exception:
+        logger.exception("Erreur lors de l'envoi de la notification de demande traitée")
 
     # Envoyer un email au formateur via SMTP
     if nouveau_statut in ('APPROVED', 'REJECTED', 'RETURNED'):
         try:
-            from django.core.mail import EmailMultiAlternatives
             from django.template.loader import render_to_string
             from django.utils import timezone
             from django.conf import settings
+            from accounts.tasks import envoyer_email_task
 
             site_url = request.build_absolute_uri('/').rstrip('/')
             formateur = demande.formateur
@@ -651,16 +655,16 @@ def changer_statut_demande(request, pk):
                 f"— EduTech"
             )
 
-            email = EmailMultiAlternatives(
+            # Envoi asynchrone via Celery pour ne pas bloquer la requête HTTP
+            envoyer_email_task.delay(
                 subject=sujet,
-                body=text_body,
+                text_content=text_body,
+                html_content=html_body,
                 from_email=settings.DEFAULT_FROM_EMAIL,
-                to=[formateur.email],
+                to_list=[formateur.email],
             )
-            email.attach_alternative(html_body, 'text/html')
-            email.send(fail_silently=False)
-        except Exception as e:
-            print(f"Erreur envoi email demande: {e}")
+        except Exception:
+            logger.exception("Erreur lors de l'envoi de l'email de demande traitée")
 
     if getattr(request.user, 'is_staff', False) or getattr(request.user, 'role', '') == 'ADMIN':
         demandes = DemandeMateriel.objects.all()

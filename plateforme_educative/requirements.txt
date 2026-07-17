@@ -1,18 +1,12 @@
 # Core Django & Web
 Django>=5.0,<6.0
-djangorestframework>=3.15.0
-djangorestframework-simplejwt>=5.3.0
-django-cors-headers>=4.3.0
-python-dotenv>=1.0.0
-asgiref>=3.7.0
-daphne>=4.0.0
 whitenoise[brotli]>=6.6.0
+gunicorn>=21.2.0
 
 # Database
 mysqlclient>=2.2.0
 
 # AI, LLM & RAG (Langchain & Langgraph)
-langchain>=0.1.0
 langchain-core>=0.1.0
 langchain-groq>=0.0.1
 langchain-openai>=0.0.8
@@ -20,8 +14,6 @@ langgraph>=0.0.25
 chromadb>=0.4.22
 onnxruntime>=1.14.1
 tokenizers>=0.13.3
-PyPDF2>=3.0.0
-beautifulsoup4>=4.12.0
 pdfplumber>=0.11.0
 
 # Task Queue (Async Processing)
@@ -29,12 +21,5 @@ celery>=5.3.0
 redis>=5.0.0
 
 # Utilities
-argon2-cffi>=23.0.0
-bcrypt>=4.1.0
-PyJWT>=2.8.0
-requests>=2.31.0
 pillow>=10.2.0
-
-
-# Extra
 openpyxl>=3.1.0

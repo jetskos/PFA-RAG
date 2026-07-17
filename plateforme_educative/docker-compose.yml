@@ -7,7 +7,7 @@ services:
     restart: always
     environment:
       MYSQL_DATABASE: ${DB_NAME:-rag_platforme1}
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-jatski}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD doit être défini dans .env}
     ports:
       - "3308:3306"
     volumes:
@@ -37,7 +37,6 @@ services:
       - DB_HOST=db
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
-      - DJANGO_DEBUG=True
     env_file:
       - .env.docker
     depends_on:

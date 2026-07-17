@@ -8,7 +8,11 @@ from django.core import mail
 Utilisateur = get_user_model()
 from accounts.models import Notification
 
-@override_settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
+@override_settings(
+    EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend',
+    CELERY_TASK_ALWAYS_EAGER=True,
+    CELERY_TASK_EAGER_PROPAGATES=True,
+)
 class TemporaryPasswordTests(TestCase):
     def setUp(self):
         self.email = "test_user@example.com"
@@ -81,7 +85,7 @@ class TemporaryPasswordTests(TestCase):
         # Should render the login page with errors
         self.assertEqual(response.status_code, 200)
         self.assertNotIn('_auth_user_id', self.client.session)
-        self.assertFormError(response, 'form', None, "Ce mot de passe temporaire a expiré (validité de 10 minutes). Veuillez effectuer une nouvelle demande.")
+        self.assertFormError(response.context['form'], None, "Ce mot de passe temporaire a expiré (validité de 10 minutes). Veuillez effectuer une nouvelle demande.")
 
     def test_change_password_clears_flags(self):
         """Test that changing password clears the temporary password flags."""

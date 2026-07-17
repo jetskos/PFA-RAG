@@ -1,0 +1,21 @@
+# Secrets & configuration locale
+.env
+.env.docker
+.vscode/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Django
+staticfiles/
+media/
+db.sqlite3
+*.log
+
+# Données IA locales
+chroma_db/
+bm25_index/
