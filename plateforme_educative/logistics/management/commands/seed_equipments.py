@@ -1,5 +1,5 @@
-from django.core.management.base import BaseCommand
 from logistics.models import Equipment
+from django.core.management.base import BaseCommand
 
 class Command(BaseCommand):
     help = 'Génère la base de données démo pour les équipements IoT'
