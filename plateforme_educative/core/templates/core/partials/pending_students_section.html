@@ -91,9 +91,9 @@
         background-repeat: no-repeat; background-position: right 10px center; background-size: 14px;
         padding: 8px 32px 8px 12px;
         border-radius: 8px;
-        border: 1.5px solid var(--border-light, #e2e8f0);
+        border: 1.5px solid var(--border-light, #E5E0D3);
         background-color: var(--bg-surface, #fff);
-        color: var(--text-primary, #0f172a);
+        color: var(--text-primary, #14110D);
         font-size: 0.85rem; font-weight: 600;
         font-family: inherit;
         outline: none;
@@ -172,13 +172,13 @@
         left: 1rem;
         top: 50%;
         transform: translateY(-50%);
-        color: #64748b;
+        color: #847B67;
     }
     .control-search input {
         width: 100%;
         padding: 0.75rem 1rem 0.75rem 2.5rem;
         border-radius: 10px;
-        border: 1px solid #cbd5e1;
+        border: 1px solid #D2CBB8;
         background: #ffffff;
         font-size: 0.95rem;
         transition: all 0.2s;
@@ -235,7 +235,7 @@
                     <div class="pending-details-col">
                         <h4 class="pending-email-text">
                             {% if row.user.first_name and row.user.last_name %}
-                                {{ row.user.first_name }} {{ row.user.last_name }} <span style="font-size: 0.8rem; color: #64748b; font-weight: normal;">({{ row.user.email }})</span>
+                                {{ row.user.first_name }} {{ row.user.last_name }} <span style="font-size: 0.8rem; color: #847B67; font-weight: normal;">({{ row.user.email }})</span>
                             {% else %}
                                 {{ row.user.email }}
                             {% endif %}
@@ -283,7 +283,7 @@
             {% if pending_students.has_previous %}
             <button class="btn btn-ghost" hx-get="{% url 'dashboard_admin_structure' %}?tab=students&page={{ pending_students.previous_page_number }}" hx-target="#dashboard-structure" hx-include="[name='q'], [name='status']">Précédent</button>
             {% endif %}
-            <span style="padding: 0.5rem 1rem; background: #e2e8f0; border-radius: 8px; font-weight: 600; color: #475569;">Page {{ pending_students.number }} sur {{ pending_students.paginator.num_pages }}</span>
+            <span style="padding: 0.5rem 1rem; background: #E5E0D3; border-radius: 8px; font-weight: 600; color: #57503F;">Page {{ pending_students.number }} sur {{ pending_students.paginator.num_pages }}</span>
             {% if pending_students.has_next %}
             <button class="btn btn-ghost" hx-get="{% url 'dashboard_admin_structure' %}?tab=students&page={{ pending_students.next_page_number }}" hx-target="#dashboard-structure" hx-include="[name='q'], [name='status']">Suivant</button>
             {% endif %}

@@ -1,24 +1,24 @@
 <div class="modal-backdrop" style="position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9999; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(4px);">
     <div class="modal-content" style="background:#fff; border-radius:16px; width:90%; max-width:500px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); overflow:hidden; animation:modalIn 0.3s cubic-bezier(0.16,1,0.3,1);">
-        <div style="padding:1.5rem; border-bottom:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
-            <h3 style="margin:0; font-size:1.25rem; font-weight:800; color:#0f172a; display:flex; align-items:center; gap:8px;">
+        <div style="padding:1.5rem; border-bottom:1px solid #E5E0D3; display:flex; justify-content:space-between; align-items:center;">
+            <h3 style="margin:0; font-size:1.25rem; font-weight:800; color:#14110D; display:flex; align-items:center; gap:8px;">
                 <i class="ti ti-alert-triangle" style="color:#ef4444;"></i> Signaler une panne
             </h3>
-            <button onclick="this.closest('.modal-backdrop').remove()" style="background:none; border:none; font-size:1.5rem; color:#94a3b8; cursor:pointer;">&times;</button>
+            <button onclick="this.closest('.modal-backdrop').remove()" style="background:none; border:none; font-size:1.5rem; color:#A79D87; cursor:pointer;">&times;</button>
         </div>
         <div style="padding:1.5rem;">
-            <p style="font-size:0.9rem; color:#64748b; margin-top:0; margin-bottom:1.5rem;">
+            <p style="font-size:0.9rem; color:#847B67; margin-top:0; margin-bottom:1.5rem;">
                 Vous signalez un problème pour l'équipement <strong>{{ demande.equipement.nom }}</strong> emprunté pour l'atelier <strong>{{ demande.atelier_cible.titre }}</strong>.
             </p>
             <form hx-post="{% url 'logistics:creer_ticket_formateur' demande.id %}" hx-target="this" hx-swap="outerHTML">
                 {% csrf_token %}
                 <div style="margin-bottom:1rem;">
-                    <label style="display:block; font-size:0.85rem; font-weight:700; color:#334155; margin-bottom:0.5rem;">Titre du problème</label>
-                    <input type="text" name="titre" required style="width:100%; padding:0.75rem; border:1px solid #cbd5e1; border-radius:8px; font-family:inherit; font-size:0.95rem; outline:none;" placeholder="Ex: Ne s'allume plus">
+                    <label style="display:block; font-size:0.85rem; font-weight:700; color:#3A342A; margin-bottom:0.5rem;">Titre du problème</label>
+                    <input type="text" name="titre" required style="width:100%; padding:0.75rem; border:1px solid #D2CBB8; border-radius:8px; font-family:inherit; font-size:0.95rem; outline:none;" placeholder="Ex: Ne s'allume plus">
                 </div>
                 <div style="margin-bottom:1.5rem;">
-                    <label style="display:block; font-size:0.85rem; font-weight:700; color:#334155; margin-bottom:0.5rem;">Description détaillée</label>
-                    <textarea name="description" required rows="4" style="width:100%; padding:0.75rem; border:1px solid #cbd5e1; border-radius:8px; font-family:inherit; font-size:0.95rem; outline:none; resize:vertical;" placeholder="Décrivez les circonstances de la panne..."></textarea>
+                    <label style="display:block; font-size:0.85rem; font-weight:700; color:#3A342A; margin-bottom:0.5rem;">Description détaillée</label>
+                    <textarea name="description" required rows="4" style="width:100%; padding:0.75rem; border:1px solid #D2CBB8; border-radius:8px; font-family:inherit; font-size:0.95rem; outline:none; resize:vertical;" placeholder="Décrivez les circonstances de la panne..."></textarea>
                 </div>
                 <div style="display:flex; gap:1rem; justify-content:flex-end;">
                     <button type="button" onclick="this.closest('.modal-backdrop').remove()" class="btn-fmt btn-fmt-outline">Annuler</button>

@@ -19,7 +19,7 @@
         justify-content: space-between;
         align-items: center;
         gap: 2rem;
-        background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #1a3a2a 100%);
+        background: linear-gradient(135deg, #120D08 0%, #203a43 50%, #1a3a2a 100%);
         box-shadow: 0 20px 60px -10px rgba(13, 148, 136, 0.3);
     }
     .formateur-hero::before {
@@ -169,7 +169,7 @@
         border-radius: 12px 12px 0 0;
         font-weight: 700;
         font-size: 0.9rem;
-        color: var(--text-muted, #64748b);
+        color: var(--text-muted, #847B67);
         cursor: pointer;
         border: none;
         background: transparent;
@@ -197,8 +197,8 @@
         border-radius: 999px;
         font-size: 0.7rem;
         font-weight: 800;
-        background: var(--bg-surface-alt, #f1f5f9);
-        color: var(--text-muted, #64748b);
+        background: var(--bg-surface-alt, #F1EDE3);
+        color: var(--text-muted, #847B67);
     }
     .tab-item.active .tab-badge {
         background: #0D9488;
@@ -242,7 +242,7 @@
     .fc-cover {
         position: relative;
         height: 170px;
-        background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+        background: linear-gradient(135deg, #120D08, #203a43, #2c5364);
         overflow: hidden;
         display: flex;
         align-items: flex-end;
@@ -284,7 +284,7 @@
     }
     .fc-badge-niveau {
         background: rgba(255,255,255,0.95);
-        color: #0f172a;
+        color: #14110D;
         font-size: 0.68rem;
         font-weight: 800;
         padding: 3px 10px;
@@ -321,7 +321,7 @@
     .fc-title {
         font-size: 1.05rem;
         font-weight: 800;
-        color: var(--text-primary, #0f172a);
+        color: var(--text-primary, #14110D);
         line-height: 1.3;
         margin: 0;
     }
@@ -336,13 +336,13 @@
         align-items: center;
         gap: 5px;
         font-size: 0.8rem;
-        color: var(--text-muted, #64748b);
+        color: var(--text-muted, #847B67);
         font-weight: 500;
     }
     .fc-info-item i { font-size: 0.95rem; }
 
     .fc-progress-bar-wrap {
-        background: var(--bg-surface-alt, #f1f5f9);
+        background: var(--bg-surface-alt, #F1EDE3);
         border-radius: 999px;
         height: 4px;
         overflow: hidden;
@@ -360,8 +360,8 @@
         gap: 0.5rem;
         align-items: center;
         padding: 0.9rem 1.35rem;
-        border-top: 1px solid var(--border-light, #f1f5f9);
-        background: var(--bg-surface-alt, #f8fafc);
+        border-top: 1px solid var(--border-light, #F1EDE3);
+        background: var(--bg-surface-alt, #FAF8F3);
     }
     .fc-btn-manage {
         flex: 1;
@@ -388,8 +388,8 @@
         justify-content: center;
         width: 36px; height: 36px;
         border-radius: 8px;
-        border: 1.5px solid var(--border-default, #cbd5e1);
-        color: var(--text-secondary, #475569);
+        border: 1.5px solid var(--border-default, #D2CBB8);
+        color: var(--text-secondary, #57503F);
         background: var(--bg-surface, white);
         text-decoration: none;
         transition: all 0.2s;
@@ -458,14 +458,14 @@
     .devoir-title {
         font-weight: 700;
         font-size: 0.95rem;
-        color: var(--text-primary, #0f172a);
+        color: var(--text-primary, #14110D);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
     }
     .devoir-meta {
         font-size: 0.8rem;
-        color: var(--text-muted, #64748b);
+        color: var(--text-muted, #847B67);
         margin-top: 2px;
         display: flex;
         gap: 0.75rem;
@@ -499,13 +499,13 @@
     .devoir-stat-num {
         font-size: 1.15rem;
         font-weight: 800;
-        color: var(--text-primary, #0f172a);
+        color: var(--text-primary, #14110D);
         line-height: 1;
     }
     .devoir-stat-label {
         font-size: 0.65rem;
         font-weight: 600;
-        color: var(--text-muted, #64748b);
+        color: var(--text-muted, #847B67);
         text-transform: uppercase;
         letter-spacing: 0.05em;
     }
@@ -562,7 +562,7 @@
         padding: 4rem 2rem;
         border: 2px dashed var(--border-light, #e8edf3);
         border-radius: 20px;
-        background: var(--bg-surface-alt, #f8fafc);
+        background: var(--bg-surface-alt, #FAF8F3);
         grid-column: 1 / -1;
         text-align: center;
     }
@@ -577,11 +577,11 @@
     .ef-empty h3 {
         font-size: 1.15rem;
         font-weight: 800;
-        color: var(--text-primary, #0f172a);
+        color: var(--text-primary, #14110D);
         margin: 0;
     }
     .ef-empty p {
-        color: var(--text-muted, #64748b);
+        color: var(--text-muted, #847B67);
         font-size: 0.9rem;
         margin: 0;
         max-width: 340px;
@@ -681,7 +681,7 @@
                         </div>
                     </div>
                     {% if cours.resume %}
-                        <p style="font-size: 0.83rem; color: var(--text-muted, #64748b); line-height: 1.55; margin: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                        <p style="font-size: 0.83rem; color: var(--text-muted, #847B67); line-height: 1.55; margin: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
                             {{ cours.resume }}
                         </p>
                     {% endif %}

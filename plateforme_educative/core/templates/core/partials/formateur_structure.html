@@ -45,11 +45,11 @@
         margin: 0 0 0.25rem 0;
         font-size: 1.15rem;
         font-weight: 700;
-        color: #0f172a;
+        color: #14110D;
     }
     .c-meta {
         font-size: 0.85rem;
-        color: #64748b;
+        color: #847B67;
         display: flex;
         align-items: center;
         gap: 1rem;
@@ -63,7 +63,7 @@
         text-transform: uppercase;
     }
     .status-publie { background: #dcfce7; color: #166534; }
-    .status-brouillon { background: #f1f5f9; color: #475569; }
+    .status-brouillon { background: #F1EDE3; color: #57503F; }
     
     .c-row-right {
         display: flex;
@@ -73,7 +73,7 @@
     
     .empty-state-modern {
         background: rgba(255, 255, 255, 0.5);
-        border: 2px dashed #cbd5e1;
+        border: 2px dashed #D2CBB8;
         border-radius: 16px;
         padding: 4rem 2rem;
         text-align: center;
@@ -89,11 +89,11 @@
     }
     .empty-state-modern h3 {
         font-size: 1.25rem;
-        color: #1e293b;
+        color: #241D16;
         margin: 0 0 0.5rem 0;
     }
     .empty-state-modern p {
-        color: #64748b;
+        color: #847B67;
         max-width: 400px;
         margin: 0 auto 1.5rem auto;
     }
@@ -123,10 +123,10 @@
                     </div>
                 </div>
                 <div class="c-row-right">
-                    <a href="{% url 'apprentissage:gerer_cours' cours.id %}" class="btn-primary" style="padding: 0.5rem 1rem; background: #0f172a; color: white;">
+                    <a href="{% url 'apprentissage:gerer_cours' cours.id %}" class="btn-primary" style="padding: 0.5rem 1rem; background: #14110D; color: white;">
                         Gérer le contenu
                     </a>
-                    <a href="{% url 'apprentissage:editer_cours' cours.id %}" class="btn-outline" style="padding: 0.5rem; color: #64748b;">
+                    <a href="{% url 'apprentissage:editer_cours' cours.id %}" class="btn-outline" style="padding: 0.5rem; color: #847B67;">
                         <i class="ti ti-dots-vertical"></i>
                     </a>
                 </div>
@@ -134,7 +134,7 @@
         {% endfor %}
     {% else %}
         <div class="empty-state-modern">
-            <i class="ti ti-notebook" style="font-size: 4rem; color: #94a3b8; margin-bottom: 1rem;"></i>
+            <i class="ti ti-notebook" style="font-size: 4rem; color: #A79D87; margin-bottom: 1rem;"></i>
             <h3>Votre espace de travail est prêt</h3>
             <p>Vous n'avez pas encore de cours. Créez votre premier module pour commencer à enseigner.</p>
             <a href="{% url 'apprentissage:nouveau_cours' %}" class="btn-primary" style="background: #3b82f6;">
@@ -146,7 +146,7 @@
 
 <!-- SECTION DEMANDES LOGISTIQUES -->
 <div style="margin-top: 3rem;">
-    <h2 style="font-size: 1.5rem; font-weight: 800; color: #0f172a; margin-bottom: 1.5rem;">Suivi Logistique</h2>
+    <h2 style="font-size: 1.5rem; font-weight: 800; color: #14110D; margin-bottom: 1.5rem;">Suivi Logistique</h2>
     
     <style>
         .logistics-tracking-grid {
@@ -159,7 +159,7 @@
             border-radius: 16px;
             padding: 1.5rem;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.025);
-            border: 1px solid #e2e8f0;
+            border: 1px solid #E5E0D3;
             transition: transform 0.2s, box-shadow 0.2s;
             position: relative;
             overflow: hidden;
@@ -190,12 +190,12 @@
         .tracking-equipement {
             font-size: 1.1rem;
             font-weight: 700;
-            color: #1e293b;
+            color: #241D16;
             margin: 0;
         }
         .tracking-date {
             font-size: 0.8rem;
-            color: #64748b;
+            color: #847B67;
         }
         
         .tracking-badge {
@@ -219,7 +219,7 @@
             gap: 1.5rem;
             margin-top: 1rem;
             padding-top: 1rem;
-            border-top: 1px dashed #e2e8f0;
+            border-top: 1px dashed #E5E0D3;
         }
         .detail-item {
             display: flex;
@@ -228,14 +228,14 @@
         }
         .detail-label {
             font-size: 0.75rem;
-            color: #64748b;
+            color: #847B67;
             text-transform: uppercase;
             letter-spacing: 0.05em;
             font-weight: 600;
         }
         .detail-value {
             font-size: 0.95rem;
-            color: #334155;
+            color: #3A342A;
             font-weight: 600;
             display: flex;
             align-items: center;
@@ -272,7 +272,7 @@
                                 {% if demande.atelier_cible %}
                                     <i class="ti ti-building-community"></i> {{ demande.atelier_cible.titre }}
                                 {% else %}
-                                    <span style="color: #94a3b8; font-style: italic;">Non spécifié</span>
+                                    <span style="color: #A79D87; font-style: italic;">Non spécifié</span>
                                 {% endif %}
                             </span>
                         </div>
@@ -282,7 +282,7 @@
         </div>
     {% else %}
         <div class="empty-state-modern" style="padding: 2rem;">
-            <i class="ti ti-box-off" style="font-size: 3rem; color: #94a3b8; margin-bottom: 1rem;"></i>
+            <i class="ti ti-box-off" style="font-size: 3rem; color: #A79D87; margin-bottom: 1rem;"></i>
             <h3 style="font-size: 1.1rem;">Aucune demande de matériel</h3>
             <p style="margin-bottom: 0;">Vous n'avez effectué aucune demande logistique pour le moment.</p>
         </div>

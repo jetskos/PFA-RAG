@@ -58,7 +58,7 @@
     position: absolute;
     bottom: -80px; right: 10%;
     width: 350px; height: 350px;
-    background: radial-gradient(circle, rgba(59,130,246,0.12) 0%, transparent 65%);
+    background: radial-gradient(circle, rgba(166,80,31,0.14) 0%, transparent 65%);
     border-radius: 50%;
     filter: blur(50px);
     pointer-events: none;
@@ -95,7 +95,7 @@
     letter-spacing: -0.04em; color: #ffffff; margin-bottom: 1.5rem;
 }
 .hero-h1 .grad {
-    background: linear-gradient(90deg, #2dd4bf 0%, #60a5fa 60%, #a78bfa 100%);
+    background: linear-gradient(90deg, #2dd4bf 0%, #e0904f 100%);
     -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
 }
 
@@ -108,12 +108,12 @@
 .btn-hero-primary {
     display: inline-flex; align-items: center; gap: 8px;
     padding: 0.9rem 2rem;
-    background: linear-gradient(135deg, #0d9488, #0f766e);
+    background: linear-gradient(135deg, #A6501F, #C2712F);
     color: white; font-weight: 700; font-size: 1rem; border-radius: 12px;
     text-decoration: none; transition: all 0.2s;
-    box-shadow: 0 8px 24px rgba(13,148,136,0.4);
+    box-shadow: 0 8px 24px rgba(166,80,31,0.4);
 }
-.btn-hero-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(13,148,136,0.55); filter: brightness(1.08); }
+.btn-hero-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(166,80,31,0.5); filter: brightness(1.06); }
 .btn-hero-ghost {
     display: inline-flex; align-items: center; gap: 8px;
     padding: 0.9rem 2rem;
@@ -236,8 +236,8 @@
     width: 52px; height: 52px; border-radius: 14px;
     display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
 }
-.pillar-feat h3 { font-size: 1.1rem; font-weight: 800; color: var(--text-primary, #0f172a); }
-.pillar-feat p  { font-size: 0.87rem; color: var(--text-muted, #64748b); line-height: 1.65; }
+.pillar-feat h3 { font-size: 1.1rem; font-weight: 800; color: var(--text-primary, #14110D); }
+.pillar-feat p  { font-size: 0.87rem; color: var(--text-muted, #847B67); line-height: 1.65; }
 
 /* ── BENTO / IoT SHOWCASE ── */
 .home-bento {
@@ -341,28 +341,28 @@
 }
 @media (max-width: 768px) { .home-roles { grid-template-columns: 1fr; } }
 .role-card { padding: 2.5rem; border-radius: 24px; position: relative; overflow: hidden; }
-.role-card--student  { background: linear-gradient(135deg, #eff6ff, #dbeafe); border: 1.5px solid #bfdbfe; }
-.role-card--formateur{ background: linear-gradient(135deg, #f0fdfa, #ccfbf1); border: 1.5px solid #99f6e4; }
+.role-card--student  { background: linear-gradient(135deg, #f0fdfa, #ccfbf1); border: 1.5px solid #99f6e4; }
+.role-card--formateur{ background: linear-gradient(135deg, #fdf3ea, #fbeee3); border: 1.5px solid #eccbae; }
 .role-badge {
     display: inline-flex; align-items: center; gap: 6px;
     font-size: 0.68rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase;
     padding: 4px 12px; border-radius: 999px; margin-bottom: 1rem;
 }
-.badge--student   { background: rgba(59,130,246,0.12); color: #1d4ed8; border: 1px solid rgba(59,130,246,0.2); }
-.badge--formateur { background: rgba(13,148,136,0.12); color: #0f766e; border: 1px solid rgba(13,148,136,0.2); }
-.role-card h3 { font-size: 1.5rem; font-weight: 900; color: #0f172a; margin-bottom: 0.75rem; letter-spacing: -0.03em; }
-.role-card > p { font-size: 0.9rem; color: #475569; line-height: 1.65; margin-bottom: 1.5rem; }
+.badge--student   { background: rgba(13,148,136,0.12); color: #0f766e; border: 1px solid rgba(13,148,136,0.2); }
+.badge--formateur { background: rgba(166,80,31,0.12); color: #7E3B15; border: 1px solid rgba(166,80,31,0.2); }
+.role-card h3 { font-size: 1.5rem; font-weight: 900; color: #14110D; margin-bottom: 0.75rem; letter-spacing: -0.03em; }
+.role-card > p { font-size: 0.9rem; color: #57503F; line-height: 1.65; margin-bottom: 1.5rem; }
 .role-list { list-style: none; padding: 0; margin: 0 0 2rem; display: flex; flex-direction: column; gap: 0.6rem; }
-.role-list li { display: flex; align-items: center; gap: 10px; font-size: 0.88rem; font-weight: 600; color: #334155; }
+.role-list li { display: flex; align-items: center; gap: 10px; font-size: 0.88rem; font-weight: 600; color: #3A342A; }
 .role-list li::before { content: '✓'; font-weight: 900; color: #0d9488; }
 .btn-role {
     display: inline-flex; align-items: center; gap: 8px;
     padding: 0.75rem 1.75rem; border-radius: 10px;
     font-weight: 700; font-size: 0.9rem; text-decoration: none; transition: all 0.2s;
 }
-.btn-role--blue { background: #3b82f6; color: white; box-shadow: 0 4px 12px rgba(59,130,246,0.3); }
+.btn-role--blue { background: #0d9488; color: white; box-shadow: 0 4px 12px rgba(13,148,136,0.3); }
 .btn-role--blue:hover  { filter: brightness(1.1); transform: translateY(-1px); }
-.btn-role--teal { background: #0d9488; color: white; box-shadow: 0 4px 12px rgba(13,148,136,0.3); }
+.btn-role--teal { background: #A6501F; color: white; box-shadow: 0 4px 12px rgba(166,80,31,0.3); }
 .btn-role--teal:hover  { filter: brightness(1.1); transform: translateY(-1px); }
 
 /* ── CTA BOTTOM ── */
@@ -516,7 +516,7 @@
     <section class="home-bento">
         <div style="margin-bottom: 2.5rem;">
             <p class="section-eyebrow">Modules IoT & Composants</p>
-            <h2 class="section-title-big" style="color: var(--text-primary,#0f172a);">Le matériel devient<br>un support d'apprentissage.</h2>
+            <h2 class="section-title-big" style="color: var(--text-primary,#14110D);">Le matériel devient<br>un support d'apprentissage.</h2>
         </div>
         <div class="bento-grid">
             <!-- Main image — IoT components -->

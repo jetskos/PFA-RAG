@@ -18,7 +18,7 @@
         justify-content: space-between;
         align-items: center;
         gap: 1.5rem;
-        background: linear-gradient(135deg, #0f2027 0%, #1a3a2a 50%, #203a43 100%);
+        background: linear-gradient(135deg, #120D08 0%, #1a3a2a 50%, #203a43 100%);
         box-shadow: 0 16px 48px -8px rgba(13,148,136,0.25);
     }
     .fn-hero::before {
@@ -64,15 +64,15 @@
         margin-bottom: 2rem;
         flex-wrap: wrap;
     }
-    .fn-filter-label { font-size: 0.82rem; font-weight: 700; color: var(--text-muted, #64748b); text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap; }
+    .fn-filter-label { font-size: 0.82rem; font-weight: 700; color: var(--text-muted, #847B67); text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap; }
     .fn-filter-select {
         flex: 1; min-width: 200px;
         appearance: none; -webkit-appearance: none;
         padding: 0.55rem 2.5rem 0.55rem 1rem;
-        border: 1.5px solid var(--border-default, #cbd5e1);
+        border: 1.5px solid var(--border-default, #D2CBB8);
         border-radius: 10px;
         background: var(--bg-surface, #fff) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24'%3E%3Cpath fill='%2394a3b8' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E") no-repeat right 0.75rem center;
-        color: var(--text-primary, #0f172a);
+        color: var(--text-primary, #14110D);
         font-size: 0.9rem; font-weight: 600; cursor: pointer;
         transition: border-color 0.2s;
     }
@@ -89,7 +89,7 @@
     }
     .classe-section-title {
         font-size: 1rem; font-weight: 800;
-        color: var(--text-primary, #0f172a);
+        color: var(--text-primary, #14110D);
         display: flex; align-items: center; gap: 0.5rem;
         margin: 0;
     }
@@ -121,7 +121,7 @@
         transition: background 0.15s;
         flex-wrap: wrap;
     }
-    .student-header:hover { background: var(--bg-surface-alt, #f8fafc); }
+    .student-header:hover { background: var(--bg-surface-alt, #FAF8F3); }
 
     .student-avatar {
         width: 44px; height: 44px; border-radius: 50%;
@@ -135,8 +135,8 @@
         background: linear-gradient(135deg, #ef4444, #dc2626);
     }
 
-    .student-name { font-weight: 800; font-size: 0.95rem; color: var(--text-primary, #0f172a); display: flex; align-items: center; gap: 0.5rem; }
-    .student-email { font-size: 0.8rem; color: var(--text-muted, #64748b); margin-top: 1px; display: flex; align-items: center; gap: 4px; }
+    .student-name { font-weight: 800; font-size: 0.95rem; color: var(--text-primary, #14110D); display: flex; align-items: center; gap: 0.5rem; }
+    .student-email { font-size: 0.8rem; color: var(--text-muted, #847B67); margin-top: 1px; display: flex; align-items: center; gap: 4px; }
     .alert-pill {
         font-size: 0.68rem; font-weight: 800; text-transform: uppercase;
         background: #ef4444; color: white;
@@ -151,7 +151,7 @@
         display: flex; align-items: center; gap: 1.5rem;
     }
     .score-block { text-align: right; }
-    .score-label { font-size: 0.68rem; font-weight: 700; color: var(--text-muted, #64748b); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 2px; }
+    .score-label { font-size: 0.68rem; font-weight: 700; color: var(--text-muted, #847B67); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 2px; }
     .score-value {
         font-size: 1.1rem; font-weight: 900;
         padding: 2px 10px; border-radius: 8px;
@@ -160,21 +160,21 @@
     .score-value.green { background: rgba(16,185,129,0.1); color: #10b981; }
     .score-value.orange { background: rgba(245,158,11,0.1); color: #f59e0b; }
     .score-value.red { background: rgba(239,68,68,0.1); color: #ef4444; }
-    .score-value.muted { background: var(--bg-surface-alt, #f1f5f9); color: var(--text-muted, #94a3b8); font-size: 0.85rem; font-style: italic; }
+    .score-value.muted { background: var(--bg-surface-alt, #F1EDE3); color: var(--text-muted, #A79D87); font-size: 0.85rem; font-style: italic; }
 
     .toggle-chevron {
         width: 32px; height: 32px;
         border-radius: 8px;
-        background: var(--bg-surface-alt, #f1f5f9);
+        background: var(--bg-surface-alt, #F1EDE3);
         display: flex; align-items: center; justify-content: center;
-        color: var(--text-muted, #94a3b8);
+        color: var(--text-muted, #A79D87);
         flex-shrink: 0;
         transition: all 0.3s;
     }
     .toggle-chevron.open { transform: rotate(180deg); background: rgba(13,148,136,0.1); color: #0D9488; }
 
     /* Details panel */
-    .student-details { background: var(--bg-surface-alt, #f8fafc); border-top: 1px solid var(--border-light, #e8edf3); }
+    .student-details { background: var(--bg-surface-alt, #FAF8F3); border-top: 1px solid var(--border-light, #e8edf3); }
     .cours-detail-section { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-light, #e8edf3); }
     .cours-detail-section:last-child { border-bottom: none; }
 
@@ -184,18 +184,18 @@
     }
     .cours-detail-title {
         font-weight: 700; font-size: 0.9rem;
-        color: var(--text-primary, #0f172a);
+        color: var(--text-primary, #14110D);
         display: flex; align-items: center; gap: 6px;
     }
-    .cours-detail-title i { color: var(--text-muted, #94a3b8); }
+    .cours-detail-title i { color: var(--text-muted, #A79D87); }
     .cours-detail-stats { display: flex; gap: 1.25rem; align-items: center; flex-wrap: wrap; }
     .cours-stat-mini {
         display: flex; flex-direction: column;
         align-items: flex-end;
         gap: 1px;
     }
-    .cours-stat-mini span:first-child { font-size: 0.68rem; color: var(--text-muted, #94a3b8); text-transform: uppercase; font-weight: 600; }
-    .cours-stat-mini span:last-child { font-size: 0.9rem; font-weight: 800; color: var(--text-primary, #0f172a); }
+    .cours-stat-mini span:first-child { font-size: 0.68rem; color: var(--text-muted, #A79D87); text-transform: uppercase; font-weight: 600; }
+    .cours-stat-mini span:last-child { font-size: 0.9rem; font-weight: 800; color: var(--text-primary, #14110D); }
 
     /* Chapter chips */
     .chapitres-grid { display: flex; flex-wrap: wrap; gap: 0.4rem; }
@@ -207,7 +207,7 @@
     }
     .ch-chip.success { background: rgba(16,185,129,0.1); color: #10b981; border: 1px solid rgba(16,185,129,0.25); }
     .ch-chip.fail { background: rgba(239,68,68,0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.2); }
-    .ch-chip.none { background: var(--bg-surface, #fff); color: var(--text-muted, #94a3b8); border: 1px solid var(--border-light, #e8edf3); }
+    .ch-chip.none { background: var(--bg-surface, #fff); color: var(--text-muted, #A79D87); border: 1px solid var(--border-light, #e8edf3); }
 
     /* Classe group */
     .classe-group { margin-bottom: 2.5rem; }
@@ -217,12 +217,12 @@
         text-align: center; padding: 4rem 2rem;
         border: 2px dashed var(--border-light, #e8edf3);
         border-radius: 20px;
-        background: var(--bg-surface-alt, #f8fafc);
+        background: var(--bg-surface-alt, #FAF8F3);
         margin-top: 1.5rem;
     }
-    .fn-empty i { font-size: 3rem; color: var(--text-muted, #94a3b8); margin-bottom: 1rem; display: block; }
-    .fn-empty h3 { font-weight: 800; color: var(--text-primary, #0f172a); margin: 0 0 0.5rem; }
-    .fn-empty p { color: var(--text-muted, #64748b); font-size: 0.9rem; margin: 0; }
+    .fn-empty i { font-size: 3rem; color: var(--text-muted, #A79D87); margin-bottom: 1rem; display: block; }
+    .fn-empty h3 { font-weight: 800; color: var(--text-primary, #14110D); margin: 0 0 0.5rem; }
+    .fn-empty p { color: var(--text-muted, #847B67); font-size: 0.9rem; margin: 0; }
 
     /* Button helpers */
     .btn-hero-primary {
@@ -343,7 +343,7 @@
                                 {{ cours_data.cours.titre }}
                                 {% for cid, moy in moyenne_classe_par_cours.items %}
                                     {% if cid == cours_data.cours.id|stringformat:"s" and moy is not None %}
-                                    <span style="font-size: 0.72rem; font-weight: 600; color: var(--text-muted, #94a3b8); background: var(--bg-surface-alt, #f1f5f9); padding: 2px 8px; border-radius: 6px; border: 1px solid var(--border-light, #e8edf3); margin-left: 4px;">
+                                    <span style="font-size: 0.72rem; font-weight: 600; color: var(--text-muted, #A79D87); background: var(--bg-surface-alt, #F1EDE3); padding: 2px 8px; border-radius: 6px; border: 1px solid var(--border-light, #e8edf3); margin-left: 4px;">
                                         Moy. classe : {{ moy }}/100
                                     </span>
                                     {% endif %}
@@ -367,7 +367,7 @@
 
                         {% if cours_data.chapitres %}
                         <div>
-                            <div style="font-size: 0.72rem; font-weight: 700; color: var(--text-muted, #94a3b8); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.5rem;">
+                            <div style="font-size: 0.72rem; font-weight: 700; color: var(--text-muted, #A79D87); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.5rem;">
                                 <i class="ti ti-list-check"></i> Chapitres
                             </div>
                             <div class="chapitres-grid">
@@ -388,8 +388,8 @@
 
                     <div style="padding: 0.6rem; text-align: center; background: var(--bg-surface, #fff); border-top: 1px solid var(--border-light, #e8edf3);">
                         <button onclick="toggleStudent('{{ etudiant_data.etudiant.id }}')"
-                                style="background: transparent; border: none; font-size: 0.8rem; font-weight: 600; color: var(--text-muted, #64748b); cursor: pointer; display: inline-flex; align-items: center; gap: 5px; padding: 0.3rem 0.75rem; border-radius: 6px; transition: background 0.15s;"
-                                onmouseover="this.style.background='var(--bg-surface-alt, #f1f5f9)'" onmouseout="this.style.background='transparent'">
+                                style="background: transparent; border: none; font-size: 0.8rem; font-weight: 600; color: var(--text-muted, #847B67); cursor: pointer; display: inline-flex; align-items: center; gap: 5px; padding: 0.3rem 0.75rem; border-radius: 6px; transition: background 0.15s;"
+                                onmouseover="this.style.background='var(--bg-surface-alt, #F1EDE3)'" onmouseout="this.style.background='transparent'">
                             <i class="ti ti-chevron-up"></i> Réduire
                         </button>
                     </div>

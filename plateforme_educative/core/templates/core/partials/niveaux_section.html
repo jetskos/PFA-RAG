@@ -33,14 +33,14 @@
         left: 1rem;
         top: 50%;
         transform: translateY(-50%);
-        color: #64748b;
+        color: #847B67;
     }
     
     .control-search input {
         width: 100%;
         padding: 0.75rem 1rem 0.75rem 2.5rem;
         border-radius: 10px;
-        border: 1px solid #cbd5e1;
+        border: 1px solid #D2CBB8;
         background: #ffffff;
         font-size: 0.95rem;
         transition: all 0.2s;
@@ -55,10 +55,10 @@
     .control-filter select {
         padding: 0.75rem 2.5rem 0.75rem 1rem;
         border-radius: 10px;
-        border: 1px solid #cbd5e1;
+        border: 1px solid #D2CBB8;
         background: #ffffff;
         font-size: 0.95rem;
-        color: #334155;
+        color: #3A342A;
         font-weight: 500;
         cursor: pointer;
         appearance: none;
@@ -102,7 +102,7 @@
         padding: 1.25rem 1.5rem;
         background: rgba(255, 255, 255, 0.8);
         backdrop-filter: blur(12px);
-        border: 1px solid rgba(226, 232, 240, 0.8);
+        border: 1px solid rgba(229, 224, 211, 0.8);
         border-left: 4px solid #0f766e;
         border-radius: 16px;
         gap: 1.5rem;
@@ -114,11 +114,11 @@
     .level-item-row:hover {
         transform: translateY(-2px);
         box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
-        border-color: #cbd5e1;
+        border-color: #D2CBB8;
     }
 
     .level-item-row.is-inactive {
-        border-left-color: #94a3b8;
+        border-left-color: #A79D87;
         opacity: 0.8;
     }
 
@@ -137,8 +137,8 @@
     }
 
     .level-item-row.is-inactive .level-avatar-circle {
-        background: #f1f5f9;
-        color: #64748b;
+        background: #F1EDE3;
+        color: #847B67;
     }
 
     .level-details-col {
@@ -151,13 +151,13 @@
     .level-title-text {
         font-size: 1.1rem;
         font-weight: 700;
-        color: #0f172a;
+        color: #14110D;
         margin: 0;
     }
 
     .level-meta-row {
         font-size: 0.85rem;
-        color: #64748b;
+        color: #847B67;
         display: flex;
         align-items: center;
         gap: 12px;
@@ -181,8 +181,8 @@
     }
 
     .status-indicator-badge.inactive {
-        background: #f1f5f9;
-        color: #64748b;
+        background: #F1EDE3;
+        color: #847B67;
     }
 
     .classes-count-col {
@@ -191,7 +191,7 @@
         gap: 8px;
         font-size: 0.9rem;
         font-weight: 600;
-        color: #475569;
+        color: #57503F;
         width: 120px;
         flex-shrink: 0;
     }
@@ -267,13 +267,13 @@
                                 <div class="level-meta-row">
                                     <span><i class="ti ti-sort-ascending" aria-hidden="true"></i> Ordre: {{ niveau.ordre }}</span>
                                     <span>&bull;</span>
-                                    <span>Code unique: <code style="background: #f1f5f9; padding: 2px 6px; border-radius: 4px; color: #475569;">{{ niveau.code }}</code></span>
+                                    <span>Code unique: <code style="background: #F1EDE3; padding: 2px 6px; border-radius: 4px; color: #57503F;">{{ niveau.code }}</code></span>
                                 </div>
                             </div>
 
                             <!-- Classes counter badge -->
                             <div class="classes-count-col">
-                                <i class="ti ti-users-group" aria-hidden="true" style="color: #94a3b8;"></i>
+                                <i class="ti ti-users-group" aria-hidden="true" style="color: #A79D87;"></i>
                                 <span>{{ niveau.classes.count }} classe{{ niveau.classes.count|pluralize }}</span>
                             </div>
 
@@ -298,9 +298,9 @@
                     {% endfor %}
                 </div>
             {% else %}
-                <div style="text-align:center; padding: 4rem 2rem; background: #f8fafc; border-radius: 16px; border: 1px dashed #cbd5e1;">
-                    <i class="ti ti-layers-linked" style="font-size: 3rem; color: #94a3b8; margin-bottom: 1rem; display: block;"></i>
-                    <p style="margin:0; color: #475569; font-size: 1.1rem; font-weight: 600;">Aucun niveau configuré dans la plateforme.</p>
+                <div style="text-align:center; padding: 4rem 2rem; background: #FAF8F3; border-radius: 16px; border: 1px dashed #D2CBB8;">
+                    <i class="ti ti-layers-linked" style="font-size: 3rem; color: #A79D87; margin-bottom: 1rem; display: block;"></i>
+                    <p style="margin:0; color: #57503F; font-size: 1.1rem; font-weight: 600;">Aucun niveau configuré dans la plateforme.</p>
                 </div>
             {% endif %}
         </div>
@@ -310,7 +310,7 @@
             {% if niveaux.has_previous %}
             <button class="btn btn-ghost" hx-get="{% url 'dashboard_admin_structure' %}?tab=niveaux&page={{ niveaux.previous_page_number }}" hx-target="#dashboard-structure" hx-include="[name='q'], [name='status']">Précédent</button>
             {% endif %}
-            <span style="padding: 0.5rem 1rem; background: #e2e8f0; border-radius: 8px; font-weight: 600; color: #475569;">Page {{ niveaux.number }} sur {{ niveaux.paginator.num_pages }}</span>
+            <span style="padding: 0.5rem 1rem; background: #E5E0D3; border-radius: 8px; font-weight: 600; color: #57503F;">Page {{ niveaux.number }} sur {{ niveaux.paginator.num_pages }}</span>
             {% if niveaux.has_next %}
             <button class="btn btn-ghost" hx-get="{% url 'dashboard_admin_structure' %}?tab=niveaux&page={{ niveaux.next_page_number }}" hx-target="#dashboard-structure" hx-include="[name='q'], [name='status']">Suivant</button>
             {% endif %}

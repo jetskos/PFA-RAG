@@ -17,7 +17,7 @@
     padding: 1.75rem 2.5rem; margin: 1.5rem 0 2rem;
     display: flex; justify-content: space-between; align-items: center;
     gap: 2rem; flex-wrap: wrap;
-    background: linear-gradient(135deg, #0f2027 0%, #203a43 55%, #1a3a2a 100%);
+    background: linear-gradient(135deg, #120D08 0%, #203a43 55%, #1a3a2a 100%);
     box-shadow: 0 16px 48px -8px rgba(13,148,136,0.28);
   }
   .logi-hero::before {
@@ -57,20 +57,20 @@
   /* ── FORM CARD ── */
   .logi-form-card {
     background: var(--bg-surface, #fff);
-    border: 1px solid var(--border-light, #e2e8f0);
+    border: 1px solid var(--border-light, #E5E0D3);
     border-radius: 20px;
     box-shadow: 0 8px 32px rgba(0,0,0,0.08);
     overflow: hidden;
   }
   .logi-form-card-header {
     padding: 1.25rem 1.75rem;
-    border-bottom: 1px solid var(--border-light, #e2e8f0);
-    background: var(--bg-body, #f8fafc);
+    border-bottom: 1px solid var(--border-light, #E5E0D3);
+    background: var(--bg-body, #FAF8F3);
     display: flex; align-items: center; gap: 0.5rem;
   }
   .logi-form-card-header h2 {
     font-size: 0.95rem; font-weight: 800;
-    color: var(--text-primary, #0f172a); margin: 0;
+    color: var(--text-primary, #14110D); margin: 0;
     display: flex; align-items: center; gap: 0.4rem;
   }
   .logi-form-card-header i { color: #0D9488; }
@@ -82,20 +82,20 @@
   .logi-label {
     display: flex; align-items: center; gap: 0.4rem;
     font-size: 0.72rem; font-weight: 800; letter-spacing: 0.06em;
-    text-transform: uppercase; color: var(--text-secondary, #334155);
+    text-transform: uppercase; color: var(--text-secondary, #3A342A);
     margin-bottom: 0.5rem;
   }
-  .logi-label i { font-size: 1rem; color: var(--text-muted, #64748b); }
+  .logi-label i { font-size: 1rem; color: var(--text-muted, #847B67); }
 
   .logi-field input,
   .logi-field textarea,
   .logi-field select {
     width: 100%; padding: 0.75rem 1rem;
-    border: 1.5px solid var(--border-default, #cbd5e1);
+    border: 1.5px solid var(--border-default, #D2CBB8);
     border-radius: 10px;
     background: var(--bg-surface, #fff);
     font-size: 0.9rem; font-family: inherit;
-    color: var(--text-primary, #0f172a);
+    color: var(--text-primary, #14110D);
     transition: border-color 0.2s, box-shadow 0.2s;
     outline: none; appearance: none;
   }
@@ -122,9 +122,9 @@
 
   /* ── FORM FOOTER ── */
   .logi-form-footer {
-    padding: 1.25rem 1.75rem; border-top: 1px solid var(--border-light, #e2e8f0);
+    padding: 1.25rem 1.75rem; border-top: 1px solid var(--border-light, #E5E0D3);
     display: flex; gap: 0.75rem; align-items: center;
-    background: var(--bg-body, #f8fafc); flex-wrap: wrap;
+    background: var(--bg-body, #FAF8F3); flex-wrap: wrap;
   }
   .btn-submit {
     display: inline-flex; align-items: center; gap: 0.4rem;
@@ -139,12 +139,12 @@
   .btn-cancel {
     display: inline-flex; align-items: center; gap: 0.4rem;
     padding: 0.65rem 1.1rem;
-    background: transparent; color: var(--text-muted, #64748b);
-    border: 1.5px solid var(--border-default, #cbd5e1); border-radius: 10px;
+    background: transparent; color: var(--text-muted, #847B67);
+    border: 1.5px solid var(--border-default, #D2CBB8); border-radius: 10px;
     font-size: 0.9rem; font-weight: 600; font-family: inherit;
     cursor: pointer; text-decoration: none; transition: all 0.2s;
   }
-  .btn-cancel:hover { border-color: var(--text-secondary, #334155); color: var(--text-primary, #0f172a); }
+  .btn-cancel:hover { border-color: var(--text-secondary, #3A342A); color: var(--text-primary, #14110D); }
 
   /* ── 2-COL GRID ── */
   .logi-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
@@ -153,16 +153,16 @@
   /* ── TOM SELECT OVERRIDES ── */
   .ts-control {
     padding: 0.75rem 1rem !important;
-    border: 1.5px solid var(--border-default, #cbd5e1) !important;
+    border: 1.5px solid var(--border-default, #D2CBB8) !important;
     border-radius: 10px !important;
     background: var(--bg-surface, #fff) !important;
     font-size: 0.9rem !important; font-family: 'Inter', system-ui, sans-serif !important;
-    color: var(--text-primary, #0f172a) !important;
+    color: var(--text-primary, #14110D) !important;
     transition: border-color 0.2s, box-shadow 0.2s !important; box-shadow: none !important;
   }
   .ts-control.focus { border-color: #0D9488 !important; box-shadow: 0 0 0 3px rgba(13,148,136,0.12) !important; }
   .ts-dropdown {
-    border: 1px solid var(--border-light, #e2e8f0) !important; border-radius: 10px !important;
+    border: 1px solid var(--border-light, #E5E0D3) !important; border-radius: 10px !important;
     box-shadow: 0 8px 24px rgba(0,0,0,0.08) !important;
     font-family: 'Inter', system-ui, sans-serif !important; font-size: 0.9rem !important;
   }

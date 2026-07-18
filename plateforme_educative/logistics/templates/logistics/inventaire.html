@@ -23,7 +23,7 @@
     align-items: center;
     gap: 2rem;
     flex-wrap: wrap;
-    background: linear-gradient(135deg, #0f2027 0%, #203a43 55%, #1a3a2a 100%);
+    background: linear-gradient(135deg, #120D08 0%, #203a43 55%, #1a3a2a 100%);
     box-shadow: 0 16px 48px -8px rgba(13, 148, 136, 0.28);
   }
   .logi-hero::before {
@@ -116,7 +116,7 @@
 
   .stat-tile {
     background: var(--bg-surface, #fff);
-    border: 1px solid var(--border-light, #e2e8f0);
+    border: 1px solid var(--border-light, #E5E0D3);
     border-radius: 16px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     padding: 1.25rem 1.4rem;
@@ -130,27 +130,27 @@
     display: flex; align-items: center; justify-content: center; font-size: 1.15rem; flex-shrink: 0;
   }
   .stat-tile-trend { font-size: 0.72rem; font-weight: 700; padding: 2px 8px; border-radius: 999px; }
-  .stat-tile-val { font-size: 2rem; font-weight: 900; color: var(--text-primary, #0f172a); line-height: 1; letter-spacing: -0.03em; }
-  .stat-tile-lbl { font-size: 0.78rem; font-weight: 600; color: var(--text-muted, #64748b); }
-  .stat-tile-bar { height: 3px; border-radius: 999px; background: var(--border-light, #e2e8f0); overflow: hidden; }
+  .stat-tile-val { font-size: 2rem; font-weight: 900; color: var(--text-primary, #14110D); line-height: 1; letter-spacing: -0.03em; }
+  .stat-tile-lbl { font-size: 0.78rem; font-weight: 600; color: var(--text-muted, #847B67); }
+  .stat-tile-bar { height: 3px; border-radius: 999px; background: var(--border-light, #E5E0D3); overflow: hidden; }
   .stat-tile-bar-fill { height: 100%; border-radius: 999px; }
 
   /* ── PANEL ── */
   .logi-panel {
     background: var(--bg-surface, #fff);
-    border: 1px solid var(--border-light, #e2e8f0);
+    border: 1px solid var(--border-light, #E5E0D3);
     border-radius: 16px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     overflow: hidden;
   }
   .logi-panel-head {
     padding: 1rem 1.25rem;
-    border-bottom: 1px solid var(--border-light, #e2e8f0);
+    border-bottom: 1px solid var(--border-light, #E5E0D3);
     display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
-    background: var(--bg-body, #f8fafc);
+    background: var(--bg-body, #FAF8F3);
   }
   .logi-panel-title {
-    font-size: 0.875rem; font-weight: 800; color: var(--text-primary, #0f172a);
+    font-size: 0.875rem; font-weight: 800; color: var(--text-primary, #14110D);
     display: flex; align-items: center; gap: 0.4rem;
   }
   .logi-panel-title i { color: #0D9488; font-size: 1rem; }
@@ -163,15 +163,15 @@
   /* ── FILTER PILLS ── */
   .logi-filter-row {
     padding: 0.75rem 1.25rem;
-    border-bottom: 1px solid var(--border-light, #e2e8f0);
+    border-bottom: 1px solid var(--border-light, #E5E0D3);
     display: flex; gap: 0.35rem; flex-wrap: wrap;
     justify-content: space-between; align-items: center;
   }
   .logi-fpill {
     padding: 0.3rem 0.85rem; border-radius: 999px;
-    border: 1.5px solid var(--border-light, #e2e8f0);
+    border: 1.5px solid var(--border-light, #E5E0D3);
     background: transparent; font-size: 0.75rem; font-weight: 700;
-    color: var(--text-muted, #64748b); cursor: pointer; font-family: inherit;
+    color: var(--text-muted, #847B67); cursor: pointer; font-family: inherit;
     transition: all 0.15s; display: flex; align-items: center; gap: 0.3rem;
   }
   .logi-fpill:hover { border-color: #0D9488; color: #0D9488; background: rgba(13,148,136,0.05); }
@@ -186,7 +186,7 @@
 
   /* ── EQUIPMENT CARD ── */
   .eq-item {
-    border-radius: 12px; border: 1.5px solid var(--border-light, #e2e8f0);
+    border-radius: 12px; border: 1.5px solid var(--border-light, #E5E0D3);
     background: var(--bg-surface, #fff); padding: 0.85rem 1rem;
     cursor: pointer; transition: all 0.2s; display: flex; gap: 0.75rem; align-items: center;
   }
@@ -194,11 +194,11 @@
   .eq-item-indicator { width: 3px; border-radius: 2px; align-self: stretch; flex-shrink: 0; min-height: 36px; }
   .ind-disponible { background: #10b981; }
   .ind-en_panne   { background: #ef4444; }
-  .ind-default    { background: #94a3b8; }
+  .ind-default    { background: #A79D87; }
 
   .eq-item-body { flex: 1; min-width: 0; }
-  .eq-item-name { font-size: 0.875rem; font-weight: 700; color: var(--text-primary, #0f172a); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .eq-item-serial { font-size: 0.75rem; color: var(--text-muted, #64748b); font-weight: 500; margin-top: 0.15rem; }
+  .eq-item-name { font-size: 0.875rem; font-weight: 700; color: var(--text-primary, #14110D); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .eq-item-serial { font-size: 0.75rem; color: var(--text-muted, #847B67); font-weight: 500; margin-top: 0.15rem; }
   .eq-item-status {
     font-size: 0.7rem; font-weight: 700; padding: 2px 7px; border-radius: 999px;
     margin-top: 0.35rem; display: inline-flex; align-items: center; gap: 0.25rem; width: fit-content;
@@ -208,8 +208,8 @@
 
   .eq-item-actions { display: flex; flex-direction: column; gap: 0.3rem; flex-shrink: 0; }
   .eq-action {
-    padding: 0.25rem 0.6rem; border-radius: 6px; border: 1px solid var(--border-light, #e2e8f0);
-    background: var(--bg-body, #f8fafc); font-size: 0.7rem; font-weight: 700;
+    padding: 0.25rem 0.6rem; border-radius: 6px; border: 1px solid var(--border-light, #E5E0D3);
+    background: var(--bg-body, #FAF8F3); font-size: 0.7rem; font-weight: 700;
     cursor: pointer; font-family: inherit; transition: all 0.15s; white-space: nowrap;
   }
   .eq-action.mod { color: #0D9488; }
@@ -219,23 +219,23 @@
 
   /* Legend */
   .logi-legend {
-    padding: 0.65rem 1.25rem; border-top: 1px solid var(--border-light, #e2e8f0);
-    background: var(--bg-body, #f8fafc); display: flex; gap: 1rem; flex-wrap: wrap;
+    padding: 0.65rem 1.25rem; border-top: 1px solid var(--border-light, #E5E0D3);
+    background: var(--bg-body, #FAF8F3); display: flex; gap: 1rem; flex-wrap: wrap;
   }
-  .leg-item { display: flex; align-items: center; gap: 0.35rem; font-size: 0.72rem; font-weight: 600; color: var(--text-muted, #64748b); }
+  .leg-item { display: flex; align-items: center; gap: 0.35rem; font-size: 0.72rem; font-weight: 600; color: var(--text-muted, #847B67); }
   .leg-dot  { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 
   /* ── FILTER SEARCH ── */
   .logi-filter-search { position: relative; width: 280px; flex-shrink: 0; }
   .logi-filter-search i {
     position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
-    color: var(--text-muted, #64748b); font-size: 1.05rem; pointer-events: none;
+    color: var(--text-muted, #847B67); font-size: 1.05rem; pointer-events: none;
   }
   .logi-filter-search input[type="text"] {
     width: 100%; padding: 0.55rem 1rem 0.55rem 2.6rem;
-    border: 1.5px solid var(--border-light, #e2e8f0);
+    border: 1.5px solid var(--border-light, #E5E0D3);
     border-radius: 999px; background: var(--bg-surface, #fff);
-    font-size: 0.85rem; color: var(--text-primary, #0f172a);
+    font-size: 0.85rem; color: var(--text-primary, #14110D);
     transition: all 0.2s; outline: none; font-family: inherit;
     box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
   }

@@ -10,7 +10,7 @@
         }
         
         .btn-add-equipement {
-            background: #0f172a;
+            background: #14110D;
             color: #ffffff;
             border: none;
             padding: 0.75rem 1.25rem;
@@ -20,18 +20,18 @@
             align-items: center;
             gap: 8px;
             transition: all 0.2s;
-            box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.1);
+            box-shadow: 0 4px 6px -1px rgba(20, 17, 13, 0.1);
         }
         .btn-add-equipement:hover {
-            background: #1e293b;
+            background: #241D16;
             transform: translateY(-1px);
-            box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.15);
+            box-shadow: 0 10px 15px -3px rgba(20, 17, 13, 0.15);
         }
 
         .catalogue-table-wrapper {
             background: #ffffff;
             border-radius: 16px;
-            border: 1px solid #e2e8f0;
+            border: 1px solid #E5E0D3;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
             overflow: hidden;
         }
@@ -42,27 +42,27 @@
         }
         
         .premium-data-table th {
-            background: #f8fafc;
+            background: #FAF8F3;
             padding: 1rem 1.5rem;
             font-size: 0.75rem;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            color: #64748b;
-            border-bottom: 1px solid #e2e8f0;
+            color: #847B67;
+            border-bottom: 1px solid #E5E0D3;
             text-align: left;
         }
 
         .premium-data-table td {
             padding: 1.25rem 1.5rem;
             vertical-align: middle;
-            border-bottom: 1px solid #e2e8f0;
-            color: #334155;
+            border-bottom: 1px solid #E5E0D3;
+            color: #3A342A;
             transition: background 0.2s;
         }
 
         .premium-data-table tbody tr:hover td {
-            background: #f8fafc;
+            background: #FAF8F3;
         }
 
         .premium-data-table tbody tr:last-child td {
@@ -73,7 +73,7 @@
         .stock-progress-container {
             width: 100%;
             max-width: 150px;
-            background: #f1f5f9;
+            background: #F1EDE3;
             border-radius: 9999px;
             height: 8px;
             overflow: hidden;
@@ -105,20 +105,20 @@
         .catalogue-empty-icon {
             width: 80px;
             height: 80px;
-            background: #f8fafc;
+            background: #FAF8F3;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0 auto 1.5rem auto;
-            border: 2px dashed #cbd5e1;
+            border: 2px dashed #D2CBB8;
         }
     </style>
 
     <div class="catalogue-header">
         <div>
-            <h2 style="margin:0; font-size:1.5rem; font-weight:800; color:#0f172a;">Catalogue Matériel</h2>
-            <p style="margin:0.25rem 0 0; color:#64748b;">Gérez l'inventaire complet, les stocks et les alertes GMAO.</p>
+            <h2 style="margin:0; font-size:1.5rem; font-weight:800; color:#14110D;">Catalogue Matériel</h2>
+            <p style="margin:0.25rem 0 0; color:#847B67;">Gérez l'inventaire complet, les stocks et les alertes GMAO.</p>
         </div>
         
         <button class="btn-add-equipement"
@@ -150,10 +150,10 @@
                             <td colspan="5">
                                 <div class="catalogue-empty">
                                     <div class="catalogue-empty-icon">
-                                        <i class="ti ti-box" style="font-size: 2.5rem; color: #94a3b8;"></i>
+                                        <i class="ti ti-box" style="font-size: 2.5rem; color: #A79D87;"></i>
                                     </div>
-                                    <h3 style="font-size: 1.25rem; font-weight: 700; color: #1e293b; margin: 0 0 0.5rem 0;">Catalogue vide</h3>
-                                    <p style="color: #64748b; margin: 0; max-width: 400px; margin: 0 auto;">Commencez à ajouter du matériel pour permettre aux formateurs de faire des demandes.</p>
+                                    <h3 style="font-size: 1.25rem; font-weight: 700; color: #241D16; margin: 0 0 0.5rem 0;">Catalogue vide</h3>
+                                    <p style="color: #847B67; margin: 0; max-width: 400px; margin: 0 auto;">Commencez à ajouter du matériel pour permettre aux formateurs de faire des demandes.</p>
                                 </div>
                             </td>
                         </tr>
@@ -167,7 +167,7 @@
             {% if equipements.has_previous %}
             <button class="btn btn-ghost" hx-get="{% url 'dashboard_admin_structure' %}?tab=equipements&page={{ equipements.previous_page_number }}" hx-target="#dashboard-structure" hx-include="[name='q'], [name='status']">Précédent</button>
             {% endif %}
-            <span style="padding: 0.5rem 1rem; background: #e2e8f0; border-radius: 8px; font-weight: 600; color: #475569;">Page {{ equipements.number }} sur {{ equipements.paginator.num_pages }}</span>
+            <span style="padding: 0.5rem 1rem; background: #E5E0D3; border-radius: 8px; font-weight: 600; color: #57503F;">Page {{ equipements.number }} sur {{ equipements.paginator.num_pages }}</span>
             {% if equipements.has_next %}
             <button class="btn btn-ghost" hx-get="{% url 'dashboard_admin_structure' %}?tab=equipements&page={{ equipements.next_page_number }}" hx-target="#dashboard-structure" hx-include="[name='q'], [name='status']">Suivant</button>
             {% endif %}

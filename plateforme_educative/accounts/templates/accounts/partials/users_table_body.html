@@ -34,19 +34,19 @@
                         <span style="display:inline-block; padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; 
                             {% if user.role == 'ADMIN' %}background: #fee2e2; color: #b91c1c;
                             {% elif user.role == 'FORMATEUR' %}background: #fef3c7; color: #b45309;
-                            {% else %}background: #e0e7ff; color: #4338ca;{% endif %}">
+                            {% else %}background: #FBEEE3; color: #7E3B15;{% endif %}">
                             {{ user.get_role_display }}
                         </span>
                     </td>
                     <td>
                         {% if user.role == 'ELEVE' %}
                             {% if user.classe %}
-                                <span style="font-weight: 600; color: #475569;"><i class="ti ti-layers-linked"></i> {{ user.classe.niveau.nom|default:user.classe.nom }}</span>
+                                <span style="font-weight: 600; color: #57503F;"><i class="ti ti-layers-linked"></i> {{ user.classe.niveau.nom|default:user.classe.nom }}</span>
                             {% else %}
-                                <span style="color: #94a3b8; font-size: 0.85rem;"><i>Aucun niveau</i></span>
+                                <span style="color: #A79D87; font-size: 0.85rem;"><i>Aucun niveau</i></span>
                             {% endif %}
                         {% else %}
-                            <span style="color: #cbd5e1;">-</span>
+                            <span style="color: #D2CBB8;">-</span>
                         {% endif %}
                     </td>
                     <td style="text-align:right;">
@@ -68,9 +68,9 @@
             {% empty %}
                 <tr>
                     <td colspan="4" style="text-align:center; padding: 3rem;">
-                        <i class="ti ti-users" style="font-size: 3rem; color: #cbd5e1; margin-bottom: 1rem; display: block;"></i>
-                        <h3 style="color: #475569; margin:0 0 0.5rem 0;">Aucun utilisateur trouvé</h3>
-                        <p style="color: #94a3b8; margin:0;">Modifiez vos filtres de recherche.</p>
+                        <i class="ti ti-users" style="font-size: 3rem; color: #D2CBB8; margin-bottom: 1rem; display: block;"></i>
+                        <h3 style="color: #57503F; margin:0 0 0.5rem 0;">Aucun utilisateur trouvé</h3>
+                        <p style="color: #A79D87; margin:0;">Modifiez vos filtres de recherche.</p>
                     </td>
                 </tr>
             {% endfor %}
@@ -82,7 +82,7 @@
         {% if users_page.has_previous %}
         <button class="btn btn-ghost" hx-get="{% url 'accounts:admin_dashboard' %}?page={{ users_page.previous_page_number }}" hx-target="#users-table-container" hx-include="[name='q'], [name='role']" hx-swap="outerHTML">Précédent</button>
         {% endif %}
-        <span style="padding: 0.5rem 1rem; background: #e2e8f0; border-radius: 8px; font-weight: 600; color: #475569;">Page {{ users_page.number }} sur {{ users_page.paginator.num_pages }}</span>
+        <span style="padding: 0.5rem 1rem; background: #E5E0D3; border-radius: 8px; font-weight: 600; color: #57503F;">Page {{ users_page.number }} sur {{ users_page.paginator.num_pages }}</span>
         {% if users_page.has_next %}
         <button class="btn btn-ghost" hx-get="{% url 'accounts:admin_dashboard' %}?page={{ users_page.next_page_number }}" hx-target="#users-table-container" hx-include="[name='q'], [name='role']" hx-swap="outerHTML">Suivant</button>
         {% endif %}

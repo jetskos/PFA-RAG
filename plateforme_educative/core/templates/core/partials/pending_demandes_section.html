@@ -18,13 +18,13 @@
             left: 1rem;
             top: 50%;
             transform: translateY(-50%);
-            color: #64748b;
+            color: #847B67;
         }
         .control-search input {
             width: 100%;
             padding: 0.75rem 1rem 0.75rem 2.5rem;
             border-radius: 12px;
-            border: 1px solid #e2e8f0;
+            border: 1px solid #E5E0D3;
             background: #ffffff;
             font-size: 0.95rem;
             transition: all 0.2s ease;
@@ -46,7 +46,7 @@
             background: #ffffff;
             border-radius: 16px;
             padding: 1.5rem;
-            border: 1px solid #e2e8f0;
+            border: 1px solid #E5E0D3;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
@@ -69,7 +69,7 @@
             gap: 12px;
             margin-bottom: 1.25rem;
             padding-bottom: 1rem;
-            border-bottom: 1px dashed #e2e8f0;
+            border-bottom: 1px dashed #E5E0D3;
         }
         
         .req-avatar {
@@ -88,7 +88,7 @@
         .req-item-title {
             font-size: 1.15rem;
             font-weight: 800;
-            color: #0f172a;
+            color: #14110D;
             margin: 0 0 0.5rem 0;
             line-height: 1.3;
         }
@@ -97,8 +97,8 @@
             display: inline-flex;
             align-items: center;
             gap: 4px;
-            background: #f1f5f9;
-            color: #475569;
+            background: #F1EDE3;
+            color: #57503F;
             padding: 4px 10px;
             border-radius: 8px;
             font-size: 0.85rem;
@@ -114,7 +114,7 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            color: #64748b;
+            color: #847B67;
             font-size: 0.85rem;
             margin-top: 0.75rem;
         }
@@ -158,8 +158,8 @@
 
     <div class="requests-header">
         <div>
-            <h2 style="margin:0; font-size:1.5rem; font-weight:800; color:#0f172a;">Demandes en attente</h2>
-            <p style="margin:0.25rem 0 0; color:#64748b;">Validez les besoins en matériel des formateurs pour leurs ateliers.</p>
+            <h2 style="margin:0; font-size:1.5rem; font-weight:800; color:#14110D;">Demandes en attente</h2>
+            <p style="margin:0.25rem 0 0; color:#847B67;">Validez les besoins en matériel des formateurs pour leurs ateliers.</p>
         </div>
         
         <div class="control-search">
@@ -181,8 +181,8 @@
                             {{ demande.formateur.first_name|first|default:demande.formateur.email|first|upper }}
                         </div>
                         <div>
-                            <div style="font-weight:700; color:#1e293b; font-size:0.95rem;">{{ demande.formateur.get_full_name|default:demande.formateur.email }}</div>
-                            <div style="font-size:0.75rem; color:#64748b;">Il y a {{ demande.date_creation|timesince }}</div>
+                            <div style="font-weight:700; color:#241D16; font-size:0.95rem;">{{ demande.formateur.get_full_name|default:demande.formateur.email }}</div>
+                            <div style="font-size:0.75rem; color:#847B67;">Il y a {{ demande.date_creation|timesince }}</div>
                         </div>
                     </div>
                     
@@ -235,19 +235,19 @@
             {% if pending_demandes.has_previous %}
             <button class="btn btn-ghost" hx-get="{% url 'dashboard_admin_structure' %}?tab=logistics&page={{ pending_demandes.previous_page_number }}" hx-target="#dashboard-structure" hx-include="[name='q'], [name='status']">Précédent</button>
             {% endif %}
-            <span style="padding: 0.5rem 1rem; background: #e2e8f0; border-radius: 8px; font-weight: 600; color: #475569;">Page {{ pending_demandes.number }} sur {{ pending_demandes.paginator.num_pages }}</span>
+            <span style="padding: 0.5rem 1rem; background: #E5E0D3; border-radius: 8px; font-weight: 600; color: #57503F;">Page {{ pending_demandes.number }} sur {{ pending_demandes.paginator.num_pages }}</span>
             {% if pending_demandes.has_next %}
             <button class="btn btn-ghost" hx-get="{% url 'dashboard_admin_structure' %}?tab=logistics&page={{ pending_demandes.next_page_number }}" hx-target="#dashboard-structure" hx-include="[name='q'], [name='status']">Suivant</button>
             {% endif %}
         </div>
         {% endif %}
     {% else %}
-        <div style="background: rgba(255,255,255,0.6); border: 2px dashed #cbd5e1; border-radius: 20px; padding: 4rem 2rem; text-align: center;">
-            <div style="width: 80px; height: 80px; background: #f1f5f9; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem auto;">
+        <div style="background: rgba(255,255,255,0.6); border: 2px dashed #D2CBB8; border-radius: 20px; padding: 4rem 2rem; text-align: center;">
+            <div style="width: 80px; height: 80px; background: #F1EDE3; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem auto;">
                 <i class="ti ti-check" style="font-size: 2.5rem; color: #10b981;"></i>
             </div>
-            <h3 style="font-size: 1.25rem; font-weight: 700; color: #1e293b; margin: 0 0 0.5rem 0;">Tout est à jour !</h3>
-            <p style="color: #64748b; margin: 0; max-width: 400px; margin: 0 auto;">Il n'y a aucune demande logistique en attente. Vous pouvez souffler.</p>
+            <h3 style="font-size: 1.25rem; font-weight: 700; color: #241D16; margin: 0 0 0.5rem 0;">Tout est à jour !</h3>
+            <p style="color: #847B67; margin: 0; max-width: 400px; margin: 0 auto;">Il n'y a aucune demande logistique en attente. Vous pouvez souffler.</p>
         </div>
     {% endif %}
 </section>

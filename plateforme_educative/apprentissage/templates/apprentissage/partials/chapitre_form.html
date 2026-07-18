@@ -9,10 +9,10 @@
         <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(13,148,136,0.1); color: #0D9488; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin: 0 auto 1rem;">
             <i class="ti ti-bookmark"></i>
         </div>
-        <h2 style="margin: 0; font-size: 1.4rem; font-weight: 800; color: var(--text-primary, #0f172a);">
+        <h2 style="margin: 0; font-size: 1.4rem; font-weight: 800; color: var(--text-primary, #14110D);">
             {% if form.instance.pk %}Modifier le chapitre{% else %}Ajouter un chapitre{% endif %}
         </h2>
-        <p style="margin: 0.25rem 0 0; font-size: 0.9rem; color: var(--text-muted, #64748b);">
+        <p style="margin: 0.25rem 0 0; font-size: 0.9rem; color: var(--text-muted, #847B67);">
             Organisez le contenu de votre cours.
         </p>
     </div>
@@ -28,7 +28,7 @@
     <div style="display: flex; flex-direction: column; gap: 1rem;">
         {% for field in form %}
             <div style="display: flex; flex-direction: column; gap: 0.4rem;">
-                <label for="{{ field.id_for_label }}" style="font-weight: 700; font-size: 0.88rem; color: var(--text-primary, #0f172a);">
+                <label for="{{ field.id_for_label }}" style="font-weight: 700; font-size: 0.88rem; color: var(--text-primary, #14110D);">
                     {{ field.label }}
                 </label>
                 {{ field }}
@@ -38,9 +38,9 @@
                         width: 100%;
                         padding: 0.65rem 1rem;
                         border-radius: 10px;
-                        border: 1.5px solid var(--border-default, #cbd5e1);
+                        border: 1.5px solid var(--border-default, #D2CBB8);
                         background: var(--bg-surface, #fff);
-                        color: var(--text-primary, #0f172a);
+                        color: var(--text-primary, #14110D);
                         font-family: inherit;
                         font-size: 0.9rem;
                         transition: all 0.2s;
@@ -61,7 +61,7 @@
                     {% endif %}
                 </style>
                 {% if field.help_text %}
-                    <span style="font-size: 0.75rem; color: var(--text-muted, #94a3b8);">{{ field.help_text }}</span>
+                    <span style="font-size: 0.75rem; color: var(--text-muted, #A79D87);">{{ field.help_text }}</span>
                 {% endif %}
                 {% if field.errors %}
                     <span style="color: #ef4444; font-size: 0.8rem; font-weight: 600; display: flex; align-items: center; gap: 4px;">
@@ -75,7 +75,7 @@
     <div style="margin-top: 2rem; display: flex; justify-content: flex-end; gap: 0.75rem;">
         <button type="button" 
                 onclick="document.getElementById('form-modal').style.display='none'"
-                style="padding: 0.6rem 1.2rem; border-radius: 10px; font-weight: 600; font-size: 0.9rem; background: var(--bg-surface-alt, #f1f5f9); border: 1px solid var(--border-default, #cbd5e1); color: var(--text-secondary, #475569); cursor: pointer; transition: all 0.2s;">
+                style="padding: 0.6rem 1.2rem; border-radius: 10px; font-weight: 600; font-size: 0.9rem; background: var(--bg-surface-alt, #F1EDE3); border: 1px solid var(--border-default, #D2CBB8); color: var(--text-secondary, #57503F); cursor: pointer; transition: all 0.2s;">
             Annuler
         </button>
         <button type="submit" 

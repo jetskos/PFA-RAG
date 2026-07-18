@@ -1,13 +1,13 @@
 <tr id="equipement-row-{{ equipement.id }}" style="transition: all 0.3s ease;">
     <td>
-        <div style="font-weight: 700; color: #0f172a; font-size: 1rem;">
+        <div style="font-weight: 700; color: #14110D; font-size: 1rem;">
             {{ equipement.nom }}
         </div>
-        <div style="font-size: 0.8rem; color: #64748b; font-family: monospace; margin-top: 4px;">
+        <div style="font-size: 0.8rem; color: #847B67; font-family: monospace; margin-top: 4px;">
             <i class="ti ti-barcode"></i> {{ equipement.reference }}
         </div>
         {% if equipement.note %}
-            <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 4px; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ equipement.note }}">
+            <div style="font-size: 0.75rem; color: #A79D87; margin-top: 4px; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ equipement.note }}">
                 <i class="ti ti-info-circle"></i> {{ equipement.note }}
             </div>
         {% endif %}
@@ -17,7 +17,7 @@
             <span style="color: {% if equipement.en_alerte and equipement.est_actif %}#ef4444{% else %}#10b981{% endif %};">
                 {{ equipement.stock_disponible }}
             </span>
-            <span style="color: #94a3b8;">/ {{ equipement.stock_total }}</span>
+            <span style="color: #A79D87;">/ {{ equipement.stock_total }}</span>
         </div>
         <div class="stock-progress-container">
             <!-- Calcule le pourcentage, limité à 100 -->
@@ -31,7 +31,7 @@
         {% endif %}
     </td>
     <td>
-        <div style="display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 8px; background: #f8fafc; border: 1px solid #e2e8f0; font-weight: 700; color: #64748b; font-size: 0.85rem;">
+        <div style="display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 8px; background: #FAF8F3; border: 1px solid #E5E0D3; font-weight: 700; color: #847B67; font-size: 0.85rem;">
             {{ equipement.seuil_alerte }}
         </div>
     </td>
@@ -41,16 +41,16 @@
                 <span style="width: 6px; height: 6px; border-radius: 50%; background: #10b981;"></span> Actif
             </span>
         {% else %}
-            <span style="background: #f1f5f9; color: #64748b; padding: 4px 10px; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;">
-                <span style="width: 6px; height: 6px; border-radius: 50%; background: #94a3b8;"></span> Archivé
+            <span style="background: #F1EDE3; color: #847B67; padding: 4px 10px; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;">
+                <span style="width: 6px; height: 6px; border-radius: 50%; background: #A79D87;"></span> Archivé
             </span>
         {% endif %}
     </td>
     <td style="text-align: right;">
         <div style="display: inline-flex; gap: 6px;">
-            <button style="width: 32px; height: 32px; border-radius: 8px; border: 1px solid #e2e8f0; background: #ffffff; color: #3b82f6; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;"
+            <button style="width: 32px; height: 32px; border-radius: 8px; border: 1px solid #E5E0D3; background: #ffffff; color: #3b82f6; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;"
                     onmouseover="this.style.background='#eff6ff'; this.style.borderColor='#bfdbfe';"
-                    onmouseout="this.style.background='#ffffff'; this.style.borderColor='#e2e8f0';"
+                    onmouseout="this.style.background='#ffffff'; this.style.borderColor='#E5E0D3';"
                     hx-get="{% url 'dashboard_admin_edit_equipement' equipement.id %}"
                     hx-target="#modal-container"
                     hx-trigger="click"

@@ -3,18 +3,18 @@
 
 {% block content %}
 <style>
-    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(20, 17, 13, 0.6); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
     .modal-content { background: var(--surface, #fff); padding: 2rem; border-radius: 16px; width: 100%; max-width: 500px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
 </style>
 
 <div class="page-shell" style="max-width: 1000px; margin: 0 auto; padding-top: 2rem;">
     <!-- Breadcrumb -->
-    <div style="font-size: 0.85rem; color: var(--text-muted, #64748b); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+    <div style="font-size: 0.85rem; color: var(--text-muted, #847B67); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
         <a href="{% url 'apprentissage:espace_formateur' %}" style="color: inherit; text-decoration: none; font-weight: 500;">Espace Formateur</a>
         <i class="ti ti-chevron-right" style="font-size: 0.75rem;"></i>
         <a href="{% url 'apprentissage:gerer_cours' chapitre.cours.id %}" style="color: inherit; text-decoration: none; font-weight: 500;">{{ chapitre.cours.titre }}</a>
         <i class="ti ti-chevron-right" style="font-size: 0.75rem;"></i>
-        <span style="color: var(--text-primary, #0f172a);">{{ chapitre.titre }}</span>
+        <span style="color: var(--text-primary, #14110D);">{{ chapitre.titre }}</span>
     </div>
 
     {% include 'apprentissage/partials/chapitre_detail.html' %}

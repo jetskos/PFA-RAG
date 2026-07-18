@@ -6,7 +6,7 @@
 <style>
     /* Hero Banner for Form */
     .form-hero {
-        background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f2027 100%);
+        background: linear-gradient(135deg, #14110D 0%, #241D16 50%, #120D08 100%);
         position: relative;
         border-radius: 20px;
         overflow: hidden;
@@ -25,7 +25,7 @@
     .form-hero::after {
         content: ''; position: absolute; bottom: -60px; left: 10%;
         width: 240px; height: 240px;
-        background: radial-gradient(circle, rgba(79,70,229,0.15) 0%, transparent 70%);
+        background: radial-gradient(circle, rgba(166,80,31,0.2) 0%, transparent 70%);
         border-radius: 50%; pointer-events: none;
     }
     .form-eyebrow {
@@ -51,7 +51,7 @@
     /* Form Container */
     .unified-form-card {
         background: var(--bg-surface, #ffffff);
-        border: 1px solid var(--border-light, #e2e8f0);
+        border: 1px solid var(--border-light, #E5E0D3);
         border-radius: 16px;
         padding: 2.5rem;
         box-shadow: 0 10px 25px rgba(0,0,0,0.05);
@@ -59,7 +59,7 @@
         margin: 0 auto 3rem;
     }
     [data-theme="dark"] .unified-form-card {
-        background: var(--bg-elevated, #1e293b);
+        background: var(--bg-elevated, #241D16);
         border-color: rgba(255,255,255,0.05);
     }
 
@@ -77,7 +77,7 @@
     }
     .unified-form-section-title::after {
         content: ''; flex: 1; height: 1px;
-        background: var(--border-light, #e2e8f0);
+        background: var(--border-light, #E5E0D3);
     }
     .unified-form-section-title:first-of-type {
         margin-top: 0.5rem;
@@ -106,7 +106,7 @@
         width: 100%;
         padding: 0.75rem 1rem;
         border-radius: 10px;
-        border: 1.5px solid var(--border-light, #e2e8f0);
+        border: 1.5px solid var(--border-light, #E5E0D3);
         font-family: inherit;
         font-size: 0.95rem;
         color: var(--text-primary);
@@ -125,7 +125,7 @@
     .unified-form-card textarea:focus {
         outline: none;
         border-color: var(--brand-primary);
-        box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.15);
+        box-shadow: 0 0 0 4px rgba(166, 80, 31, 0.15);
     }
     .unified-form-card input[type="checkbox"] {
         width: auto;
@@ -152,7 +152,7 @@
         gap: 1rem;
         justify-content: flex-end;
         align-items: center;
-        border-top: 1px solid var(--border-light, #e2e8f0);
+        border-top: 1px solid var(--border-light, #E5E0D3);
         padding-top: 1.75rem;
         margin-top: 1rem;
     }
@@ -162,7 +162,7 @@
     .btn-unified-ghost {
         padding: 0.75rem 1.5rem;
         border-radius: 10px;
-        border: 1.5px solid var(--border-light, #e2e8f0);
+        border: 1.5px solid var(--border-light, #E5E0D3);
         background: transparent;
         color: var(--text-secondary);
         font-weight: 700;
@@ -181,7 +181,7 @@
         padding: 0.75rem 2rem;
         border-radius: 10px;
         border: none;
-        background: linear-gradient(135deg, var(--brand-primary), #4338ca);
+        background: linear-gradient(135deg, var(--brand-primary), #7E3B15);
         color: #fff;
         font-weight: 700;
         font-size: 0.95rem;
@@ -190,11 +190,11 @@
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+        box-shadow: 0 4px 12px rgba(166, 80, 31, 0.25);
     }
     .btn-unified-submit:hover {
         transform: translateY(-2px);
-        box-shadow: 0 6px 16px rgba(79, 70, 229, 0.35);
+        box-shadow: 0 6px 16px rgba(166, 80, 31, 0.35);
         filter: brightness(1.05);
     }
     
@@ -235,7 +235,7 @@
                 </label>
                 {{ form.titre }}
                 {% if form.titre.help_text %}
-                    <span style="font-size: 0.8rem; color: var(--text-muted, #94a3b8);">{{ form.titre.help_text }}</span>
+                    <span style="font-size: 0.8rem; color: var(--text-muted, #A79D87);">{{ form.titre.help_text }}</span>
                 {% endif %}
                 {% for error in form.titre.errors %}
                     <span class="unified-form-error"><i class="ti ti-alert-triangle"></i> {{ error }}</span>
@@ -248,7 +248,7 @@
                 </label>
                 {{ form.description }}
                 {% if form.description.help_text %}
-                    <span style="font-size: 0.8rem; color: var(--text-muted, #94a3b8);">{{ form.description.help_text }}</span>
+                    <span style="font-size: 0.8rem; color: var(--text-muted, #A79D87);">{{ form.description.help_text }}</span>
                 {% endif %}
                 {% for error in form.description.errors %}
                     <span class="unified-form-error"><i class="ti ti-alert-triangle"></i> {{ error }}</span>
@@ -261,7 +261,7 @@
                 </label>
                 {{ form.type }}
                 {% if form.type.help_text %}
-                    <span style="font-size: 0.8rem; color: var(--text-muted, #94a3b8);">{{ form.type.help_text }}</span>
+                    <span style="font-size: 0.8rem; color: var(--text-muted, #A79D87);">{{ form.type.help_text }}</span>
                 {% endif %}
                 {% for error in form.type.errors %}
                     <span class="unified-form-error"><i class="ti ti-alert-triangle"></i> {{ error }}</span>
@@ -301,7 +301,7 @@
                     </label>
                     {{ form.cours }}
                     {% if form.cours.help_text %}
-                        <span style="font-size: 0.8rem; color: var(--text-muted, #94a3b8);">{{ form.cours.help_text }}</span>
+                        <span style="font-size: 0.8rem; color: var(--text-muted, #A79D87);">{{ form.cours.help_text }}</span>
                     {% endif %}
                     {% for error in form.cours.errors %}
                         <span class="unified-form-error"><i class="ti ti-alert-triangle"></i> {{ error }}</span>
@@ -314,7 +314,7 @@
                     </label>
                     {{ form.classe }}
                     {% if form.classe.help_text %}
-                        <span style="font-size: 0.8rem; color: var(--text-muted, #94a3b8);">{{ form.classe.help_text }}</span>
+                        <span style="font-size: 0.8rem; color: var(--text-muted, #A79D87);">{{ form.classe.help_text }}</span>
                     {% endif %}
                     {% for error in form.classe.errors %}
                         <span class="unified-form-error"><i class="ti ti-alert-triangle"></i> {{ error }}</span>

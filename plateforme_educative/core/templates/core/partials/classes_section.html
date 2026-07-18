@@ -33,14 +33,14 @@
         left: 1rem;
         top: 50%;
         transform: translateY(-50%);
-        color: #64748b;
+        color: #847B67;
     }
     
     .control-search input {
         width: 100%;
         padding: 0.75rem 1rem 0.75rem 2.5rem;
         border-radius: 10px;
-        border: 1px solid #cbd5e1;
+        border: 1px solid #D2CBB8;
         background: #ffffff;
         font-size: 0.95rem;
         transition: all 0.2s;
@@ -55,10 +55,10 @@
     .control-filter select {
         padding: 0.75rem 2.5rem 0.75rem 1rem;
         border-radius: 10px;
-        border: 1px solid #cbd5e1;
+        border: 1px solid #D2CBB8;
         background: #ffffff;
         font-size: 0.95rem;
-        color: #334155;
+        color: #3A342A;
         font-weight: 500;
         cursor: pointer;
         appearance: none;
@@ -102,7 +102,7 @@
         padding: 1.25rem 1.5rem;
         background: rgba(255, 255, 255, 0.8);
         backdrop-filter: blur(12px);
-        border: 1px solid rgba(226, 232, 240, 0.8);
+        border: 1px solid rgba(229, 224, 211, 0.8);
         border-left: 4px solid #3b82f6;
         border-radius: 16px;
         gap: 1.5rem;
@@ -114,11 +114,11 @@
     .class-item-row:hover {
         transform: translateY(-2px);
         box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
-        border-color: #cbd5e1;
+        border-color: #D2CBB8;
     }
 
     .class-item-row.is-inactive {
-        border-left-color: #94a3b8;
+        border-left-color: #A79D87;
         opacity: 0.8;
     }
 
@@ -137,8 +137,8 @@
     }
 
     .class-item-row.is-inactive .class-avatar-circle {
-        background: #f1f5f9;
-        color: #64748b;
+        background: #F1EDE3;
+        color: #847B67;
     }
 
     .class-details-col {
@@ -151,13 +151,13 @@
     .class-title-text {
         font-size: 1.1rem;
         font-weight: 700;
-        color: #0f172a;
+        color: #14110D;
         margin: 0;
     }
 
     .class-meta-row {
         font-size: 0.85rem;
-        color: #64748b;
+        color: #847B67;
         display: flex;
         align-items: center;
         gap: 12px;
@@ -181,8 +181,8 @@
     }
 
     .status-indicator-badge.inactive {
-        background: #f1f5f9;
-        color: #64748b;
+        background: #F1EDE3;
+        color: #847B67;
     }
 
     /* Progress bar styling */
@@ -196,7 +196,7 @@
 
     .progress-bar-container {
         height: 8px;
-        background: #e2e8f0;
+        background: #E5E0D3;
         border-radius: 999px;
         overflow: hidden;
     }
@@ -211,7 +211,7 @@
     .progress-metrics-label {
         font-size: 0.8rem;
         font-weight: 700;
-        color: #475569;
+        color: #57503F;
         display: flex;
         justify-content: space-between;
     }
@@ -309,7 +309,7 @@
                                 <div class="class-meta-row">
                                     <span><i class="ti ti-calendar" aria-hidden="true"></i> {{ classe.annee_scolaire }}</span>
                                     <span>&bull;</span>
-                                    <span>Niveau: <code style="background: #f1f5f9; padding: 2px 6px; border-radius: 4px; color: #475569;">{{ classe.niveau.code }}</code></span>
+                                    <span>Niveau: <code style="background: #F1EDE3; padding: 2px 6px; border-radius: 4px; color: #57503F;">{{ classe.niveau.code }}</code></span>
                                 </div>
                             </div>
 
@@ -349,9 +349,9 @@
                     {% endfor %}
                 </div>
             {% else %}
-                <div style="text-align:center; padding: 4rem 2rem; background: #f8fafc; border-radius: 16px; border: 1px dashed #cbd5e1;">
-                    <i class="ti ti-users-group" style="font-size: 3rem; color: #94a3b8; margin-bottom: 1rem; display: block;"></i>
-                    <p style="margin:0; color: #475569; font-size: 1.1rem; font-weight: 600;">Aucune classe configurée dans la plateforme.</p>
+                <div style="text-align:center; padding: 4rem 2rem; background: #FAF8F3; border-radius: 16px; border: 1px dashed #D2CBB8;">
+                    <i class="ti ti-users-group" style="font-size: 3rem; color: #A79D87; margin-bottom: 1rem; display: block;"></i>
+                    <p style="margin:0; color: #57503F; font-size: 1.1rem; font-weight: 600;">Aucune classe configurée dans la plateforme.</p>
                 </div>
             {% endif %}
         </div>
@@ -361,7 +361,7 @@
             {% if classes.has_previous %}
             <button class="btn btn-ghost" hx-get="{% url 'dashboard_admin_structure' %}?tab=classes&page={{ classes.previous_page_number }}" hx-target="#dashboard-structure" hx-include="[name='q'], [name='status']">Précédent</button>
             {% endif %}
-            <span style="padding: 0.5rem 1rem; background: #e2e8f0; border-radius: 8px; font-weight: 600; color: #475569;">Page {{ classes.number }} sur {{ classes.paginator.num_pages }}</span>
+            <span style="padding: 0.5rem 1rem; background: #E5E0D3; border-radius: 8px; font-weight: 600; color: #57503F;">Page {{ classes.number }} sur {{ classes.paginator.num_pages }}</span>
             {% if classes.has_next %}
             <button class="btn btn-ghost" hx-get="{% url 'dashboard_admin_structure' %}?tab=classes&page={{ classes.next_page_number }}" hx-target="#dashboard-structure" hx-include="[name='q'], [name='status']">Suivant</button>
             {% endif %}

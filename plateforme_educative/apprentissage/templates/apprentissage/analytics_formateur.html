@@ -18,15 +18,15 @@
         justify-content: space-between;
         align-items: center;
         gap: 1.5rem;
-        background: linear-gradient(135deg, #1e1b4b 0%, #0f2027 50%, #1a2a3a 100%);
-        box-shadow: 0 16px 48px -8px rgba(99,102,241,0.25);
+        background: linear-gradient(135deg, #14110D 0%, #120D08 50%, #1a2a3a 100%);
+        box-shadow: 0 16px 48px -8px rgba(166,80,31,0.25);
     }
     .analytics-hero::before {
         content: '';
         position: absolute;
         top: -70px; right: -70px;
         width: 280px; height: 280px;
-        background: radial-gradient(circle, rgba(99,102,241,0.2) 0%, transparent 70%);
+        background: radial-gradient(circle, rgba(166,80,31,0.24) 0%, transparent 70%);
         border-radius: 50%;
         pointer-events: none;
     }
@@ -42,9 +42,9 @@
     .ah-left { position: relative; z-index: 2; }
     .ah-eyebrow {
         display: inline-flex; align-items: center; gap: 6px;
-        background: rgba(99,102,241,0.2);
-        border: 1px solid rgba(99,102,241,0.4);
-        color: #a5b4fc; font-size: 0.72rem; font-weight: 700;
+        background: rgba(166,80,31,0.2);
+        border: 1px solid rgba(166,80,31,0.4);
+        color: #F0A874; font-size: 0.72rem; font-weight: 700;
         letter-spacing: 0.12em; text-transform: uppercase;
         padding: 4px 12px; border-radius: 999px; margin-bottom: 0.6rem;
     }
@@ -53,7 +53,7 @@
         letter-spacing: -0.03em; margin: 0 0 0.4rem; line-height: 1.2;
     }
     .ah-title span {
-        background: linear-gradient(90deg, #a5b4fc, #2dd4bf);
+        background: linear-gradient(90deg, #e0904f, #2dd4bf);
         -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         background-clip: text;
     }
@@ -101,8 +101,8 @@
     .kpi-icon.amber { background: rgba(245,158,11,0.12); color: #f59e0b; }
     .kpi-icon.red { background: rgba(239,68,68,0.12); color: #ef4444; }
 
-    .kpi-num { font-size: 2rem; font-weight: 900; line-height: 1; color: var(--text-primary, #0f172a); }
-    .kpi-label { font-size: 0.78rem; font-weight: 700; color: var(--text-muted, #64748b); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px; }
+    .kpi-num { font-size: 2rem; font-weight: 900; line-height: 1; color: var(--text-primary, #14110D); }
+    .kpi-label { font-size: 0.78rem; font-weight: 700; color: var(--text-muted, #847B67); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px; }
 
     /* Charts row */
     .charts-row {
@@ -119,7 +119,7 @@
     }
     .chart-card-title {
         font-size: 1rem; font-weight: 800;
-        color: var(--text-primary, #0f172a);
+        color: var(--text-primary, #14110D);
         display: flex; align-items: center; gap: 8px;
         margin: 0 0 1.25rem;
     }
@@ -144,35 +144,35 @@
     .data-card-header {
         padding: 1.1rem 1.5rem;
         border-bottom: 1px solid var(--border-light, #e8edf3);
-        background: var(--bg-surface-alt, #f8fafc);
+        background: var(--bg-surface-alt, #FAF8F3);
         font-size: 1rem; font-weight: 800;
-        color: var(--text-primary, #0f172a);
+        color: var(--text-primary, #14110D);
         display: flex; align-items: center; gap: 8px;
     }
     .data-card-header i { color: #0D9488; }
 
     .data-table { width: 100%; border-collapse: collapse; }
     .data-table thead tr {
-        background: var(--bg-surface-alt, #f8fafc);
+        background: var(--bg-surface-alt, #FAF8F3);
         font-size: 0.72rem; text-transform: uppercase;
-        color: var(--text-muted, #94a3b8);
+        color: var(--text-muted, #A79D87);
         letter-spacing: 0.06em;
     }
     .data-table th { padding: 0.65rem 1.25rem; text-align: left; font-weight: 700; border-bottom: 1px solid var(--border-light, #e8edf3); }
     .data-table th:not(:first-child) { text-align: center; }
-    .data-table tbody tr { border-bottom: 1px solid var(--border-light, #f1f5f9); transition: background 0.15s; }
+    .data-table tbody tr { border-bottom: 1px solid var(--border-light, #F1EDE3); transition: background 0.15s; }
     .data-table tbody tr:last-child { border-bottom: none; }
-    .data-table tbody tr:hover { background: var(--bg-surface-alt, #f8fafc); }
+    .data-table tbody tr:hover { background: var(--bg-surface-alt, #FAF8F3); }
     .data-table td { padding: 0.85rem 1.25rem; font-size: 0.88rem; }
     .data-table td:not(:first-child) { text-align: center; }
-    .data-table td:first-child { font-weight: 600; color: var(--text-primary, #0f172a); }
+    .data-table td:first-child { font-weight: 600; color: var(--text-primary, #14110D); }
 
     .td-completion-bar {
         display: flex; align-items: center; gap: 0.5rem; justify-content: center;
     }
     .mini-bar-track {
         width: 60px; height: 6px;
-        background: var(--bg-surface-alt, #f1f5f9);
+        background: var(--bg-surface-alt, #F1EDE3);
         border-radius: 999px; overflow: hidden;
     }
     .mini-bar-fill { height: 100%; background: linear-gradient(90deg, #0D9488, #2dd4bf); border-radius: 999px; }
@@ -195,7 +195,7 @@
 
     .alert-student-row {
         padding: 0.9rem 1.25rem;
-        border-bottom: 1px solid var(--border-light, #f1f5f9);
+        border-bottom: 1px solid var(--border-light, #F1EDE3);
         display: flex; align-items: flex-start; gap: 0.75rem;
         transition: background 0.15s;
     }
@@ -209,8 +209,8 @@
         font-size: 0.85rem; font-weight: 800; flex-shrink: 0;
     }
     .alert-info { flex: 1; min-width: 0; }
-    .alert-name { font-weight: 700; font-size: 0.88rem; color: var(--text-primary, #0f172a); }
-    .alert-cours { font-size: 0.78rem; color: var(--text-muted, #64748b); margin: 1px 0; }
+    .alert-name { font-weight: 700; font-size: 0.88rem; color: var(--text-primary, #14110D); }
+    .alert-cours { font-size: 0.78rem; color: var(--text-muted, #847B67); margin: 1px 0; }
     .alert-stats { display: flex; gap: 0.75rem; font-size: 0.78rem; font-weight: 700; margin-top: 3px; }
     .alert-reason {
         font-size: 0.68rem; font-weight: 800; text-transform: uppercase;
@@ -220,7 +220,7 @@
     }
 
     .all-ok {
-        padding: 2rem; text-align: center; color: var(--text-muted, #64748b);
+        padding: 2rem; text-align: center; color: var(--text-muted, #847B67);
         display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
     }
     .all-ok i { font-size: 2rem; color: #10b981; }
@@ -234,7 +234,7 @@
         color: rgba(255,255,255,0.9); font-weight: 600; font-size: 0.85rem;
         text-decoration: none; backdrop-filter: blur(8px); transition: all 0.2s;
     }
-    .btn-ah-secondary:hover { background: rgba(255,255,255,0.15); color: #a5b4fc; }
+    .btn-ah-secondary:hover { background: rgba(255,255,255,0.15); color: #F0A874; }
 </style>
 
 <div class="page-shell" style="max-width: 1200px; margin: 0 auto; padding-top: 2rem;">
@@ -335,7 +335,7 @@
                                 <div class="mini-bar-track">
                                     <div class="mini-bar-fill" style="width: {{ item.taux_completion_moyen }}%;"></div>
                                 </div>
-                                <span style="font-weight: 700; font-size: 0.82rem; color: var(--text-primary, #0f172a);">{{ item.taux_completion_moyen }}%</span>
+                                <span style="font-weight: 700; font-size: 0.82rem; color: var(--text-primary, #14110D);">{{ item.taux_completion_moyen }}%</span>
                             </div>
                         </td>
                         <td>
@@ -346,7 +346,7 @@
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="4" style="padding: 2.5rem; text-align: center; color: var(--text-muted, #94a3b8);">
+                        <td colspan="4" style="padding: 2.5rem; text-align: center; color: var(--text-muted, #A79D87);">
                             Aucun cours créé pour le moment.
                         </td>
                     </tr>
@@ -394,7 +394,7 @@
     const isDark = document.documentElement.classList.contains('dark') ||
                    document.body.classList.contains('dark-mode');
     const gridColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
-    const textColor = isDark ? 'rgba(255,255,255,0.6)' : '#64748b';
+    const textColor = isDark ? 'rgba(255,255,255,0.6)' : '#847B67';
 
     const _chartData = JSON.parse('{{ chart_data_json|escapejs }}');
     const coursLabels  = _chartData.labels;
@@ -440,7 +440,7 @@
                 data: [_rep[0], _rep[1], _rep[2], _rep[3]],
                 backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6', '#10b981'],
                 borderWidth: 2,
-                borderColor: isDark ? '#1e293b' : '#ffffff',
+                borderColor: isDark ? '#241D16' : '#ffffff',
             }]
         },
         options: {

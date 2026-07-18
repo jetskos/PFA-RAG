@@ -20,17 +20,17 @@
     .dd-breadcrumb {
         display: flex; align-items: center; gap: 6px;
         font-size: 0.82rem; font-weight: 600;
-        color: var(--text-muted, #64748b);
+        color: var(--text-muted, #847B67);
         margin-bottom: 1.5rem;
         flex-wrap: wrap;
     }
     .dd-breadcrumb a { color: #0D9488; text-decoration: none; transition: opacity 0.15s; }
     .dd-breadcrumb a:hover { opacity: 0.75; }
-    .dd-breadcrumb i { font-size: 0.75rem; color: var(--text-muted, #94a3b8); }
+    .dd-breadcrumb i { font-size: 0.75rem; color: var(--text-muted, #A79D87); }
 
     /* ── Header card ── */
     .dd-header-card {
-        background: linear-gradient(135deg, #0f2027, #1a3a2a);
+        background: linear-gradient(135deg, #120D08, #1a3a2a);
         border-radius: 20px;
         padding: 2rem;
         margin-bottom: 1.5rem;
@@ -84,30 +84,30 @@
         display: flex; align-items: center; gap: 8px;
         padding: 1rem 1.5rem;
         border-bottom: 1px solid var(--border-light, #e8edf3);
-        background: var(--bg-surface-alt, #f8fafc);
+        background: var(--bg-surface-alt, #FAF8F3);
         font-size: 0.95rem; font-weight: 800;
-        color: var(--text-primary, #0f172a);
+        color: var(--text-primary, #14110D);
     }
     .dd-card-header i { color: #0D9488; font-size: 1.05rem; }
     .dd-card-body { padding: 1.5rem; }
 
-    .consigne-text { white-space: pre-wrap; line-height: 1.75; font-size: 0.92rem; color: var(--text-primary, #0f172a); }
+    .consigne-text { white-space: pre-wrap; line-height: 1.75; font-size: 0.92rem; color: var(--text-primary, #14110D); }
 
     /* ── Submissions table ── */
     .submissions-table { width: 100%; border-collapse: collapse; }
     .submissions-table thead tr {
         font-size: 0.72rem; text-transform: uppercase;
-        color: var(--text-muted, #94a3b8);
+        color: var(--text-muted, #A79D87);
         letter-spacing: 0.07em;
-        background: var(--bg-surface-alt, #f8fafc);
+        background: var(--bg-surface-alt, #FAF8F3);
         border-bottom: 1px solid var(--border-light, #e8edf3);
     }
     .submissions-table th { padding: 0.65rem 1.25rem; text-align: left; font-weight: 700; }
     .submissions-table th:not(:first-child) { text-align: center; }
     .submissions-table th:last-child { text-align: right; }
-    .submissions-table tbody tr { border-bottom: 1px solid var(--border-light, #f1f5f9); transition: background 0.15s; }
+    .submissions-table tbody tr { border-bottom: 1px solid var(--border-light, #F1EDE3); transition: background 0.15s; }
     .submissions-table tbody tr:last-child { border-bottom: none; }
-    .submissions-table tbody tr:hover { background: var(--bg-surface-alt, #f8fafc); }
+    .submissions-table tbody tr:hover { background: var(--bg-surface-alt, #FAF8F3); }
     .submissions-table td { padding: 0.85rem 1.25rem; font-size: 0.88rem; }
     .submissions-table td:not(:first-child) { text-align: center; }
     .submissions-table td:last-child { text-align: right; }
@@ -121,7 +121,7 @@
         color: white; display: flex; align-items: center; justify-content: center;
         font-size: 0.82rem; font-weight: 800; flex-shrink: 0;
     }
-    .s-name { font-weight: 700; font-size: 0.88rem; color: var(--text-primary, #0f172a); }
+    .s-name { font-weight: 700; font-size: 0.88rem; color: var(--text-primary, #14110D); }
 
     .note-badge {
         font-weight: 800; font-size: 0.9rem;
@@ -130,7 +130,7 @@
     .note-badge.green { background: rgba(16,185,129,0.1); color: #10b981; }
     .note-badge.orange { background: rgba(245,158,11,0.1); color: #f59e0b; }
     .note-badge.red { background: rgba(239,68,68,0.1); color: #ef4444; }
-    .note-badge.none { background: var(--bg-surface-alt, #f1f5f9); color: var(--text-muted, #94a3b8); font-size: 0.8rem; }
+    .note-badge.none { background: var(--bg-surface-alt, #F1EDE3); color: var(--text-muted, #A79D87); font-size: 0.8rem; }
 
     .action-btns { display: flex; gap: 0.4rem; justify-content: flex-end; }
     .action-btn {
@@ -141,9 +141,9 @@
         white-space: nowrap;
     }
     .action-btn.view {
-        background: var(--bg-surface-alt, #f1f5f9);
-        border: 1.5px solid var(--border-default, #cbd5e1);
-        color: var(--text-secondary, #475569);
+        background: var(--bg-surface-alt, #F1EDE3);
+        border: 1.5px solid var(--border-default, #D2CBB8);
+        color: var(--text-secondary, #57503F);
     }
     .action-btn.view:hover { background: rgba(13,148,136,0.06); border-color: #0D9488; color: #0D9488; }
     .action-btn.grade {
@@ -153,16 +153,16 @@
     }
     .action-btn.grade:hover { filter: brightness(1.08); transform: translateY(-1px); }
     .action-btn.regrade {
-        background: var(--bg-surface-alt, #f1f5f9);
-        border: 1.5px solid var(--border-default, #cbd5e1);
-        color: var(--text-secondary, #475569);
+        background: var(--bg-surface-alt, #F1EDE3);
+        border: 1.5px solid var(--border-default, #D2CBB8);
+        color: var(--text-secondary, #57503F);
     }
     .action-btn.regrade:hover { border-color: #0D9488; color: #0D9488; }
 
     /* ── Empty submissions ── */
     .empty-submissions {
         padding: 3rem; text-align: center;
-        color: var(--text-muted, #94a3b8);
+        color: var(--text-muted, #A79D87);
         display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
     }
     .empty-submissions i { font-size: 2.5rem; margin-bottom: 0.25rem; }
@@ -182,16 +182,16 @@
     /* Forms */
     .form-group input[type="file"] {
         display: block; width: 100%; padding: 0.6rem;
-        background: var(--bg-surface-alt, #f8fafc);
-        border: 1.5px dashed var(--border-default, #cbd5e1);
+        background: var(--bg-surface-alt, #FAF8F3);
+        border: 1.5px dashed var(--border-default, #D2CBB8);
         border-radius: 12px; font-size: 0.85rem;
-        color: var(--text-secondary, #475569);
+        color: var(--text-secondary, #57503F);
         cursor: pointer; transition: all 0.2s;
     }
     .form-group input[type="file"]:hover { border-color: #0D9488; background: rgba(13,148,136,0.02); }
     .form-group textarea {
         width: 100%; padding: 0.85rem; border-radius: 12px;
-        border: 1.5px solid var(--border-default, #cbd5e1);
+        border: 1.5px solid var(--border-default, #D2CBB8);
         font-family: inherit; font-size: 0.9rem; resize: vertical;
         min-height: 100px;
     }
@@ -217,30 +217,30 @@
     }
     .dd-sidebar-header {
         padding: 0.85rem 1.25rem;
-        background: var(--bg-surface-alt, #f8fafc);
+        background: var(--bg-surface-alt, #FAF8F3);
         border-bottom: 1px solid var(--border-light, #e8edf3);
         font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
-        letter-spacing: 0.07em; color: var(--text-muted, #94a3b8);
+        letter-spacing: 0.07em; color: var(--text-muted, #A79D87);
         display: flex; align-items: center; gap: 6px;
     }
     .dd-sidebar-body { padding: 1rem 1.25rem; }
     .info-row {
         display: flex; justify-content: space-between; align-items: center;
         padding: 0.55rem 0;
-        border-bottom: 1px solid var(--border-light, #f1f5f9);
+        border-bottom: 1px solid var(--border-light, #F1EDE3);
         font-size: 0.88rem;
     }
     .info-row:last-child { border-bottom: none; padding-bottom: 0; }
-    .info-row span:first-child { color: var(--text-muted, #64748b); font-weight: 500; }
-    .info-row span:last-child { font-weight: 700; color: var(--text-primary, #0f172a); text-align: right; max-width: 55%; }
+    .info-row span:first-child { color: var(--text-muted, #847B67); font-weight: 500; }
+    .info-row span:last-child { font-weight: 700; color: var(--text-primary, #14110D); text-align: right; max-width: 55%; }
 
     .dd-btn-back {
         display: flex; align-items: center; justify-content: center; gap: 6px;
         padding: 0.75rem;
-        border: 1.5px solid var(--border-default, #cbd5e1);
+        border: 1.5px solid var(--border-default, #D2CBB8);
         border-radius: 14px;
         background: var(--bg-surface, #fff);
-        color: var(--text-secondary, #475569);
+        color: var(--text-secondary, #57503F);
         font-weight: 700; font-size: 0.88rem;
         text-decoration: none; transition: all 0.2s;
         width: 100%;
@@ -265,7 +265,7 @@
         <i class="ti ti-chevron-right"></i>
         <span>{{ devoir.chapitre.cours.titre }}</span>
         <i class="ti ti-chevron-right"></i>
-        <span style="color: var(--text-primary, #0f172a);">{{ devoir.titre }}</span>
+        <span style="color: var(--text-primary, #14110D);">{{ devoir.titre }}</span>
     </div>
 
     <!-- Header card -->
@@ -323,7 +323,7 @@
                 <div class="dd-card-header">
                     <i class="ti ti-users"></i>
                     Soumissions reçues
-                    <span style="font-size: 0.78rem; font-weight: 600; color: var(--text-muted, #94a3b8); margin-left: 4px;">
+                    <span style="font-size: 0.78rem; font-weight: 600; color: var(--text-muted, #A79D87); margin-left: 4px;">
                         ({{ soumissions_all|length }})
                     </span>
                 </div>
@@ -348,7 +348,7 @@
                                     <div class="s-name">{{ s.etudiant.get_full_name }}</div>
                                 </div>
                             </td>
-                            <td style="font-size: 0.82rem; color: var(--text-muted, #64748b);">
+                            <td style="font-size: 0.82rem; color: var(--text-muted, #847B67);">
                                 {{ s.date_soumission|date:"d/m/Y H:i" }}
                             </td>
                             <td>
@@ -382,7 +382,7 @@
                 {% else %}
                 <div class="empty-submissions">
                     <i class="ti ti-inbox"></i>
-                    <strong style="color: var(--text-primary, #0f172a);">Aucune soumission reçue</strong>
+                    <strong style="color: var(--text-primary, #14110D);">Aucune soumission reçue</strong>
                     <span style="font-size: 0.85rem;">Les travaux de vos élèves apparaîtront ici.</span>
                 </div>
                 {% endif %}
@@ -422,7 +422,7 @@
                         <div class="form-group">
                             <label class="form-label" style="display:block; font-weight:700; margin-bottom:0.5rem; color:var(--text-primary);">
                                 {{ form.fichier.label }}
-                                <span style="color: var(--text-muted, #94a3b8); font-size: 0.78rem; font-weight: normal; margin-left: 5px;">(PDF, DOC, image · max 10 Mo)</span>
+                                <span style="color: var(--text-muted, #A79D87); font-size: 0.78rem; font-weight: normal; margin-left: 5px;">(PDF, DOC, image · max 10 Mo)</span>
                             </label>
                             {{ form.fichier }}
                             {% if form.fichier.errors %}<div class="form-error" style="color: #ef4444; font-size: 0.8rem; margin-top: 4px;">{{ form.fichier.errors }}</div>{% endif %}
@@ -443,7 +443,7 @@
                             {% endif %}
                         </button>
                         {% if soumission and soumission.est_corrigee %}
-                        <p style="font-size: 0.8rem; color: var(--text-muted, #94a3b8); display: flex; align-items: center; gap: 5px; margin: 0;">
+                        <p style="font-size: 0.8rem; color: var(--text-muted, #A79D87); display: flex; align-items: center; gap: 5px; margin: 0;">
                             <i class="ti ti-lock"></i> Ce devoir a été corrigé. Vous ne pouvez plus le modifier.
                         </p>
                         {% endif %}
@@ -494,7 +494,7 @@
                     <i class="ti ti-{% if soumission.est_corrigee %}rosette-discount-check{% else %}clock{% endif %}"></i>
                     {% if soumission.est_corrigee %}{{ app.text }}{% else %}En attente de correction{% endif %}
                 </div>
-                <div style="font-size: 0.82rem; color: var(--text-muted, #64748b);">
+                <div style="font-size: 0.82rem; color: var(--text-muted, #847B67);">
                     Envoyé le {{ soumission.date_soumission|date:"d/m/Y à H:i" }}
                 </div>
                 <a href="{{ soumission.fichier.url }}" target="_blank"
