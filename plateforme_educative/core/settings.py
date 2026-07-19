@@ -145,6 +145,10 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+# Vidéos de secours hors-ligne (jusqu'à ~300 Mo, voir validate_video_file_size)
+DATA_UPLOAD_MAX_MEMORY_SIZE = 314572800  # 300 Mo
+FILE_UPLOAD_MAX_MEMORY_SIZE = 10485760   # 10 Mo — au-delà, écrit sur disque au lieu de garder en mémoire
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'

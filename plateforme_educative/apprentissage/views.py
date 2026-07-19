@@ -28,6 +28,67 @@ def _htmx_modal_error_response(request, template_name, context):
     return response
 
 
+def _get_video_context(chapitre):
+    """
+    Calcule comment afficher la vidéo d'un chapitre.
+
+    Hybride en ligne/hors-ligne : si aucune connexion internet n'est détectée,
+    on bascule automatiquement sur le fichier MP4 local (video_fichier) plutôt
+    que sur le lien YouTube/Vimeo/direct — utile pour les élèves sans réseau.
+    """
+    from core.utils import has_internet
+
+    context = {
+        'is_offline_video': False,
+        'is_direct_video': False,
+        'is_youtube': False,
+        'is_vimeo': False,
+        'vimeo_embed_url': '',
+        'is_unavailable_offline': False,
+    }
+
+    online = has_internet(host="www.youtube.com", port=443)
+
+    if not online and chapitre.video_fichier:
+        context['is_offline_video'] = True
+        return context
+
+    url = chapitre.url_video or ''
+    url_lower = url.lower()
+
+    if not url:
+        # Pas de lien en ligne : se rabattre sur le fichier local s'il existe.
+        if chapitre.video_fichier:
+            context['is_offline_video'] = True
+        return context
+
+    if not online:
+        # Un lien existe mais on ne peut pas le charger sans connexion,
+        # et aucun fichier local n'a été fourni en secours.
+        context['is_unavailable_offline'] = True
+        return context
+
+    context['is_direct_video'] = any(url_lower.endswith(ext) for ext in ['.mp4', '.webm', '.ogg', '.mov'])
+    context['is_youtube'] = 'youtube.com' in url_lower or 'youtu.be' in url_lower
+    context['is_vimeo'] = 'vimeo.com' in url_lower
+
+    if context['is_vimeo']:
+        from urllib.parse import urlparse
+        try:
+            parsed = urlparse(url)
+            parts = parsed.path.strip('/').split('/')
+            video_id = ''
+            for part in reversed(parts):
+                if part.isdigit():
+                    video_id = part
+                    break
+            context['vimeo_embed_url'] = f"https://player.vimeo.com/video/{video_id}" if video_id else url
+        except Exception:
+            context['vimeo_embed_url'] = url
+
+    return context
+
+
 @login_required
 def espace_formateur(request):
     """Espace dédié aux formateurs pour gérer leurs cours."""
@@ -141,7 +202,7 @@ def ajouter_chapitre(request, cours_id):
     cours = get_object_or_404(Cours, pk=cours_id)
 
     if request.method == 'POST':
-        form = ChapitreForm(request.POST)
+        form = ChapitreForm(request.POST, request.FILES)
         if form.is_valid():
             chapitre = form.save(commit=False)
             chapitre.cours = cours
@@ -197,7 +258,7 @@ def editer_chapitre(request, chapitre_id):
     cours = chapitre.cours
 
     if request.method == 'POST':
-        form = ChapitreForm(request.POST, instance=chapitre)
+        form = ChapitreForm(request.POST, request.FILES, instance=chapitre)
         if form.is_valid():
             form.save()
             chapitres = cours.chapitres.all().order_by('ordre')
@@ -442,10 +503,7 @@ def detail_cours(request, cours_id):
     # Calcul des infos RAG et vidéo pour le premier chapitre
     chapitre_initial = None
     session_assistant = None
-    is_direct_video = False
-    is_youtube = False
-    is_vimeo = False
-    vimeo_embed_url = ""
+    video_ctx = {'is_offline_video': False, 'is_direct_video': False, 'is_youtube': False, 'is_vimeo': False, 'vimeo_embed_url': ''}
     chapitre_precedent = None
     chapitre_suivant = None
 
@@ -454,28 +512,7 @@ def detail_cours(request, cours_id):
         chapitre_precedent = None
         chapitre_suivant = chapitres.filter(ordre__gt=chapitre_initial.ordre).order_by('ordre').first()
 
-        url = chapitre_initial.url_video or ''
-        url_lower = url.lower()
-        is_direct_video = any(url_lower.endswith(ext) for ext in ['.mp4', '.webm', '.ogg', '.mov'])
-        is_youtube = 'youtube.com' in url_lower or 'youtu.be' in url_lower
-        is_vimeo = 'vimeo.com' in url_lower
-
-        if is_vimeo:
-            from urllib.parse import urlparse
-            try:
-                parsed = urlparse(url)
-                parts = parsed.path.strip('/').split('/')
-                video_id = ''
-                for part in reversed(parts):
-                    if part.isdigit():
-                        video_id = part
-                        break
-                if video_id:
-                    vimeo_embed_url = f"https://player.vimeo.com/video/{video_id}"
-                else:
-                    vimeo_embed_url = url
-            except Exception:
-                vimeo_embed_url = url
+        video_ctx = _get_video_context(chapitre_initial)
 
         if request.user.is_authenticated:
             from tuteur_ia.models import SessionAssistant
@@ -503,10 +540,12 @@ def detail_cours(request, cours_id):
         'chapitres_data': chapitres_data,
         'can_edit_documents': False,
         'chapitre_initial_assistant': session_assistant,
-        'chapitre_initial_is_direct_video': is_direct_video,
-        'chapitre_initial_is_youtube': is_youtube,
-        'chapitre_initial_is_vimeo': is_vimeo,
-        'chapitre_initial_vimeo_embed_url': vimeo_embed_url,
+        'chapitre_initial_is_offline_video': video_ctx['is_offline_video'],
+        'chapitre_initial_is_direct_video': video_ctx['is_direct_video'],
+        'chapitre_initial_is_youtube': video_ctx['is_youtube'],
+        'chapitre_initial_is_vimeo': video_ctx['is_vimeo'],
+        'chapitre_initial_vimeo_embed_url': video_ctx['vimeo_embed_url'],
+        'chapitre_initial_is_unavailable_offline': video_ctx['is_unavailable_offline'],
         'chapitre_initial_precedent': chapitre_precedent,
         'chapitre_initial_suivant': chapitre_suivant,
         'chapitre_initial_is_complete': chapitre_initial_is_complete,
@@ -551,30 +590,8 @@ def detail_chapitre(request, cours_id, chapitre_id):
     chapitre_precedent = chapitres_cours.filter(ordre__lt=chapitre.ordre).order_by('-ordre').first()
     chapitre_suivant = chapitres_cours.filter(ordre__gt=chapitre.ordre).order_by('ordre').first()
     
-    # Analyse de la vidéo
-    url = chapitre.url_video or ''
-    url_lower = url.lower()
-    is_direct_video = any(url_lower.endswith(ext) for ext in ['.mp4', '.webm', '.ogg', '.mov'])
-    is_youtube = 'youtube.com' in url_lower or 'youtu.be' in url_lower
-    is_vimeo = 'vimeo.com' in url_lower
-    
-    vimeo_embed_url = ''
-    if is_vimeo:
-        from urllib.parse import urlparse
-        try:
-            parsed = urlparse(url)
-            parts = parsed.path.strip('/').split('/')
-            video_id = ''
-            for part in reversed(parts):
-                if part.isdigit():
-                    video_id = part
-                    break
-            if video_id:
-                vimeo_embed_url = f"https://player.vimeo.com/video/{video_id}"
-            else:
-                vimeo_embed_url = url
-        except Exception:
-            vimeo_embed_url = url
+    # Analyse de la vidéo (hybride en ligne/hors-ligne)
+    video_ctx = _get_video_context(chapitre)
 
     # Charger/Créer la session RAG Assistant
     session_assistant = None
@@ -592,10 +609,12 @@ def detail_chapitre(request, cours_id, chapitre_id):
         'can_edit_documents': False,
         'chapitre_precedent': chapitre_precedent,
         'chapitre_suivant': chapitre_suivant,
-        'is_direct_video': is_direct_video,
-        'is_youtube': is_youtube,
-        'is_vimeo': is_vimeo,
-        'vimeo_embed_url': vimeo_embed_url,
+        'is_offline_video': video_ctx['is_offline_video'],
+        'is_direct_video': video_ctx['is_direct_video'],
+        'is_youtube': video_ctx['is_youtube'],
+        'is_vimeo': video_ctx['is_vimeo'],
+        'vimeo_embed_url': video_ctx['vimeo_embed_url'],
+        'is_unavailable_offline': video_ctx['is_unavailable_offline'],
         'session_assistant': session_assistant,
     }
     

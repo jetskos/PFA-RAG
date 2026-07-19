@@ -850,7 +850,15 @@
         <!-- Video Player -->
         <div class="video-container-wrapper">
             <h3><i class="ti ti-brand-youtube" style="color: var(--accent-danger);"></i> Vidéo Pédagogique</h3>
-            {% if chapitre.url_video %}
+            {% if is_offline_video and chapitre.video_fichier %}
+                <video class="video-player-direct" controls>
+                    <source src="{{ chapitre.video_fichier.url }}" type="video/mp4">
+                    Votre navigateur ne supporte pas la lecture de vidéos.
+                </video>
+                <div class="video-source-info">
+                    <i class="ti ti-wifi-off"></i> Mode hors-ligne — vidéo locale
+                </div>
+            {% elif chapitre.url_video %}
                 {% if is_direct_video %}
                     <video class="video-player-direct" controls>
                         <source src="{{ chapitre.url_video }}" type="video/mp4">
@@ -871,6 +879,11 @@
                 {% endif %}
                 <div class="video-source-info">
                     <i class="ti ti-link"></i> Source : <a href="{{ chapitre.url_video }}" target="_blank" rel="noopener">{{ chapitre.url_video }}</a>
+                </div>
+            {% elif is_unavailable_offline %}
+                <div class="video-placeholder">
+                    <i class="ti ti-wifi-off" style="font-size: 2.5rem;"></i>
+                    <p>Vidéo indisponible hors-ligne — connectez-vous à internet, ou demandez à votre formateur d'ajouter une version locale.</p>
                 </div>
             {% else %}
                 <div class="video-placeholder">
