@@ -22,7 +22,7 @@ from django.dispatch import receiver
 logger = logging.getLogger(__name__)
 
 
-def _index_document_async(document_id: str, pdf_path: str):
+def _index_document(document_id: str, pdf_path: str):
     """
     Lance l'indexation de manière synchrone pour éviter la corruption multi-processus de ChromaDB.
     """
@@ -95,7 +95,7 @@ def on_document_save(sender, instance, created, **kwargs):
         f"[ChromaDB] Signal déclenché pour '{instance.titre}' "
         f"— raison : {reason}"
     )
-    _index_document_async(
+    _index_document(
         document_id=str(instance.pk),
         pdf_path=pdf_path,
     )
