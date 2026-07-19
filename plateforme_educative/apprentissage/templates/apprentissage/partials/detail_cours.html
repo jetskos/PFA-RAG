@@ -59,7 +59,7 @@
     <main class="apprentissage-contenu" id="contenu-cours">
         {% with chapitres_data.0 as chapitre_initial %}
             {% if chapitre_initial %}
-                {% include 'apprentissage/partials/detail_chapitre.html' with cours=cours chapitre=chapitre_initial.chapitre documents_par_type=chapitre_initial.documents_par_type session_assistant=chapitre_initial_assistant is_direct_video=chapitre_initial_is_direct_video is_youtube=chapitre_initial_is_youtube is_vimeo=chapitre_initial_is_vimeo vimeo_embed_url=chapitre_initial_vimeo_embed_url chapitre_precedent=chapitre_initial_precedent chapitre_suivant=chapitre_initial_suivant %}
+                {% include 'apprentissage/partials/detail_chapitre.html' with cours=cours chapitre=chapitre_initial.chapitre documents_par_type=chapitre_initial.documents_par_type session_assistant=chapitre_initial_assistant is_offline_video=chapitre_initial_is_offline_video is_direct_video=chapitre_initial_is_direct_video is_youtube=chapitre_initial_is_youtube is_vimeo=chapitre_initial_is_vimeo vimeo_embed_url=chapitre_initial_vimeo_embed_url is_unavailable_offline=chapitre_initial_is_unavailable_offline chapitre_precedent=chapitre_initial_precedent chapitre_suivant=chapitre_initial_suivant %}
             {% else %}
                 <article class="content-card course-empty">
                     <p class="eyebrow">Aperçu du cours</p>

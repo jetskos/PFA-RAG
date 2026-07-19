@@ -19,12 +19,13 @@ class CoursForm(forms.ModelForm):
 class ChapitreForm(forms.ModelForm):
     class Meta:
         model = Chapitre
-        fields = ('titre', 'description', 'ordre', 'url_video', 'actif')
+        fields = ('titre', 'description', 'ordre', 'url_video', 'video_fichier', 'actif')
         widgets = {
             'titre': forms.TextInput(attrs={'class': 'form-control'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'ordre': forms.NumberInput(attrs={'class': 'form-control'}),
             'url_video': forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'https://youtube.com/watch?v=...'}),
+            'video_fichier': forms.FileInput(attrs={'class': 'form-control', 'accept': '.mp4'}),
             'actif': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
 

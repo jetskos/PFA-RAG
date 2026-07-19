@@ -12,6 +12,13 @@ def validate_file_size(value):
         raise ValidationError(f"Le fichier ne doit pas dépasser {limit_mb} Mo.")
 
 
+def validate_video_file_size(value):
+    """Valide que la vidéo ne dépasse pas 300 Mo."""
+    limit_mb = 300
+    if value.size > limit_mb * 1024 * 1024:
+        raise ValidationError(f"La vidéo ne doit pas dépasser {limit_mb} Mo.")
+
+
 
 class Cours(models.Model):
     """Modèle représentant un cours dans la plateforme."""
@@ -98,6 +105,17 @@ class Chapitre(models.Model):
         blank=True,
         validators=[URLValidator()],
         help_text='Lien vers la vidéo YouTube'
+    )
+    video_fichier = models.FileField(
+        upload_to='videos/%Y/%m/',
+        verbose_name='Vidéo hors-ligne (MP4)',
+        blank=True,
+        null=True,
+        validators=[
+            FileExtensionValidator(allowed_extensions=['mp4']),
+            validate_video_file_size,
+        ],
+        help_text="Utilisée automatiquement à la place du lien YouTube quand l'élève n'a pas de connexion internet."
     )
     date_creation = models.DateTimeField(
         auto_now_add=True,
