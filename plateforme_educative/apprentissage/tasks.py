@@ -57,3 +57,193 @@ def indexer_document_task(self, document_id: str, pdf_path: str):
             f"[ChromaDB] ✗ Erreur indexation {document_id}: {exc}",
             exc_info=True,
         )
+
+import json
+import zipfile
+import shutil
+from pathlib import Path
+from django.conf import settings
+from django.utils import timezone
+from .models import ExportJob, Cours
+
+@shared_task(bind=True, max_retries=1, name='apprentissage.tasks.export_course_task')
+def export_course_task(self, export_job_id: str):
+    logger.info(f"[Export] Démarrage de la tâche pour le job {export_job_id}")
+    try:
+        job = ExportJob.objects.get(pk=export_job_id)
+        cours = job.cours
+        
+        # 1. Préparation du répertoire temporaire
+        base_export_dir = Path(settings.MEDIA_ROOT) / 'exports' / 'temp' / str(job.id)
+        base_export_dir.mkdir(parents=True, exist_ok=True)
+        
+        # 2. Construction des métadonnées
+        metadata = {
+            'version': '1.0',
+            'cours': {
+                'titre': cours.titre,
+                'description': cours.description,
+                'resume': cours.resume,
+                'niveau': cours.niveau.code,
+            },
+            'chapitres': []
+        }
+        
+        if cours.image_couverture:
+            img_path = Path(cours.image_couverture.path)
+            if img_path.exists():
+                shutil.copy2(img_path, base_export_dir / img_path.name)
+                metadata['cours']['image_couverture'] = img_path.name
+
+        for chapitre in cours.chapitres.all():
+            chap_data = {
+                'titre': chapitre.titre,
+                'description': chapitre.description,
+                'ordre': chapitre.ordre,
+                'url_video': chapitre.url_video,
+                'documents': []
+            }
+            
+            if chapitre.video_fichier:
+                vid_path = Path(chapitre.video_fichier.path)
+                if vid_path.exists():
+                    shutil.copy2(vid_path, base_export_dir / vid_path.name)
+                    chap_data['video_fichier'] = vid_path.name
+                    
+            for doc in chapitre.documents.filter(actif=True):
+                if doc.fichier_pdf:
+                    doc_path = Path(doc.fichier_pdf.path)
+                    if doc_path.exists():
+                        shutil.copy2(doc_path, base_export_dir / doc_path.name)
+                        chap_data['documents'].append({
+                            'titre': doc.titre,
+                            'type_document': doc.type_document,
+                            'description': doc.description,
+                            'ordre': doc.ordre,
+                            'fichier_pdf': doc_path.name
+                        })
+            metadata['chapitres'].append(chap_data)
+
+        # 3. Sauvegarder le JSON
+        with open(base_export_dir / 'course_metadata.json', 'w', encoding='utf-8') as f:
+            json.dump(metadata, f, ensure_ascii=False, indent=4)
+
+        # 4. Créer le fichier ZIP
+        zip_filename = f'cours_{cours.id}_export.zip'
+        zip_filepath = Path(settings.MEDIA_ROOT) / 'exports' / 'cours' / str(timezone.now().year) / str(timezone.now().month)
+        zip_filepath.mkdir(parents=True, exist_ok=True)
+        final_zip_path = zip_filepath / zip_filename
+
+        with zipfile.ZipFile(final_zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
+            for file_path in base_export_dir.rglob('*'):
+                if file_path.is_file():
+                    zipf.write(file_path, file_path.relative_to(base_export_dir))
+
+        # 5. Nettoyer le dossier temporaire
+        shutil.rmtree(base_export_dir, ignore_errors=True)
+
+        # 6. Mettre à jour le statut
+        rel_zip_path = str(final_zip_path.relative_to(settings.MEDIA_ROOT)).replace('\\\\', '/')
+        job.fichier_zip.name = rel_zip_path
+        job.status = 'SUCCESS'
+        job.date_fin = timezone.now()
+        job.save()
+
+        logger.info(f"[Export] Succès pour le job {export_job_id}")
+
+    except Exception as e:
+        logger.error(f"[Export] Erreur pour le job {export_job_id}: {e}", exc_info=True)
+        ExportJob.objects.filter(pk=export_job_id).update(
+            status='FAILED',
+            erreur=str(e),
+            date_fin=timezone.now()
+        )
+
+import uuid
+
+@shared_task(bind=True, name='apprentissage.tasks.import_courses_task')
+def import_courses_task(self, user_id: str, zip_files: list):
+    logger.info(f"[Import] Démarrage de l'importation de {len(zip_files)} fichier(s) par l'utilisateur {user_id}")
+    try:
+        from accounts.models import Utilisateur
+        from apprentissage.models import Niveau, Cours, Chapitre, Document
+        from django.core.files import File
+        
+        user = Utilisateur.objects.get(pk=user_id)
+        
+        for zip_path_str in zip_files:
+            zip_path = Path(zip_path_str)
+            if not zip_path.exists():
+                continue
+                
+            extract_dir = Path(settings.MEDIA_ROOT) / 'imports' / 'temp' / str(uuid.uuid4())
+            extract_dir.mkdir(parents=True, exist_ok=True)
+            
+            try:
+                with zipfile.ZipFile(zip_path, 'r') as zipf:
+                    zipf.extractall(extract_dir)
+                    
+                meta_file = extract_dir / 'course_metadata.json'
+                if not meta_file.exists():
+                    continue
+                    
+                with open(meta_file, 'r', encoding='utf-8') as f:
+                    metadata = json.load(f)
+                    
+                c_data = metadata.get('cours', {})
+                niveau_code = c_data.get('niveau') or "NA"
+                niveau, _ = Niveau.objects.get_or_create(code=niveau_code, defaults={'nom': niveau_code})
+                
+                cours = Cours.objects.create(
+                    titre=f"{c_data.get('titre', 'Cours importé')} (Importé)",
+                    description=c_data.get('description', ''),
+                    resume=c_data.get('resume', ''),
+                    niveau=niveau,
+                    createur=user,
+                    actif=True # Les cours importés sont directement actifs
+                )
+                
+                if 'image_couverture' in c_data:
+                    img_file = extract_dir / c_data['image_couverture']
+                    if img_file.exists():
+                        with open(img_file, 'rb') as f:
+                            cours.image_couverture.save(img_file.name, File(f))
+                            
+                for chap_data in metadata.get('chapitres', []):
+                    chapitre = Chapitre.objects.create(
+                        cours=cours,
+                        titre=chap_data.get('titre', 'Chapitre sans titre'),
+                        description=chap_data.get('description', ''),
+                        ordre=chap_data.get('ordre', 0),
+                        url_video=chap_data.get('url_video', '')
+                    )
+                    
+                    if 'video_fichier' in chap_data:
+                        vid_file = extract_dir / chap_data['video_fichier']
+                        if vid_file.exists():
+                            with open(vid_file, 'rb') as f:
+                                chapitre.video_fichier.save(vid_file.name, File(f))
+                                
+                    for doc_data in chap_data.get('documents', []):
+                        doc = Document.objects.create(
+                            chapitre=chapitre,
+                            titre=doc_data.get('titre', 'Document'),
+                            type_document=doc_data.get('type_document', 'RESSOURCE'),
+                            description=doc_data.get('description', ''),
+                            ordre=doc_data.get('ordre', 0)
+                        )
+                        if 'fichier_pdf' in doc_data:
+                            pdf_file = extract_dir / doc_data['fichier_pdf']
+                            if pdf_file.exists():
+                                with open(pdf_file, 'rb') as f:
+                                    doc.fichier_pdf.save(pdf_file.name, File(f))
+                                    
+            finally:
+                # Cleanup
+                shutil.rmtree(extract_dir, ignore_errors=True)
+                if zip_path.exists():
+                    zip_path.unlink()
+                    
+        logger.info(f"[Import] Fin de l'importation par l'utilisateur {user_id}")
+    except Exception as e:
+        logger.error(f"[Import] Erreur globale: {e}", exc_info=True)

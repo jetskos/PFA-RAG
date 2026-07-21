@@ -564,3 +564,38 @@ def supprimer_devoir_evenement(sender, instance, **kwargs):
     Evenement.objects.filter(description__contains=search_str).delete()
 
 
+class ExportJob(models.Model):
+    """Suivi asynchrone des exportations de cours en ZIP."""
+    STATUS_CHOICES = (
+        ('PENDING', 'En cours'),
+        ('SUCCESS', 'Terminé'),
+        ('FAILED', 'Échoué'),
+    )
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    formateur = models.ForeignKey(
+        'accounts.Utilisateur',
+        on_delete=models.CASCADE,
+        related_name='export_jobs',
+        verbose_name='Formateur'
+    )
+    cours = models.ForeignKey(
+        Cours,
+        on_delete=models.CASCADE,
+        related_name='export_jobs',
+        verbose_name='Cours'
+    )
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
+    fichier_zip = models.FileField(upload_to='exports/cours/%Y/%m/', null=True, blank=True, verbose_name='Fichier ZIP')
+    erreur = models.TextField(blank=True, null=True)
+    date_creation = models.DateTimeField(auto_now_add=True)
+    date_fin = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = 'Tâche d\'export'
+        verbose_name_plural = 'Tâches d\'export'
+        ordering = ['-date_creation']
+
+    def __str__(self):
+        return f"Export {self.cours.titre} par {self.formateur.get_full_name()} ({self.get_status_display()})"
+
+

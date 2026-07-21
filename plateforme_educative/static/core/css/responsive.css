@@ -1,0 +1,197 @@
+/* ── RESPONSIVE DESIGN (Mobile First & Adaptative) ── */
+
+/* Styles pour tous les écrans (modifications de base) */
+.mobile-only {
+    display: none !important;
+}
+
+/* =========================================
+   TABLETTES ET SMARTPHONES (<= 992px)
+   ========================================= */
+@media (max-width: 992px) {
+    .header-inner {
+        gap: 1rem;
+        padding: 0.5rem 1rem;
+    }
+    
+    .brand-name {
+        font-size: 0.95rem;
+    }
+}
+
+/* =========================================
+   SMARTPHONES (<= 768px)
+   ========================================= */
+@media (max-width: 768px) {
+    .mobile-only {
+        display: flex !important;
+    }
+
+    /* --- Navigation / Header --- */
+    .header-inner {
+        justify-content: space-between;
+    }
+
+    /* Le menu principal devient un Off-canvas (caché sur le côté gauche) */
+    .main-nav {
+        position: fixed;
+        top: 0;
+        left: -100%;
+        width: 280px;
+        height: 100vh;
+        background: var(--bg-surface, #ffffff);
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 5rem 1.5rem 2rem 1.5rem;
+        box-shadow: 4px 0 24px rgba(0,0,0,0.1);
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 999;
+        overflow-y: auto;
+    }
+
+    .main-nav.open {
+        left: 0;
+    }
+
+    .main-nav a {
+        width: 100%;
+        padding: 1rem;
+        font-size: 1rem;
+        border-radius: 12px;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Bouton Hamburger */
+    #mobile-menu-btn {
+        background: transparent;
+        border: none;
+        font-size: 1.5rem;
+        color: var(--text-primary);
+        cursor: pointer;
+        padding: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        transition: background 0.2s;
+    }
+    #mobile-menu-btn:hover {
+        background: var(--bg-surface-alt);
+    }
+
+    /* Backdrop (Fond sombre) */
+    .nav-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(15, 23, 42, 0.5);
+        backdrop-filter: blur(4px);
+        z-index: 998;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s;
+    }
+    .nav-backdrop.open {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    /* --- Grilles Générales --- */
+    .stats-grid,
+    .dashboard-grid,
+    .course-grid,
+    .courses-grid,
+    .chapitres-grid,
+    .documents-grid,
+    .formateur-courses-grid,
+    .courses-grid-modern {
+        grid-template-columns: 1fr !important;
+        gap: 1rem;
+    }
+
+    /* --- Page Détail Cours (Hero & Layout) --- */
+    .course-hero-inner {
+        flex-direction: column;
+        padding: 1.5rem 1rem !important;
+        text-align: center;
+    }
+    
+    .course-hero-content h1 {
+        font-size: 1.75rem !important;
+    }
+    
+    .course-hero-image-wrapper {
+        width: 100% !important;
+        height: 200px !important;
+    }
+
+    .course-layout {
+        flex-direction: column !important;
+    }
+    
+    .course-sidebar {
+        width: 100% !important;
+        position: static !important;
+    }
+
+    /* --- Boutons et Actions --- */
+    .header-actions-row,
+    .page-header-actions {
+        flex-direction: column;
+        width: 100%;
+        gap: 0.5rem;
+    }
+    
+    .page-header-actions button,
+    .page-header-actions a,
+    .header-actions-row button,
+    .header-actions-row a {
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* --- Modales (HTMX, JSZip, etc.) --- */
+    .modal-content,
+    #form-modal > div,
+    #import-preview-modal > div,
+    #export-preview-modal > div {
+        width: 95% !important;
+        max-width: none !important;
+        padding: 1.5rem !important;
+        border-radius: 16px !important;
+    }
+
+    .export-stepper,
+    .import-stepper {
+        flex-direction: row; /* keep row but small */
+        overflow-x: auto;
+    }
+
+    /* --- Tableaux (Overflow horizontal) --- */
+    .table-container,
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        width: 100%;
+        border-radius: 8px;
+        border: 1px solid var(--border-default, #e2e8f0);
+    }
+    
+    table.table {
+        min-width: 600px; /* Force scroll if table is wide */
+    }
+
+    /* --- Padding général --- */
+    main.main-content,
+    .container {
+        padding: 1rem !important;
+    }
+    
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 1rem;
+    }
+}

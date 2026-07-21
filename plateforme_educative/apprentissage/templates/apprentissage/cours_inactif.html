@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="page-shell" style="max-width: 800px; margin: 4rem auto; padding: 2rem;">
+    <div style="background: var(--bg-surface, #fff); border-radius: 24px; padding: 4rem 2rem; text-align: center; border: 1.5px solid var(--border-light, #e8edf3); box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
+        
+        <div style="width: 80px; height: 80px; border-radius: 20px; background: rgba(245, 158, 11, 0.1); color: #f59e0b; font-size: 2.5rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem auto;">
+            <i class="ti ti-eye-off"></i>
+        </div>
+
+        <h1 style="color: var(--text-primary, #0f172a); font-size: 1.8rem; font-weight: 800; margin-bottom: 1rem;">Ce cours n'est pas encore actif</h1>
+        
+        <p style="color: var(--text-muted, #64748b); font-size: 1.05rem; line-height: 1.6; max-width: 500px; margin: 0 auto 2.5rem auto;">
+            Le formateur travaille actuellement sur ce contenu. Il sera disponible ici dès qu'il aura été publié. Revenez plus tard !
+        </p>
+
+        <a href="{% url 'apprentissage:liste_cours' %}" class="btn-primary" style="display: inline-flex; align-items: center; gap: 8px; padding: 0.8rem 1.6rem; border-radius: 12px; font-weight: 600; text-decoration: none;">
+            <i class="ti ti-arrow-left"></i> Retour au catalogue
+        </a>
+    </div>
+</div>
+{% endblock %}

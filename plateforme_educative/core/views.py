@@ -863,3 +863,28 @@ def admin_equipement_toggle_active_view(request, equipement_id):
     equipement.est_actif = not equipement.est_actif
     equipement.save()
     return render(request, 'core/partials/equipement_row.html', {'equipement': equipement})
+
+import string
+import secrets
+from django.utils import timezone
+from django.http import JsonResponse
+from accounts.models import Utilisateur
+
+@role_required('ADMIN')
+@require_http_methods(['POST'])
+def admin_force_password_reset_view(request, user_id):
+    user_to_reset = get_object_or_404(Utilisateur, pk=user_id)
+    
+    chars = string.ascii_letters + string.digits
+    temp_pass = ''.join(secrets.choice(chars) for _ in range(8))
+    
+    user_to_reset.set_password(temp_pass)
+    user_to_reset.is_temp_password = True
+    user_to_reset.temp_password_created_at = timezone.now()
+    user_to_reset.save()
+    
+    return JsonResponse({
+        'status': 'success',
+        'temp_password': temp_pass,
+        'message': f'Nouveau mot de passe pour {user_to_reset.email} : {temp_pass}'
+    })
