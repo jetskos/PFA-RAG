@@ -1274,6 +1274,8 @@ def calendrier_view(request):
 def calendrier_events_json(request):
     from django.http import JsonResponse
     user = request.user
+    
+    # 1. Fetch Evenements
     if user.is_superuser or user.role == 'ADMIN':
         events = Evenement.objects.all().select_related('cours', 'classe', 'createur')
     elif user.is_formateur:
@@ -1307,7 +1309,7 @@ def calendrier_events_json(request):
     for ev in events:
         can_manage_ev = can_manage_global and (user.is_superuser or user.role == 'ADMIN' or ev.createur == user)
         events_data.append({
-            'id': str(ev.id),
+            'id': f"ev_{ev.id}",
             'title': ev.titre,
             'start': ev.date_debut.isoformat() if ev.date_debut else None,
             'end': ev.date_fin.isoformat() if ev.date_fin else None,
@@ -1323,6 +1325,75 @@ def calendrier_events_json(request):
                 'delete_url': reverse('apprentissage:supprimer_evenement', args=[ev.id]) if can_manage_ev else '',
             }
         })
+        
+    # 2. Fetch Devoirs (Date limite)
+    if user.is_superuser or user.role == 'ADMIN':
+        devoirs = Devoir.objects.filter(date_limite__isnull=False, actif=True).select_related('chapitre', 'chapitre__cours')
+    elif user.is_formateur:
+        devoirs = Devoir.objects.filter(createur=user, date_limite__isnull=False, actif=True).select_related('chapitre', 'chapitre__cours')
+    else:
+        # Élève
+        classe = getattr(user, 'classe', None)
+        niveau = getattr(classe, 'niveau', None) if classe else None
+        if niveau:
+            devoirs = Devoir.objects.filter(chapitre__cours__niveau=niveau, actif=True, date_limite__isnull=False).select_related('chapitre', 'chapitre__cours')
+        else:
+            devoirs = []
+
+    for dev in devoirs:
+        # We simulate a 1-hour duration for the deadline for visual purposes
+        end_time = dev.date_limite
+        from datetime import timedelta
+        start_time = end_time - timedelta(hours=1)
+        
+        events_data.append({
+            'id': f"dev_{dev.id}",
+            'title': f"Rendu: {dev.titre}",
+            'start': start_time.isoformat(),
+            'end': end_time.isoformat(),
+            'backgroundColor': '#ef4444', # Red
+            'extendedProps': {
+                'rawType': 'ECHEANCE_DEVOIR',
+                'type': 'Rendu de Devoir',
+                'description': dev.consigne,
+                'cours': dev.chapitre.cours.titre if dev.chapitre and dev.chapitre.cours else None,
+                'can_manage': False,
+            }
+        })
+        
+    # 3. Fetch Ateliers (Workshops)
+    from logistics.models import Workshop
+    if user.is_superuser or user.role == 'ADMIN':
+        ateliers = Workshop.objects.filter(est_annule=False)
+    elif user.is_formateur:
+        ateliers = Workshop.objects.filter(
+            Q(tuteur=user) | Q(createur=user), est_annule=False
+        )
+    else:
+        # Élève
+        classe = getattr(user, 'classe', None)
+        niveau = getattr(classe, 'niveau', None) if classe else None
+        niveau_nom = getattr(niveau, 'nom', None) if niveau else None
+        if niveau_nom:
+            ateliers = Workshop.objects.filter(niveau_cible=niveau_nom, est_annule=False)
+        else:
+            ateliers = []
+
+    for at in ateliers:
+        events_data.append({
+            'id': f"ws_{at.id}",
+            'title': f"Atelier: {at.titre}",
+            'start': at.date_debut.isoformat() if at.date_debut else None,
+            'end': at.date_fin.isoformat() if at.date_fin else None,
+            'backgroundColor': '#8b5cf6', # Purple
+            'extendedProps': {
+                'rawType': 'ATELIER',
+                'type': 'Atelier Pratique IoT',
+                'description': f"Salle: {at.salle}",
+                'can_manage': False,
+            }
+        })
+
     return JsonResponse(events_data, safe=False)
 
 @login_required
@@ -1380,5 +1451,63 @@ def supprimer_evenement(request, pk):
     messages.success(request, "L'événement a été supprimé.")
     return redirect('apprentissage:calendrier')
 
+# ── Export/Import Offline (.edutech) ─────────────────────────────────────────
+
+@login_required
+def export_edutech_view(request, cours_id):
+    """Génère et télécharge le package .edutech du cours."""
+    # Seuls les formateurs, admins, et le créateur peuvent exporter
+    cours = get_object_or_404(Cours, pk=cours_id)
+    if not (request.user.is_superuser or request.user.role == 'ADMIN' or (request.user.is_formateur and cours.createur == request.user)):
+        return HttpResponseForbidden("Vous n'avez pas l'autorisation d'exporter ce cours.")
+
+    from .export_import import export_cours_edutech
+    
+    zip_buffer, filename = export_cours_edutech(cours_id)
+    if not zip_buffer:
+        messages.error(request, "Erreur lors de la génération du fichier d'export.")
+        return redirect('apprentissage:gerer_cours', pk=cours_id)
+
+    response = HttpResponse(zip_buffer, content_type='application/zip')
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    return response
+
+
+@login_required
+def import_edutech_view(request):
+    """Vue pour uploader et importer un package .edutech."""
+    if not (request.user.is_superuser or request.user.role == 'ADMIN' or request.user.is_formateur):
+        return HttpResponseForbidden("Accès réservé aux formateurs et administrateurs.")
+
+    if request.method == 'POST':
+        from django.http import JsonResponse
+        zip_file = request.FILES.get('edutech_file')
+        is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest' or 'application/json' in request.headers.get('Accept', '')
+
+        if not zip_file:
+            if is_ajax: return JsonResponse({"success": False, "error": "Veuillez sélectionner un fichier .edutech valide."})
+            messages.error(request, "Veuillez sélectionner un fichier .edutech valide.")
+            return redirect('apprentissage:espace_formateur')
+
+        if not zip_file.name.endswith('.edutech') and not zip_file.name.endswith('.zip'):
+            if is_ajax: return JsonResponse({"success": False, "error": "Le fichier doit avoir l'extension .edutech ou .zip."})
+            messages.error(request, "Le fichier doit avoir l'extension .edutech ou .zip.")
+            return redirect('apprentissage:espace_formateur')
+
+        from .export_import import import_cours_edutech
+        success, message = import_cours_edutech(zip_file, createur=request.user)
+
+        if success:
+            if is_ajax:
+                from django.urls import reverse
+                return JsonResponse({"success": True, "redirect_url": reverse('apprentissage:gerer_cours', kwargs={'pk': message})})
+            messages.success(request, "Cours importé avec succès depuis le mode hors-ligne !")
+            return redirect('apprentissage:gerer_cours', pk=message) # message contient l'ID du cours ici
+        else:
+            if is_ajax: return JsonResponse({"success": False, "error": f"Échec de l'importation : {message}"})
+            messages.error(request, f"Échec de l'importation : {message}")
+            return redirect('apprentissage:espace_formateur')
+
+    return render(request, 'apprentissage/import_edutech.html')
 
 

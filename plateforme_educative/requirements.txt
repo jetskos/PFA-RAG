@@ -38,3 +38,6 @@ pillow>=10.2.0
 
 # Extra
 openpyxl>=3.1.0
+django-anymail[resend]>=10.2
+langchain-community>=0.0.10
+langchain-ollama>=0.0.1

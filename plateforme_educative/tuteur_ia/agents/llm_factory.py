@@ -26,7 +26,12 @@ def get_llm(temperature: float = 0.7, model_name: str = None):
     openai_key = os.getenv("OPENAI_API_KEY", "") or getattr(django_settings, "OPENAI_API_KEY", "")
 
     # Déterminer le fournisseur et le modèle
-    if groq_key:
+    offline_mode = getattr(django_settings, "OFFLINE_MODE", False)
+
+    if offline_mode:
+        provider = "ollama"
+        model = getattr(django_settings, "OLLAMA_MODEL", "gemma4:e4b")
+    elif groq_key:
         provider = "groq"
         model = model_name if model_name else GROQ_MODEL
     elif openai_key:
@@ -34,7 +39,7 @@ def get_llm(temperature: float = 0.7, model_name: str = None):
         model = model_name if model_name else OPENAI_MODEL
     else:
         raise EnvironmentError(
-            "Aucun LLM configuré. Définissez GROQ_API_KEY ou OPENAI_API_KEY dans .env"
+            "Aucun LLM configuré. Définissez GROQ_API_KEY ou OPENAI_API_KEY dans .env, ou activez OFFLINE_MODE."
         )
 
     # Clé de cache unique pour ce modèle et cette température
@@ -43,7 +48,22 @@ def get_llm(temperature: float = 0.7, model_name: str = None):
         return _llm_cache[cache_key]
 
     # Instancier et mettre en cache
-    if provider == "groq":
+    if provider == "ollama":
+        try:
+            from langchain_community.chat_models import ChatOllama
+        except ImportError:
+            try:
+                from langchain_ollama import ChatOllama
+            except ImportError:
+                raise ImportError("Veuillez installer langchain-community ou langchain-ollama pour le mode hors-ligne.")
+        
+        base_url = getattr(django_settings, "OLLAMA_BASE_URL", "http://127.0.0.1:11434")
+        llm = ChatOllama(
+            base_url=base_url,
+            model=model,
+            temperature=temperature
+        )
+    elif provider == "groq":
         from langchain_groq import ChatGroq
         llm = ChatGroq(
             model=model,

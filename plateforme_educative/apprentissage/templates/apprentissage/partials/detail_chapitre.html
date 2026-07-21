@@ -850,7 +850,17 @@
         <!-- Video Player -->
         <div class="video-container-wrapper">
             <h3><i class="ti ti-brand-youtube" style="color: var(--accent-danger);"></i> Vidéo Pédagogique</h3>
-            {% if chapitre.url_video %}
+            {% if chapitre.fichier_video and chapitre.fichier_video.name %}
+                <div class="video-frame" style="background: black; display: flex; justify-content: center; align-items: center;">
+                    <video controls style="max-width: 100%; max-height: 100%; border-radius: 12px; outline: none; width: 100%;">
+                        <source src="{{ chapitre.fichier_video.url }}" type="video/mp4">
+                        Votre navigateur ne supporte pas la lecture de vidéos MP4.
+                    </video>
+                </div>
+                <div class="video-source-info" style="color: var(--primary);">
+                    <i class="ti ti-server"></i> Source locale sécurisée (Mode Hors-Ligne)
+                </div>
+            {% elif chapitre.url_video %}
                 {% if is_direct_video %}
                     <video class="video-player-direct" controls>
                         <source src="{{ chapitre.url_video }}" type="video/mp4">

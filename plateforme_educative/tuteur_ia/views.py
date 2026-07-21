@@ -48,10 +48,13 @@ def demarrer_session(request, chapitre_id):
         session_existante = SessionTuteur.objects.filter(
             etudiant=request.user, chapitre=chapitre, statut='EN_COURS'
         ).first()
+        from django.conf import settings
+        offline_mode = getattr(settings, "OFFLINE_MODE", False)
         return render(request, 'tuteur_ia/session.html', {
             'chapitre': chapitre,
             'cours':    cours,
             'session_existante': session_existante,
+            'offline_mode': offline_mode,
         })
 
     # POST — créer la session sans appeler le LLM

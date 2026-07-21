@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     'apprentissage',
     'logistics',
     'tuteur_ia',
+    'anymail',
 ]
 
 MIDDLEWARE = [
@@ -179,15 +180,27 @@ X_FRAME_OPTIONS = 'SAMEORIGIN'
 if DEBUG:
     EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
 else:
-    EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
+    EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'anymail.backends.resend.EmailBackend')
 
-EMAIL_HOST = os.getenv('EMAIL_HOST', 'localhost')
-EMAIL_PORT = int(os.getenv('EMAIL_PORT', 25))
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
-EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'False').lower() in {'1', 'true', 'yes', 'on'}
+ANYMAIL = {
+    "RESEND_API_KEY": os.getenv("RESEND_API_KEY", ""),
+}
+
+EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.resend.com')
+EMAIL_PORT = int(os.getenv('EMAIL_PORT', 465))
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', 'resend')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', os.getenv('RESEND_API_KEY', ''))
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True').lower() in {'1', 'true', 'yes', 'on'}
 EMAIL_TIMEOUT = 5
-DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'webmaster@localhost')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'onboarding@resend.dev')
+
+# Cache
+CACHES = {
+    "default": {
+        "BACKEND": os.getenv("CACHE_BACKEND", "django.core.cache.backends.locmem.LocMemCache"),
+        "LOCATION": os.getenv("REDIS_CACHE_URL", "unique-snowflake"),
+    }
+}
 
 GROQ_API_KEY = os.getenv('GROQ_API_KEY', '')
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY', '')
@@ -201,3 +214,8 @@ CELERY_TASK_DEFAULT_QUEUE = 'pfa_rag_queue_v2'
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_TASK_ALWAYS_EAGER = os.getenv('CELERY_TASK_ALWAYS_EAGER', 'False').lower() in {'1', 'true', 'yes', 'on'}
 CELERY_TASK_EAGER_PROPAGATES = os.getenv('CELERY_TASK_ALWAYS_EAGER', 'False').lower() in {'1', 'true', 'yes', 'on'}
+
+# IA Hybride : Configuration Cloud vs Local (Ollama)
+OFFLINE_MODE = os.getenv('OFFLINE_MODE', 'False').lower() in {'1', 'true', 'yes', 'on'}
+OLLAMA_BASE_URL = os.getenv('OLLAMA_BASE_URL', 'http://127.0.0.1:11434')
+OLLAMA_MODEL = os.getenv('OLLAMA_MODEL', 'gemma4:e4b')

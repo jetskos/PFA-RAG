@@ -97,7 +97,15 @@ class Chapitre(models.Model):
         verbose_name='URL vidéo YouTube',
         blank=True,
         validators=[URLValidator()],
-        help_text='Lien vers la vidéo YouTube'
+        help_text='Lien vers la vidéo YouTube (Mode Cloud)'
+    )
+    fichier_video = models.FileField(
+        upload_to='videos/chapitres/%Y/%m/',
+        null=True,
+        blank=True,
+        verbose_name='Vidéo locale (Offline)',
+        validators=[FileExtensionValidator(allowed_extensions=['mp4', 'webm', 'ogg'])],
+        help_text='Vidéo MP4 pour le fonctionnement hors-ligne sans Internet'
     )
     date_creation = models.DateTimeField(
         auto_now_add=True,

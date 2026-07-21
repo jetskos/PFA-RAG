@@ -64,4 +64,8 @@ urlpatterns = [
     path('formateur/analytics/data/', views.formateur_analytics_data, name='formateur_analytics_data'),
     path('admin/analytics/', views.admin_analytics_dashboard, name='admin_analytics'),
     path('admin/analytics/data/', views.admin_analytics_data, name='admin_analytics_data'),
+
+    # ── Import/Export Offline ─────────────────────────────────────────────────
+    path('formateur/cours/<uuid:cours_id>/export/', views.export_edutech_view, name='export_edutech'),
+    path('formateur/cours/import/', views.import_edutech_view, name='import_edutech'),
 ]
