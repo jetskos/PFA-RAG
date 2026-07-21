@@ -22,6 +22,11 @@ urlpatterns = [
     path('formateur/wizard/step4/', views_wizard.wizard_step4_pdfs, name='wizard_step4'),
     # --------------------
     
+    # --- EXPORTATION / IMPORTATION ---
+    path('formateur/export-multiple/', views.export_multiple_courses_view, name='export_multiple_courses'),
+    path('formateur/export-status/<uuid:job_id>/', views.check_export_status_view, name='check_export_status'),
+    path('formateur/import-multiple/', views.import_multiple_courses_view, name='import_multiple_courses'),
+    
     path('formateur/cours/nouveau/', views.nouveau_cours, name='nouveau_cours'),
     path('formateur/cours/<uuid:pk>/', views.gerer_cours, name='gerer_cours'),
     path('formateur/cours/<uuid:pk>/editer/', views.editer_cours, name='editer_cours'),

@@ -46,6 +46,7 @@
                             </td>
                             <td style="padding:12px 8px; border-bottom:1px solid var(--border); text-align:right;">
                                 <div style="display:flex; gap:0.5rem; justify-content:flex-end;">
+                                    <button type="button" class="btn btn-ghost" style="color: #f59e0b; padding:6px 12px;" onclick="forcePasswordReset('{{ eleve.id }}', '{% url 'dashboard_admin_force_password_reset' eleve.id %}')" title="Réinitialiser le mot de passe (Hors-ligne)"><i class="ti ti-key"></i></button>
                                     <form method="post" action="{% url 'dashboard_admin_remove_student_page' classe.id eleve.id %}">
                                         {% csrf_token %}
                                         <button type="submit" class="btn btn-ghost" style="color: #ef4444; padding:6px 12px;" onclick="return confirm('Retirer cet élève de la classe ?')">Retirer</button>
@@ -117,4 +118,35 @@
         </div>
     </div>
 </section>
+
+<script>
+function forcePasswordReset(userId, url) {
+    if (!confirm('Voulez-vous vraiment générer un nouveau mot de passe aléatoire pour cet utilisateur ?')) {
+        return;
+    }
+    
+    // Get the CSRF token from the first form on the page
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrfToken,
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            alert(data.message + '\n\nIMPORTANT: Veuillez communiquer ce mot de passe à l\'utilisateur. Il devra obligatoirement le changer lors de sa première connexion (Valable 10 heures).');
+        } else {
+            alert('Erreur: ' + (data.error || 'Une erreur est survenue.'));
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        alert('Erreur lors de la requête.');
+    });
+}
+</script>
 {% endblock %}

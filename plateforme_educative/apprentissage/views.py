@@ -101,10 +101,14 @@ def espace_formateur(request):
         total_soumissions=Count('soumissions'),
         soumissions_a_noter=Count('soumissions', filter=Q(soumissions__note__isnull=True))
     ).order_by('-date_creation')
+    # Récupérer l'historique des exports
+    from .models import ExportJob
+    export_jobs = ExportJob.objects.filter(formateur=request.user).order_by('-date_creation')
 
     context = {
         'mes_cours': mes_cours,
         'devoirs': devoirs,
+        'export_jobs': export_jobs,
     }
 
     return render(request, 'apprentissage/espace_formateur.html', context)
@@ -456,7 +460,13 @@ def liste_cours(request):
 @login_required
 def detail_cours(request, cours_id):
     """Affiche un cours avec ses chapitres et documents groupés par type."""
-    cours = get_object_or_404(Cours, id=cours_id, actif=True)
+    cours = get_object_or_404(Cours, id=cours_id)
+
+    # Si le cours est inactif, seul le superuser ou le formateur créateur peut y accéder
+    if not cours.actif:
+        if not request.user.is_superuser:
+            if not getattr(request.user, 'is_formateur', False) or cours.createur != request.user:
+                return render(request, 'apprentissage/cours_inactif.html', status=403)
 
     # Sécurité : empêcher un étudiant d'accéder à un cours hors de son niveau
     if request.user.is_authenticated and not (request.user.is_superuser or request.user.is_formateur):
@@ -1399,5 +1409,83 @@ def supprimer_evenement(request, pk):
     messages.success(request, "L'événement a été supprimé.")
     return redirect('apprentissage:calendrier')
 
+import json
+from django.http import JsonResponse
+from .models import ExportJob
 
+@login_required
+@require_http_methods(['POST'])
+def export_multiple_courses_view(request):
+    """Lance la tâche d'exportation (en arrière-plan) pour plusieurs cours."""
+    if not request.user.is_formateur and request.user.role != 'ADMIN':
+        return JsonResponse({'status': 'error', 'message': "Non autorisé."}, status=403)
+        
+    try:
+        data = json.loads(request.body)
+        course_ids = data.get('course_ids', [])
+        
+        if not course_ids:
+            return JsonResponse({'status': 'error', 'message': "Aucun cours sélectionné."})
+            
+        jobs_created = []
+        for cid in course_ids:
+            cours = get_object_or_404(Cours, pk=cid)
+            
+            # Vérifier les droits
+            if not request.user.is_superuser and request.user.role != 'ADMIN' and cours.createur != request.user:
+                continue
+                
+            job = ExportJob.objects.create(formateur=request.user, cours=cours)
+            
+            from .tasks import export_course_task
+            export_course_task.delay(str(job.id))
+            
+            jobs_created.append({'id': str(job.id), 'cours_titre': cours.titre})
+            
+        if not jobs_created:
+            return JsonResponse({'status': 'error', 'message': "Aucun cours valide n'a pu être exporté."})
+            
+        return JsonResponse({'status': 'success', 'jobs': jobs_created, 'message': f"{len(jobs_created)} export(s) lancé(s)."})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
 
+@login_required
+def check_export_status_view(request, job_id):
+    """Vérifie l'état d'un export."""
+    job = get_object_or_404(ExportJob, pk=job_id, formateur=request.user)
+    data = {
+        'status': job.status,
+        'erreur': job.erreur,
+        'url': job.fichier_zip.url if job.fichier_zip else None
+    }
+    return JsonResponse(data)
+
+import os
+from django.core.files.storage import FileSystemStorage
+
+@login_required
+@require_http_methods(['POST'])
+def import_multiple_courses_view(request):
+    """Reçoit des fichiers ZIP et lance les tâches d'importation en arrière-plan."""
+    if not request.user.is_formateur and request.user.role != 'ADMIN':
+        return JsonResponse({'status': 'error', 'message': "Non autorisé."}, status=403)
+        
+    try:
+        files = request.FILES.getlist('zip_files')
+        if not files:
+            return JsonResponse({'status': 'error', 'message': "Aucun fichier reçu."})
+            
+        # Sauvegarder temporairement les fichiers ZIP
+        fs = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'imports', 'temp'))
+        saved_files = []
+        for f in files:
+            filename = fs.save(f.name, f)
+            saved_files.append(os.path.join(fs.location, filename))
+            
+        # Lancer la tâche Celery pour l'importation
+        from .tasks import import_courses_task
+        import_courses_task.delay(request.user.id, saved_files)
+        
+        return JsonResponse({'status': 'success', 'message': f"{len(saved_files)} fichier(s) en cours d'importation. Les cours apparaîtront bientôt dans votre tableau de bord."})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)

@@ -20,6 +20,7 @@
     <link rel="stylesheet" href="{% static 'core/css/formateur.css' %}">
     <link rel="stylesheet" href="{% static 'core/css/apprentissage.css' %}">
     <link rel="stylesheet" href="{% static 'core/css/tuteur.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/responsive.css' %}">
 
     <script src="https://unpkg.com/htmx.org@1.9.12" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js" defer></script>
@@ -28,20 +29,32 @@
 
 <body>
 
+    <!-- Backdrop for mobile menu -->
+    <div class="nav-backdrop" id="nav-backdrop" onclick="toggleMobileMenu()"></div>
+
     <header class="site-header">
         <div class="header-inner">
-            <a href="{% url 'accueil' %}" class="brand">
-                <div class="brand-icon" style="background: transparent; box-shadow: none; width: auto; height: auto;">
-                    <img src="{% static 'images/logo_white.png' %}" alt="EduTech Logo" style="height: 54px; object-fit: contain;">
-                </div>
-                <div>
-                    <div class="brand-name">EduTech</div>
-                    <div class="brand-tagline">IoT & IA Platform</div>
-                </div>
-            </a>
+            <div style="display:flex; align-items:center; gap:1rem;">
+                <button id="mobile-menu-btn" class="mobile-only" onclick="toggleMobileMenu()" aria-label="Menu">
+                    <i class="ti ti-menu-2"></i>
+                </button>
+                <a href="{% url 'accueil' %}" class="brand">
+                    <div class="brand-icon" style="background: transparent; box-shadow: none; width: auto; height: auto;">
+                        <img src="{% static 'images/logo_white.png' %}" alt="EduTech Logo" style="height: 54px; object-fit: contain;">
+                    </div>
+                    <div>
+                        <div class="brand-name">EduTech</div>
+                        <div class="brand-tagline">IoT & IA Platform</div>
+                    </div>
+                </a>
+            </div>
 
             {% with current_url=request.resolver_match.url_name %}
-            <nav class="main-nav">
+            <nav class="main-nav" id="main-nav">
+                <!-- Close button inside the offcanvas for mobile -->
+                <button class="mobile-only" onclick="toggleMobileMenu()" style="position:absolute; top:1rem; right:1rem; background:transparent; border:none; font-size:1.5rem; color:var(--text-primary); cursor:pointer;">
+                    <i class="ti ti-x"></i>
+                </button>
                 {% if user.is_authenticated and user.role == 'ADMIN' %}
                 <a href="{% url 'dashboard_admin' %}"
                     class="{% if current_url == 'dashboard_admin' %}active{% endif %}">
@@ -373,6 +386,14 @@
         document.body.addEventListener("closeModal", function () {
             document.getElementById("modal-container").innerHTML = "";
         });
+
+        // Fonction pour gérer le menu mobile
+        function toggleMobileMenu() {
+            const nav = document.getElementById('main-nav');
+            const backdrop = document.getElementById('nav-backdrop');
+            nav.classList.toggle('open');
+            backdrop.classList.toggle('open');
+        }
     </script>
 
     <div id="modal-container"></div>
