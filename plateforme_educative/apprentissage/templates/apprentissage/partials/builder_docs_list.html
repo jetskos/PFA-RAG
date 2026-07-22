@@ -1,0 +1,44 @@
+{% load static %}
+{% if documents %}
+{% for doc in documents %}
+<div class="doc-item-builder" id="doc-row-{{ doc.id }}">
+    <div class="doc-icon-builder {% if 'pdf' in doc.fichier_pdf.name|lower %}pdf{% else %}pdf{% endif %}">
+        <i class="ti ti-file-type-pdf"></i>
+    </div>
+    <div class="doc-info-builder">
+        <div class="doc-name-builder">{{ doc.titre }}</div>
+        <div class="doc-meta-builder">{{ doc.get_type_document_display }}</div>
+    </div>
+    <div class="doc-actions-builder">
+        <a href="{{ doc.fichier_pdf.url }}" target="_blank" class="wsbtn-icon" title="Visualiser">
+            <i class="ti ti-eye"></i>
+        </a>
+        <a href="{% url 'apprentissage:telecharger_document' doc.id %}" class="wsbtn-icon" title="Télécharger">
+            <i class="ti ti-download"></i>
+        </a>
+        <button class="wsbtn-icon" title="Modifier"
+                hx-get="{% url 'apprentissage:editer_document' doc.id %}"
+                hx-target="#builder-drawer-body"
+                hx-swap="innerHTML"
+                onclick="openBuilderDrawer('Modifier le document', 'doc')">
+            <i class="ti ti-pencil"></i>
+        </button>
+        <form method="post" action="{% url 'apprentissage:supprimer_document' doc.id %}" 
+              style="display:inline"
+              hx-post="{% url 'apprentissage:supprimer_document' doc.id %}"
+              hx-target="#docs-{{ doc.chapitre.id }}"
+              hx-swap="innerHTML"
+              onsubmit="return confirm('Supprimer ce document ?')">
+            {% csrf_token %}
+            <button type="submit" class="wsbtn-icon danger" title="Supprimer">
+                <i class="ti ti-trash"></i>
+            </button>
+        </form>
+    </div>
+</div>
+{% endfor %}
+{% else %}
+<div class="no-docs-hint">
+    <i class="ti ti-file-off"></i> Aucun document — ajoutez un PDF ci-dessous.
+</div>
+{% endif %}

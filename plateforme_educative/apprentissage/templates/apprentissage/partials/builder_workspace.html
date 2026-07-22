@@ -1,0 +1,324 @@
+{% load static %}
+{% load humanize %}
+{% with nb_chapitres=chapitres.count nb_docs=0 %}
+<div class="ws-course-header">
+    <div class="ws-top-bar">
+        <div class="ws-title-block">
+            <div class="ws-icon">
+                {% if cours.image_couverture %}
+                    <img src="{{ cours.image_couverture.url }}" alt="{{ cours.titre }}" style="width:100%;height:100%;object-fit:cover;border-radius:12px;">
+                {% else %}
+                    <i class="ti ti-certificate"></i>
+                {% endif %}
+            </div>
+            <div style="flex:1;min-width:0">
+                <div class="ws-course-title"
+                     data-cours-id="{{ cours.id }}"
+                     contenteditable="false"
+                     id="title-{{ cours.id }}">{{ cours.titre }}</div>
+                <div class="ws-course-desc"
+                     data-cours-id="{{ cours.id }}"
+                     contenteditable="false"
+                     id="desc-{{ cours.id }}">{{ cours.description|truncatechars:120 }}</div>
+                <div style="display:flex;align-items:center;gap:0.6rem;margin-top:0.4rem">
+                    <span class="niveau-badge niveau-{{ cours.niveau.code }}">{{ cours.niveau.nom }}</span>
+                    <span class="meta-chip"><i class="ti ti-books"></i> {{ nb_chapitres }} chapitre{{ nb_chapitres|pluralize }}</span>
+                    <span class="meta-chip"><i class="ti ti-clock"></i> Modifié {{ cours.date_modification|naturaltime }}</span>
+                </div>
+            </div>
+        </div>
+        <div class="ws-actions-bar">
+            <!-- Toggle Actif -->
+            <div class="toggle-group" title="Activer / Désactiver le cours">
+                <span class="toggle-label">{{ cours.actif|yesno:"Actif,Inactif" }}</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" class="course-toggle" 
+                           data-url="{% url 'apprentissage:toggle_cours_actif' cours.pk %}"
+                           data-label-el="this.closest('.toggle-group').querySelector('.toggle-label')"
+                           {% if cours.actif %}checked{% endif %}
+                           onchange="handleCourseToggle(this)">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <a href="{% url 'apprentissage:detail_cours' cours.id %}" class="wsbtn wsbtn-ghost" target="_blank">
+                <i class="ti ti-eye"></i> Voir
+            </a>
+            <a href="{% url 'apprentissage:editer_cours' cours.pk %}" class="wsbtn wsbtn-ghost">
+                <i class="ti ti-settings"></i> Paramètres
+            </a>
+        </div>
+    </div>
+    <!-- Tabs -->
+    <div class="ws-tabs">
+        <div class="ws-tab active" onclick="switchWsTab(this, 'tab-chapitres')">
+            <i class="ti ti-layout-list"></i> Chapitres <span class="tab-count">{{ nb_chapitres }}</span>
+        </div>
+        <div class="ws-tab" onclick="switchWsTab(this, 'tab-devoirs')">
+            <i class="ti ti-clipboard-list"></i> Devoirs
+        </div>
+        <div class="ws-tab" onclick="switchWsTab(this, 'tab-inscrits')">
+            <i class="ti ti-users"></i> Inscrits <span class="tab-count">{{ progressions.count }}</span>
+        </div>
+    </div>
+</div>
+
+<!-- ── TAB CHAPITRES ── -->
+<div class="ws-tab-content" id="tab-chapitres">
+    <div class="ws-section-header">
+        <span class="ws-section-title">Chapitres du cours</span>
+        <div style="display:flex;gap:0.4rem">
+            <button class="wsbtn wsbtn-ghost" onclick="expandAllChapters()">
+                <i class="ti ti-arrows-maximize"></i> Tout déplier
+            </button>
+        </div>
+    </div>
+
+    <div id="builder-chapitres-{{ cours.id }}" class="sortable-chapitres">
+        {% for chapitre in chapitres %}
+        <div class="chapter-card" data-id="{{ chapitre.id }}">
+            <div class="chapter-card-header" onclick="toggleExpandChapter('{{ chapitre.id }}')">
+                <span class="drag-handle" onclick="event.stopPropagation()" title="Glisser pour réordonner">
+                    <i class="ti ti-grip-vertical"></i>
+                </span>
+                <span class="ch-num">{{ chapitre.ordre }}</span>
+                <span class="ch-title">{{ chapitre.titre }}</span>
+                <div class="ch-badges">
+                    {% with doc_count=chapitre.documents.count %}
+                    {% if doc_count > 0 %}
+                    <span class="cbadge cbadge-blue"><i class="ti ti-paperclip"></i> {{ doc_count }}</span>
+                    {% endif %}
+                    {% endwith %}
+                    {% with dev_count=chapitre.devoirs.count %}
+                    {% if dev_count > 0 %}
+                    <span class="cbadge cbadge-purple"><i class="ti ti-clipboard"></i> {{ dev_count }}</span>
+                    {% endif %}
+                    {% endwith %}
+                    <span class="cbadge {% if chapitre.actif %}cbadge-green{% else %}cbadge-grey{% endif %}"
+                          id="ch-status-badge-{{ chapitre.id }}">
+                        {{ chapitre.actif|yesno:"Actif,Inactif" }}
+                    </span>
+                </div>
+                <div class="ch-actions" onclick="event.stopPropagation()">
+                    <label class="toggle-switch sm-toggle" title="Activer / Désactiver">
+                        <input type="checkbox" 
+                               data-url="{% url 'apprentissage:toggle_chapitre_actif' chapitre.id %}"
+                               {% if chapitre.actif %}checked{% endif %}
+                               onchange="handleChapterToggle(this, '{{ chapitre.id }}')">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <button class="wsbtn-icon" title="Modifier le chapitre"
+                            hx-get="{% url 'apprentissage:editer_chapitre' chapitre.id %}"
+                            hx-target="#builder-drawer-body"
+                            hx-swap="innerHTML"
+                            onclick="openBuilderDrawer('Modifier le chapitre', 'edit')">
+                        <i class="ti ti-pencil"></i>
+                    </button>
+                    <button class="wsbtn-icon danger" title="Supprimer le chapitre"
+                            onclick="confirmDeleteChapter('{{ chapitre.id }}', '{{ cours.id }}')">
+                        <i class="ti ti-trash"></i>
+                    </button>
+                </div>
+                <button class="wsbtn-icon" onclick="event.stopPropagation();toggleExpandChapter('{{ chapitre.id }}')" style="margin-left:0.25rem">
+                    <i class="ti ti-chevron-down ch-chevron" id="chevron-{{ chapitre.id }}"></i>
+                </button>
+            </div>
+
+            <!-- Chapitre expand section -->
+            <div class="chapter-expand-body" id="expand-{{ chapitre.id }}">
+                {% if chapitre.description %}
+                <p class="ch-desc-text">{{ chapitre.description }}</p>
+                {% endif %}
+
+                {% if chapitre.url_video %}
+                <div class="resource-badge resource-yt">
+                    <i class="ti ti-brand-youtube"></i>
+                    <a href="{{ chapitre.url_video }}" target="_blank" rel="noopener">{{ chapitre.url_video|truncatechars:60 }}</a>
+                </div>
+                {% endif %}
+                {% if chapitre.video_fichier %}
+                <div class="resource-badge resource-video">
+                    <i class="ti ti-movie"></i>
+                    <span>Vidéo MP4 hors-ligne disponible</span>
+                    <a href="{{ chapitre.video_fichier.url }}" target="_blank" class="resource-preview-link">
+                        <i class="ti ti-player-play"></i> Prévisualiser
+                    </a>
+                </div>
+                {% endif %}
+
+                <!-- Documents list -->
+                <div id="docs-{{ chapitre.id }}">
+                    {% include 'apprentissage/partials/builder_docs_list.html' with chapitre=chapitre documents=chapitre.documents.all %}
+                </div>
+
+                <!-- Add doc button -->
+                <button class="add-doc-btn"
+                        hx-get="{% url 'apprentissage:ajouter_document' chapitre.id %}"
+                        hx-target="#builder-drawer-body"
+                        hx-swap="innerHTML"
+                        onclick="openBuilderDrawer('Ajouter un document', 'doc')">
+                    <i class="ti ti-plus"></i> Ajouter PDF / Document
+                </button>
+            </div>
+        </div>
+        {% empty %}
+        <div class="empty-state-builder" id="empty-chapitres-msg">
+            <i class="ti ti-books" style="font-size:2rem;color:var(--brand-clr);opacity:0.4"></i>
+            <p>Aucun chapitre. Commencez par en créer un.</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <button class="add-chapter-btn-main"
+            hx-get="{% url 'apprentissage:ajouter_chapitre' cours.pk %}"
+            hx-target="#builder-drawer-body"
+            hx-swap="innerHTML"
+            onclick="openBuilderDrawer('Ajouter un chapitre', 'chapitre')">
+        <i class="ti ti-plus"></i> Ajouter un chapitre
+    </button>
+</div>
+
+<!-- ── TAB DEVOIRS ── -->
+<div class="ws-tab-content" id="tab-devoirs" style="display:none">
+    <div class="ws-section-header">
+        <span class="ws-section-title">Devoirs du cours</span>
+    </div>
+    {% with all_devoirs=chapitres %}
+    <div class="devoirs-list">
+        {% for chapitre in chapitres %}
+        {% with devoirs=chapitre.devoirs.all %}
+        {% if devoirs %}
+        <div class="devoir-group-title">{{ chapitre.titre }}</div>
+        {% for devoir in devoirs %}
+        <div class="devoir-row">
+            <div class="devoir-info">
+                <span class="devoir-title">{{ devoir.titre }}</span>
+                <span class="devoir-meta">/{{ devoir.note_max }} pts
+                    {% if devoir.date_limite %} · ⏰ {{ devoir.date_limite|date:"d/m/Y H:i" }}{% endif %}
+                </span>
+            </div>
+            <div class="devoir-actions">
+                <a href="{% url 'apprentissage:devoir_detail' devoir_id=devoir.pk %}" class="wsbtn wsbtn-ghost" title="Soumissions">
+                    <i class="ti ti-eye"></i>
+                </a>
+                <a href="{% url 'apprentissage:devoir_editer' devoir_id=devoir.pk %}" class="wsbtn wsbtn-ghost" title="Modifier">
+                    <i class="ti ti-pencil"></i>
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+        {% empty %}
+        <div class="empty-state-builder">
+            <i class="ti ti-clipboard-list" style="font-size:2rem;opacity:0.4"></i>
+            <p>Aucun devoir créé. Dépliez un chapitre pour en créer un.</p>
+        </div>
+        {% endfor %}
+    </div>
+    {% endwith %}
+</div>
+
+<!-- ── TAB INSCRITS ── -->
+<div class="ws-tab-content" id="tab-inscrits" style="display:none">
+    <div class="ws-section-header">
+        <span class="ws-section-title">Étudiants inscrits ({{ progressions.count }})</span>
+        <a href="{% url 'apprentissage:detail_cours' cours.id %}" class="wsbtn wsbtn-ghost" target="_blank">
+            <i class="ti ti-external-link"></i> Voir le cours public
+        </a>
+    </div>
+
+    {% if progressions %}
+    <div style="display:flex;flex-direction:column;gap:6px;">
+        {% for prog in progressions %}
+        {% with pct=prog.pourcentage etudiant=prog.etudiant %}
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:0.75rem 1rem;display:flex;align-items:center;gap:0.85rem;transition:var(--transition)" 
+             onmouseover="this.style.borderColor='#d1d5db'" onmouseout="this.style.borderColor='var(--border)'">
+            <!-- Avatar -->
+            <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--brand-clr),#7c3aed);color:white;display:flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:700;flex-shrink:0">
+                {{ etudiant.first_name|first|upper }}{{ etudiant.last_name|first|upper }}
+            </div>
+            <!-- Info -->
+            <div style="flex:1;min-width:0">
+                <div style="font-size:0.84rem;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+                    {{ etudiant.get_full_name }}
+                </div>
+                <div style="font-size:0.72rem;color:var(--text-4);display:flex;align-items:center;gap:0.5rem;margin-top:0.1rem">
+                    {% if etudiant.classe %}<span><i class="ti ti-building-community"></i> {{ etudiant.classe.nom }}</span>{% endif %}
+                    <span><i class="ti ti-clock"></i> {{ prog.date_derniere_consultation|naturaltime }}</span>
+                </div>
+            </div>
+            <!-- Progress -->
+            <div style="width:110px;flex-shrink:0;text-align:right">
+                <div style="display:flex;justify-content:space-between;font-size:0.72rem;font-weight:700;color:{% if pct >= 75 %}#16a34a{% elif pct >= 40 %}#d97706{% else %}var(--text-4){% endif %};margin-bottom:3px">
+                    <span>{{ prog.chapitres_valides.count }}/{{ nb_chapitres_total }} chap.</span>
+                    <span>{{ pct }}%</span>
+                </div>
+                <div style="height:5px;background:#e5e7eb;border-radius:999px;overflow:hidden">
+                    <div style="height:100%;width:{{ pct }}%;background:{% if pct >= 75 %}#22c55e{% elif pct >= 40 %}#f59e0b{% else %}#6b7280{% endif %};border-radius:999px;transition:width 0.5s"></div>
+                </div>
+            </div>
+        </div>
+        {% endwith %}
+        {% endfor %}
+    </div>
+    <!-- Summary stats -->
+    <div style="margin-top:1.25rem;display:flex;gap:0.75rem;flex-wrap:wrap">
+        {% with total=progressions.count %}
+        <div style="flex:1;min-width:120px;background:var(--brand-light);border:1px solid rgba(79,70,229,0.15);border-radius:var(--radius);padding:0.75rem;text-align:center">
+            <div style="font-size:1.4rem;font-weight:900;color:var(--brand-clr)">{{ total }}</div>
+            <div style="font-size:0.72rem;font-weight:600;color:var(--brand-clr);margin-top:0.1rem">Inscrits</div>
+        </div>
+        <div style="flex:1;min-width:120px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:var(--radius);padding:0.75rem;text-align:center">
+            <div style="font-size:1.4rem;font-weight:900;color:#16a34a" id="stat-termines-{{ cours.id }}">–</div>
+            <div style="font-size:0.72rem;font-weight:600;color:#16a34a;margin-top:0.1rem">Terminé (≥75%)</div>
+        </div>
+        <div style="flex:1;min-width:120px;background:#fffbeb;border:1px solid #fde68a;border-radius:var(--radius);padding:0.75rem;text-align:center">
+            <div style="font-size:1.4rem;font-weight:900;color:#d97706" id="stat-en-cours-{{ cours.id }}">–</div>
+            <div style="font-size:0.72rem;font-weight:600;color:#d97706;margin-top:0.1rem">En cours (40-74%)</div>
+        </div>
+        {% endwith %}
+    </div>
+    <script>
+    (function() {
+        // Compute stats from rendered bars
+        const bars = document.querySelectorAll('#tab-inscrits [style*="width:"]');
+        let done = 0, inProgress = 0;
+        bars.forEach(b => {
+            const m = b.style.width.match(/(\d+)%/);
+            if (m) {
+                const p = parseInt(m[1]);
+                if (p >= 75) done++;
+                else if (p >= 40) inProgress++;
+            }
+        });
+        const dEl = document.getElementById('stat-termines-{{ cours.id }}');
+        const iEl = document.getElementById('stat-en-cours-{{ cours.id }}');
+        if (dEl) dEl.textContent = done;
+        if (iEl) iEl.textContent = inProgress;
+    })();
+    </script>
+    {% else %}
+    <div class="empty-state-builder">
+        <i class="ti ti-user-off" style="font-size:2.5rem;opacity:0.3;color:var(--brand-clr)"></i>
+        <p>Aucun étudiant n'a encore commencé ce cours.</p>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+(function() {
+    // Init SortableJS for this cours
+    const el = document.getElementById('builder-chapitres-{{ cours.id }}');
+    if (el && typeof Sortable !== 'undefined') {
+        Sortable.create(el, {
+            handle: '.drag-handle',
+            animation: 200,
+            ghostClass: 'sortable-ghost',
+            onEnd: function(evt) {
+                showBuilderToast('✅ Ordre mis à jour', 'success');
+            }
+        });
+    }
+})();
+</script>
+{% endwith %}

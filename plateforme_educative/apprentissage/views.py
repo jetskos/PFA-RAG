@@ -394,6 +394,51 @@ def supprimer_document(request, document_id):
 
 
 @login_required
+@FormateurCoursRequiredMixin.as_decorator()
+@require_http_methods(['POST'])
+def toggle_cours_actif(request, pk):
+    """Toggle le statut actif/inactif d'un cours via HTMX (Course Builder)."""
+    cours = get_object_or_404(Cours, pk=pk)
+    cours.actif = not cours.actif
+    cours.save(update_fields=['actif'])
+    from django.http import JsonResponse
+    return JsonResponse({'actif': cours.actif, 'cours_id': str(cours.id)})
+
+
+@login_required
+@FormateurChapitreRequiredMixin.as_decorator()
+@require_http_methods(['POST'])
+def toggle_chapitre_actif(request, chapitre_id):
+    """Toggle le statut actif/inactif d'un chapitre via HTMX (Course Builder)."""
+    chapitre = get_object_or_404(Chapitre, pk=chapitre_id)
+    chapitre.actif = not chapitre.actif
+    chapitre.save(update_fields=['actif'])
+    from django.http import JsonResponse
+    return JsonResponse({'actif': chapitre.actif, 'chapitre_id': str(chapitre.id)})
+
+
+@login_required
+@FormateurCoursRequiredMixin.as_decorator()
+def builder_cours_detail(request, pk):
+    """Retourne le panneau de détails d'un cours pour le Course Builder (HTMX)."""
+    cours = get_object_or_404(Cours, pk=pk)
+    chapitres = cours.chapitres.prefetch_related('documents', 'devoirs').order_by('ordre')
+    # Progressions des étudiants pour l'onglet "Inscrits"
+    progressions = cours.progressions.select_related(
+        'etudiant', 'etudiant__classe'
+    ).prefetch_related('chapitres_valides').order_by('-date_derniere_consultation')
+    nb_chapitres_total = chapitres.count()
+    context = {
+        'cours': cours,
+        'chapitres': chapitres,
+        'progressions': progressions,
+        'nb_chapitres_total': nb_chapitres_total,
+        'can_edit_documents': True,
+    }
+    return render(request, 'apprentissage/partials/builder_workspace.html', context)
+
+
+@login_required
 def liste_cours(request):
     """Affiche la liste de tous les cours actifs (et brouillons pour les créateurs)."""
     q = request.GET.get('q', '').strip()

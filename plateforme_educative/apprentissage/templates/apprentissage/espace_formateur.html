@@ -1,1412 +1,1357 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}Espace Formateur | EduTech{% endblock %}
+{% load humanize %}
+{% block title %}Course Builder | EduTech{% endblock %}
 
 {% block content %}
 <style>
-    /* ═══════════════════════════════════════════
-       ESPACE FORMATEUR — PREMIUM REDESIGN
-    ═══════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════
+   COURSE BUILDER — INTEGRATED DJANGO INTERFACE
+   ═══════════════════════════════════════════════ */
 
-    /* ── HERO BANNER ── */
-    .formateur-hero {
-        position: relative;
-        border-radius: 24px;
-        overflow: hidden;
-        padding: 2.5rem 2.5rem 2rem;
-        margin-bottom: 2rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 2rem;
-        background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #1a3a2a 100%);
-        box-shadow: 0 20px 60px -10px rgba(13, 148, 136, 0.3);
-    }
-    .formateur-hero::before {
-        content: '';
-        position: absolute;
-        top: -80px; right: -80px;
-        width: 320px; height: 320px;
-        background: radial-gradient(circle, rgba(13,148,136,0.25) 0%, transparent 70%);
-        border-radius: 50%;
-        animation: glowPulse 5s ease-in-out infinite alternate;
-    }
-    .formateur-hero::after {
-        content: '';
-        position: absolute;
-        bottom: -60px; left: 30%;
-        width: 200px; height: 200px;
-        background: radial-gradient(circle, rgba(59,130,246,0.18) 0%, transparent 70%);
-        border-radius: 50%;
-        animation: glowPulse 7s ease-in-out infinite alternate-reverse;
-    }
-    @keyframes glowPulse {
-        from { transform: scale(1); opacity: 0.5; }
-        to   { transform: scale(1.3); opacity: 1; }
-    }
-    .hero-left { position: relative; z-index: 2; }
-    .hero-eyebrow {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        background: rgba(13,148,136,0.2);
-        border: 1px solid rgba(13,148,136,0.4);
-        color: #2dd4bf;
-        font-size: 0.72rem;
-        font-weight: 700;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-        padding: 4px 12px;
-        border-radius: 999px;
-        margin-bottom: 0.75rem;
-        backdrop-filter: blur(8px);
-    }
-    .hero-title {
-        font-size: 2.2rem;
-        font-weight: 900;
-        color: #fff;
-        letter-spacing: -0.03em;
-        line-height: 1.2;
-        margin: 0 0 0.5rem;
-    }
-    .hero-title span {
-        background: linear-gradient(90deg, #2dd4bf, #60a5fa);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-    }
-    .hero-subtitle {
-        color: rgba(255,255,255,0.65);
-        font-size: 0.95rem;
-        margin: 0;
-        line-height: 1.5;
-    }
+:root {
+    --brand-clr: #4f46e5;
+    --brand-light: #eef2ff;
+    --brand-hover: #4338ca;
+    --teal: #0d9488;
+    --success: #22c55e;
+    --danger: #ef4444;
+    --danger-light: #fef2f2;
+    --surface: #ffffff;
+    --surface-alt: #f8f9fb;
+    --border: #e5e7eb;
+    --text: #111827;
+    --text-2: #374151;
+    --text-3: #6b7280;
+    --text-4: #9ca3af;
+    --sidebar-w: 330px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,.07);
+    --shadow-md: 0 4px 12px rgba(0,0,0,.08);
+    --shadow-lg: 0 10px 30px rgba(0,0,0,.12);
+    --radius: 10px;
+    --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
 
-    /* Hero stats */
-    .hero-stats-row {
-        display: flex;
-        gap: 1.25rem;
-        margin-top: 1.5rem;
-    }
-    .hero-stat-pill {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        background: rgba(255,255,255,0.07);
-        border: 1px solid rgba(255,255,255,0.12);
-        border-radius: 12px;
-        padding: 0.5rem 1rem;
-        backdrop-filter: blur(8px);
-    }
-    .hero-stat-pill i { color: #2dd4bf; font-size: 1.1rem; }
-    .hero-stat-pill span { color: rgba(255,255,255,0.9); font-size: 0.88rem; font-weight: 600; }
-    .hero-stat-pill strong { color: #fff; font-weight: 800; }
+/* ── LAYOUT ── */
+.builder-shell {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 72px); /* header height */
+    background: var(--surface-alt);
+}
 
-    /* Hero actions */
-    .hero-right {
-        position: relative;
-        z-index: 2;
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
-        flex-shrink: 0;
-    }
-    .btn-hero-primary {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 0.75rem 1.5rem;
-        border-radius: 14px;
-        background: linear-gradient(135deg, #0D9488, #0F766E);
-        color: white;
-        font-weight: 700;
-        font-size: 0.9rem;
-        text-decoration: none;
-        transition: all 0.25s;
-        box-shadow: 0 6px 20px rgba(13,148,136,0.35);
-        white-space: nowrap;
-    }
-    .btn-hero-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 28px rgba(13,148,136,0.45);
-        filter: brightness(1.08);
-    }
-    .btn-hero-secondary {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 0.7rem 1.5rem;
-        border-radius: 14px;
-        background: rgba(255,255,255,0.08);
-        border: 1.5px solid rgba(255,255,255,0.18);
-        color: rgba(255,255,255,0.9);
-        font-weight: 600;
-        font-size: 0.88rem;
-        text-decoration: none;
-        backdrop-filter: blur(8px);
-        transition: all 0.2s;
-        white-space: nowrap;
-    }
-    .btn-hero-secondary:hover {
-        background: rgba(255,255,255,0.15);
-        border-color: rgba(45,212,191,0.4);
-        color: #2dd4bf;
-    }
+/* ── TOPBAR ── */
+.builder-topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0.65rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-shrink: 0;
+    box-shadow: var(--shadow-sm);
+}
 
-    /* ── TAB NAV ── */
-    .tabs-nav {
-        display: flex;
-        gap: 0.5rem;
-        border-bottom: 2px solid var(--border-light, #e8edf3);
-        margin-bottom: 2rem;
-        padding-bottom: 0;
-    }
-    .tab-item {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 0.75rem 1.5rem;
-        border-radius: 12px 12px 0 0;
-        font-weight: 700;
-        font-size: 0.9rem;
-        color: var(--text-muted, #64748b);
-        cursor: pointer;
-        border: none;
-        background: transparent;
-        transition: all 0.2s;
-        position: relative;
-        margin-bottom: -2px;
-        border-bottom: 2px solid transparent;
-    }
-    .tab-item:hover {
-        color: #0D9488;
-        background: rgba(13,148,136,0.05);
-    }
-    .tab-item.active {
-        color: #0D9488;
-        border-bottom: 2px solid #0D9488;
-        background: rgba(13,148,136,0.06);
-    }
-    .tab-item .tab-badge {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 20px;
-        height: 20px;
-        padding: 0 6px;
-        border-radius: 999px;
-        font-size: 0.7rem;
-        font-weight: 800;
-        background: var(--bg-surface-alt, #f1f5f9);
-        color: var(--text-muted, #64748b);
-    }
-    .tab-item.active .tab-badge {
-        background: #0D9488;
-        color: white;
-    }
-    .tab-item.has-alert .tab-badge {
-        background: #ef4444;
-        color: white;
-        animation: pulseRed 2s ease infinite;
-    }
-    @keyframes pulseRed {
-        0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
-        50% { box-shadow: 0 0 0 4px rgba(239,68,68,0.2); }
-    }
+.builder-topbar-title {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
 
-    /* ── COURSE CARDS GRID ── */
-    .formateur-courses-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-        gap: 1.5rem;
-    }
+.builder-topbar-subtitle {
+    font-size: 0.78rem;
+    color: var(--text-3);
+    font-weight: 500;
+}
 
-    .fc-card {
-        background: var(--bg-surface, #fff);
-        border-radius: 20px;
-        overflow: hidden;
-        border: 1.5px solid var(--border-light, #e8edf3);
-        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
-        display: flex;
-        flex-direction: column;
-        position: relative;
-    }
-    .fc-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 16px 40px rgba(0,0,0,0.1);
-        border-color: rgba(13,148,136,0.3);
-    }
+.builder-topbar-actions {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
 
-    /* Cover */
-    .fc-cover {
-        position: relative;
-        height: 170px;
-        background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-        overflow: hidden;
-        display: flex;
-        align-items: flex-end;
-        padding: 1rem;
-    }
-    .fc-cover img {
-        position: absolute;
-        inset: 0;
-        width: 100%; height: 100%;
-        object-fit: cover;
-        transition: transform 0.4s ease;
-    }
-    .fc-card:hover .fc-cover img {
-        transform: scale(1.05);
-    }
-    .fc-cover-overlay {
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(to top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.1) 60%);
-    }
-    .fc-cover-icon {
-        position: absolute;
-        inset: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    .fc-cover-icon i {
-        font-size: 3.5rem;
-        color: rgba(255,255,255,0.12);
-    }
-    .fc-cover-meta {
-        position: relative;
-        z-index: 2;
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-end;
-        width: 100%;
-    }
-    .fc-badge-niveau {
-        background: rgba(255,255,255,0.95);
-        color: #0f172a;
-        font-size: 0.68rem;
-        font-weight: 800;
-        padding: 3px 10px;
-        border-radius: 8px;
-        letter-spacing: 0.04em;
-    }
-    .fc-badge-statut {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        font-size: 0.72rem;
-        font-weight: 700;
-        padding: 3px 10px;
-        border-radius: 8px;
-    }
-    .fc-badge-statut.published {
-        background: rgba(16,185,129,0.85);
-        color: white;
-    }
-    .fc-badge-statut.draft {
-        background: rgba(0,0,0,0.5);
-        color: rgba(255,255,255,0.8);
-        border: 1px solid rgba(255,255,255,0.15);
-    }
+/* ── MAIN CONTENT ── */
+.builder-content {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
 
-    /* Card body */
-    .fc-body {
-        padding: 1.25rem 1.35rem;
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
-    }
-    .fc-title {
-        font-size: 1.05rem;
-        font-weight: 800;
-        color: var(--text-primary, #0f172a);
-        line-height: 1.3;
-        margin: 0;
-    }
+/* ── SIDEBAR ── */
+.builder-sidebar {
+    width: var(--sidebar-w);
+    flex-shrink: 0;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
 
-    .fc-info-row {
-        display: flex;
-        gap: 1rem;
-        flex-wrap: wrap;
-    }
-    .fc-info-item {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        font-size: 0.8rem;
-        color: var(--text-muted, #64748b);
-        font-weight: 500;
-    }
-    .fc-info-item i { font-size: 0.95rem; }
+.sidebar-head {
+    padding: 1rem 1rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+}
 
-    .fc-progress-bar-wrap {
-        background: var(--bg-surface-alt, #f1f5f9);
-        border-radius: 999px;
-        height: 4px;
-        overflow: hidden;
-    }
-    .fc-progress-bar {
-        height: 100%;
-        background: linear-gradient(90deg, #0D9488, #2dd4bf);
-        border-radius: 999px;
-        transition: width 0.6s ease;
-    }
+.sidebar-head-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.6rem;
+}
 
-    /* Card footer */
-    .fc-footer {
-        display: flex;
-        gap: 0.5rem;
-        align-items: center;
-        padding: 0.9rem 1.35rem;
-        border-top: 1px solid var(--border-light, #f1f5f9);
-        background: var(--bg-surface-alt, #f8fafc);
-    }
-    .fc-btn-manage {
-        flex: 1;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-        padding: 0.6rem 1rem;
-        border-radius: 10px;
-        background: linear-gradient(135deg, #0D9488, #0F766E);
-        color: white;
-        font-weight: 700;
-        font-size: 0.85rem;
-        text-decoration: none;
-        transition: all 0.2s;
-    }
-    .fc-btn-manage:hover {
-        filter: brightness(1.1);
-        transform: translateY(-1px);
-    }
-    .fc-btn-icon {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 36px; height: 36px;
-        border-radius: 8px;
-        border: 1.5px solid var(--border-default, #cbd5e1);
-        color: var(--text-secondary, #475569);
-        background: var(--bg-surface, white);
-        text-decoration: none;
-        transition: all 0.2s;
-        cursor: pointer;
-    }
-    .fc-btn-icon:hover {
-        border-color: #0D9488;
-        color: #0D9488;
-        background: rgba(13,148,136,0.05);
-    }
-    .fc-btn-icon.danger:hover {
-        border-color: #ef4444;
-        color: #ef4444;
-        background: rgba(239,68,68,0.05);
-    }
+.sidebar-count {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--text-3);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
 
-    /* ── DEVOIRS TABLE ── */
-    .devoirs-container {
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
-    }
-    .devoir-row {
-        display: flex;
-        align-items: center;
-        gap: 1.25rem;
-        padding: 1.1rem 1.5rem;
-        background: var(--bg-surface, #fff);
-        border: 1.5px solid var(--border-light, #e8edf3);
-        border-radius: 16px;
-        transition: all 0.2s;
-        text-decoration: none;
-        position: relative;
-        overflow: hidden;
-    }
-    .devoir-row:hover {
-        border-color: rgba(13,148,136,0.3);
-        box-shadow: 0 6px 20px rgba(0,0,0,0.06);
-        transform: translateX(3px);
-    }
-    .devoir-row.urgent {
-        border-color: rgba(239,68,68,0.3);
-    }
-    .devoir-row.urgent::before {
-        content: '';
-        position: absolute;
-        left: 0; top: 0; bottom: 0;
-        width: 4px;
-        background: linear-gradient(180deg, #ef4444, #dc2626);
-        border-radius: 4px 0 0 4px;
-    }
-    .devoir-icon {
-        width: 44px; height: 44px;
-        border-radius: 12px;
-        display: flex; align-items: center; justify-content: center;
-        font-size: 1.2rem;
-        flex-shrink: 0;
-        background: rgba(13,148,136,0.1);
-        color: #0D9488;
-    }
-    .devoir-row.urgent .devoir-icon {
-        background: rgba(239,68,68,0.1);
-        color: #ef4444;
-    }
-    .devoir-info { flex: 1; min-width: 0; }
-    .devoir-title {
-        font-weight: 700;
-        font-size: 0.95rem;
-        color: var(--text-primary, #0f172a);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    .devoir-meta {
-        font-size: 0.8rem;
-        color: var(--text-muted, #64748b);
-        margin-top: 2px;
-        display: flex;
-        gap: 0.75rem;
-        align-items: center;
-        flex-wrap: wrap;
-    }
-    .devoir-meta-item {
-        display: flex;
-        align-items: center;
-        gap: 3px;
-    }
-    .deadline-badge {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        font-size: 0.75rem;
-        font-weight: 700;
-        padding: 2px 8px;
-        border-radius: 6px;
-        background: rgba(239,68,68,0.1);
-        color: #ef4444;
-    }
+.sidebar-search-wrap {
+    position: relative;
+}
 
-    .devoir-stat {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 2px;
-        flex-shrink: 0;
-    }
-    .devoir-stat-num {
-        font-size: 1.15rem;
-        font-weight: 800;
-        color: var(--text-primary, #0f172a);
-        line-height: 1;
-    }
-    .devoir-stat-label {
-        font-size: 0.65rem;
-        font-weight: 600;
-        color: var(--text-muted, #64748b);
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-    }
-    .devoir-action {
-        flex-shrink: 0;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 0.55rem 1.1rem;
-        border-radius: 10px;
-        background: linear-gradient(135deg, #0D9488, #0F766E);
-        color: white;
-        font-weight: 700;
-        font-size: 0.82rem;
-        text-decoration: none;
-        transition: all 0.2s;
-    }
-    .devoir-action:hover {
-        filter: brightness(1.1);
-        transform: translateY(-1px);
-    }
-    .badge-to-grade {
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-        padding: 3px 10px;
-        border-radius: 999px;
-        font-size: 0.72rem;
-        font-weight: 700;
-        animation: pulseRed 2s ease infinite;
-        background: rgba(239,68,68,0.12);
-        color: #ef4444;
-        border: 1px solid rgba(239,68,68,0.3);
-    }
-    .badge-ok {
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-        padding: 3px 10px;
-        border-radius: 999px;
-        font-size: 0.72rem;
-        font-weight: 700;
-        background: rgba(16,185,129,0.1);
-        color: #10b981;
-        border: 1px solid rgba(16,185,129,0.25);
-    }
+.sidebar-search-wrap i {
+    position: absolute;
+    left: 0.65rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-4);
+    font-size: 0.85rem;
+    pointer-events: none;
+}
 
-    /* ── EMPTY STATE ── */
-    .ef-empty {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 1rem;
-        padding: 4rem 2rem;
-        border: 2px dashed var(--border-light, #e8edf3);
-        border-radius: 20px;
-        background: var(--bg-surface-alt, #f8fafc);
-        grid-column: 1 / -1;
-        text-align: center;
-    }
-    .ef-empty-icon {
-        width: 72px; height: 72px;
-        border-radius: 20px;
-        background: rgba(13,148,136,0.1);
-        display: flex; align-items: center; justify-content: center;
-        font-size: 2rem;
-        color: #0D9488;
-    }
-    .ef-empty h3 {
-        font-size: 1.15rem;
-        font-weight: 800;
-        color: var(--text-primary, #0f172a);
-        margin: 0;
-    }
-    .ef-empty p {
-        color: var(--text-muted, #64748b);
-        font-size: 0.9rem;
-        margin: 0;
-        max-width: 340px;
-    }
+.sidebar-search-wrap input {
+    width: 100%;
+    padding: 0.5rem 0.75rem 0.5rem 2.1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-family: inherit;
+    font-size: 0.82rem;
+    color: var(--text);
+    background: var(--surface-alt);
+    outline: none;
+    transition: var(--transition);
+}
+.sidebar-search-wrap input:focus {
+    border-color: var(--brand-clr);
+    box-shadow: 0 0 0 3px rgba(79,70,229,0.1);
+    background: white;
+}
+
+.courses-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0.5rem;
+    min-height: 0;
+}
+.courses-scroll::-webkit-scrollbar { width: 4px; }
+.courses-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+/* Devoirs urgents panel */
+.devoirs-panel {
+    flex-shrink: 0;
+    border-top: 1px solid var(--border);
+    max-height: 260px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+.devoirs-panel.collapsed { max-height: 40px; }
+.devoirs-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.6rem 1rem;
+    cursor: pointer;
+    flex-shrink: 0;
+    user-select: none;
+    background: var(--surface);
+}
+.devoirs-panel-header:hover { background: var(--surface-alt); }
+.devoirs-panel-title {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--text-3);
+}
+.devoirs-panel-body {
+    overflow-y: auto;
+    padding: 0 0.75rem 0.75rem;
+    flex: 1;
+}
+.devoirs-panel-body::-webkit-scrollbar { width: 3px; }
+.devoirs-panel-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+.devoir-alert-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.55rem 0.6rem;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    margin-bottom: 4px;
+    transition: var(--transition);
+    text-decoration: none;
+}
+.devoir-alert-row:hover { border-color: #f97316; background: #fff7ed; }
+.devoir-alert-urgent {
+    border-color: #fed7aa;
+    background: #fff7ed;
+}
+
+/* ── COURSE ITEM ── */
+.course-item {
+    padding: 0.8rem 0.9rem;
+    border-radius: var(--radius);
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: var(--transition);
+    position: relative;
+    margin-bottom: 2px;
+}
+.course-item:hover {
+    background: var(--surface-alt);
+    border-color: var(--border);
+}
+.course-item.active {
+    background: var(--brand-light);
+    border-color: rgba(79,70,229,0.25);
+}
+.course-item.active .ci-title { color: var(--brand-clr); }
+.ci-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.4rem; }
+.ci-title { font-size: 0.86rem; font-weight: 600; color: var(--text); line-height: 1.3; flex: 1; }
+.ci-meta { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.45rem; flex-wrap: wrap; }
+.ci-time { font-size: 0.72rem; color: var(--text-4); margin-top: 0.3rem; display: flex; align-items: center; gap: 3px; }
+
+/* ctx menu */
+.ctx-wrap { position: relative; flex-shrink: 0; }
+.ctx-btn {
+    width: 26px; height: 26px;
+    border: none; background: transparent;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: var(--text-4);
+    transition: var(--transition);
+    opacity: 0;
+}
+.course-item:hover .ctx-btn { opacity: 1; }
+.ctx-btn:hover { background: var(--border); color: var(--text); }
+
+.ctx-menu {
+    position: absolute; top: calc(100% + 4px); right: 0;
+    background: white; border: 1px solid var(--border);
+    border-radius: var(--radius); box-shadow: var(--shadow-lg);
+    min-width: 170px; z-index: 600;
+    display: none; overflow: hidden;
+}
+.ctx-menu.open { display: block; }
+.ctx-link {
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 0.55rem 0.85rem;
+    font-size: 0.82rem; font-weight: 500; color: var(--text-2);
+    cursor: pointer; transition: var(--transition);
+    text-decoration: none;
+    border: none; background: none; width: 100%; text-align: left; font-family: inherit;
+}
+.ctx-link:hover { background: var(--surface-alt); }
+.ctx-link.ctx-danger { color: var(--danger); }
+.ctx-link.ctx-danger:hover { background: var(--danger-light); }
+.ctx-sep { height: 1px; background: var(--border); margin: 3px 0; }
+
+/* ── WORKSPACE ── */
+.builder-workspace {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--surface-alt);
+}
+
+.ws-empty {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    color: var(--text-4);
+    text-align: center;
+    padding: 2rem;
+}
+.ws-empty-icon {
+    width: 80px; height: 80px;
+    border-radius: 20px;
+    background: var(--brand-light);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2.5rem;
+    color: var(--brand-clr);
+    opacity: 0.5;
+    margin-bottom: 0.5rem;
+}
+
+.ws-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.ws-course-header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+}
+
+.ws-top-bar {
+    padding: 1.1rem 1.5rem;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.ws-title-block {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.85rem;
+    flex: 1;
+    min-width: 0;
+}
+
+.ws-icon {
+    width: 50px; height: 50px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--brand-clr), #7c3aed);
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 1.4rem;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.ws-course-title {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -0.02em;
+    line-height: 1.3;
+    border-radius: 6px;
+    padding: 1px 4px;
+}
+
+.ws-course-desc {
+    font-size: 0.82rem;
+    color: var(--text-3);
+    margin-top: 0.15rem;
+    border-radius: 6px;
+    padding: 1px 4px;
+    line-height: 1.4;
+}
+
+.ws-actions-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.toggle-group {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-3);
+    padding: 0.25rem 0.5rem;
+    background: var(--surface-alt);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+}
+
+/* Tabs */
+.ws-tabs {
+    display: flex;
+    padding: 0 1.5rem;
+}
+.ws-tab {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.6rem 0.9rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-3);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: var(--transition);
+}
+.ws-tab:hover { color: var(--text); }
+.ws-tab.active { color: var(--brand-clr); border-bottom-color: var(--brand-clr); }
+.tab-count {
+    background: var(--brand-light);
+    color: var(--brand-clr);
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 999px;
+}
+
+/* ── WORKSPACE BODY ── */
+.ws-tab-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.25rem 1.5rem 2rem;
+}
+.ws-tab-content::-webkit-scrollbar { width: 5px; }
+.ws-tab-content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.ws-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.85rem;
+}
+.ws-section-title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--text-4);
+}
+
+/* ── CHAPTER CARDS ── */
+.sortable-chapitres { display: flex; flex-direction: column; gap: 4px; }
+
+.chapter-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    transition: var(--transition);
+}
+.chapter-card:hover { border-color: #d1d5db; box-shadow: var(--shadow-sm); }
+.sortable-ghost { opacity: 0.4; border: 2px dashed var(--brand-clr); }
+
+.chapter-card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 0.9rem;
+    cursor: pointer;
+    user-select: none;
+}
+
+.drag-handle {
+    color: var(--text-4);
+    cursor: grab;
+    padding: 4px;
+    border-radius: 4px;
+    transition: var(--transition);
+    flex-shrink: 0;
+    font-size: 1rem;
+}
+.drag-handle:hover { background: var(--surface-alt); color: var(--text-3); }
+.drag-handle:active { cursor: grabbing; }
+
+.ch-num {
+    width: 22px; height: 22px;
+    border-radius: 6px;
+    background: var(--brand-light);
+    color: var(--brand-clr);
+    font-size: 0.68rem;
+    font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+}
+.ch-title {
+    font-weight: 600;
+    font-size: 0.86rem;
+    color: var(--text);
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.ch-badges { display: flex; gap: 0.3rem; align-items: center; flex-shrink: 0; }
+
+.cbadge {
+    display: inline-flex; align-items: center; gap: 2px;
+    padding: 1px 6px; border-radius: 999px;
+    font-size: 0.68rem; font-weight: 700;
+}
+.cbadge-blue { background: #eff6ff; color: #3b82f6; }
+.cbadge-purple { background: #f5f3ff; color: #7c3aed; }
+.cbadge-green { background: #dcfce7; color: #16a34a; }
+.cbadge-grey { background: #f3f4f6; color: #6b7280; }
+
+.ch-actions {
+    display: flex; align-items: center; gap: 0.2rem;
+    opacity: 0; transition: opacity 0.15s; flex-shrink: 0;
+}
+.chapter-card:hover .ch-actions { opacity: 1; }
+
+/* ── CHAPTER EXPAND ── */
+.chapter-expand-body {
+    display: none;
+    border-top: 1px solid var(--border);
+    padding: 0.85rem 1rem 1rem 3.2rem;
+}
+.chapter-expand-body.open { display: block; }
+
+.ch-chevron { transition: transform 0.2s; }
+.ch-chevron.rotated { transform: rotate(180deg); }
+
+.ch-desc-text {
+    font-size: 0.82rem;
+    color: var(--text-3);
+    margin-bottom: 0.75rem;
+    line-height: 1.5;
+}
+
+.resource-badge {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    padding: 0.4rem 0.75rem; border-radius: 8px;
+    font-size: 0.78rem; font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+.resource-yt { background: #fff7ed; color: #ea580c; border: 1px solid #fed7aa; }
+.resource-video { background: #eff6ff; color: #3b82f6; border: 1px solid #bfdbfe; }
+.resource-preview-link { margin-left: 0.4rem; text-decoration: underline; }
+
+/* ── DOC ITEMS ── */
+.doc-item-builder {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.5rem 0.65rem;
+    border-radius: 8px;
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    margin-bottom: 4px;
+    transition: var(--transition);
+}
+.doc-item-builder:hover { border-color: var(--brand-clr); }
+
+.doc-icon-builder {
+    width: 30px; height: 30px;
+    border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.9rem; flex-shrink: 0;
+}
+.doc-icon-builder.pdf { background: #fff1f2; color: #e11d48; }
+.doc-icon-builder.video { background: #eff6ff; color: #3b82f6; }
+
+.doc-info-builder { flex: 1; min-width: 0; }
+.doc-name-builder { font-size: 0.8rem; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.doc-meta-builder { font-size: 0.7rem; color: var(--text-4); }
+.doc-actions-builder { display: flex; gap: 0.2rem; align-items: center; }
+
+.no-docs-hint {
+    font-size: 0.78rem;
+    color: var(--text-4);
+    padding: 0.4rem 0;
+    display: flex; align-items: center; gap: 0.4rem;
+}
+
+/* ── BUTTONS ── */
+.wsbtn {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    padding: 0.45rem 0.85rem;
+    border-radius: var(--radius);
+    font-family: inherit; font-size: 0.8rem; font-weight: 600;
+    cursor: pointer; transition: var(--transition);
+    border: 1px solid transparent; text-decoration: none;
+    white-space: nowrap;
+}
+.wsbtn-primary { background: var(--brand-clr); color: white; border-color: var(--brand-clr); }
+.wsbtn-primary:hover { background: var(--brand-hover); }
+.wsbtn-outline { background: white; color: var(--text-2); border-color: var(--border); }
+.wsbtn-outline:hover { border-color: #d1d5db; background: var(--surface-alt); }
+.wsbtn-ghost { background: transparent; color: var(--text-3); border-color: transparent; padding: 0.35rem 0.6rem; font-size: 0.78rem; }
+.wsbtn-ghost:hover { background: var(--surface-alt); color: var(--text); }
+
+.wsbtn-icon {
+    width: 28px; height: 28px;
+    display: inline-flex; align-items: center; justify-content: center;
+    border: none; background: transparent; border-radius: 7px;
+    cursor: pointer; color: var(--text-3); font-size: 0.9rem;
+    transition: var(--transition); font-family: inherit;
+}
+.wsbtn-icon:hover { background: var(--surface-alt); color: var(--text); }
+.wsbtn-icon.danger { color: var(--danger); }
+.wsbtn-icon.danger:hover { background: var(--danger-light); }
+
+.add-chapter-btn-main {
+    display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+    width: 100%; padding: 0.8rem;
+    border: 2px dashed #d1d5db; border-radius: var(--radius);
+    background: transparent; color: var(--text-3);
+    font-family: inherit; font-size: 0.84rem; font-weight: 600;
+    cursor: pointer; transition: var(--transition); margin-top: 0.6rem;
+}
+.add-chapter-btn-main:hover { border-color: var(--brand-clr); color: var(--brand-clr); background: var(--brand-light); }
+
+.add-doc-btn {
+    display: flex; align-items: center; gap: 0.4rem;
+    width: 100%; padding: 0.45rem 0.6rem;
+    border: 1px dashed #d1d5db; border-radius: 8px;
+    background: transparent; color: var(--text-3);
+    font-family: inherit; font-size: 0.78rem; font-weight: 500;
+    cursor: pointer; transition: var(--transition); margin-top: 6px;
+}
+.add-doc-btn:hover { border-color: var(--brand-clr); color: var(--brand-clr); background: var(--brand-light); }
+
+/* ── TOGGLE ── */
+.toggle-switch {
+    position: relative; width: 36px; height: 20px; flex-shrink: 0;
+}
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.toggle-slider {
+    position: absolute; inset: 0;
+    background: #d1d5db; border-radius: 99px; cursor: pointer;
+    transition: var(--transition);
+}
+.toggle-slider::after {
+    content: ''; position: absolute;
+    width: 14px; height: 14px; background: white;
+    border-radius: 50%; top: 3px; left: 3px;
+    transition: var(--transition); box-shadow: var(--shadow-sm);
+}
+.toggle-switch input:checked + .toggle-slider { background: var(--success); }
+.toggle-switch input:checked + .toggle-slider::after { transform: translateX(16px); }
+.sm-toggle { width: 30px; height: 16px; }
+.sm-toggle .toggle-slider::after { width: 10px; height: 10px; top: 3px; left: 3px; }
+.sm-toggle input:checked + .toggle-slider::after { transform: translateX(14px); }
+
+/* ── MISC BADGES ── */
+.niveau-badge {
+    display: inline-flex; align-items: center; gap: 3px;
+    font-size: 0.7rem; font-weight: 700;
+    padding: 2px 7px; border-radius: 999px;
+}
+.meta-chip {
+    display: inline-flex; align-items: center; gap: 3px;
+    font-size: 0.72rem; color: var(--text-4); font-weight: 500;
+}
+
+.badge-active { background: #dcfce7; color: #16a34a; border-radius: 999px; padding: 2px 7px; font-size: 0.7rem; font-weight: 700; }
+.badge-inactive { background: #f3f4f6; color: #6b7280; border-radius: 999px; padding: 2px 7px; font-size: 0.7rem; font-weight: 700; }
+.badge-info { background: #eff6ff; color: #3b82f6; border-radius: 999px; padding: 2px 7px; font-size: 0.7rem; font-weight: 700; }
+
+/* ── DRAWER ── */
+.builder-drawer-overlay {
+    position: fixed; inset: 0;
+    background: rgba(17,24,39,0.45);
+    backdrop-filter: blur(4px);
+    z-index: 900;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.25s;
+}
+.builder-drawer-overlay.open { opacity: 1; pointer-events: all; }
+
+.builder-drawer {
+    position: fixed;
+    top: 0; right: 0;
+    width: 480px; max-width: 95vw;
+    height: 100vh;
+    background: white;
+    z-index: 901;
+    display: flex; flex-direction: column;
+    box-shadow: -10px 0 40px rgba(0,0,0,0.12);
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.builder-drawer.open { transform: translateX(0); }
+
+.drawer-hdr {
+    padding: 1.1rem 1.4rem;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 0.7rem;
+    flex-shrink: 0;
+}
+.drawer-hdr-icon {
+    width: 36px; height: 36px; border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem; flex-shrink: 0;
+}
+.drawer-hdr h3 { font-size: 0.95rem; font-weight: 700; flex: 1; }
+.drawer-hdr p { font-size: 0.75rem; color: var(--text-3); margin-top: 0.1rem; }
+
+.drawer-scrollbody {
+    flex: 1; overflow-y: auto; padding: 1.25rem;
+}
+.drawer-scrollbody::-webkit-scrollbar { width: 4px; }
+.drawer-scrollbody::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.drawer-ftr {
+    padding: 0.85rem 1.25rem;
+    border-top: 1px solid var(--border);
+    display: flex; justify-content: flex-end; gap: 0.6rem;
+    background: var(--surface-alt); flex-shrink: 0;
+}
+
+/* ── DEVOIRS ── */
+.devoir-group-title {
+    font-size: 0.75rem; font-weight: 700;
+    letter-spacing: 0.05em; text-transform: uppercase;
+    color: var(--text-4); margin: 1rem 0 0.4rem;
+}
+.devoir-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.6rem 0.75rem;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; margin-bottom: 4px;
+}
+.devoir-info { display: flex; flex-direction: column; }
+.devoir-title { font-size: 0.84rem; font-weight: 600; }
+.devoir-meta { font-size: 0.72rem; color: var(--text-4); margin-top: 0.1rem; }
+.devoir-actions { display: flex; gap: 0.3rem; }
+
+/* ── EMPTY STATES ── */
+.empty-state-builder {
+    text-align: center; padding: 2rem 1rem;
+    color: var(--text-4); display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+}
+.empty-state-builder p { font-size: 0.82rem; }
+
+/* ── TOAST ── */
+.builder-toast {
+    position: fixed; bottom: 1.5rem; right: 1.5rem;
+    padding: 0.7rem 1.1rem; border-radius: 10px;
+    background: #1f2937; color: white;
+    font-size: 0.82rem; font-weight: 500;
+    display: flex; align-items: center; gap: 0.4rem;
+    box-shadow: var(--shadow-lg); z-index: 2000;
+    transform: translateY(100px); opacity: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.builder-toast.show { transform: translateY(0); opacity: 1; }
+.builder-toast.success { background: #065f46; }
+.builder-toast.error { background: #991b1b; }
+
+/* ── IMPORT/EXPORT MODALS (same as before) ── */
+#import-preview-modal, #export-preview-modal {
+    position: fixed; inset: 0; background: rgba(15,23,42,0.75);
+    z-index: 9999; display: none; align-items: center; justify-content: center;
+    backdrop-filter: blur(8px);
+}
+#import-preview-modal > div, #export-preview-modal > div {
+    background: white; border-radius: 20px;
+    width: 580px; max-width: 95vw; max-height: 85vh; overflow-y: auto;
+    padding: 2rem; box-shadow: 0 25px 60px rgba(0,0,0,0.3);
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+    .builder-sidebar { width: 100%; max-height: 280px; border-right: none; border-bottom: 1px solid var(--border); }
+    .builder-content { flex-direction: column; }
+    .builder-workspace { height: calc(100vh - 280px - 72px - 50px); }
+    .ws-top-bar { flex-direction: column; }
+    .ws-actions-bar { align-self: flex-start; }
+}
 </style>
 
-<div class="page-shell" style="max-width: 1200px; margin: 0 auto; padding-top: 2rem;">
-
-    <!-- ═══════════════════ HERO ═══════════════════ -->
-    <div class="formateur-hero">
-        <div class="hero-left">
-            <span class="hero-eyebrow">
-                <i class="ti ti-school"></i> Espace Formateur
-            </span>
-            <h1 class="hero-title">
-                Bienvenue, <span>{{ request.user.get_full_name|default:request.user.email }}</span>
-            </h1>
-            <p class="hero-subtitle">Gérez vos cours, suivez vos devoirs et pilotez l'apprentissage de vos étudiants.</p>
-
-            <div class="hero-stats-row">
-                <div class="hero-stat-pill">
-                    <i class="ti ti-books"></i>
-                    <span><strong>{{ mes_cours|length }}</strong> cours</span>
-                </div>
-                <div class="hero-stat-pill">
-                    <i class="ti ti-clipboard-list"></i>
-                    <span><strong>{{ devoirs|length }}</strong> devoirs</span>
-                </div>
-                {% with urgent_count=devoirs|length %}
-                <div class="hero-stat-pill">
-                    <i class="ti ti-users"></i>
-                    <span>Mes étudiants</span>
-                </div>
-                {% endwith %}
+<div class="builder-shell">
+    <!-- ── TOPBAR ── -->
+    <div class="builder-topbar">
+        <div>
+            <div class="builder-topbar-title">
+                <i class="ti ti-layout-sidebar" style="color:var(--brand-clr)"></i>
+                Course Builder
             </div>
+            <div class="builder-topbar-subtitle">{{ mes_cours.count }} cours · Cliquez sur un cours pour commencer</div>
         </div>
-
-        <div class="hero-right">
-            <a href="{% url 'apprentissage:nouveau_cours' %}" class="btn-hero-primary">
-                <i class="ti ti-plus"></i> Créer un cours
-            </a>
-            <a href="{% url 'apprentissage:formateur_notes' %}" class="btn-hero-secondary">
-                <i class="ti ti-chart-bar"></i> Notes des étudiants
+        <div class="builder-topbar-actions">
+            <button class="wsbtn wsbtn-outline" onclick="document.getElementById('import-preview-modal').style.display='flex'">
+                <i class="ti ti-file-import"></i> Importer ZIP
+            </button>
+            <button class="wsbtn wsbtn-outline" id="export-multi-btn" onclick="exportSelectedCourses()">
+                <i class="ti ti-file-export"></i> Exporter sélection
+            </button>
+            <a href="{% url 'apprentissage:wizard_start' %}" class="wsbtn wsbtn-primary">
+                <i class="ti ti-plus"></i> Nouveau cours
             </a>
         </div>
     </div>
 
-    <!-- ═══════════════════ TABS NAV ═══════════════════ -->
-    {% with urgent_devoirs=devoirs|length %}
-    <div class="tabs-nav">
-        <button class="tab-item active" onclick="switchFormTab('tab-cours', this)" id="btn-tab-cours">
-            <i class="ti ti-books"></i>
-            Mes Cours
-            <span class="tab-badge">{{ mes_cours|length }}</span>
-        </button>
-        <button class="tab-item {% for d in devoirs %}{% if d.soumissions_a_noter > 0 %}has-alert{% endif %}{% endfor %}" onclick="switchFormTab('tab-devoirs', this)" id="btn-tab-devoirs">
-            <i class="ti ti-clipboard-list"></i>
-            Devoirs
-            <span class="tab-badge">{{ devoirs|length }}</span>
-        <button class="tab-item" onclick="switchFormTab('tab-exports', this)" id="btn-tab-exports">
-            <i class="ti ti-history"></i>
-            Historique des Exports
-        </button>
-    </div>
-    {% endwith %}
-
-    <!-- ═══════════════════ TAB: COURS ═══════════════════ -->
-    <div id="tab-cours" class="tab-pane" style="display: block;">
-        <!-- TOOLBAR EXPORT/IMPORT -->
-        <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-bottom:1.5rem;">
-            <button type="button" onclick="document.getElementById('import-zip-input').click()" style="display:inline-flex; align-items:center; gap:8px; padding:0.6rem 1.2rem; border-radius:10px; font-weight:600; font-size:0.9rem; cursor:pointer; transition:all 0.2s; color: #334155; background: #f8fafc; border: 1px solid #cbd5e1; box-shadow: 0 1px 2px rgba(0,0,0,0.05);" onmouseover="this.style.background='#f1f5f9'; this.style.borderColor='#94a3b8';" onmouseout="this.style.background='#f8fafc'; this.style.borderColor='#cbd5e1';">
-                <i class="ti ti-upload" style="color:#0D9488; font-size:1.1rem;"></i> Importer (ZIP)
-            </button>
-            <input type="file" id="import-zip-input" multiple accept=".zip" style="display:none" onchange="importCourses(this)">
-            
-            <button type="button" id="btn-export-selected" onclick="exportSelectedCourses()" style="display:inline-flex; align-items:center; gap:8px; padding:0.6rem 1.2rem; border-radius:10px; font-weight:600; font-size:0.9rem; cursor:pointer; transition:all 0.2s; color: #334155; background: #f8fafc; border: 1px solid #cbd5e1; box-shadow: 0 1px 2px rgba(0,0,0,0.05);" onmouseover="this.style.background='#f1f5f9'; this.style.borderColor='#94a3b8';" onmouseout="this.style.background='#f8fafc'; this.style.borderColor='#cbd5e1';">
-                <i class="ti ti-download" style="color:#0D9488; font-size:1.1rem;"></i> Exporter (<span id="export-count">0</span> sélectionné)
-            </button>
-        </div>
-
-        <div class="formateur-courses-grid">
-            {% for cours in mes_cours %}
-            <div class="fc-card">
-                <!-- Cover -->
-                <div class="fc-cover">
-                    <input type="checkbox" name="course_ids" value="{{ cours.id }}" class="course-export-checkbox" onchange="updateExportCount()" style="position: absolute; top: 1rem; left: 1rem; z-index: 10; transform: scale(1.4); cursor: pointer; accent-color: #0D9488;">
-                    {% if cours.image_couverture %}
-                        <img src="{{ cours.image_couverture.url }}" alt="{{ cours.titre }}">
-                        <div class="fc-cover-overlay"></div>
-                    {% else %}
-                        <div class="fc-cover-icon"><i class="ti ti-books"></i></div>
-                    {% endif %}
-                    <div class="fc-cover-meta">
-                        <span class="fc-badge-niveau">{{ cours.niveau.nom }}</span>
-                        <span class="fc-badge-statut {% if cours.actif %}published{% else %}draft{% endif %}">
-                            <i class="ti {% if cours.actif %}ti-eye{% else %}ti-eye-off{% endif %}"></i>
-                            {% if cours.actif %}Publié{% else %}Brouillon{% endif %}
-                        </span>
-                    </div>
+    <div class="builder-content">
+        <!-- ── SIDEBAR ── -->
+        <div class="builder-sidebar">
+            <div class="sidebar-head">
+                <div class="sidebar-head-top">
+                    <span class="sidebar-count" id="sidebar-count">{{ mes_cours.count }} cours</span>
+                    <span class="badge-info" style="font-size:0.72rem;padding:2px 7px;border-radius:999px;">Formateur</span>
                 </div>
-
-                <!-- Body -->
-                <div class="fc-body">
-                    <h3 class="fc-title">{{ cours.titre }}</h3>
-                    <div class="fc-info-row">
-                        <div class="fc-info-item">
-                            <i class="ti ti-layout-list"></i>
-                            {{ cours.chapitres.count }} chapitre{{ cours.chapitres.count|pluralize }}
-                        </div>
-                        <div class="fc-info-item">
-                            <i class="ti ti-calendar"></i>
-                            {{ cours.date_creation|date:'d/m/Y' }}
-                        </div>
-                    </div>
-                    {% if cours.resume %}
-                        <p style="font-size: 0.83rem; color: var(--text-muted, #64748b); line-height: 1.55; margin: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
-                            {{ cours.resume }}
-                        </p>
-                    {% endif %}
-                </div>
-
-                <!-- Footer -->
-                <div class="fc-footer">
-                    <a href="{% url 'apprentissage:gerer_cours' cours.pk %}" class="fc-btn-manage">
-                        <i class="ti ti-layout-grid"></i> Gérer le contenu
-                    </a>
-                    <a href="{% url 'apprentissage:editer_cours' cours.pk %}" class="fc-btn-icon" title="Modifier">
-                        <i class="ti ti-pencil"></i>
-                    </a>
-                    <form method="post" action="{% url 'apprentissage:supprimer_cours' cours.pk %}" style="display:inline; margin:0;"
-                          onsubmit="return confirm('⚠️ Supprimer définitivement le cours « {{ cours.titre }} » ?\n\nCette action est irréversible.');">
-                        {% csrf_token %}
-                        <button type="submit" class="fc-btn-icon danger" title="Supprimer">
-                            <i class="ti ti-trash"></i>
-                        </button>
-                    </form>
+                <div class="sidebar-search-wrap">
+                    <i class="ti ti-search"></i>
+                    <input type="text" id="course-search-input" placeholder="Rechercher..." 
+                           oninput="filterCourseList(this.value)">
                 </div>
             </div>
-            {% empty %}
-            <div class="ef-empty">
-                <div class="ef-empty-icon"><i class="ti ti-school"></i></div>
-                <h3>Aucun cours pour le moment</h3>
-                <p>Commencez par créer votre premier cours et partagez votre savoir avec vos étudiants.</p>
-                <a href="{% url 'apprentissage:nouveau_cours' %}" class="btn-hero-primary" style="margin-top: 0.5rem;">
-                    <i class="ti ti-plus"></i> Créer mon premier cours
-                </a>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
 
-    <!-- ═══════════════════ TAB: DEVOIRS ═══════════════════ -->
-    <div id="tab-devoirs" class="tab-pane" style="display: none;">
-        {% if devoirs %}
-        <div class="devoirs-container">
-            {% for devoir in devoirs %}
-            <div class="devoir-row {% if devoir.soumissions_a_noter > 0 %}urgent{% endif %}">
-                <div class="devoir-icon">
-                    <i class="ti ti-{% if devoir.soumissions_a_noter > 0 %}alert-circle{% else %}clipboard-check{% endif %}"></i>
-                </div>
-
-                <div class="devoir-info">
-                    <div class="devoir-title">{{ devoir.titre }}</div>
-                    <div class="devoir-meta">
-                        <div class="devoir-meta-item">
-                            <i class="ti ti-books"></i>
-                            {{ devoir.chapitre.cours.titre }}
+            <div class="courses-scroll" id="courses-scroll">
+                {% for cours in mes_cours %}
+                <div class="course-item" id="ci-{{ cours.id }}"
+                     data-title="{{ cours.titre|lower }}"
+                     onclick="loadCourseWorkspace('{{ cours.id }}', this)">
+                    <div class="ci-header">
+                        <div class="ci-title">{{ cours.titre }}</div>
+                        <div class="ctx-wrap">
+                            <button class="ctx-btn" onclick="toggleCtxMenu(event, '{{ cours.id }}')" title="Options">
+                                <i class="ti ti-dots-vertical"></i>
+                            </button>
+                            <div class="ctx-menu" id="ctx-{{ cours.id }}">
+                                <a href="{% url 'apprentissage:editer_cours' cours.pk %}" class="ctx-link">
+                                    <i class="ti ti-pencil"></i> Modifier les infos
+                                </a>
+                                <a href="{% url 'apprentissage:detail_cours' cours.id %}" class="ctx-link" target="_blank">
+                                    <i class="ti ti-eye"></i> Prévisualiser
+                                </a>
+                                <button class="ctx-link" onclick="exportSingleCourse('{{ cours.id }}', '{{ cours.titre|escapejs }}')">
+                                    <i class="ti ti-file-export"></i> Exporter ZIP
+                                </button>
+                                <div class="ctx-sep"></div>
+                                <form method="post" action="{% url 'apprentissage:supprimer_cours' cours.pk %}"
+                                      onsubmit="return confirm('Supprimer « {{ cours.titre|escapejs }} » et tous ses chapitres ?')">
+                                    {% csrf_token %}
+                                    <button type="submit" class="ctx-link ctx-danger">
+                                        <i class="ti ti-trash"></i> Supprimer
+                                    </button>
+                                </form>
+                            </div>
                         </div>
-                        <div class="devoir-meta-item">
-                            <i class="ti ti-bookmark"></i>
-                            {{ devoir.chapitre.titre }}
-                        </div>
-                        {% if devoir.date_limite %}
-                        <span class="deadline-badge">
-                            <i class="ti ti-clock"></i>
-                            {{ devoir.date_limite|date:"d/m/Y H:i" }}
+                    </div>
+                    <div class="ci-meta">
+                        <span class="cbadge {% if cours.actif %}cbadge-green{% else %}cbadge-grey{% endif %}">
+                            <i class="ti ti-circle-filled" style="font-size:5px"></i>
+                            {{ cours.actif|yesno:"Actif,Inactif" }}
                         </span>
-                        {% endif %}
+                        <span class="cbadge cbadge-blue"><i class="ti ti-books"></i> {{ cours.chapitres.count }}</span>
+                    </div>
+                    <div class="ci-time">
+                        <i class="ti ti-clock"></i> {{ cours.date_modification|naturaltime }}
                     </div>
                 </div>
-
-                <!-- Stats -->
-                <div class="devoir-stat">
-                    <span class="devoir-stat-num">{{ devoir.total_soumissions }}</span>
-                    <span class="devoir-stat-label">Reçues</span>
+                {% empty %}
+                <div class="empty-state-builder" style="padding:2rem 1rem">
+                    <i class="ti ti-books" style="font-size:2.5rem;opacity:0.3;color:var(--brand-clr)"></i>
+                    <p>Aucun cours. Créez votre premier cours !</p>
                 </div>
-                <div style="width: 1px; height: 32px; background: var(--border-light, #e8edf3);"></div>
-                <div class="devoir-stat">
+                {% endfor %}
+            </div>
+
+            <!-- ── DEVOIRS À CORRIGER PANEL ── -->
+            {% if devoirs %}
+            <div class="devoirs-panel" id="devoirs-panel">
+                <div class="devoirs-panel-header" onclick="toggleDevoirsPanel()">
+                    <span class="devoirs-panel-title">
+                        <i class="ti ti-alert-triangle" style="color:#f97316"></i>
+                        Devoirs à corriger
+                        {% with urgent_count=devoirs|length %}
+                        <span style="background:#fff7ed;color:#f97316;border:1px solid #fed7aa;border-radius:999px;padding:1px 6px;font-size:0.68rem;font-weight:800">
+                            {{ devoirs|length }}
+                        </span>
+                        {% endwith %}
+                    </span>
+                    <i class="ti ti-chevron-up" id="devoirs-panel-chevron" style="color:var(--text-4);font-size:0.85rem;transition:transform 0.2s"></i>
+                </div>
+                <div class="devoirs-panel-body" id="devoirs-panel-body">
+                    {% for devoir in devoirs %}
                     {% if devoir.soumissions_a_noter > 0 %}
-                        <span class="badge-to-grade"><i class="ti ti-alert-triangle"></i> {{ devoir.soumissions_a_noter }} à noter</span>
+                    <a href="{% url 'apprentissage:devoir_detail' devoir_id=devoir.pk %}"
+                       class="devoir-alert-row devoir-alert-urgent">
+                        <div style="width:28px;height:28px;border-radius:7px;background:#fff;border:1px solid #fed7aa;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                            <i class="ti ti-clipboard-list" style="font-size:0.85rem;color:#f97316"></i>
+                        </div>
+                        <div style="flex:1;min-width:0">
+                            <div style="font-size:0.78rem;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ devoir.titre }}</div>
+                            <div style="font-size:0.7rem;color:#f97316;font-weight:600">{{ devoir.soumissions_a_noter }} à noter · {{ devoir.chapitre.cours.titre|truncatechars:22 }}</div>
+                        </div>
+                        <span style="background:#f97316;color:white;border-radius:999px;min-width:20px;height:20px;padding:0 5px;display:flex;align-items:center;justify-content:center;font-size:0.68rem;font-weight:800;flex-shrink:0">
+                            {{ devoir.soumissions_a_noter }}
+                        </span>
+                    </a>
                     {% else %}
-                        <span class="badge-ok"><i class="ti ti-check"></i> À jour</span>
+                    <a href="{% url 'apprentissage:devoir_detail' devoir_id=devoir.pk %}"
+                       class="devoir-alert-row">
+                        <div style="width:28px;height:28px;border-radius:7px;background:var(--surface-alt);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                            <i class="ti ti-clipboard-check" style="font-size:0.85rem;color:#22c55e"></i>
+                        </div>
+                        <div style="flex:1;min-width:0">
+                            <div style="font-size:0.78rem;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ devoir.titre }}</div>
+                            <div style="font-size:0.7rem;color:var(--text-4)">{{ devoir.total_soumissions }} soumission{{ devoir.total_soumissions|pluralize }} · Tout noté ✓</div>
+                        </div>
+                    </a>
                     {% endif %}
+                    {% endfor %}
                 </div>
+            </div>
+            {% endif %}
+        </div>
 
-                <a href="{% url 'apprentissage:devoir_detail' devoir_id=devoir.pk %}" class="devoir-action">
-                    <i class="ti ti-eye"></i> Voir les copies
-                </a>
+        <!-- ── WORKSPACE ── -->
+        <div class="builder-workspace" id="builder-workspace">
+            <!-- Empty state -->
+            <div class="ws-empty" id="ws-empty-state">
+                <div class="ws-empty-icon">
+                    <i class="ti ti-layout-sidebar-right"></i>
+                </div>
+                <h3 style="font-size:1rem;font-weight:700;color:var(--text-3)">Sélectionnez un cours</h3>
+                <p style="font-size:0.82rem;max-width:300px;">Cliquez sur un cours dans la liste pour voir et modifier ses chapitres, documents et devoirs.</p>
             </div>
-            {% endfor %}
-        </div>
-        {% else %}
-        <div class="ef-empty" style="border-radius: 20px;">
-            <div class="ef-empty-icon" style="background: rgba(245,158,11,0.1); color: #f59e0b;">
-                <i class="ti ti-clipboard-list"></i>
+
+            <!-- Workspace content (loaded via HTMX) -->
+            <div class="ws-main" id="ws-main-content" style="display:none">
+                <div id="ws-detail-area" style="display:flex;flex-direction:column;flex:1;overflow:hidden">
+                    <!-- HTMX injecte ici builder_workspace.html -->
+                </div>
             </div>
-            <h3>Aucun devoir créé</h3>
-            <p>Pour assigner des devoirs, rendez-vous dans la gestion de l'un de vos cours puis ouvrez un chapitre.</p>
         </div>
-        {% endif %}
     </div>
+</div>
 
-    <!-- ═══════════════════ TAB: EXPORTS ═══════════════════ -->
-    <div id="tab-exports" class="tab-pane" style="display: none;">
-        {% if export_jobs %}
-        <div class="devoirs-container">
-            {% for job in export_jobs %}
-            <div class="devoir-row" style="border-left: 4px solid {% if job.status == 'SUCCESS' %}#10b981{% elif job.status == 'FAILED' %}#ef4444{% else %}#f59e0b{% endif %};">
-                <div class="devoir-icon" style="background: rgba({% if job.status == 'SUCCESS' %}16,185,129{% elif job.status == 'FAILED' %}239,68,68{% else %}245,158,11{% endif %}, 0.1); color: {% if job.status == 'SUCCESS' %}#10b981{% elif job.status == 'FAILED' %}#ef4444{% else %}#f59e0b{% endif %};">
-                    <i class="ti ti-{% if job.status == 'SUCCESS' %}check{% elif job.status == 'FAILED' %}x{% else %}loader ti-spin{% endif %}"></i>
-                </div>
+<!-- ── DRAWER ── -->
+<div class="builder-drawer-overlay" id="builder-drawer-overlay" onclick="closeBuilderDrawer()"></div>
+<div class="builder-drawer" id="builder-drawer">
+    <div class="drawer-hdr">
+        <div class="drawer-hdr-icon" id="drawer-hdr-icon" style="background:var(--brand-light);color:var(--brand-clr)">
+            <i class="ti ti-bookmark"></i>
+        </div>
+        <div>
+            <h3 id="drawer-hdr-title">Ajouter un chapitre</h3>
+            <p id="drawer-hdr-sub">Remplissez les informations ci-dessous.</p>
+        </div>
+        <button class="wsbtn-icon" onclick="closeBuilderDrawer()" style="margin-left:auto">
+            <i class="ti ti-x"></i>
+        </button>
+    </div>
+    <div class="drawer-scrollbody" id="builder-drawer-body">
+        <div style="display:flex;align-items:center;justify-content:center;height:200px;color:var(--text-4)">
+            <i class="ti ti-loader ti-spin" style="font-size:1.5rem"></i>
+        </div>
+    </div>
+</div>
 
-                <div class="devoir-info">
-                    <div class="devoir-title">Export: {{ job.cours.titre }}</div>
-                    <div class="devoir-meta">
-                        <div class="devoir-meta-item">
-                            <i class="ti ti-calendar"></i>
-                            Lancé le {{ job.date_creation|date:"d/m/Y H:i" }}
+<!-- IMPORT / EXPORT MODALS (same as before, kept for compatibility) -->
+{% include 'apprentissage/partials/import_modal.html' with csrf_token=csrf_token mes_cours=mes_cours %}
+
+<div id="export-preview-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,23,42,0.8);z-index:9999;align-items:center;justify-content:center;backdrop-filter:blur(8px)">
+    <div style="background:white;border-radius:20px;width:600px;max-width:95%;padding:2rem;box-shadow:0 25px 60px rgba(0,0,0,0.3);max-height:85vh;overflow-y:auto;display:flex;flex-direction:column;">
+        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem">
+            <div style="width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#f59e0b,#d97706);color:white;display:flex;align-items:center;justify-content:center;font-size:1.5rem">
+                <i class="ti ti-file-export"></i>
+            </div>
+            <div>
+                <h3 style="font-size:1.1rem;font-weight:800;margin:0">Exporter les cours</h3>
+                <p style="font-size:0.82rem;color:#64748b;margin:0">Téléchargez en fichier ZIP</p>
+            </div>
+            <button onclick="closeExportModal()" style="margin-left:auto;background:none;border:none;font-size:1.2rem;cursor:pointer;color:#64748b"><i class="ti ti-x"></i></button>
+        </div>
+        
+        <div id="export-courses-list" style="display:flex;flex-direction:column;gap:0.5rem;margin-bottom:1.5rem"></div>
+        
+        <!-- Progress section (hidden by default) -->
+        <div id="export-progress-section" style="display:none; margin-bottom: 1.5rem; padding:1.5rem; background:var(--brand-light); border-radius:var(--radius); border:1px solid rgba(79,70,229,0.2)">
+            <div style="display:flex;justify-content:space-between;font-size:0.85rem;margin-bottom:0.8rem;font-weight:700;color:var(--brand-clr)">
+                <span id="export-progress-text"><i class="ti ti-loader ti-spin"></i> Initialisation...</span>
+                <span id="export-progress-pct">0%</span>
+            </div>
+            <div style="width:100%;height:10px;background:#e0e7ff;border-radius:5px;overflow:hidden">
+                <div id="export-progress-bar" style="width:0%;height:100%;background:var(--brand-clr);transition:width 0.4s ease, background-color 0.4s ease"></div>
+            </div>
+            <div id="export-download-links" style="margin-top:1.2rem;display:flex;flex-direction:column;gap:0.5rem;"></div>
+        </div>
+
+        <div style="display:flex;justify-content:flex-end;gap:0.75rem" id="export-actions">
+            <button onclick="closeExportModal()" class="wsbtn wsbtn-outline">Fermer</button>
+            <button onclick="confirmExport()" class="wsbtn wsbtn-primary" id="confirm-export-btn">
+                <i class="ti ti-file-export"></i> Lancer l'export
+            </button>
+        </div>
+
+        <!-- Historique des exports -->
+        <div style="margin-top:2rem;border-top:1px solid var(--border);padding-top:1.5rem;">
+            <h4 style="font-size:0.9rem;font-weight:700;color:var(--text-2);margin-bottom:1rem"><i class="ti ti-history"></i> Exports récents</h4>
+            <div style="display:flex;flex-direction:column;gap:0.5rem;max-height:200px;overflow-y:auto;padding-right:0.5rem" id="export-history-list">
+                {% for job in export_jobs|slice:":5" %}
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:0.75rem;background:var(--surface-alt);border:1px solid var(--border);border-radius:8px">
+                    <div style="min-width:0;flex:1">
+                        <div style="font-size:0.8rem;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ job.cours.titre }}</div>
+                        <div style="font-size:0.7rem;color:var(--text-4)">{{ job.date_creation|naturaltime }} · 
+                            {% if job.status == 'SUCCESS' %}<span style="color:var(--success)">Terminé</span>
+                            {% elif job.status == 'FAILED' %}<span style="color:var(--danger)">Échoué</span>
+                            {% else %}<span style="color:#f59e0b">En cours...</span>{% endif %}
                         </div>
-                        <div class="devoir-meta-item">
-                            Statut: {{ job.get_status_display }}
-                        </div>
-                        {% if job.erreur %}
-                        <div class="devoir-meta-item" style="color: #ef4444;">
-                            Erreur: {{ job.erreur }}
-                        </div>
-                        {% endif %}
                     </div>
-                </div>
-
-                <!-- Stats / Actions -->
-                <div class="devoir-stats">
                     {% if job.status == 'SUCCESS' and job.fichier_zip %}
-                        <a href="{{ job.fichier_zip.url }}" download class="devoir-action" style="background: linear-gradient(135deg, #10b981, #059669);">
-                            <i class="ti ti-download"></i> Télécharger le ZIP
-                        </a>
-                    {% elif job.status == 'PENDING' %}
-                        <button class="devoir-action" style="background: rgba(245,158,11,0.1); color: #f59e0b; border: 1px solid #f59e0b;" disabled>
-                            <i class="ti ti-loader ti-spin"></i> En cours...
-                        </button>
+                    <a href="{{ job.fichier_zip.url }}" class="wsbtn wsbtn-ghost" style="padding:0.4rem 0.6rem;color:var(--brand-clr)" download>
+                        <i class="ti ti-download" style="font-size:1.1rem"></i>
+                    </a>
                     {% endif %}
                 </div>
+                {% empty %}
+                <div style="font-size:0.8rem;color:var(--text-4);text-align:center;padding:1rem 0">Aucun export récent.</div>
+                {% endfor %}
             </div>
-            {% endfor %}
-        </div>
-        {% else %}
-        <div class="ef-empty">
-            <div class="ef-empty-icon"><i class="ti ti-history"></i></div>
-            <h3>Aucun export en cours</h3>
-            <p>Sélectionnez des cours dans l'onglet "Mes Cours" et cliquez sur "Exporter" pour générer des fichiers ZIP.</p>
-        </div>
-        {% endif %}
-    </div>
-
-</div><!-- /.page-shell -->
-
-<!-- Modale de Prévisualisation de l'Import -->
-<div id="import-preview-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.8); z-index:9999; align-items:center; justify-content:center; backdrop-filter: blur(4px);">
-    <div style="background:var(--bg-surface, #fff); width:90%; max-width:650px; border-radius:24px; padding:2.5rem; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); position:relative; overflow:hidden;">
-        <!-- Header -->
-        <h3 style="margin-top:0; margin-bottom:1.5rem; color:#0f172a; font-size:1.5rem; display:flex; align-items:center; gap:0.5rem;">
-            <i class="ti ti-cloud-upload" style="color:#0D9488;"></i> Importer un Cours
-        </h3>
-        
-        <!-- Stepper -->
-        <div class="import-stepper" style="display:flex; justify-content:space-between; margin-bottom: 2rem; position:relative;">
-            <div style="position:absolute; top:14px; left:16%; right:16%; height:2px; background:#e2e8f0; z-index:1;"></div>
-            
-            <div id="step-1" style="position:relative; z-index:2; text-align:center; flex:1;">
-                <div id="step-1-icon" style="width:30px; height:30px; border-radius:50%; background:#10b981; color:white; margin:0 auto; display:flex; align-items:center; justify-content:center; font-size:1rem; border:4px solid #fff; box-shadow:0 0 0 1px #10b981;"><i class="ti ti-check"></i></div>
-                <div id="step-1-text" style="font-size:0.8rem; font-weight:700; color:#0f172a; margin-top:0.5rem;">Analyse locale</div>
-            </div>
-            
-            <div id="step-2" style="position:relative; z-index:2; text-align:center; flex:1;">
-                <div id="step-2-icon" style="width:30px; height:30px; border-radius:50%; background:#f8fafc; color:#94a3b8; margin:0 auto; display:flex; align-items:center; justify-content:center; font-size:0.9rem; font-weight:700; border:4px solid #fff; box-shadow:0 0 0 1px #cbd5e1;">2</div>
-                <div id="step-2-text" style="font-size:0.8rem; font-weight:600; color:#94a3b8; margin-top:0.5rem;">Transfert</div>
-            </div>
-
-            <div id="step-3" style="position:relative; z-index:2; text-align:center; flex:1;">
-                <div id="step-3-icon" style="width:30px; height:30px; border-radius:50%; background:#f8fafc; color:#94a3b8; margin:0 auto; display:flex; align-items:center; justify-content:center; font-size:0.9rem; font-weight:700; border:4px solid #fff; box-shadow:0 0 0 1px #cbd5e1;">3</div>
-                <div id="step-3-text" style="font-size:0.8rem; font-weight:600; color:#94a3b8; margin-top:0.5rem;">Création Base de données</div>
-            </div>
-        </div>
-        
-        <!-- Loading State -->
-        <div id="preview-loading" style="text-align:center; padding:2rem 0; color:#64748b;">
-            <i class="ti ti-loader ti-spin" style="font-size:2.5rem; color:#0D9488; margin-bottom:1rem; display:block;"></i>
-            <p style="margin:0; font-weight:500;">Lecture de l'archive ZIP en cours...</p>
-        </div>
-
-        <!-- Preview Tree -->
-        <div id="preview-content" style="display:none; background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:1.5rem; max-height:300px; overflow-y:auto; font-family:'Fira Code', monospace; font-size:0.85rem; line-height:1.6; color:#334155; margin-bottom:1.5rem;">
-        </div>
-
-        <!-- Progress Animation (Hidden by default) -->
-        <div id="upload-progress-container" style="display:none; margin-top:1rem;">
-            <p id="upload-status-text" style="margin:0 0 0.5rem 0; font-weight:600; color:#0f172a; display:flex; justify-content:space-between;">
-                <span><i class="ti ti-cloud-upload"></i> Envoi vers le serveur...</span> <span id="upload-percent" style="color:#10b981;">0%</span>
-            </p>
-            <div style="width:100%; height:8px; background:#e2e8f0; border-radius:999px; overflow:hidden;">
-                <div id="upload-progress-bar" style="width:0%; height:100%; background:linear-gradient(90deg, #10b981, #34d399); transition:width 0.2s ease;"></div>
-            </div>
-            <p id="upload-details" style="margin:0.5rem 0 0 0; font-size:0.75rem; color:#64748b; text-align:right;">0 Mo / 0 Mo</p>
-        </div>
-
-        <!-- Actions -->
-        <div id="preview-actions" style="display:flex; justify-content:flex-end; gap:1rem; margin-top:2rem;">
-            <button type="button" id="btn-cancel-import" class="btn-hero-secondary" onclick="closePreviewModal()" style="color:#64748b; border-color:#cbd5e1; background:transparent;">Annuler</button>
-            <button type="button" id="btn-confirm-import" class="btn-hero-primary" style="background:linear-gradient(135deg, #10b981, #059669);">
-                <i class="ti ti-check"></i> Confirmer l'Importation
-            </button>
         </div>
     </div>
 </div>
 
-<!-- Modale de Prévisualisation de l'Export -->
-<div id="export-preview-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.8); z-index:9999; align-items:center; justify-content:center; backdrop-filter: blur(4px);">
-    <div style="background:var(--bg-surface, #fff); width:90%; max-width:650px; border-radius:24px; padding:2.5rem; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); position:relative; overflow:hidden;">
-        <!-- Header -->
-        <h3 style="margin-top:0; margin-bottom:1.5rem; color:#0f172a; font-size:1.5rem; display:flex; align-items:center; gap:0.5rem;">
-            <i class="ti ti-cloud-download" style="color:#f59e0b;"></i> Exporter des Cours
-        </h3>
-        
-        <!-- Stepper -->
-        <div class="export-stepper" style="display:flex; justify-content:space-between; margin-bottom: 2rem; position:relative;">
-            <div style="position:absolute; top:14px; left:16%; right:16%; height:2px; background:#e2e8f0; z-index:1;"></div>
-            
-            <div id="estep-1" style="position:relative; z-index:2; text-align:center; flex:1;">
-                <div id="estep-1-icon" style="width:30px; height:30px; border-radius:50%; background:#f59e0b; color:white; margin:0 auto; display:flex; align-items:center; justify-content:center; font-size:1rem; border:4px solid #fff; box-shadow:0 0 0 1px #f59e0b;"><i class="ti ti-check"></i></div>
-                <div id="estep-1-text" style="font-size:0.8rem; font-weight:700; color:#0f172a; margin-top:0.5rem;">Préparation</div>
-            </div>
-            
-            <div id="estep-2" style="position:relative; z-index:2; text-align:center; flex:1;">
-                <div id="estep-2-icon" style="width:30px; height:30px; border-radius:50%; background:#f8fafc; color:#94a3b8; margin:0 auto; display:flex; align-items:center; justify-content:center; font-size:0.9rem; font-weight:700; border:4px solid #fff; box-shadow:0 0 0 1px #cbd5e1;">2</div>
-                <div id="estep-2-text" style="font-size:0.8rem; font-weight:600; color:#94a3b8; margin-top:0.5rem;">Génération ZIP</div>
-            </div>
+<!-- TOAST -->
+<div class="builder-toast" id="builder-toast"></div>
 
-            <div id="estep-3" style="position:relative; z-index:2; text-align:center; flex:1;">
-                <div id="estep-3-icon" style="width:30px; height:30px; border-radius:50%; background:#f8fafc; color:#94a3b8; margin:0 auto; display:flex; align-items:center; justify-content:center; font-size:0.9rem; font-weight:700; border:4px solid #fff; box-shadow:0 0 0 1px #cbd5e1;">3</div>
-                <div id="estep-3-text" style="font-size:0.8rem; font-weight:600; color:#94a3b8; margin-top:0.5rem;">Terminé</div>
-            </div>
-        </div>
+<input type="hidden" id="csrf-token-val" value="{{ csrf_token }}">
 
-        <!-- Selected Courses List -->
-        <div id="export-preview-content" style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:1.5rem; max-height:250px; overflow-y:auto; margin-bottom:1.5rem;">
-        </div>
-
-        <!-- Progress Animation (Hidden by default) -->
-        <div id="export-progress-container" style="display:none; text-align:center; padding:1rem 0;">
-            <i class="ti ti-loader ti-spin" style="font-size:2.5rem; color:#f59e0b; margin-bottom:1rem; display:block;"></i>
-            <p id="export-status-text" style="margin:0; font-weight:500; color:#64748b;">Compression de vos cours en arrière-plan...</p>
-        </div>
-
-        <!-- Actions -->
-        <div id="export-preview-actions" style="display:flex; justify-content:flex-end; gap:1rem; margin-top:1rem;">
-            <button type="button" id="btn-cancel-export" class="btn-hero-secondary" onclick="closeExportPreviewModal()" style="color:#64748b; border-color:#cbd5e1; background:transparent;">Annuler</button>
-            <button type="button" id="btn-confirm-export" class="btn-hero-primary" style="background:linear-gradient(135deg, #f59e0b, #d97706);">
-                <i class="ti ti-download"></i> Lancer l'Exportation
-            </button>
-        </div>
-    </div>
-</div>
-
-<input type="hidden" id="csrf-token-export" value="{{ csrf_token }}">
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.3/Sortable.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
 <script>
-    function switchFormTab(tabId, btn) {
-        document.querySelectorAll('.tab-pane').forEach(el => el.style.display = 'none');
-        document.querySelectorAll('.tab-item').forEach(el => el.classList.remove('active'));
-        document.getElementById(tabId).style.display = 'block';
-        btn.classList.add('active');
-    }
+let activeCourseId = null;
 
-    function updateExportCount() {
-        const checked = document.querySelectorAll('.course-export-checkbox:checked').length;
-        const countSpan = document.getElementById('export-count');
-        countSpan.textContent = checked;
-    }
+// ══════════════════ LOAD COURSE WORKSPACE ══════════════════
+function loadCourseWorkspace(coursId, el) {
+    // Highlight
+    document.querySelectorAll('.course-item').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    activeCourseId = coursId;
 
-    function setEStepState(stepNum, state) {
-        const icon = document.getElementById(`estep-${stepNum}-icon`);
-        const text = document.getElementById(`estep-${stepNum}-text`);
-        if (!icon || !text) return;
-        
-        if (state === 'pending') {
-            icon.style.background = '#f8fafc';
-            icon.style.color = '#94a3b8';
-            icon.style.boxShadow = '0 0 0 1px #cbd5e1';
-            icon.innerHTML = stepNum;
-            text.style.color = '#94a3b8';
-        } else if (state === 'active') {
-            icon.style.background = '#f59e0b';
-            icon.style.color = 'white';
-            icon.style.boxShadow = '0 0 0 2px #fef3c7';
-            icon.innerHTML = '<i class="ti ti-loader ti-spin"></i>';
-            text.style.color = '#f59e0b';
-        } else if (state === 'completed') {
-            icon.style.background = '#10b981';
-            icon.style.color = 'white';
-            icon.style.boxShadow = '0 0 0 1px #10b981';
-            icon.innerHTML = '<i class="ti ti-check"></i>';
-            text.style.color = '#0f172a';
+    // Show workspace
+    document.getElementById('ws-empty-state').style.display = 'none';
+    const wsMain = document.getElementById('ws-main-content');
+    wsMain.style.display = 'flex';
+    wsMain.style.flexDirection = 'column';
+    wsMain.style.flex = '1';
+    wsMain.style.overflow = 'hidden';
+
+    // Load via HTMX
+    const detailArea = document.getElementById('ws-detail-area');
+    detailArea.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;flex:1;color:var(--text-4)"><i class="ti ti-loader ti-spin" style="font-size:2rem"></i></div>`;
+
+    htmx.ajax('GET', `/apprentissage/formateur/builder/${coursId}/detail/`, {
+        target: '#ws-detail-area',
+        swap: 'innerHTML'
+    });
+}
+
+// ══════════════════ SEARCH ══════════════════
+function filterCourseList(q) {
+    q = q.toLowerCase();
+    let visible = 0;
+    document.querySelectorAll('.course-item').forEach(el => {
+        const title = el.dataset.title || '';
+        const show = !q || title.includes(q);
+        el.style.display = show ? '' : 'none';
+        if (show) visible++;
+    });
+    document.getElementById('sidebar-count').textContent = visible + ' cours';
+}
+
+// ══════════════════ CTX MENU ══════════════════
+function toggleCtxMenu(e, id) {
+    e.stopPropagation();
+    document.querySelectorAll('.ctx-menu').forEach(m => { if (m.id !== `ctx-${id}`) m.classList.remove('open'); });
+    document.getElementById(`ctx-${id}`).classList.toggle('open');
+}
+document.addEventListener('click', () => {
+    document.querySelectorAll('.ctx-menu').forEach(m => m.classList.remove('open'));
+});
+
+// ══════════════════ DRAWER ══════════════════
+function openBuilderDrawer(title, mode) {
+    const iconMap = {
+        'chapitre': { icon: 'ti-bookmark', bg: 'var(--brand-light)', color: 'var(--brand-clr)' },
+        'doc': { icon: 'ti-file-upload', bg: '#eff6ff', color: '#3b82f6' },
+        'edit': { icon: 'ti-pencil', bg: '#fef3c7', color: '#d97706' },
+    };
+    const cfg = iconMap[mode] || iconMap['chapitre'];
+    const iconEl = document.getElementById('drawer-hdr-icon');
+    iconEl.style.background = cfg.bg;
+    iconEl.style.color = cfg.color;
+    iconEl.innerHTML = `<i class="ti ${cfg.icon}"></i>`;
+    document.getElementById('drawer-hdr-title').textContent = title;
+
+    document.getElementById('builder-drawer-overlay').classList.add('open');
+    document.getElementById('builder-drawer').classList.add('open');
+}
+
+function closeBuilderDrawer() {
+    document.getElementById('builder-drawer-overlay').classList.remove('open');
+    document.getElementById('builder-drawer').classList.remove('open');
+}
+
+// Listen for HTMX success to close drawer after save
+document.body.addEventListener('htmx:afterSwap', function(e) {
+    // If the target is the chapitres list area, refresh workspace
+    if (e.target.id === 'ws-detail-area') return;
+    
+    // If it's a chapter list update, close the drawer
+    if (e.target.id && e.target.id.startsWith('builder-chapitres-')) {
+        closeBuilderDrawer();
+        if (activeCourseId) {
+            htmx.ajax('GET', `/apprentissage/formateur/builder/${activeCourseId}/detail/`, {
+                target: '#ws-detail-area', swap: 'innerHTML'
+            });
         }
     }
+});
 
-    function closeExportPreviewModal() {
-        document.getElementById('export-preview-modal').style.display = 'none';
-        
-        const cancelBtn = document.getElementById('btn-cancel-export');
-        if (cancelBtn) {
-            cancelBtn.innerHTML = 'Annuler';
-            cancelBtn.style.color = '#64748b';
-            cancelBtn.style.borderColor = '#cbd5e1';
-            cancelBtn.style.background = 'transparent';
-            cancelBtn.onclick = closeExportPreviewModal;
-        }
-        document.getElementById('btn-confirm-export').style.display = 'inline-flex';
-        document.getElementById('export-progress-container').style.display = 'none';
-        document.getElementById('export-preview-content').style.display = 'block';
-    }
-
-    let exportPollingInterval = null;
-
-    function exportSelectedCourses() {
-        const checkboxes = document.querySelectorAll('.course-export-checkbox:checked');
-        if (checkboxes.length === 0) {
-            showToast("Veuillez sélectionner au moins un cours à exporter en cochant la case sur son image.", "info");
-            return;
-        }
-
-        // Setup Modal
-        document.getElementById('export-preview-modal').style.display = 'flex';
-        setEStepState(1, 'completed');
-        setEStepState(2, 'pending');
-        setEStepState(3, 'pending');
-
-        const content = document.getElementById('export-preview-content');
-        let html = `<div style="font-weight:700; color:#334155; margin-bottom:1rem;">Vous avez sélectionné ${checkboxes.length} cours à exporter :</div>`;
-        checkboxes.forEach(cb => {
-            const courseCard = cb.closest('.fc-card');
-            const title = courseCard.querySelector('.fc-title').innerText;
-            html += `
-                <div style="display:flex; align-items:center; gap:8px; padding:8px 0; border-bottom:1px solid #e2e8f0; color:#475569; font-size:0.9rem;">
-                    <i class="ti ti-books" style="color:#f59e0b;"></i> ${title}
-                </div>
-            `;
+// Detect successful form submissions in the drawer to close it
+document.getElementById('builder-drawer').addEventListener('htmx:afterRequest', function(e) {
+    if (e.detail.successful && activeCourseId) {
+        closeBuilderDrawer();
+        htmx.ajax('GET', `/apprentissage/formateur/builder/${activeCourseId}/detail/`, {
+            target: '#ws-detail-area', swap: 'innerHTML'
         });
-        content.innerHTML = html;
-        
-        // Setup confirmation button
-        document.getElementById('btn-confirm-export').onclick = function() {
-            const courseIds = Array.from(checkboxes).map(cb => cb.value);
-            const csrfToken = document.getElementById('csrf-token-export').value;
-            
-            // Update UI for processing
-            document.getElementById('export-preview-content').style.display = 'none';
-            this.style.display = 'none'; // hide confirm button
-            
-            const cancelBtn = document.getElementById('btn-cancel-export');
-            cancelBtn.innerHTML = '<i class="ti ti-eye-off"></i> Masquer (Continuer en arrière-plan)';
-            cancelBtn.style.color = '#3b82f6';
-            cancelBtn.style.borderColor = '#bfdbfe';
-            cancelBtn.style.background = '#eff6ff';
-            cancelBtn.onclick = function() {
-                closeExportPreviewModal();
-                showToast('L\'exportation continue en arrière-plan.', 'info');
-                setTimeout(() => { window.location.href = window.location.pathname + '#tab-exports'; window.location.reload(); }, 1000);
-            };
+        showBuilderToast('✅ Enregistré avec succès', 'success');
+    }
+});
 
-            document.getElementById('export-progress-container').style.display = 'block';
-            setEStepState(2, 'active');
+// ══════════════════ CHAPTER INTERACTIONS ══════════════════
+function toggleExpandChapter(id) {
+    const body = document.getElementById(`expand-${id}`);
+    const chevron = document.getElementById(`chevron-${id}`);
+    if (!body) return;
+    const isOpen = body.classList.contains('open');
+    body.classList.toggle('open');
+    if (chevron) chevron.classList.toggle('rotated', !isOpen);
+}
 
-            fetch('{% url "apprentissage:export_multiple_courses" %}', {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': csrfToken,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ course_ids: courseIds })
-            })
+function expandAllChapters() {
+    document.querySelectorAll('.chapter-expand-body').forEach(el => el.classList.add('open'));
+    document.querySelectorAll('.ch-chevron').forEach(el => el.classList.add('rotated'));
+}
+
+// ══════════════════ TOGGLE ACTIF ══════════════════
+function handleCourseToggle(checkbox) {
+    const url = checkbox.dataset.url;
+    const label = checkbox.closest('.toggle-group').querySelector('.toggle-label');
+    const csrf = document.getElementById('csrf-token-val').value;
+
+    fetch(url, {
+        method: 'POST',
+        headers: { 'X-CSRFToken': csrf, 'Content-Type': 'application/json' }
+    })
+    .then(r => r.json())
+    .then(data => {
+        const isActif = data.actif;
+        if (label) label.textContent = isActif ? 'Actif' : 'Inactif';
+        // Update sidebar badge
+        const ciEl = document.getElementById(`ci-${data.cours_id}`);
+        if (ciEl) {
+            const badge = ciEl.querySelector('.cbadge');
+            if (badge) {
+                badge.className = `cbadge ${isActif ? 'cbadge-green' : 'cbadge-grey'}`;
+                badge.innerHTML = `<i class="ti ti-circle-filled" style="font-size:5px"></i> ${isActif ? 'Actif' : 'Inactif'}`;
+            }
+        }
+        showBuilderToast(isActif ? '✅ Cours activé' : '⛔ Cours désactivé', isActif ? 'success' : '');
+    })
+    .catch(() => showBuilderToast('❌ Erreur lors de la mise à jour', 'error'));
+}
+
+function handleChapterToggle(checkbox, chapitreId) {
+    const url = checkbox.dataset.url;
+    const csrf = document.getElementById('csrf-token-val').value;
+    const isChecked = checkbox.checked;
+
+    fetch(url, {
+        method: 'POST',
+        headers: { 'X-CSRFToken': csrf, 'Content-Type': 'application/json' }
+    })
+    .then(r => r.json())
+    .then(data => {
+        const badge = document.getElementById(`ch-status-badge-${chapitreId}`);
+        if (badge) {
+            badge.textContent = data.actif ? 'Actif' : 'Inactif';
+            badge.className = `cbadge ${data.actif ? 'cbadge-green' : 'cbadge-grey'}`;
+        }
+        showBuilderToast(data.actif ? '✅ Chapitre activé' : '⛔ Chapitre désactivé', data.actif ? 'success' : '');
+    })
+    .catch(() => { checkbox.checked = !isChecked; showBuilderToast('❌ Erreur', 'error'); });
+}
+
+// ══════════════════ DELETE CHAPTER ══════════════════
+function confirmDeleteChapter(chapitreId, coursId) {
+    if (!confirm('Supprimer ce chapitre et tous ses documents ? Cette action est irréversible.')) return;
+    const csrf = document.getElementById('csrf-token-val').value;
+    fetch(`/apprentissage/formateur/chapitre/${chapitreId}/supprimer/`, {
+        method: 'POST',
+        headers: { 'X-CSRFToken': csrf }
+    })
+    .then(() => {
+        htmx.ajax('GET', `/apprentissage/formateur/builder/${coursId}/detail/`, {
+            target: '#ws-detail-area', swap: 'innerHTML'
+        });
+        showBuilderToast('🗑️ Chapitre supprimé', 'error');
+    });
+}
+
+// ══════════════════ WORKSPACE TABS ══════════════════
+function switchWsTab(el, tabId) {
+    el.closest('.ws-course-header').parentElement.querySelectorAll('.ws-tab-content').forEach(t => t.style.display = 'none');
+    el.closest('.ws-tabs').querySelectorAll('.ws-tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    const content = document.getElementById(tabId);
+    if (content) { content.style.display = 'block'; }
+}
+
+// ══════════════════ EXPORT ══════════════════
+let selectedExportIds = [];
+let exportPollInterval;
+let fakeProgressInterval;
+
+function closeExportModal() {
+    document.getElementById('export-preview-modal').style.display = 'none';
+    clearInterval(exportPollInterval);
+    clearInterval(fakeProgressInterval);
+}
+
+function exportSelectedCourses() {
+    selectedExportIds = [activeCourseId].filter(Boolean);
+    const list = document.getElementById('export-courses-list');
+    list.innerHTML = selectedExportIds.length > 0
+        ? selectedExportIds.map(id => {
+            const el = document.querySelector(`.course-item[id="ci-${id}"] .ci-title`);
+            return `<div style="padding:0.6rem 0.8rem;background:#fef9c3;border:1px solid #fde047;border-radius:8px;font-size:0.85rem;font-weight:700;color:#854d0e"><i class="ti ti-package" style="margin-right:5px"></i> ${el ? el.textContent : id}</div>`;
+        }).join('')
+        : '<p style="color:var(--danger);font-size:0.82rem;font-weight:600"><i class="ti ti-alert-circle"></i> Sélectionnez d\'abord un cours dans la liste.</p>';
+    
+    resetExportModalState();
+    document.getElementById('export-preview-modal').style.display = 'flex';
+}
+
+function exportSingleCourse(id, title) {
+    selectedExportIds = [id];
+    const list = document.getElementById('export-courses-list');
+    list.innerHTML = `<div style="padding:0.6rem 0.8rem;background:#fef9c3;border:1px solid #fde047;border-radius:8px;font-size:0.85rem;font-weight:700;color:#854d0e"><i class="ti ti-package" style="margin-right:5px"></i> ${title}</div>`;
+    
+    resetExportModalState();
+    document.getElementById('export-preview-modal').style.display = 'flex';
+}
+
+function resetExportModalState() {
+    const btn = document.getElementById('confirm-export-btn');
+    btn.style.display = selectedExportIds.length > 0 ? 'flex' : 'none';
+    btn.disabled = false;
+    
+    document.getElementById('export-progress-section').style.display = 'none';
+    const bar = document.getElementById('export-progress-bar');
+    bar.style.width = '0%';
+    bar.style.background = 'var(--brand-clr)';
+    
+    document.getElementById('export-download-links').innerHTML = '';
+}
+
+function confirmExport() {
+    if (!selectedExportIds.length) return;
+    const csrf = document.getElementById('csrf-token-val').value;
+    const btn = document.getElementById('confirm-export-btn');
+    
+    // UI Update - Hide button and show progress
+    btn.style.display = 'none';
+    document.getElementById('export-progress-section').style.display = 'block';
+    document.getElementById('export-progress-bar').style.width = '5%';
+    document.getElementById('export-progress-text').innerHTML = '<i class="ti ti-loader ti-spin"></i> Préparation de l\'export...';
+    document.getElementById('export-progress-pct').textContent = '5%';
+    document.getElementById('export-download-links').innerHTML = '';
+
+    fetch('/apprentissage/formateur/export-multiple/', {
+        method: 'POST',
+        headers: { 'X-CSRFToken': csrf, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ course_ids: selectedExportIds })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.status === 'success' && data.jobs && data.jobs.length > 0) {
+            pollExportJob(data.jobs[0].id);
+        } else {
+            showBuilderToast('❌ ' + (data.message || 'Erreur lors de l\'export'), 'error');
+            btn.style.display = 'flex';
+            document.getElementById('export-progress-section').style.display = 'none';
+        }
+    })
+    .catch(() => {
+        btn.style.display = 'flex';
+        document.getElementById('export-progress-section').style.display = 'none';
+        showBuilderToast('❌ Erreur de connexion', 'error');
+    });
+}
+
+function pollExportJob(jobId) {
+    let progress = 5;
+    
+    // Simulate fake progress while waiting for Celery
+    fakeProgressInterval = setInterval(() => {
+        if (progress < 85) {
+            progress += Math.floor(Math.random() * 8) + 2;
+            if (progress > 85) progress = 85;
+            document.getElementById('export-progress-bar').style.width = progress + '%';
+            document.getElementById('export-progress-pct').textContent = progress + '%';
+            document.getElementById('export-progress-text').innerHTML = '<i class="ti ti-loader ti-spin"></i> Compression des fichiers PDF et vidéos...';
+        }
+    }, 1200);
+
+    exportPollInterval = setInterval(() => {
+        fetch(`/apprentissage/formateur/export-status/${jobId}/`)
             .then(r => r.json())
             .then(data => {
-                if (data.status === 'success') {
-                    const jobs = data.jobs; // [{id, cours_titre}]
-                    pollExportStatus(jobs, checkboxes);
-                } else {
-                    showToast('Erreur: ' + data.message, 'error');
-                    closeExportPreviewModal();
-                }
-            })
-            .catch(err => {
-                console.error(err);
-                showToast('Erreur lors du lancement de l\'export.', 'error');
-                closeExportPreviewModal();
-            });
-        };
-    }
-
-    function pollExportStatus(jobs, checkboxes) {
-        let completedJobs = 0;
-        
-        exportPollingInterval = setInterval(() => {
-            let allDone = true;
-            let currentPromises = [];
-            
-            jobs.forEach(job => {
-                // If not done, check status
-                if (!job.done) {
-                    allDone = false;
-                    currentPromises.push(
-                        fetch(`/apprentissage/formateur/export-status/${job.id}/`)
-                        .then(r => r.json())
-                        .then(statusData => {
-                            if (statusData.status === 'SUCCESS' || statusData.status === 'FAILED') {
-                                job.done = true;
-                                completedJobs++;
-                            }
-                        }).catch(() => {})
-                    );
-                }
-            });
-
-            Promise.all(currentPromises).then(() => {
-                document.getElementById('export-status-text').innerText = `Génération des archives ZIP en cours... (${completedJobs}/${jobs.length})`;
-                if (allDone) {
-                    clearInterval(exportPollingInterval);
-                    setEStepState(2, 'completed');
-                    setEStepState(3, 'completed');
-                    document.getElementById('export-status-text').innerHTML = `<span style="color:#10b981;"><i class="ti ti-check"></i> Exportation terminée avec succès !</span>`;
+                if (data.status === 'SUCCESS') {
+                    clearInterval(exportPollInterval);
+                    clearInterval(fakeProgressInterval);
+                    document.getElementById('export-progress-bar').style.width = '100%';
+                    document.getElementById('export-progress-bar').style.background = 'var(--success)';
+                    document.getElementById('export-progress-pct').textContent = '100%';
+                    document.getElementById('export-progress-text').innerHTML = '<i class="ti ti-check" style="font-size:1.1rem;color:var(--success)"></i> Export terminé avec succès !';
                     
-                    checkboxes.forEach(cb => cb.checked = false);
-                    updateExportCount();
-                    
-                    showToast('Les archives ZIP sont prêtes ! Redirection...', 'success');
-                    setTimeout(() => {
-                        closeExportPreviewModal();
-                        window.location.href = window.location.pathname + '#tab-exports';
-                        window.location.reload();
-                    }, 2000);
-                }
-            });
-        }, 2000); // Check every 2 seconds
-    }
-
-    let selectedImportFile = null;
-
-    function closePreviewModal() {
-        document.getElementById('import-preview-modal').style.display = 'none';
-        document.getElementById('import-zip-input').value = '';
-        selectedImportFile = null;
-        
-        const cancelBtn = document.getElementById('btn-cancel-import');
-        if (cancelBtn) {
-            cancelBtn.innerHTML = 'Annuler';
-            cancelBtn.style.color = '#64748b';
-            cancelBtn.style.borderColor = '#cbd5e1';
-            cancelBtn.style.background = 'transparent';
-            cancelBtn.onclick = closePreviewModal;
-        }
-    }
-
-    function formatBytes(bytes, decimals = 2) {
-        if (!+bytes) return '0 Octets';
-        const k = 1024;
-        const dm = decimals < 0 ? 0 : decimals;
-        const sizes = ['Octets', 'Ko', 'Mo', 'Go', 'To', 'Po'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
-    }
-
-    function setStepState(stepNum, state) {
-        const icon = document.getElementById(`step-${stepNum}-icon`);
-        const text = document.getElementById(`step-${stepNum}-text`);
-        if (!icon || !text) return;
-        
-        if (state === 'pending') {
-            icon.style.background = '#f8fafc';
-            icon.style.color = '#94a3b8';
-            icon.style.boxShadow = '0 0 0 1px #cbd5e1';
-            icon.innerHTML = stepNum;
-            text.style.color = '#94a3b8';
-        } else if (state === 'active') {
-            icon.style.background = '#0D9488';
-            icon.style.color = 'white';
-            icon.style.boxShadow = '0 0 0 2px #ccfbf1';
-            icon.innerHTML = '<i class="ti ti-loader ti-spin"></i>';
-            text.style.color = '#0D9488';
-        } else if (state === 'completed') {
-            icon.style.background = '#10b981';
-            icon.style.color = 'white';
-            icon.style.boxShadow = '0 0 0 1px #10b981';
-            icon.innerHTML = '<i class="ti ti-check"></i>';
-            text.style.color = '#0f172a';
-        }
-    }
-
-    function importCourses(input) {
-        if (!input.files || input.files.length === 0) return;
-        selectedImportFile = input.files[0];
-        
-        const modal = document.getElementById('import-preview-modal');
-        const loading = document.getElementById('preview-loading');
-        const content = document.getElementById('preview-content');
-        const actions = document.getElementById('preview-actions');
-        const progressContainer = document.getElementById('upload-progress-container');
-        
-        modal.style.display = 'flex';
-        loading.style.display = 'block';
-        content.style.display = 'none';
-        progressContainer.style.display = 'none';
-        actions.style.display = 'flex';
-        document.getElementById('btn-confirm-import').style.display = 'inline-flex';
-        document.getElementById('btn-confirm-import').disabled = true;
-
-        setStepState(1, 'active');
-        setStepState(2, 'pending');
-        setStepState(3, 'pending');
-
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            if (typeof JSZip === 'undefined') {
-                content.innerHTML = '<span style="color:#ef4444;">❌ Erreur : JSZip n\'est pas chargé.</span>';
-                loading.style.display = 'none';
-                content.style.display = 'block';
-                return;
-            }
-            JSZip.loadAsync(e.target.result).then(function(zip) {
-                if (!zip.file("course_metadata.json")) {
-                    content.innerHTML = '<span style="color:#ef4444;">❌ Erreur : Archive invalide (course_metadata.json introuvable).</span>';
-                    loading.style.display = 'none';
-                    content.style.display = 'block';
-                    return;
-                }
-                
-                zip.file("course_metadata.json").async("string").then(function(data) {
-                    try {
-                        const manifest = JSON.parse(data);
-                        let html = `
-                            <div style="background:#f8fafc; padding:1rem; border-radius:12px; margin-bottom:1rem; border:1px solid #e2e8f0;">
-                                <div style="font-weight:800; font-size:1.15rem; color:#0f172a; display:flex; align-items:center; gap:8px;">
-                                    <div style="width:36px; height:36px; border-radius:10px; background:linear-gradient(135deg, #0D9488, #0F766E); display:flex; align-items:center; justify-content:center; color:white;">
-                                        <i class="ti ti-books"></i>
-                                    </div>
-                                    ${manifest.cours.titre}
-                                </div>
-                                ${manifest.cours.description ? `<div style="color:#64748b; font-size:0.85rem; margin-top:8px; padding-left:44px;">${manifest.cours.description.substring(0, 120)}...</div>` : ''}
-                            </div>
-                            <div style="padding-left:14px; position:relative;">
+                    if (data.url) {
+                        document.getElementById('export-download-links').innerHTML = `
+                            <a href="${data.url}" class="wsbtn wsbtn-primary" style="width:100%;justify-content:center;background:var(--success);border-color:var(--success);font-size:0.95rem;padding:0.75rem" download>
+                                <i class="ti ti-download"></i> Télécharger l'archive ZIP
+                            </a>
                         `;
-                        
-                        const chapitres = manifest.chapitres || [];
-                        chapitres.forEach((chap, i) => {
-                            html += `
-                                <div style="position:relative; margin-bottom:12px;">
-                                    <div style="display:flex; align-items:center; gap:8px; font-weight:600; color:#334155;">
-                                        <div style="width:24px; height:24px; border-radius:6px; background:#e0e7ff; color:#4f46e5; display:flex; align-items:center; justify-content:center;">
-                                            <i class="ti ti-folder"></i>
-                                        </div>
-                                        ${chap.titre}
-                                    </div>
-                            `;
-                            
-                            const docs = chap.documents || [];
-                            if (docs.length > 0) {
-                                html += `<div style="padding-left:11px; margin-top:6px; border-left:2px solid #e2e8f0; margin-left:11px;">`;
-                                docs.forEach((item, j) => {
-                                    html += `
-                                        <div style="display:flex; align-items:center; gap:8px; color:#64748b; font-size:0.85rem; margin-bottom:4px; padding-left:12px; position:relative;">
-                                            <div style="position:absolute; left:0; top:50%; width:8px; height:2px; background:#e2e8f0;"></div>
-                                            <i class="ti ti-file-text" style="color:#94a3b8;"></i> ${item.titre}
-                                        </div>
-                                    `;
-                                });
-                                html += `</div>`;
-                            }
-                            html += `</div>`;
-                        });
-                        html += `</div>`;
-                        
-                        content.innerHTML = html;
-                        loading.style.display = 'none';
-                        content.style.display = 'block';
-                        document.getElementById('btn-confirm-import').disabled = false;
-                        
-                        setStepState(1, 'completed');
-                    } catch (err) {
-                        content.innerHTML = '<span style="color:#ef4444;">❌ Erreur : Impossible de lire les métadonnées.</span>';
-                        loading.style.display = 'none';
-                        content.style.display = 'block';
                     }
-                });
-            }).catch(function(err) {
-                content.innerHTML = '<span style="color:#ef4444;">❌ Erreur : Impossible d\'ouvrir l\'archive ZIP.</span>';
-                loading.style.display = 'none';
-                content.style.display = 'block';
+                    showBuilderToast('✅ Export prêt', 'success');
+                } else if (data.status === 'FAILED') {
+                    clearInterval(exportPollInterval);
+                    clearInterval(fakeProgressInterval);
+                    document.getElementById('export-progress-bar').style.background = 'var(--danger)';
+                    document.getElementById('export-progress-text').innerHTML = '<i class="ti ti-alert-triangle" style="color:var(--danger)"></i> Erreur: ' + (data.erreur || 'Échec de l\'export');
+                    document.getElementById('confirm-export-btn').style.display = 'flex';
+                }
             });
-        };
-        reader.readAsArrayBuffer(selectedImportFile);
+    }, 2000);
+}
+
+// ══════════════════ TOAST ══════════════════
+function showBuilderToast(msg, type) {
+    const t = document.getElementById('builder-toast');
+    t.textContent = msg;
+    t.className = 'builder-toast' + (type ? ` ${type}` : '');
+    t.classList.add('show');
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+// Handle close form after HTMX post
+document.body.addEventListener('htmx:afterSwap', function(e) {
+    if (e.target.classList.contains('ws-tab-content') ||
+        e.target.id === 'ws-detail-area') return;
+
+    // Re-render workspace if a chapter/doc was modified
+    if (activeCourseId && (e.target.id?.startsWith('docs-') || e.target.id?.startsWith('builder-chapitres-'))) {
+        closeBuilderDrawer();
     }
-
-    document.getElementById('btn-confirm-import').addEventListener('click', function() {
-        if (!selectedImportFile) return;
-
-        document.getElementById('preview-content').style.display = 'none';
-        document.getElementById('btn-confirm-import').style.display = 'none';
-        const cancelBtn = document.getElementById('btn-cancel-import');
-        cancelBtn.innerHTML = '<i class="ti ti-eye-off"></i> Masquer (Continuer en arrière-plan)';
-        cancelBtn.style.color = '#3b82f6';
-        cancelBtn.style.borderColor = '#bfdbfe';
-        cancelBtn.style.background = '#eff6ff';
-        cancelBtn.onclick = function() {
-            closePreviewModal();
-            showToast('L\'importation continue en arrière-plan. Vous pouvez suivre l\'historique.', 'info');
-            setTimeout(() => { window.location.href = window.location.pathname + '#tab-exports'; window.location.reload(); }, 3000);
-        };
-        
-        document.getElementById('upload-progress-container').style.display = 'block';
-        
-        setStepState(2, 'active');
-
-        const formData = new FormData();
-        const input = document.getElementById('import-zip-input');
-        for (let i = 0; i < input.files.length; i++) {
-            formData.append('zip_files', input.files[i]);
-        }
-        
-        const csrfToken = document.getElementById('csrf-token-export').value;
-        const xhr = new XMLHttpRequest();
-        
-        xhr.upload.addEventListener('progress', function(e) {
-            if (e.lengthComputable) {
-                const percent = Math.floor((e.loaded / e.total) * 100);
-                document.getElementById('upload-percent').textContent = `${percent}%`;
-                document.getElementById('upload-progress-bar').style.width = `${percent}%`;
-                document.getElementById('upload-details').textContent = `${formatBytes(e.loaded)} / ${formatBytes(e.total)}`;
-
-                if (percent === 100) {
-                    document.getElementById('upload-status-text').innerHTML = '<span><i class="ti ti-server"></i> Traitement de la base de données...</span> <span style="color:#0D9488;">100%</span>';
-                    document.getElementById('upload-progress-bar').style.background = '#0D9488';
-                    
-                    setStepState(2, 'completed');
-                    setStepState(3, 'active');
-                }
-            }
-        });
-
-        xhr.onload = function() {
-            if (xhr.status >= 200 && xhr.status < 300) {
-                try {
-                    const response = JSON.parse(xhr.responseText);
-                    if (response.status === 'success') {
-                        document.getElementById('upload-status-text').innerHTML = '<span><i class="ti ti-check"></i> Cours créé avec succès !</span>';
-                        document.getElementById('upload-progress-bar').style.background = '#10b981';
-                        
-                        setStepState(3, 'completed');
-                        
-                        showToast('Le cours a été importé avec succès ! Redirection...', 'success');
-                        setTimeout(() => {
-                            closePreviewModal();
-                            window.location.href = window.location.pathname + '#tab-cours';
-                            window.location.reload();
-                        }, 2500);
-                    } else {
-                        showToast('Erreur: ' + response.message, 'error');
-                        closePreviewModal();
-                    }
-                } catch(e) {
-                    showToast('Erreur fatale. Le serveur ne répond pas correctement.', 'error');
-                    closePreviewModal();
-                }
-            } else {
-                showToast('Erreur HTTP ' + xhr.status, 'error');
-                closePreviewModal();
-            }
-        };
-
-        xhr.onerror = function() {
-            alert('Erreur réseau. Connexion interrompue.');
-            closePreviewModal();
-        };
-
-        xhr.open('POST', '{% url "apprentissage:import_multiple_courses" %}', true);
-        xhr.setRequestHeader('X-CSRFToken', csrfToken);
-        xhr.send(formData);
-    });
-
-    function showToast(message, type='info') {
-        const toast = document.createElement('div');
-        toast.style.position = 'fixed';
-        toast.style.bottom = '20px';
-        toast.style.right = '20px';
-        toast.style.padding = '12px 24px';
-        toast.style.background = type === 'success' ? '#10b981' : (type === 'error' ? '#ef4444' : '#3b82f6');
-        toast.style.color = 'white';
-        toast.style.borderRadius = '8px';
-        toast.style.boxShadow = '0 10px 15px -3px rgba(0,0,0,0.1)';
-        toast.style.zIndex = '10000';
-        toast.style.fontWeight = '600';
-        toast.style.fontSize = '0.9rem';
-        toast.style.transition = 'opacity 0.3s';
-        toast.innerHTML = `<i class="ti ti-${type === 'success' ? 'check' : (type === 'error' ? 'alert-triangle' : 'info-circle')}"></i> ${message}`;
-        document.body.appendChild(toast);
-        
-        setTimeout(() => {
-            toast.style.opacity = '0';
-            setTimeout(() => toast.remove(), 300);
-        }, 4000);
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-        if (window.location.hash === '#tab-exports') {
-            const btn = document.getElementById('btn-tab-exports');
-            if (btn) switchFormTab('tab-exports', btn);
-        }
-    });
+});
 </script>
 
 {% endblock %}
