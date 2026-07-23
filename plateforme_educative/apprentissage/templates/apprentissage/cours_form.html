@@ -279,7 +279,7 @@
             {% endif %}
         </div>
         <div class="cf-hero-right">
-            <a href="{% url 'apprentissage:espace_formateur' %}" class="btn-hero-secondary">
+            <a href="{% if return_url %}{{ return_url }}{% else %}{% url 'apprentissage:espace_formateur' %}{% endif %}" class="btn-hero-secondary">
                 <i class="ti ti-arrow-left"></i> Retour
             </a>
         </div>
@@ -352,7 +352,7 @@
                 <button type="submit" class="btn btn-submit">
                     <i class="ti ti-device-floppy"></i> Enregistrer
                 </button>
-                <a href="{% url 'apprentissage:espace_formateur' %}" class="btn btn-cancel">Annuler</a>
+                <a href="{% if return_url %}{{ return_url }}{% else %}{% url 'apprentissage:espace_formateur' %}{% endif %}" class="btn btn-cancel">Annuler</a>
             </div>
         </form>
     </div>

@@ -113,9 +113,9 @@ DATABASES = {
         'ENGINE': db_engine,
         'NAME': os.getenv('DB_NAME', 'rag_platforme1'),
         'USER': os.getenv('DB_USER', 'root'),
-        'PASSWORD': os.getenv('DB_PASSWORD', 'jatski'),
+        'PASSWORD': os.getenv('DB_PASSWORD', ''),
         'HOST': os.getenv('DB_HOST', '127.0.0.1'),
-        'PORT': os.getenv('DB_PORT', '3307'),
+        'PORT': os.getenv('DB_PORT', '3306'),
     }
 }
 
