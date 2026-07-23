@@ -38,7 +38,7 @@ def register_view(request):
                         type='NOUVELLE_INSCRIPTION',
                         titre="Nouvelle inscription d'élève",
                         message=f"L'étudiant {user.get_full_name()} s'est inscrit et attend d'être associé à une classe.",
-                        url=reverse('dashboard_admin') + '?tab=students',
+                        url=reverse('dashboard_admin_structure') + '?tab=students',
                         envoyer_email=False
                     )
             if request.headers.get('HX-Request') == 'true':
@@ -621,6 +621,11 @@ def onboarding_view(request):
     is_htmx = request.headers.get('HX-Request') == 'true'
 
     if request.method == 'POST':
+        if 'complete_and_redirect' in request.POST:
+            user.onboarding_completed = True
+            user.save()
+            return redirect(request.POST['complete_and_redirect'])
+
         # Étape profil — sauvegarde
         if step['id'] == 'profil':
             first_name = request.POST.get('first_name', '').strip()

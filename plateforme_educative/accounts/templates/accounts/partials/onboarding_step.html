@@ -285,9 +285,13 @@
   </div>
 
   <div class="ob-actions">
-    <a href="{% url 'apprentissage:nouveau_cours' %}" class="ob-btn-primary" style="text-decoration:none;">
-      ✏️ Créer mon premier cours
-    </a>
+    <form method="post" action="{% url 'accounts:onboarding' %}" style="margin:0;">
+      {% csrf_token %}
+      <input type="hidden" name="complete_and_redirect" value="{% url 'apprentissage:nouveau_cours' %}">
+      <button type="submit" class="ob-btn-primary">
+        ✏️ Créer mon premier cours
+      </button>
+    </form>
     <form method="post" hx-post="{% url 'accounts:onboarding' %}?step=3"
           hx-target="#onboarding-card" hx-swap="innerHTML">
       {% csrf_token %}

@@ -121,6 +121,11 @@ def nouveau_cours(request):
     """Créer un nouveau cours pour le formateur connecté. Réservé aux FORMATEURS."""
     if not (request.user.is_formateur or request.user.is_superuser):
         return HttpResponseForbidden("Accès réservé aux formateurs.")
+    if hasattr(request.user, 'role') and request.user.role == 'ADMIN':
+        return_url = reverse('apprentissage:liste_cours')
+    else:
+        return_url = reverse('apprentissage:espace_formateur')
+
     if request.method == 'POST':
         form = CoursForm(request.POST, request.FILES)
         if form.is_valid():
@@ -145,11 +150,14 @@ def nouveau_cours(request):
                     )
             except Exception as e:
                 pass
-            return redirect('apprentissage:espace_formateur')
+            return redirect(return_url)
     else:
         form = CoursForm()
 
-    return render(request, 'apprentissage/cours_form.html', {'form': form})
+    return render(request, 'apprentissage/cours_form.html', {
+        'form': form,
+        'return_url': return_url
+    })
 
 
 @login_required
@@ -159,15 +167,23 @@ def editer_cours(request, pk):
     """Modifier un cours appartenant au formateur connecté."""
     cours = get_object_or_404(Cours, pk=pk)
 
+    if hasattr(request.user, 'role') and request.user.role == 'ADMIN':
+        return_url = reverse('apprentissage:liste_cours')
+    else:
+        return_url = reverse('apprentissage:espace_formateur')
+
     if request.method == 'POST':
         form = CoursForm(request.POST, request.FILES, instance=cours)
         if form.is_valid():
             form.save()
-            return redirect('apprentissage:espace_formateur')
+            return redirect(return_url)
     else:
         form = CoursForm(instance=cours)
 
-    return render(request, 'apprentissage/cours_form.html', {'form': form})
+    return render(request, 'apprentissage/cours_form.html', {
+        'form': form,
+        'return_url': return_url
+    })
 
 
 @login_required

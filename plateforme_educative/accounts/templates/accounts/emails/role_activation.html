@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Votre compte est activé</title>
+    <style>
+        /* Import Inter Font */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f3f4f6;
+            margin: 0;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .email-wrapper {
+            width: 100%;
+            background-color: #f3f4f6;
+            padding: 40px 0;
+        }
+
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e5e7eb;
+        }
+
+        .email-header {
+            background: linear-gradient(135deg, #0d9488 0%, #312e81 100%);
+            padding: 40px 32px;
+            text-align: center;
+            color: #ffffff;
+        }
+
+        .email-header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            line-height: 1.2;
+        }
+
+        .email-header p {
+            margin: 10px 0 0;
+            font-size: 16px;
+            font-weight: 400;
+            opacity: 0.9;
+        }
+
+        .email-body {
+            padding: 40px 32px;
+            color: #374151;
+            line-height: 1.6;
+        }
+
+        .greeting {
+            font-size: 20px;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 24px;
+            margin-top: 0;
+        }
+
+        .message-content {
+            font-size: 16px;
+            margin-bottom: 32px;
+            color: #4b5563;
+        }
+
+        .role-badge {
+            display: inline-block;
+            background-color: #f0fdfa;
+            color: #0f766e;
+            padding: 6px 12px;
+            border-radius: 9999px;
+            font-weight: 600;
+            font-size: 14px;
+            border: 1px solid #ccfbf1;
+            margin-top: 10px;
+        }
+        
+        .role-badge-admin {
+            background-color: #eef2ff;
+            color: #4338ca;
+            border-color: #e0e7ff;
+        }
+
+        .action-button-container {
+            text-align: center;
+            margin: 32px 0;
+        }
+
+        .action-button {
+            display: inline-block;
+            background-color: #0d9488;
+            color: #ffffff !important;
+            text-decoration: none;
+            padding: 14px 32px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background-color 0.2s;
+            box-shadow: 0 4px 6px -1px rgba(13, 148, 136, 0.2), 0 2px 4px -1px rgba(13, 148, 136, 0.1);
+        }
+
+        .action-button:hover {
+            background-color: #0f766e;
+        }
+
+        .email-footer {
+            background-color: #f9fafb;
+            padding: 32px;
+            text-align: center;
+            color: #6b7280;
+            font-size: 13px;
+            border-top: 1px solid #f3f4f6;
+        }
+
+        .footer-logo {
+            font-weight: 700;
+            color: #111827;
+            font-size: 16px;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .footer-links {
+            margin: 16px 0;
+        }
+        
+        .footer-links a {
+            color: #0d9488;
+            text-decoration: none;
+            margin: 0 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-wrapper">
+        <div class="email-container">
+            <!-- Header -->
+            <div class="email-header">
+                <h1>Félicitations !</h1>
+                <p>Votre compte a été activé avec succès.</p>
+            </div>
+
+            <!-- Body -->
+            <div class="email-body">
+                <h2 class="greeting">Bonjour {{ destinataire.get_short_name }},</h2>
+                
+                <div class="message-content">
+                    <p>Nous avons le plaisir de vous informer que votre compte sur la plateforme <strong>EduTech</strong> est désormais actif et que vos droits d'accès ont été mis à jour.</p>
+                    
+                    <p>Votre rôle officiel sur la plateforme est : <br/>
+                        {% if destinataire.role == 'ADMIN' %}
+                            <span class="role-badge role-badge-admin">Administrateur</span>
+                        {% else %}
+                            <span class="role-badge">Formateur</span>
+                        {% endif %}
+                    </p>
+                    
+                    <p>En tant que membre de l'équipe, vous avez accès à des fonctionnalités avancées vous permettant de piloter l'apprentissage et de contribuer au succès de nos apprenants.</p>
+                </div>
+
+                <div class="action-button-container">
+                    <a href="{{ login_url }}" class="action-button">Accéder à mon espace</a>
+                </div>
+                
+                <div class="message-content" style="margin-bottom: 0;">
+                    <p>Si vous avez des questions ou si vous avez besoin d'assistance pour démarrer, notre support technique reste à votre entière disposition.</p>
+                    <p>Bienvenue à bord !<br/><strong>L'équipe EduTech</strong></p>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="email-footer">
+                <div class="footer-logo">EduTech IoT & IA</div>
+                <p>La plateforme éducative de l'avenir.</p>
+                <div class="footer-links">
+                    <a href="{{ base_url }}">Accueil</a> | 
+                    <a href="{{ base_url }}/contact">Support</a>
+                </div>
+                <p style="margin-top: 24px; font-size: 11px; opacity: 0.7;">
+                    Cet e-mail est généré automatiquement. Merci de ne pas y répondre.
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

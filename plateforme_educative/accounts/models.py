@@ -117,6 +117,11 @@ class Utilisateur(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = [] # Email est déjà requis par USERNAME_FIELD
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._original_role = self.role
+        self._original_statut = self.statut_compte
+
     def save(self, *args, **kwargs):
         if self.role == 'FORMATEUR':
             self.is_formateur = True
@@ -130,7 +135,70 @@ class Utilisateur(AbstractBaseUser, PermissionsMixin):
             self.is_formateur = False
             self.is_staff = False
             self.is_superuser = False
+            
+        is_new = getattr(self, '_state', None) and getattr(self._state, 'adding', False)
         super().save(*args, **kwargs)
+
+        # Logique d'envoi d'e-mail pour les nouveaux rôles / activations
+        if getattr(self, 'role', '') in ['ADMIN', 'FORMATEUR']:
+            role_changed = not is_new and getattr(self, 'role', '') != getattr(self, '_original_role', '')
+            statut_changed = not is_new and getattr(self, 'statut_compte', '') == 'ACTIVE' and getattr(self, '_original_statut', '') != 'ACTIVE'
+            is_new_active = is_new and getattr(self, 'statut_compte', '') == 'ACTIVE'
+            
+            if role_changed or statut_changed or is_new_active:
+                # Update tracker to avoid multiple emails on subsequent saves in the same instance
+                self._original_role = self.role
+                self._original_statut = self.statut_compte
+                self.send_role_activation_email()
+
+    def send_role_activation_email(self):
+        """Envoie l'e-mail premium d'activation/changement de rôle et crée une notification in-app"""
+        from django.template.loader import render_to_string
+        from django.utils.html import strip_tags
+        from django.conf import settings
+        from accounts.tasks import envoyer_email_task
+        from accounts.models import Notification
+        import logging
+
+        logger = logging.getLogger(__name__)
+
+        # 1. Créer la notification In-App
+        try:
+            titre = "Félicitations, vous êtes maintenant Formateur !" if self.role == 'FORMATEUR' else "Félicitations, vous êtes maintenant Administrateur !"
+            Notification.objects.create(
+                destinataire=self,
+                type='COMPTE_ACTIVE',
+                titre=titre,
+                message="Vos droits d'accès ont été mis à jour. Bienvenue dans l'équipe !",
+                url='/dashboard/formateur/' if self.role == 'FORMATEUR' else '/dashboard/admin/'
+            )
+        except Exception as e:
+            logger.error(f"Erreur création notification in-app pour {self.email} : {e}")
+        
+        try:
+            subject = "[EduTech] Votre compte est activé - Bienvenue dans l'équipe !"
+            base_url = getattr(settings, 'BASE_URL', 'http://127.0.0.1:8000')
+            login_url = f"{base_url}/accounts/login/"
+            
+            context = {
+                'destinataire': self,
+                'base_url': base_url,
+                'login_url': login_url
+            }
+            
+            html_content = render_to_string('accounts/emails/role_activation.html', context)
+            text_content = strip_tags(html_content)
+            
+            envoyer_email_task.delay(
+                subject=subject,
+                text_content=text_content,
+                html_content=html_content,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                to_list=[self.email],
+            )
+            logger.info(f"E-mail premium d'activation planifié pour {self.email} ({self.role})")
+        except Exception as e:
+            logger.error(f"Erreur lors de la planification de l'e-mail d'activation pour {self.email} : {e}")
 
     def __str__(self):
         return self.get_full_name()
