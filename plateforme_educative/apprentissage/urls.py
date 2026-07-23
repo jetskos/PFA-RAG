@@ -26,6 +26,7 @@ urlpatterns = [
     path('formateur/export-multiple/', views.export_multiple_courses_view, name='export_multiple_courses'),
     path('formateur/export-status/<uuid:job_id>/', views.check_export_status_view, name='check_export_status'),
     path('formateur/import-multiple/', views.import_multiple_courses_view, name='import_multiple_courses'),
+    path('formateur/import-status/<uuid:job_id>/', views.check_import_status_view, name='check_import_status'),
     
     path('formateur/cours/nouveau/', views.nouveau_cours, name='nouveau_cours'),
     path('formateur/cours/<uuid:pk>/', views.gerer_cours, name='gerer_cours'),

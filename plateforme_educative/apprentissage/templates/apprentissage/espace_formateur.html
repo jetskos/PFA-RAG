@@ -1105,7 +1105,11 @@
                         fetch(`/apprentissage/formateur/export-status/${job.id}/`)
                         .then(r => r.json())
                         .then(statusData => {
-                            if (statusData.status === 'SUCCESS' || statusData.status === 'FAILED') {
+                            if (statusData.status === 'SUCCESS') {
+                                job.done = true;
+                                job.url = statusData.url;
+                                completedJobs++;
+                            } else if (statusData.status === 'FAILED') {
                                 job.done = true;
                                 completedJobs++;
                             }
@@ -1125,10 +1129,21 @@
                     checkboxes.forEach(cb => cb.checked = false);
                     updateExportCount();
                     
-                    showToast('Les archives ZIP sont prêtes ! Redirection...', 'success');
+                    showToast('Les archives ZIP sont prêtes ! Téléchargement en cours...', 'success');
+                    
+                    jobs.forEach(job => {
+                        if (job.url) {
+                            const link = document.createElement('a');
+                            link.href = job.url;
+                            link.download = '';
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                        }
+                    });
+
                     setTimeout(() => {
                         closeExportPreviewModal();
-                        window.location.href = window.location.pathname + '#tab-exports';
                         window.location.reload();
                     }, 2000);
                 }
@@ -1343,17 +1358,8 @@
                 try {
                     const response = JSON.parse(xhr.responseText);
                     if (response.status === 'success') {
-                        document.getElementById('upload-status-text').innerHTML = '<span><i class="ti ti-check"></i> Cours créé avec succès !</span>';
-                        document.getElementById('upload-progress-bar').style.background = '#10b981';
-                        
-                        setStepState(3, 'completed');
-                        
-                        showToast('Le cours a été importé avec succès ! Redirection...', 'success');
-                        setTimeout(() => {
-                            closePreviewModal();
-                            window.location.href = window.location.pathname + '#tab-cours';
-                            window.location.reload();
-                        }, 2500);
+                        document.getElementById('upload-status-text').innerHTML = '<span><i class="ti ti-server"></i> Sauvegarde et Indexation en cours...</span>';
+                        pollImportStatus(response.job_id);
                     } else {
                         showToast('Erreur: ' + response.message, 'error');
                         closePreviewModal();
@@ -1377,6 +1383,52 @@
         xhr.setRequestHeader('X-CSRFToken', csrfToken);
         xhr.send(formData);
     });
+
+    let importPollingInterval = null;
+
+    function pollImportStatus(jobId) {
+        importPollingInterval = setInterval(() => {
+            fetch(`/apprentissage/formateur/import-status/${jobId}/`)
+            .then(r => r.json())
+            .then(data => {
+                const statusText = document.getElementById('upload-status-text');
+                const progressBar = document.getElementById('upload-progress-bar');
+                
+                if (data.status === 'EXTRACTION') {
+                    statusText.innerHTML = '<span><i class="ti ti-archive"></i> Extraction des fichiers...</span>';
+                    progressBar.style.width = '30%';
+                } else if (data.status === 'SAUVEGARDE_BDD') {
+                    statusText.innerHTML = '<span><i class="ti ti-database"></i> Sauvegarde en base de données...</span>';
+                    progressBar.style.width = '60%';
+                } else if (data.status === 'INDEXATION_IA') {
+                    statusText.innerHTML = '<span><i class="ti ti-brain"></i> Indexation pour l\'IA en cours (cela peut prendre du temps)...</span> <span style="color:#f59e0b;"><i class="ti ti-loader ti-spin"></i></span>';
+                    progressBar.style.width = '85%';
+                    progressBar.style.background = '#f59e0b';
+                } else if (data.status === 'TERMINE') {
+                    clearInterval(importPollingInterval);
+                    statusText.innerHTML = '<span><i class="ti ti-check"></i> Cours importé et indexé avec succès !</span>';
+                    progressBar.style.width = '100%';
+                    progressBar.style.background = '#10b981';
+                    
+                    setStepState(3, 'completed');
+                    showToast('Importation terminée ! Redirection...', 'success');
+                    
+                    setTimeout(() => {
+                        closePreviewModal();
+                        window.location.href = window.location.pathname + '#tab-cours';
+                        window.location.reload();
+                    }, 2500);
+                } else if (data.status === 'FAILED') {
+                    clearInterval(importPollingInterval);
+                    showToast('Erreur lors de l\'importation: ' + (data.erreur || 'Erreur inconnue'), 'error');
+                    closePreviewModal();
+                }
+            })
+            .catch(err => {
+                console.error("Erreur de polling d'import", err);
+            });
+        }, 2000);
+    }
 
     function showToast(message, type='info') {
         const toast = document.createElement('div');

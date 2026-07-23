@@ -1460,6 +1460,18 @@ def check_export_status_view(request, job_id):
     }
     return JsonResponse(data)
 
+@login_required
+def check_import_status_view(request, job_id):
+    """Vérifie l'état d'un import."""
+    from .models import ImportJob
+    job = get_object_or_404(ImportJob, pk=job_id, formateur=request.user)
+    data = {
+        'status': job.status,
+        'erreur': job.erreur,
+        'titre_cours': job.titre_cours
+    }
+    return JsonResponse(data)
+
 import os
 from django.core.files.storage import FileSystemStorage
 
@@ -1482,10 +1494,14 @@ def import_multiple_courses_view(request):
             filename = fs.save(f.name, f)
             saved_files.append(os.path.join(fs.location, filename))
             
+        # Créer le job d'importation
+        from .models import ImportJob
+        import_job = ImportJob.objects.create(formateur=request.user)
+
         # Lancer la tâche Celery pour l'importation
         from .tasks import import_courses_task
-        import_courses_task.delay(request.user.id, saved_files)
+        import_courses_task.delay(str(import_job.id), request.user.id, saved_files)
         
-        return JsonResponse({'status': 'success', 'message': f"{len(saved_files)} fichier(s) en cours d'importation. Les cours apparaîtront bientôt dans votre tableau de bord."})
+        return JsonResponse({'status': 'success', 'job_id': str(import_job.id), 'message': f"{len(saved_files)} fichier(s) en cours d'importation."})
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
