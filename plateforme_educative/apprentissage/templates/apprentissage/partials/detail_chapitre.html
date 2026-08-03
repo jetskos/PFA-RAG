@@ -851,13 +851,35 @@
         <div class="video-container-wrapper">
             <h3><i class="ti ti-brand-youtube" style="color: var(--accent-danger);"></i> Vidéo Pédagogique</h3>
             {% if is_offline_video and chapitre.video_fichier %}
-                <video class="video-player-direct" controls>
-                    <source src="{{ chapitre.video_fichier.url }}" type="video/mp4">
-                    Votre navigateur ne supporte pas la lecture de vidéos.
-                </video>
-                <div class="video-source-info">
-                    <i class="ti ti-wifi-off"></i> Mode hors-ligne — vidéo locale
-                </div>
+                {% if chapitre.is_hls_ready and chapitre.video_hls_url %}
+                    <video id="hls-video-{{ chapitre.id }}" class="video-player-direct" controls></video>
+                    <script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
+                    <script>
+                        (function() {
+                            var video = document.getElementById('hls-video-{{ chapitre.id }}');
+                            var videoSrc = "/media/{{ chapitre.video_hls_url }}";
+                            if (Hls.isSupported()) {
+                                var hls = new Hls();
+                                hls.loadSource(videoSrc);
+                                hls.attachMedia(video);
+                            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                                video.src = videoSrc;
+                            }
+                        })();
+                    </script>
+                    <div class="video-source-info">
+                        <i class="ti ti-bolt"></i> Mode hors-ligne — Streaming Rapide HLS (Optimisé)
+                    </div>
+                {% else %}
+                    <video class="video-player-direct" controls>
+                        <source src="{{ chapitre.video_fichier.url }}" type="video/mp4">
+                        Votre navigateur ne supporte pas la lecture de vidéos.
+                    </video>
+                    <div class="video-source-info">
+                        <i class="ti ti-wifi-off"></i> Mode hors-ligne — Vidéo locale
+                        <span style="margin-left:auto; color:var(--accent-warning);"><i class="ti ti-loader"></i> Optimisation HLS en arrière-plan...</span>
+                    </div>
+                {% endif %}
             {% elif chapitre.url_video %}
                 {% if is_direct_video %}
                     <video class="video-player-direct" controls>

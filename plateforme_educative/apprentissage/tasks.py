@@ -107,22 +107,20 @@ def export_course_task(self, export_job_id: str):
             if chapitre.video_fichier:
                 vid_path = Path(chapitre.video_fichier.path)
                 if vid_path.exists():
-                    safe_name = f"c{chapitre.id}_{vid_path.name}"
-                    shutil.copy2(vid_path, base_export_dir / safe_name)
-                    chap_data['video_fichier'] = safe_name
+                    shutil.copy2(vid_path, base_export_dir / vid_path.name)
+                    chap_data['video_fichier'] = vid_path.name
                     
             for doc in chapitre.documents.filter(actif=True):
                 if doc.fichier_pdf:
                     doc_path = Path(doc.fichier_pdf.path)
                     if doc_path.exists():
-                        safe_name = f"d{doc.id}_{doc_path.name}"
-                        shutil.copy2(doc_path, base_export_dir / safe_name)
+                        shutil.copy2(doc_path, base_export_dir / doc_path.name)
                         chap_data['documents'].append({
                             'titre': doc.titre,
                             'type_document': doc.type_document,
                             'description': doc.description,
                             'ordre': doc.ordre,
-                            'fichier_pdf': safe_name
+                            'fichier_pdf': doc_path.name
                         })
             metadata['chapitres'].append(chap_data)
 
@@ -164,20 +162,14 @@ def export_course_task(self, export_job_id: str):
 import uuid
 
 @shared_task(bind=True, name='apprentissage.tasks.import_courses_task')
-def import_courses_task(self, import_job_id: str, user_id: str, zip_files: list):
+def import_courses_task(self, user_id: str, zip_files: list):
     logger.info(f"[Import] Démarrage de l'importation de {len(zip_files)} fichier(s) par l'utilisateur {user_id}")
     try:
         from accounts.models import Utilisateur
-        from apprentissage.models import Niveau, Cours, Chapitre, Document, ImportJob
+        from apprentissage.models import Niveau, Cours, Chapitre, Document
         from django.core.files import File
         
-        job = ImportJob.objects.get(pk=import_job_id)
         user = Utilisateur.objects.get(pk=user_id)
-        
-        job.status = 'EXTRACTION'
-        job.save()
-        
-        docs_to_index = []
         
         for zip_path_str in zip_files:
             zip_path = Path(zip_path_str)
@@ -197,10 +189,6 @@ def import_courses_task(self, import_job_id: str, user_id: str, zip_files: list)
                     
                 with open(meta_file, 'r', encoding='utf-8') as f:
                     metadata = json.load(f)
-                    
-                job.status = 'SAUVEGARDE_BDD'
-                job.titre_cours = metadata.get('cours', {}).get('titre', 'Cours importé')
-                job.save()
                     
                 c_data = metadata.get('cours', {})
                 niveau_code = c_data.get('niveau') or "NA"
@@ -249,7 +237,6 @@ def import_courses_task(self, import_job_id: str, user_id: str, zip_files: list)
                             if pdf_file.exists():
                                 with open(pdf_file, 'rb') as f:
                                     doc.fichier_pdf.save(pdf_file.name, File(f))
-                                docs_to_index.append(doc)
                                     
             finally:
                 # Cleanup
@@ -257,20 +244,71 @@ def import_courses_task(self, import_job_id: str, user_id: str, zip_files: list)
                 if zip_path.exists():
                     zip_path.unlink()
                     
-        if docs_to_index:
-            job.status = 'INDEXATION_IA'
-            job.save()
-            for doc in docs_to_index:
-                indexer_document_task.delay(str(doc.id), doc.fichier_pdf.path)
-
-        job.status = 'TERMINE'
-        job.save()
-                    
         logger.info(f"[Import] Fin de l'importation par l'utilisateur {user_id}")
     except Exception as e:
         logger.error(f"[Import] Erreur globale: {e}", exc_info=True)
-        try:
-            from apprentissage.models import ImportJob
-            ImportJob.objects.filter(pk=import_job_id).update(status='FAILED', erreur=str(e))
-        except:
-            pass
+
+import subprocess
+
+@shared_task(bind=True, name='apprentissage.tasks.convertir_video_hls')
+def convertir_video_hls(self, chapitre_id: str):
+    logger.info(f"[HLS] Démarrage de la conversion pour le chapitre {chapitre_id}")
+    try:
+        from apprentissage.models import Chapitre
+        chapitre = Chapitre.objects.get(pk=chapitre_id)
+        
+        if not chapitre.video_fichier:
+            logger.warning(f"[HLS] Pas de vidéo pour le chapitre {chapitre_id}")
+            return
+            
+        video_path = Path(chapitre.video_fichier.path)
+        if not video_path.exists():
+            logger.warning(f"[HLS] Fichier vidéo introuvable : {video_path}")
+            return
+            
+        # Créer le répertoire de destination pour HLS
+        # media/videos/YYYY/MM/nom_video_hls/
+        hls_dir = video_path.parent / f"{video_path.stem}_hls"
+        hls_dir.mkdir(parents=True, exist_ok=True)
+        
+        playlist_path = hls_dir / 'playlist.m3u8'
+        
+        import shutil
+        ffmpeg_path = shutil.which('ffmpeg')
+        if not ffmpeg_path:
+            # Fallback in case Celery worker started before PATH was refreshed
+            import os
+            local_app_data = os.environ.get('LOCALAPPDATA', '')
+            fallback = os.path.join(local_app_data, r"Microsoft\WinGet\Packages\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\ffmpeg-8.1.2-full_build\bin\ffmpeg.exe")
+            if os.path.exists(fallback):
+                ffmpeg_path = fallback
+            else:
+                ffmpeg_path = 'ffmpeg'
+
+        # Commande FFmpeg pour générer le HLS (720p)
+        cmd = [
+            ffmpeg_path, '-y', '-i', str(video_path),
+            '-profile:v', 'baseline', '-level', '3.0',
+            '-s', '1280x720', '-start_number', '0',
+            '-hls_time', '10', '-hls_list_size', '0',
+            '-f', 'hls', str(playlist_path)
+        ]
+        
+        logger.info(f"[HLS] Exécution de FFmpeg: {' '.join(cmd)}")
+        subprocess.run(cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        
+        # Mettre à jour le chapitre
+        rel_hls_path = str(playlist_path.relative_to(settings.MEDIA_ROOT)).replace('\\\\', '/').replace('\\', '/')
+        
+        Chapitre.objects.filter(pk=chapitre_id).update(
+            is_hls_ready=True,
+            video_hls_url=rel_hls_path
+        )
+        
+        logger.info(f"[HLS] Succès: Playlist générée à {rel_hls_path}")
+        
+    except subprocess.CalledProcessError as e:
+        logger.error(f"[HLS] Erreur FFmpeg: {e.stderr.decode('utf-8', errors='ignore')}")
+    except Exception as e:
+        logger.error(f"[HLS] Erreur inattendue: {e}", exc_info=True)
+

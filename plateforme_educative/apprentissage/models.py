@@ -117,6 +117,16 @@ class Chapitre(models.Model):
         ],
         help_text="Utilisée automatiquement à la place du lien YouTube quand l'élève n'a pas de connexion internet."
     )
+    video_hls_url = models.CharField(
+        max_length=512,
+        blank=True,
+        null=True,
+        verbose_name="Chemin Playlist HLS"
+    )
+    is_hls_ready = models.BooleanField(
+        default=False,
+        verbose_name="HLS Prêt"
+    )
     date_creation = models.DateTimeField(
         auto_now_add=True,
         verbose_name='Date de création'
@@ -599,33 +609,3 @@ class ExportJob(models.Model):
         return f"Export {self.cours.titre} par {self.formateur.get_full_name()} ({self.get_status_display()})"
 
 
-class ImportJob(models.Model):
-    """Suivi asynchrone des importations de cours."""
-    STATUS_CHOICES = (
-        ('EN_ATTENTE', 'En attente'),
-        ('EXTRACTION', 'Extraction du ZIP'),
-        ('SAUVEGARDE_BDD', 'Sauvegarde en base de données'),
-        ('INDEXATION_IA', 'Indexation pour l\'IA'),
-        ('TERMINE', 'Terminé'),
-        ('FAILED', 'Échoué'),
-    )
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    formateur = models.ForeignKey(
-        'accounts.Utilisateur',
-        on_delete=models.CASCADE,
-        related_name='import_jobs',
-        verbose_name='Formateur'
-    )
-    status = models.CharField(max_length=30, choices=STATUS_CHOICES, default='EN_ATTENTE')
-    titre_cours = models.CharField(max_length=255, blank=True, null=True)
-    erreur = models.TextField(blank=True, null=True)
-    date_creation = models.DateTimeField(auto_now_add=True)
-    date_fin = models.DateTimeField(null=True, blank=True)
-
-    class Meta:
-        verbose_name = 'Tâche d\'import'
-        verbose_name_plural = 'Tâches d\'import'
-        ordering = ['-date_creation']
-
-    def __str__(self):
-        return f"Import par {self.formateur.get_full_name()} ({self.get_status_display()})"

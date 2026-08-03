@@ -112,3 +112,33 @@ def on_document_delete(sender, instance, **kwargs):
         logger.info(f"[ChromaDB] Chunks supprimés pour '{instance.titre}'")
     except Exception as e:
         logger.error(f"[ChromaDB] Erreur suppression {instance.pk}: {e}")
+
+def _video_has_changed(instance) -> bool:
+    try:
+        from apprentissage.models import Chapitre
+        old = Chapitre.objects.get(pk=instance.pk)
+        return str(old.video_fichier) != str(instance.video_fichier)
+    except Chapitre.DoesNotExist:
+        return True
+    except Exception:
+        return True
+
+@receiver(post_save, sender='apprentissage.Chapitre')
+def on_chapitre_save(sender, instance, created, **kwargs):
+    if not instance.video_fichier:
+        return
+
+    try:
+        video_path = instance.video_fichier.path
+    except Exception:
+        return
+
+    if not os.path.exists(video_path):
+        return
+
+    if created or _video_has_changed(instance):
+        from apprentissage.tasks import convertir_video_hls
+        from apprentissage.models import Chapitre
+        Chapitre.objects.filter(pk=instance.pk).update(is_hls_ready=False, video_hls_url=None)
+        logger.info(f"[HLS] Signal déclenché pour '{instance.titre}', lancement tâche Celery.")
+        convertir_video_hls.delay(str(instance.pk))
