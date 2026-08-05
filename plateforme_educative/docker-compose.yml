@@ -50,7 +50,7 @@ services:
     build: .
     container_name: pfarag_celery
     restart: always
-    command: celery -A core worker -l info
+    command: celery -A core worker -l info --pool=solo
     volumes:
       - .:/app
     environment:
