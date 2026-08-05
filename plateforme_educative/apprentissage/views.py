@@ -83,7 +83,10 @@ def _get_video_context(chapitre):
                     video_id = part
                     break
             context['vimeo_embed_url'] = f"https://player.vimeo.com/video/{video_id}" if video_id else url
-        except Exception:
+        except Exception as e:
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.warning(f"Erreur lors du parsing de l'URL Vimeo ({url}): {e}")
             context['vimeo_embed_url'] = url
 
     return context
@@ -942,8 +945,10 @@ def devoir_creer_view(request, chapitre_id):
                         message=f"Un nouveau devoir '{devoir.titre}' a été publié dans le chapitre '{chapitre.titre}'.",
                         url=reverse('apprentissage:devoir_detail', args=[devoir.pk])
                     )
-            except Exception:
-                pass
+            except Exception as e:
+                import logging
+                logger = logging.getLogger(__name__)
+                logger.error(f"Erreur lors de l'envoi de la notification pour le devoir {devoir.pk}: {e}")
 
             return redirect('apprentissage:gerer_chapitre', chapitre_id=chapitre.pk)
     else:
@@ -1026,8 +1031,10 @@ def soumission_noter_view(request, soumission_id):
                     message=f"Votre devoir '{devoir.titre}' a été corrigé. Note : {s.note}/{devoir.note_max}.",
                     url=reverse('apprentissage:devoir_detail', args=[devoir.pk])
                 )
-            except Exception:
-                pass
+            except Exception as e:
+                import logging
+                logger = logging.getLogger(__name__)
+                logger.error(f"Erreur lors de l'envoi de la notification de correction pour la soumission {soumission.pk}: {e}")
 
             return redirect('apprentissage:devoir_detail', devoir_id=devoir.pk)
     else:
@@ -1186,8 +1193,10 @@ def devoir_detail_view(request, devoir_id):
                             message=f"L'étudiant {request.user.get_full_name()} a soumis son devoir '{devoir.titre}'.",
                             url=reverse('apprentissage:devoir_detail', args=[devoir.pk])
                         )
-                    except Exception:
-                        pass
+                    except Exception as e:
+                        import logging
+                        logger = logging.getLogger(__name__)
+                        logger.error(f"Erreur lors de l'envoi de la notification de soumission de devoir pour {devoir.pk}: {e}")
 
                 return redirect('apprentissage:devoir_detail', devoir_id=devoir.pk)
         else:

@@ -11,6 +11,8 @@ Tous les autres modules (rag_tool, signals) passent par ce manager.
 """
 import logging
 import os
+import threading
+import time
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
@@ -26,6 +28,7 @@ EMBEDDING_MODEL = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
 _client = None
 _collection = None
 _embedding_fn = None
+_embedding_init_lock = threading.Lock()
 
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
@@ -35,18 +38,36 @@ def _get_chroma_path() -> str:
     try:
         from django.conf import settings
         return str(Path(settings.MEDIA_ROOT) / "chroma_db")
-    except Exception:
+    except Exception as e:
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.debug(f"Impossible de charger settings.MEDIA_ROOT (fallback utilisé) : {e}")
         return os.path.join(os.getcwd(), "media", "chroma_db")
 
 
 def _get_embedding_function():
-    """Retourne la fonction d'embedding (singleton)."""
+    """Retourne la fonction d'embedding (singleton, création protégée par verrou)."""
     global _embedding_fn
     if _embedding_fn is None:
-        from chromadb.utils.embedding_functions import DefaultEmbeddingFunction
-        _embedding_fn = DefaultEmbeddingFunction()
-        logger.info("Utilisation de DefaultEmbeddingFunction (local ONNX) - pas de PyTorch, API externe inutile !")
+        with _embedding_init_lock:
+            if _embedding_fn is None:
+                from chromadb.utils.embedding_functions import DefaultEmbeddingFunction
+                _embedding_fn = DefaultEmbeddingFunction()
+                logger.info("Utilisation de DefaultEmbeddingFunction (local ONNX) - pas de PyTorch, API externe inutile !")
     return _embedding_fn
+
+
+def warm_up_embeddings() -> None:
+    """
+    Force l'initialisation complète du modèle ONNX (session + tokenizer) tout
+    de suite, au lieu d'attendre la première recherche RAG d'un élève.
+
+    L'objet DefaultEmbeddingFunction ne charge réellement le modèle ONNX en
+    mémoire qu'au premier appel (cached_property paresseuse) — sans cet appel,
+    ce coût d'initialisation retombe sur la première requête utilisateur,
+    au pire moment (RAM déjà sollicitée par Django/Ollama).
+    """
+    _get_embedding_function()(["préchargement"])
 
 
 def get_collection():
@@ -255,7 +276,57 @@ def search(
         if where_filter:
             kwargs["where"] = where_filter
 
-        results = collection.query(**kwargs)
+        # Réessai sur échec transitoire (ex. ONNXRuntimeError "bad allocation"
+        # observé sous pression mémoire) — évite de dégrader silencieusement
+        # une session entière en contexte RAG vide pour un aléa passager.
+        results = None
+        last_error = None
+        for attempt in range(3):
+            try:
+                results = collection.query(**kwargs)
+                break
+            except Exception as e:
+                last_error = e
+                # Fallback : Si la requête filtrée par 'where' échoue (bug ChromaDB "Error finding id"),
+                # ré-essayer sans le filtre 'where' puis filtrer les métadonnées en Python.
+                if where_filter:
+                    try:
+                        logger.warning(f"[ChromaDB Fallback] Requête avec filtre where a échoué ({e}), bascule sur filtrage Python.")
+                        unfiltered_kwargs = {
+                            "query_texts": [query],
+                            "n_results":   min(n_results * 5, collection.count()),
+                            "include":     ["documents", "metadatas", "distances"],
+                        }
+                        raw = collection.query(**unfiltered_kwargs)
+                        if raw and raw.get("documents") and raw["documents"][0]:
+                            f_docs, f_metas, f_dists = [], [], []
+                            for doc, meta, dist in zip(raw["documents"][0], raw["metadatas"][0], raw["distances"][0]):
+                                if chapitre_id and str(meta.get("chapitre_id")) == str(chapitre_id):
+                                    f_docs.append(doc)
+                                    f_metas.append(meta)
+                                    f_dists.append(dist)
+                                elif not chapitre_id and cours_id and str(meta.get("cours_id")) == str(cours_id):
+                                    f_docs.append(doc)
+                                    f_metas.append(meta)
+                                    f_dists.append(dist)
+                            
+                            if f_docs:
+                                results = {
+                                    "documents": [f_docs[:n_results]],
+                                    "metadatas": [f_metas[:n_results]],
+                                    "distances": [f_dists[:n_results]],
+                                }
+                                break
+                    except Exception as fallback_e:
+                        logger.warning(f"[ChromaDB Fallback] Échec du filtrage Python : {fallback_e}")
+
+                if attempt < 2:
+                    logger.warning(
+                        f"Recherche ChromaDB échouée (essai {attempt + 1}/3), nouvelle tentative : {e}"
+                    )
+                    time.sleep(0.4)
+        if results is None:
+            raise last_error
 
         output = []
         docs      = results.get("documents", [[]])[0]

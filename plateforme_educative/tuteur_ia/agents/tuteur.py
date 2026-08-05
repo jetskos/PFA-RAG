@@ -1,11 +1,15 @@
 """
 Agent Tuteur Socratique - Pose des questions sans donner les réponses.
 """
+import logging
+import time
 from typing import Any
 from langchain_core.messages import SystemMessage, HumanMessage
 from tuteur_ia.graph.state import StudyBuddyState
 from tuteur_ia.prompts.tuteur import TUTOR_SYSTEM_PROMPT, TUTOR_USER_PROMPT_TEMPLATE
 from tuteur_ia.agents.llm_factory import get_llm
+
+logger = logging.getLogger(__name__)
 
 
 def _try_rag_enrichment(concept: str, chapitre_id: str) -> str:
@@ -30,7 +34,10 @@ def _try_rag_enrichment(concept: str, chapitre_id: str) -> str:
             return "\n\n---\n\n".join(all_texts)
         # Fallback
         return rag_search(concept, chapitre_id=chapitre_id) or ""
-    except Exception:
+    except Exception as e:
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"Erreur lors de la récupération du contexte RAG pour '{concept}': {e}")
         return ""
 
 
@@ -39,14 +46,19 @@ def tuteur_node(state: StudyBuddyState) -> dict[str, Any]:
     Nœud Tuteur : pose une question socratique pour guider l'étudiant.
     N'utilise jamais la réponse directe — guide par le questionnement.
     """
-    llm = get_llm(temperature=0.7, model_name="llama-3.1-8b-instant")
+    # max_tokens court : la consigne (TUTOR_SYSTEM_PROMPT) demande 2 phrases +
+    # 1 question max — un plafond bas évite qu'un petit modèle local ne parte
+    # en digression (voir diagnostiqueur_node pour le détail du problème observé).
+    llm = get_llm(temperature=0.7, model_name="llama-3.1-8b-instant", max_tokens=250)
 
     rag_content = state.get("rag_context")
     if not rag_content:
+        t0 = time.perf_counter()
         rag_content = _try_rag_enrichment(
             state["current_concept"],
             chapitre_id=state["chapitre_id"],
         )
+        logger.info(f"[TIMING] tuteur RAG search: {time.perf_counter() - t0:.2f}s")
 
 
     recent_messages = ""
@@ -70,7 +82,9 @@ def tuteur_node(state: StudyBuddyState) -> dict[str, Any]:
         HumanMessage(content=user_prompt),
     ]
 
+    t0 = time.perf_counter()
     response = llm.invoke(messages)
+    logger.info(f"[TIMING] tuteur LLM invoke: {time.perf_counter() - t0:.2f}s")
 
     return {
         "messages": [response],

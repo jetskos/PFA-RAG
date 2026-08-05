@@ -4,8 +4,39 @@
       hx-encoding="multipart/form-data"
       hx-target="#docs-chapitre-{% if chapitre %}{{ chapitre.id }}{% else %}{{ document.chapitre.id }}{% endif %}"
       hx-swap="innerHTML"
-      hx-on::after-request="if(event.detail.successful) document.getElementById('form-modal').style.display='none';">
+      hx-indicator="#indexing-indicator"
+      hx-disabled-elt="find button"
+      hx-on::after-request="if(event.detail.successful) { document.getElementById('form-modal').style.display='none'; window.location.reload(); }">
     {% csrf_token %}
+
+    <style>
+        .spin {
+            animation: spin-anim 0.9s linear infinite;
+            display: inline-block;
+        }
+        @keyframes spin-anim {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        @keyframes progress-pulse {
+            0% { width: 10%; margin-left: 0%; }
+            50% { width: 65%; margin-left: 15%; }
+            100% { width: 100%; margin-left: 0%; }
+        }
+        .htmx-indicator {
+            display: none;
+        }
+        .htmx-request.htmx-indicator,
+        .htmx-request .htmx-indicator {
+            display: block !important;
+        }
+        form.htmx-request .submit-btn-text {
+            display: none !important;
+        }
+        form.htmx-request .submit-btn-loading {
+            display: inline-flex !important;
+        }
+    </style>
 
     <div style="margin-bottom: 1.5rem; text-align: center;">
         <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(59,130,246,0.1); color: #3b82f6; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin: 0 auto 1rem;">
@@ -77,6 +108,45 @@
         {% endfor %}
     </div>
 
+    <!-- Visual Stepper & Indexing Progress Banner -->
+    <div id="indexing-indicator" class="htmx-indicator" style="margin-top: 1.5rem; padding: 1.2rem; border-radius: 12px; background: rgba(59,130,246,0.06); border: 1.5px solid rgba(59,130,246,0.25);">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; position: relative;">
+            <div style="position: absolute; top: 13px; left: 18%; right: 18%; height: 2px; background: rgba(59,130,246,0.2); z-index: 1;"></div>
+            
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 4px; z-index: 2; position: relative;">
+                <div style="width: 26px; height: 26px; border-radius: 50%; background: #10b981; color: white; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700;">✓</div>
+                <span style="font-size: 0.72rem; font-weight: 700; color: #10b981;">1. Envoi PDF</span>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 4px; z-index: 2; position: relative;">
+                <div style="width: 26px; height: 26px; border-radius: 50%; background: #3b82f6; color: white; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; box-shadow: 0 0 0 4px rgba(59,130,246,0.2);">
+                    <i class="ti ti-loader-2 spin"></i>
+                </div>
+                <span style="font-size: 0.72rem; font-weight: 700; color: #2563eb;">2. Indexation IA</span>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 4px; z-index: 2; position: relative;">
+                <div style="width: 26px; height: 26px; border-radius: 50%; background: #e2e8f0; color: #94a3b8; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700;">3</div>
+                <span style="font-size: 0.72rem; font-weight: 600; color: #94a3b8;">3. RAG Prêt</span>
+            </div>
+        </div>
+
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+            <div style="font-weight: 700; font-size: 0.9rem; color: #1e40af; display: flex; align-items: center; gap: 6px;">
+                <i class="ti ti-database-export" style="font-size: 1.1rem;"></i> Sauvegarde et Indexation en cours...
+            </div>
+            <span style="font-size: 0.78rem; font-weight: 600; color: #2563eb;">ChromaDB Vector Store</span>
+        </div>
+        
+        <div style="width: 100%; height: 7px; background: rgba(59,130,246,0.15); border-radius: 99px; overflow: hidden; position: relative;">
+            <div style="height: 100%; background: linear-gradient(90deg, #3b82f6, #10b981); border-radius: 99px; animation: progress-pulse 1.8s ease-in-out infinite;"></div>
+        </div>
+        
+        <div style="font-size: 0.78rem; color: #64748b; margin-top: 0.5rem; text-align: center;">
+            Extraction du texte PDF & génération des embeddings vectoriels en cours. Veuillez patienter...
+        </div>
+    </div>
+
     <div style="margin-top: 2rem; display: flex; justify-content: flex-end; gap: 0.75rem;">
         <button type="button" 
                 onclick="document.getElementById('form-modal').style.display='none'"
@@ -87,7 +157,12 @@
                 style="padding: 0.6rem 1.2rem; border-radius: 10px; font-weight: 700; font-size: 0.9rem; background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(59,130,246,0.25); transition: all 0.2s;"
                 onmouseover="this.style.transform='translateY(-1px)'"
                 onmouseout="this.style.transform='none'">
-            <i class="ti ti-check" style="margin-right: 4px;"></i> {% if form.instance.pk %}Enregistrer{% else %}Ajouter{% endif %}
+            <span class="submit-btn-text">
+                <i class="ti ti-check" style="margin-right: 4px;"></i> {% if form.instance.pk %}Enregistrer{% else %}Ajouter{% endif %}
+            </span>
+            <span class="submit-btn-loading" style="display: none; align-items: center; gap: 6px;">
+                <i class="ti ti-loader-2 spin"></i> Indexation...
+            </span>
         </button>
     </div>
 </form>

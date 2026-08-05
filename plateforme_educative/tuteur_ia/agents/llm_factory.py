@@ -4,7 +4,9 @@ Modèle Groq actif : llama-3.3-70b-versatile (remplace mixtral-8x7b-32768 décom
 
 Solution hybride hors-ligne : si aucune connexion internet n'est détectée
 (ou si aucune clé Groq/OpenAI n'est configurée), on bascule automatiquement
-sur un modèle Ollama local (Gemma 4) — utile pour les élèves sans réseau.
+sur un modèle Ollama local (Qwen2.5 1.5B Instruct) — utile pour les élèves
+sans réseau. Choisi pour sa rapidité sur CPU (~2-4s/appel) et sa fiabilité
+à produire du JSON structuré (requis par diagnostiqueur/évaluateur).
 """
 import logging
 import os
@@ -17,8 +19,27 @@ logger = logging.getLogger(__name__)
 # Modèle Groq à jour (avril 2025+)
 GROQ_MODEL   = "llama-3.3-70b-versatile"
 OPENAI_MODEL = "gpt-4o-mini"
-OLLAMA_MODEL     = os.getenv("OLLAMA_MODEL", "gemma4:e2b-it-qat")
+OLLAMA_MODEL     = os.getenv("OLLAMA_MODEL", "qwen2.5:1.5b-instruct")
 OLLAMA_BASE_URL  = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
+# Garde le modèle chargé en RAM en continu : évite les 10-20s de rechargement
+# qu'Ollama impose par défaut après 5 min d'inactivité entre deux messages.
+OLLAMA_KEEP_ALIVE = os.getenv("OLLAMA_KEEP_ALIVE", "30m")
+# Plafonne la longueur de génération (au lieu de laisser Ollama tourner sans
+# limite jusqu'à la fenêtre de contexte). 1024 tokens laisse assez de marge
+# pour le cas le plus long — les 8 questions QCM en JSON (views_qcm.py,
+# ~900 tokens) — tout en bornant un tuteur/évaluateur qui partirait en boucle.
+OLLAMA_NUM_PREDICT = int(os.getenv("OLLAMA_NUM_PREDICT", "512"))
+# Fenêtre de contexte : RAG + prompt système + historique sous 2048 tokens sur CPU.
+OLLAMA_NUM_CTX = int(os.getenv("OLLAMA_NUM_CTX", "2048"))
+# Laisse Ollama auto-détecter GPU/CPU par défaut (ne pas fixer num_gpu).
+# Testé sur machine de dev : forcer le CPU (num_gpu=0) s'est avéré NETTEMENT
+# plus lent et instable (17-32s/appel) que l'auto-détection GPU (1,5-1,9s
+# stable) — contre-intuitif, mais mesuré. Sur un serveur cible sans GPU
+# (ex. Intel N100/RPi4 du cahier des charges), ça n'a aucun effet puisqu'il
+# n'y a pas de GPU à détecter. Positionner OLLAMA_NUM_GPU=0 explicitement
+# pour forcer le CPU si un test sur le matériel cible réel montre l'inverse.
+_ollama_num_gpu_env = os.getenv("OLLAMA_NUM_GPU")
+OLLAMA_NUM_GPU = int(_ollama_num_gpu_env) if _ollama_num_gpu_env is not None else None
 
 
 # Cache global des instances LLM
@@ -53,7 +74,7 @@ def _has_internet() -> bool:
     return online
 
 
-def get_llm(temperature: float = 0.7, model_name: str = None):
+def get_llm(temperature: float = 0.7, model_name: str = None, max_tokens: int = None):
     """
     Retourne le LLM configuré (avec mise en cache des instances pour préserver les connexions HTTP).
     Priorité : GROQ_API_KEY (si en ligne) → OPENAI_API_KEY (si en ligne) → Ollama local (hors-ligne).
@@ -61,6 +82,13 @@ def get_llm(temperature: float = 0.7, model_name: str = None):
     `model_name` ne s'applique qu'aux fournisseurs Groq/OpenAI — en mode hors-ligne,
     c'est toujours OLLAMA_MODEL qui est utilisé (les noms de modèles Groq n'ont pas
     de sens pour Ollama).
+
+    `max_tokens` plafonne la longueur de génération pour CET appel (sinon
+    OLLAMA_NUM_PREDICT par défaut, dimensionné pour le pire cas — le QCM 8
+    questions). À fixer bas (~250-300) pour tuteur/diagnostic/évaluateur qui
+    doivent rester courts par consigne : un petit modèle local peut parfois
+    ignorer cette consigne et partir en digression, ce qui coûte cher en
+    temps de génération hors-ligne si rien ne le plafonne.
     """
     global _llm_cache
     from django.conf import settings as django_settings
@@ -85,8 +113,8 @@ def get_llm(temperature: float = 0.7, model_name: str = None):
         else:
             logger.warning("Pas de connexion internet détectée — repli sur Ollama local (%s).", model)
 
-    # Clé de cache unique pour ce modèle et cette température
-    cache_key = (provider, model, temperature)
+    # Clé de cache unique pour ce modèle, cette température et ce plafond de tokens
+    cache_key = (provider, model, temperature, max_tokens)
     if cache_key in _llm_cache:
         return _llm_cache[cache_key]
 
@@ -97,6 +125,11 @@ def get_llm(temperature: float = 0.7, model_name: str = None):
             model=model,
             temperature=temperature,
             groq_api_key=groq_key,
+            # Sans timeout, un WiFi qui tombe pendant une session peut bloquer
+            # l'appel très longtemps au lieu de basculer vite vers Ollama.
+            timeout=8.0,
+            max_retries=1,
+            max_tokens=max_tokens,
         )
     elif provider == "openai":
         from langchain_openai import ChatOpenAI
@@ -104,6 +137,9 @@ def get_llm(temperature: float = 0.7, model_name: str = None):
             model=model,
             temperature=temperature,
             api_key=openai_key,
+            timeout=8.0,
+            max_retries=1,
+            max_tokens=max_tokens,
         )
     else:
         from langchain_ollama import ChatOllama
@@ -111,7 +147,10 @@ def get_llm(temperature: float = 0.7, model_name: str = None):
             model=model,
             temperature=temperature,
             base_url=OLLAMA_BASE_URL,
-            reasoning=False,  # évite que Gemma 4 ne consomme tout son budget en réflexion cachée
+            keep_alive=OLLAMA_KEEP_ALIVE,
+            num_predict=max_tokens if max_tokens is not None else OLLAMA_NUM_PREDICT,
+            num_ctx=OLLAMA_NUM_CTX,
+            num_gpu=OLLAMA_NUM_GPU,
         )
 
     _llm_cache[cache_key] = llm

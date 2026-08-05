@@ -111,8 +111,8 @@ class Command(BaseCommand):
         try:
             from tuteur_ia.tools.bm25_store import invalidate_cache
             invalidate_cache()
-        except Exception:
-            pass
+        except Exception as e:
+            self.stdout.write(self.style.WARNING(f"Erreur lors de l'invalidation du cache BM25 : {e}"))
 
         self.stdout.write("")
         self.stdout.write(self.style.SUCCESS(

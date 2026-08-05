@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.decorators.http import require_http_methods
 from django.http import JsonResponse
 from .models import Utilisateur, Niveau, Classe, Notification
+from .services import UserService
 from apprentissage.models import Progression, ChapitreVisite, ChapitreComplete, Cours
 import secrets
 import string
@@ -149,75 +150,16 @@ def admin_dashboard(request):
             return JsonResponse({'status': 'error', 'message': 'Utilisateur introuvable'}, status=404)
 
         if action == 'delete':
-            # Prevent deleting oneself or other superusers
-            if str(user.pk) == str(request.user.pk):
-                return JsonResponse({'status': 'error', 'message': 'Vous ne pouvez pas supprimer votre propre compte.'}, status=400)
-            if user.is_superuser:
-                return JsonResponse({'status': 'error', 'message': 'Impossible de supprimer un superuser.'}, status=400)
-            user.delete()
+            success, error_msg = UserService.delete_user(user, request.user)
+            if not success:
+                return JsonResponse({'status': 'error', 'message': error_msg}, status=400)
             return JsonResponse({'status': 'success'})
 
         # default: save updates
-        role = request.POST.get('role')
-        classe_id = request.POST.get('classe_id') or None
-        niveau_id = request.POST.get('niveau') or None
+        success, error_msg = UserService.update_user(user, request.POST, request.user)
+        if not success:
+            return JsonResponse({'status': 'error', 'message': error_msg}, status=404)
 
-        if role in dict(Utilisateur.ROLE_CHOICES):
-            user.role = role
-            user.is_formateur = (role == 'FORMATEUR')
-            if role == 'ADMIN':
-                user.is_staff = True
-                user.is_superuser = True
-            else:
-                user.is_staff = False
-                user.is_superuser = False
-
-        if classe_id:
-            try:
-                user.classe = Classe.objects.get(pk=classe_id)
-            except Classe.DoesNotExist:
-                return JsonResponse({'status': 'error', 'message': 'Classe introuvable'}, status=404)
-        elif niveau_id:
-            try:
-                niveau = Niveau.objects.get(pk=niveau_id)
-            except Niveau.DoesNotExist:
-                return JsonResponse({'status': 'error', 'message': 'Niveau introuvable'}, status=404)
-            user.classe = (
-                Classe.objects.filter(niveau=niveau, actif=True)
-                .order_by('annee_scolaire', 'nom')
-                .first()
-            )
-        elif role == 'ELEVE' and not user.classe:
-            user.statut_compte = 'PENDING'
-            user.is_active = False
-        elif role != 'ELEVE':
-            user.statut_compte = 'ACTIVE'
-            user.is_active = True
-
-        # --- Email de bienvenue si le compte passe à ACTIF ---
-        if user.is_active and user.statut_compte == 'ACTIVE' and user.role == 'ELEVE':
-            try:
-                from django.core.mail import EmailMultiAlternatives
-                from django.template.loader import render_to_string
-                from django.utils.html import strip_tags
-                from accounts.tasks import envoyer_email_task
-                ctx = {
-                    'user': user,
-                    'base_url': getattr(settings, 'BASE_URL', 'http://127.0.0.1:8000')
-                }
-                html_content = render_to_string('accounts/emails/activation_email.html', ctx)
-                text_content = strip_tags(html_content)
-                envoyer_email_task.delay(
-                    subject="Votre compte EduTech est activé !",
-                    text_content=text_content,
-                    html_content=html_content,
-                    from_email=settings.DEFAULT_FROM_EMAIL,
-                    to_list=[user.email],
-                )
-            except Exception:
-                pass
-
-        user.save()
         return JsonResponse({'status': 'success'})
 
     # GET

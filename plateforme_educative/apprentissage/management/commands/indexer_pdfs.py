@@ -153,5 +153,5 @@ class Command(BaseCommand):
                 f"\nChromaDB total : {stats['total_chunks']} chunks "
                 f"— {stats['chroma_path']}\n"
             )
-        except Exception:
-            pass
+        except Exception as e:
+            self.stdout.write(self.style.WARNING(f"Erreur lors de la récupération des statistiques ChromaDB : {e}"))

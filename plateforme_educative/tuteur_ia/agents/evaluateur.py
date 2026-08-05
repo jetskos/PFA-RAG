@@ -2,11 +2,15 @@
 Agent Évaluateur - Évalue la compréhension et calcule le score de maîtrise.
 """
 import json
+import logging
+import time
 from typing import Any
 from langchain_core.messages import SystemMessage, HumanMessage
 from tuteur_ia.graph.state import StudyBuddyState
 from tuteur_ia.prompts.evaluateur import EVALUATOR_SYSTEM_PROMPT, EVALUATOR_USER_PROMPT_TEMPLATE
 from tuteur_ia.agents.llm_factory import get_llm
+
+logger = logging.getLogger(__name__)
 
 
 def evaluateur_node(state: StudyBuddyState) -> dict[str, Any]:
@@ -15,7 +19,8 @@ def evaluateur_node(state: StudyBuddyState) -> dict[str, Any]:
     Calcule le mastery_score (0.0–1.0) et produit du feedback.
     """
     previous_score = state.get("mastery_score", 0.0)
-    llm = get_llm(temperature=0.2, model_name="llama-3.1-8b-instant")
+    # max_tokens court : sortie attendue = un seul petit objet JSON d'évaluation.
+    llm = get_llm(temperature=0.2, model_name="llama-3.1-8b-instant", max_tokens=300)
 
     student_response = ""
     last_question = ""
@@ -31,6 +36,7 @@ def evaluateur_node(state: StudyBuddyState) -> dict[str, Any]:
 
     rag_content = state.get("rag_context")
     if not rag_content:
+        t0 = time.perf_counter()
         try:
             from tuteur_ia.tools.chroma_store import search as chroma_search
             from tuteur_ia.tools.rag_tool import rag_search
@@ -50,8 +56,11 @@ def evaluateur_node(state: StudyBuddyState) -> dict[str, Any]:
                         all_texts.append(t)
             rag_content = ("\n\n---\n\n".join(all_texts) if all_texts
                            else rag_search(state["current_concept"], chapitre_id=chapitre_id))
-        except Exception:
+        except Exception as e:
+            logger.error(f"Erreur lors de la recherche RAG dans evaluateur pour '{state['current_concept']}': {e}")
             rag_content = ""
+        finally:
+            logger.info(f"[TIMING] evaluateur RAG search: {time.perf_counter() - t0:.2f}s")
 
     user_prompt = EVALUATOR_USER_PROMPT_TEMPLATE.format(
         current_concept=state["current_concept"],
@@ -68,7 +77,9 @@ def evaluateur_node(state: StudyBuddyState) -> dict[str, Any]:
         HumanMessage(content=user_prompt),
     ]
 
+    t0 = time.perf_counter()
     response = llm.invoke(messages)
+    logger.info(f"[TIMING] evaluateur LLM invoke: {time.perf_counter() - t0:.2f}s")
 
     last_evaluation = {}
     mastery_score = state.get("mastery_score", 0.0)

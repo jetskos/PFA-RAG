@@ -2,6 +2,8 @@
 Agent Diagnostiqueur - Analyse initiale du niveau de l'étudiant.
 """
 import json
+import logging
+import time
 from typing import Any
 from langchain_core.messages import SystemMessage, HumanMessage
 from tuteur_ia.graph.state import StudyBuddyState
@@ -10,6 +12,8 @@ from tuteur_ia.prompts.diagnostiqueur import (
     DIAGNOSTIC_USER_PROMPT_TEMPLATE,
 )
 from tuteur_ia.agents.llm_factory import get_llm
+
+logger = logging.getLogger(__name__)
 
 
 def diagnostiqueur_node(state: StudyBuddyState) -> dict[str, Any]:
@@ -23,6 +27,7 @@ def diagnostiqueur_node(state: StudyBuddyState) -> dict[str, Any]:
         from tuteur_ia.tools.chroma_store import search as chroma_search
         from tuteur_ia.tools.rag_tool import rag_search
         chapitre_id = state["chapitre_id"]
+        t0 = time.perf_counter()
         try:
             # Multi-requêtes pour couvrir tout le contenu du PDF
             queries = [
@@ -43,10 +48,18 @@ def diagnostiqueur_node(state: StudyBuddyState) -> dict[str, Any]:
                 chapitre_id=chapitre_id,
                 n_results=6,
             )
-        except Exception:
+        except Exception as e:
+            logger.error(f"Erreur lors de la recherche RAG dans diagnostiqueur: {e}")
             rag_content = ""
+        finally:
+            logger.info(f"[TIMING] diagnostiqueur RAG search: {time.perf_counter() - t0:.2f}s")
 
-    llm = get_llm(temperature=0.3, model_name="llama-3.1-8b-instant")
+    t0 = time.perf_counter()
+    # max_tokens court : la sortie attendue est un petit JSON (2-3 questions
+    # courtes) — sans plafond bas, un petit modèle local peut partir en
+    # digression et recopier de gros extraits du RAG (observé en test : 17s
+    # pour un diagnostic au lieu de ~2s une fois plafonné).
+    llm = get_llm(temperature=0.3, model_name="llama-3.1-8b-instant", max_tokens=150)
 
     user_prompt = DIAGNOSTIC_USER_PROMPT_TEMPLATE.format(
         etudiant_email=state.get("etudiant_id", "unknown"),
@@ -63,6 +76,7 @@ def diagnostiqueur_node(state: StudyBuddyState) -> dict[str, Any]:
     ]
 
     response = llm.invoke(messages)
+    logger.info(f"[TIMING] diagnostiqueur LLM invoke: {time.perf_counter() - t0:.2f}s")
 
     diagnosis = {}
     try:

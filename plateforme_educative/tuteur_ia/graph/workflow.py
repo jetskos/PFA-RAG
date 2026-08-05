@@ -69,7 +69,10 @@ def get_graph():
         try:
             from tuteur_ia.graph.checkpointer import DjangoCheckpointSaver
             checkpointer = DjangoCheckpointSaver()
-        except Exception:
+        except Exception as e:
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.debug(f"Impossible de charger DjangoCheckpointSaver, utilisation de MemorySaver: {e}")
             from langgraph.checkpoint.memory import MemorySaver
             checkpointer = MemorySaver()
 

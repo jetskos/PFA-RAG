@@ -4,6 +4,7 @@ Vues Django — Tuteur IA (chatbot socratique).
 - Feedback selon mastery_score : < 0.75 → réviser, >= 0.75 → félicitations + QCM
 """
 import json
+import time
 import uuid as uuid_module
 import logging
 
@@ -130,6 +131,7 @@ def repondre(request, session_id):
         state_obj = graph.get_state(config)
         graph_initialized = bool(state_obj.values and "current_concept" in state_obj.values)
 
+        t0 = time.perf_counter()
         if not graph_initialized:
             # PREMIER MESSAGE : lancer le graph depuis zéro avec le message
             # de l'étudiant déjà inclus dans l'état initial.
@@ -162,6 +164,11 @@ def repondre(request, session_id):
             final_state = None
             for event in graph.stream(None, config, stream_mode="values"):
                 final_state = event
+        logger.info(
+            f"[TIMING] repondre() graph.stream() total "
+            f"({'premier message' if not graph_initialized else 'tour suivant'}): "
+            f"{time.perf_counter() - t0:.2f}s"
+        )
 
         tutor_response = ""
         mastery_score  = 0.0
@@ -243,7 +250,10 @@ def statut_session(request, session_id):
         values = state.values if state else {}
         mastery_score = values.get("mastery_score", session.mastery_score_final or 0.0)
         iteration     = values.get("iteration", 0)
-    except Exception:
+    except Exception as e:
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"Erreur lors de la récupération de l'état du graphe: {e}")
         mastery_score = session.mastery_score_final or 0.0
         iteration     = 0
 
@@ -365,25 +375,21 @@ def poser_question(request, session_id):
             )
         else:
             system_prompt = (
-                f"Tu es le Tuteur Assistant STRICTEMENT limité au chapitre '{titre_chapitre}'.\n\n"
-                "EXTRAITS DU DOCUMENT PDF (seule source autorisée) :\n"
+                f"Tu es le Tuteur Assistant Pédagogique du chapitre '{titre_chapitre}'.\n\n"
+                "EXTRAITS DU DOCUMENT PDF (Source principale) :\n"
                 "---\n"
                 f"{context}\n"
                 "---\n\n"
-                "RÈGLE ABSOLUE N°1 — DÉTECTION HORS SUJET :\n"
-                "Analyse d'abord si la question de l'élève est liée au contenu du chapitre "
-                f"'{titre_chapitre}' ou aux extraits PDF ci-dessus.\n"
-                "• Si la question concerne des sujets ÉTRANGERS au chapitre "
-                "(marques commerciales, célébrités, pays, recettes, sports, actualités, "
-                "ou tout sujet non mentionné dans le PDF ci-dessus), "
-                "réponds UNIQUEMENT et EXACTEMENT :\n"
-                f"\"{refus_hors_sujet}\"\n"
-                "• Ne donne JAMAIS de réponse basée sur tes connaissances générales. "
-                "Même si tu connais la réponse, si elle n'est pas dans le PDF : REFUSE.\n\n"
-                "RÈGLE N°2 — QUESTIONS VALIDES :\n"
-                "Si la question porte bien sur le chapitre (résumé, explication, concepts du PDF...), "
-                "réponds clairement et de façon concise (max 3 paragraphes) "
-                "en te basant EXCLUSIVEMENT sur les extraits fournis."
+                "CONSIGNES ET RÈGLES :\n"
+                "1. DEMANDES DE RÉSUMÉ ET DE SYNTHÈSE : Si l'élève demande de résumer le chapitre, d'expliquer le cours, "
+                "ou de donner les points clés (ex: 'résume ce chapitre', 'explique le cours', 'points clés'), "
+                "tu DOIS impérativement répondre en fournissant un résumé clair, bien structuré et synthétique "
+                "basé sur les extraits de cours fournis ci-dessus.\n\n"
+                "2. QUESTIONS CONCERNANT LE COURS : Réponds de façon concise, bienveillante et pédagogique "
+                "en t'appuyant sur le contenu du document.\n\n"
+                "3. QUESTIONS TOTALEMENT HORS SUJET : Uniquement si l'élève pose une question qui n'a AUCUN rapport avec le domaine du cours "
+                "(ex: météo, célébrités, recettes de cuisine, sports), réponds :\n"
+                f"\"{refus_hors_sujet}\""
             )
 
         messages_to_send = [SystemMessage(content=system_prompt)] + chat_history + [HumanMessage(content=question)]

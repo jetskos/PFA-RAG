@@ -41,10 +41,22 @@ def _get_pdf_content_for_qcm(chapitre) -> str:
     from tuteur_ia.tools.chroma_store import get_collection
     try:
         collection = get_collection()
-        res = collection.get(
-            where={"chapitre_id": str(chapitre.id)},
-            include=["documents", "metadatas"]
-        )
+        try:
+            res = collection.get(
+                where={"chapitre_id": str(chapitre.id)},
+                include=["documents", "metadatas"]
+            )
+        except Exception as err:
+            logger.warning(f"[ChromaDB QCM Fallback] collection.get avec filtre where a échoué ({err}), bascule sur filtrage Python.")
+            raw = collection.get(include=["documents", "metadatas"])
+            docs, metas = [], []
+            if raw and raw.get("documents"):
+                for doc, meta in zip(raw["documents"], raw["metadatas"]):
+                    if meta and str(meta.get("chapitre_id")) == str(chapitre.id):
+                        docs.append(doc)
+                        metas.append(meta)
+            res = {"documents": docs, "metadatas": metas}
+
         docs = res.get("documents", [])
         metas = res.get("metadatas", [])
 
@@ -348,8 +360,10 @@ def corriger_qcm(request, session_id):
             if c['ordre'] > ordre_actuel:
                 prochain_chapitre_id = str(c['id'])
                 break
-    except Exception:
-        pass
+    except Exception as e:
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"Erreur lors de la récupération du prochain chapitre: {e}")
 
     return JsonResponse({
         'score':                score,
@@ -392,8 +406,10 @@ def resultats_qcm(request, session_id):
             .order_by('ordre')
             .first()
         )
-    except Exception:
-        pass
+    except Exception as e:
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"Erreur lors de la récupération du prochain chapitre dans resultats_qcm: {e}")
 
     return render(request, 'tuteur_ia/qcm_resultats.html', {
         'session':           session,

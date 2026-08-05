@@ -45,7 +45,8 @@ def _pdf_has_changed(instance) -> bool:
     except Document.DoesNotExist:
         # Nouveau document → pas encore en base
         return True
-    except Exception:
+    except Exception as e:
+        logger.warning(f"Erreur lors de la vérification de l'ancien PDF pour le document {instance.id if hasattr(instance, 'id') else 'nouveau'}: {e}")
         return True
 
 
@@ -53,23 +54,14 @@ def _pdf_has_changed(instance) -> bool:
 def on_document_save(sender, instance, created, **kwargs):
     """
     Déclenché automatiquement après chaque sauvegarde d'un Document.
-
-    Cas couverts :
-    ┌─────────────────────────────────────────┬──────────────┐
-    │ Situation                               │ Indexation   │
-    ├─────────────────────────────────────────┼──────────────┤
-    │ Nouveau document uploadé (admin/API)    │ ✅ Toujours  │
-    │ PDF remplacé par un nouveau fichier     │ ✅ Toujours  │
-    │ Modification du titre/description seul │ ❌ Skip      │
-    │ contenu_extrait vidé manuellement       │ ✅ Toujours  │
-    └─────────────────────────────────────────┴──────────────┘
     """
     if not instance.fichier_pdf:
         return
 
     try:
         pdf_path = instance.fichier_pdf.path
-    except Exception:
+    except Exception as e:
+        logger.error(f"Impossible de récupérer le chemin du PDF pour le document {instance.id if hasattr(instance, 'id') else 'nouveau'}: {e}")
         return
 
     if not os.path.exists(pdf_path):

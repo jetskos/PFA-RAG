@@ -162,14 +162,21 @@ def export_course_task(self, export_job_id: str):
 import uuid
 
 @shared_task(bind=True, name='apprentissage.tasks.import_courses_task')
-def import_courses_task(self, user_id: str, zip_files: list):
-    logger.info(f"[Import] Démarrage de l'importation de {len(zip_files)} fichier(s) par l'utilisateur {user_id}")
+def import_courses_task(self, import_job_id: str, user_id: str, zip_files: list):
+    logger.info(f"[Import] Démarrage de l'importation (job {import_job_id}) par l'utilisateur {user_id}")
+    from apprentissage.models import ImportJob
+    import_job = ImportJob.objects.filter(pk=import_job_id).first()
+    if import_job:
+        import_job.status = 'EXTRACTION'
+        import_job.save()
+
     try:
         from accounts.models import Utilisateur
         from apprentissage.models import Niveau, Cours, Chapitre, Document
         from django.core.files import File
         
         user = Utilisateur.objects.get(pk=user_id)
+        imported_cours_titres = []
         
         for zip_path_str in zip_files:
             zip_path = Path(zip_path_str)
@@ -194,14 +201,16 @@ def import_courses_task(self, user_id: str, zip_files: list):
                 niveau_code = c_data.get('niveau') or "NA"
                 niveau, _ = Niveau.objects.get_or_create(code=niveau_code, defaults={'nom': niveau_code})
                 
+                cours_titre = f"{c_data.get('titre', 'Cours importé')} (Importé)"
                 cours = Cours.objects.create(
-                    titre=f"{c_data.get('titre', 'Cours importé')} (Importé)",
+                    titre=cours_titre,
                     description=c_data.get('description', ''),
                     resume=c_data.get('resume', ''),
                     niveau=niveau,
                     createur=user,
                     actif=True # Les cours importés sont directement actifs
                 )
+                imported_cours_titres.append(cours_titre)
                 
                 if 'image_couverture' in c_data:
                     img_file = extract_dir / c_data['image_couverture']
@@ -243,10 +252,21 @@ def import_courses_task(self, user_id: str, zip_files: list):
                 shutil.rmtree(extract_dir, ignore_errors=True)
                 if zip_path.exists():
                     zip_path.unlink()
-                    
+
+        if import_job:
+            import_job.status = 'TERMINE'
+            import_job.titre_cours = ", ".join(imported_cours_titres) if imported_cours_titres else "Cours importé"
+            import_job.date_fin = timezone.now()
+            import_job.save()
+
         logger.info(f"[Import] Fin de l'importation par l'utilisateur {user_id}")
     except Exception as e:
         logger.error(f"[Import] Erreur globale: {e}", exc_info=True)
+        if import_job:
+            import_job.status = 'FAILED'
+            import_job.erreur = str(e)
+            import_job.date_fin = timezone.now()
+            import_job.save()
 
 import subprocess
 
@@ -307,6 +327,8 @@ def convertir_video_hls(self, chapitre_id: str):
         
         logger.info(f"[HLS] Succès: Playlist générée à {rel_hls_path}")
         
+    except FileNotFoundError:
+        logger.warning("[HLS] FFmpeg non installé sur le système. Conversion vidéo HLS ignorée.")
     except subprocess.CalledProcessError as e:
         logger.error(f"[HLS] Erreur FFmpeg: {e.stderr.decode('utf-8', errors='ignore')}")
     except Exception as e:
