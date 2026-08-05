@@ -13,6 +13,7 @@ RUN apt-get update && apt-get install -y \
     default-libmysqlclient-dev \
     pkg-config \
     libmariadb-dev \
+    ffmpeg \
     && rm -rf /var/lib/apt/lists/*
 
 # Set the working directory in the container
