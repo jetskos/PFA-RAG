@@ -1,94 +1,1295 @@
-{% extends 'base.html' %}
-{% block title %}Gérer le cours{% endblock %}
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Gérer le cours : {{ cours.titre }}{% endblock %}
 
 {% block content %}
 <style>
-    .builder-accordion { background: var(--surface); border: 1px solid var(--bordure); border-radius: 8px; margin-bottom: 1rem; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-    .builder-summary { padding: 1rem 1.5rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; background: #f8fafc; font-weight: 600; list-style: none; }
-    .builder-summary::-webkit-details-marker { display: none; }
-    .builder-summary:hover { background: #f1f5f9; }
-    .builder-content { padding: 1.5rem; border-top: 1px solid var(--bordure); background: var(--surface); }
-    
-    /* La Modale en pur CSS */
-    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
-    .modal-content { background: var(--surface); padding: 2rem; border-radius: var(--radius-lg); width: 100%; max-width: 500px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+
+/* ═══════════════════════════════════════════════
+   COURSE BUILDER — INTEGRATED DJANGO INTERFACE
+   ═══════════════════════════════════════════════ */
+
+:root {
+    --brand-clr: #4f46e5;
+    --brand-light: #eef2ff;
+    --brand-hover: #4338ca;
+    --teal: #0d9488;
+    --success: #22c55e;
+    --danger: #ef4444;
+    --danger-light: #fef2f2;
+    --surface: #ffffff;
+    --surface-alt: #f8f9fb;
+    --border: #e5e7eb;
+    --text: #111827;
+    --text-2: #374151;
+    --text-3: #6b7280;
+    --text-4: #9ca3af;
+    --sidebar-w: 330px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,.07);
+    --shadow-md: 0 4px 12px rgba(0,0,0,.08);
+    --shadow-lg: 0 10px 30px rgba(0,0,0,.12);
+    --radius: 10px;
+    --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── LAYOUT ── */
+.builder-shell {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 72px); /* header height */
+    background: var(--surface-alt);
+}
+
+/* ── TOPBAR ── */
+.builder-topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0.65rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-shrink: 0;
+    box-shadow: var(--shadow-sm);
+}
+
+.builder-topbar-title {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.builder-topbar-subtitle {
+    font-size: 0.78rem;
+    color: var(--text-3);
+    font-weight: 500;
+}
+
+.builder-topbar-actions {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* ── MAIN CONTENT ── */
+.builder-content {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* ── SIDEBAR ── */
+.builder-sidebar {
+    width: var(--sidebar-w);
+    flex-shrink: 0;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.sidebar-head {
+    padding: 1rem 1rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+}
+
+.sidebar-head-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.6rem;
+}
+
+.sidebar-count {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--text-3);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.sidebar-search-wrap {
+    position: relative;
+}
+
+.sidebar-search-wrap i {
+    position: absolute;
+    left: 0.65rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-4);
+    font-size: 0.85rem;
+    pointer-events: none;
+}
+
+.sidebar-search-wrap input {
+    width: 100%;
+    padding: 0.5rem 0.75rem 0.5rem 2.1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-family: inherit;
+    font-size: 0.82rem;
+    color: var(--text);
+    background: var(--surface-alt);
+    outline: none;
+    transition: var(--transition);
+}
+.sidebar-search-wrap input:focus {
+    border-color: var(--brand-clr);
+    box-shadow: 0 0 0 3px rgba(79,70,229,0.1);
+    background: white;
+}
+
+.courses-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0.5rem;
+    min-height: 0;
+}
+.courses-scroll::-webkit-scrollbar { width: 4px; }
+.courses-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+/* Devoirs urgents panel */
+.devoirs-panel {
+    flex-shrink: 0;
+    border-top: 1px solid var(--border);
+    max-height: 260px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+.devoirs-panel.collapsed { max-height: 40px; }
+.devoirs-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.6rem 1rem;
+    cursor: pointer;
+    flex-shrink: 0;
+    user-select: none;
+    background: var(--surface);
+}
+.devoirs-panel-header:hover { background: var(--surface-alt); }
+.devoirs-panel-title {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--text-3);
+}
+.devoirs-panel-body {
+    overflow-y: auto;
+    padding: 0 0.75rem 0.75rem;
+    flex: 1;
+}
+.devoirs-panel-body::-webkit-scrollbar { width: 3px; }
+.devoirs-panel-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+.devoir-alert-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.55rem 0.6rem;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    margin-bottom: 4px;
+    transition: var(--transition);
+    text-decoration: none;
+}
+.devoir-alert-row:hover { border-color: #f97316; background: #fff7ed; }
+.devoir-alert-urgent {
+    border-color: #fed7aa;
+    background: #fff7ed;
+}
+
+/* ── COURSE ITEM ── */
+.course-item {
+    padding: 0.8rem 0.9rem;
+    border-radius: var(--radius);
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: var(--transition);
+    position: relative;
+    margin-bottom: 2px;
+}
+.course-item:hover {
+    background: var(--surface-alt);
+    border-color: var(--border);
+}
+.course-item.active {
+    background: var(--brand-light);
+    border-color: rgba(79,70,229,0.25);
+}
+.course-item.active .ci-title { color: var(--brand-clr); }
+.ci-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.4rem; }
+.ci-title { font-size: 0.86rem; font-weight: 600; color: var(--text); line-height: 1.3; flex: 1; }
+.ci-meta { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.45rem; flex-wrap: wrap; }
+.ci-time { font-size: 0.72rem; color: var(--text-4); margin-top: 0.3rem; display: flex; align-items: center; gap: 3px; }
+
+/* ctx menu */
+.ctx-wrap { position: relative; flex-shrink: 0; }
+.ctx-btn {
+    width: 26px; height: 26px;
+    border: none; background: transparent;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: var(--text-4);
+    transition: var(--transition);
+    opacity: 0;
+}
+.course-item:hover .ctx-btn { opacity: 1; }
+.ctx-btn:hover { background: var(--border); color: var(--text); }
+
+.ctx-menu {
+    position: absolute; top: calc(100% + 4px); right: 0;
+    background: white; border: 1px solid var(--border);
+    border-radius: var(--radius); box-shadow: var(--shadow-lg);
+    min-width: 170px; z-index: 600;
+    display: none; overflow: hidden;
+}
+.ctx-menu.open { display: block; }
+.ctx-link {
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 0.55rem 0.85rem;
+    font-size: 0.82rem; font-weight: 500; color: var(--text-2);
+    cursor: pointer; transition: var(--transition);
+    text-decoration: none;
+    border: none; background: none; width: 100%; text-align: left; font-family: inherit;
+}
+.ctx-link:hover { background: var(--surface-alt); }
+.ctx-link.ctx-danger { color: var(--danger); }
+.ctx-link.ctx-danger:hover { background: var(--danger-light); }
+.ctx-sep { height: 1px; background: var(--border); margin: 3px 0; }
+
+/* ── WORKSPACE ── */
+.builder-workspace {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--surface-alt);
+}
+
+.ws-empty {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    color: var(--text-4);
+    text-align: center;
+    padding: 2rem;
+}
+.ws-empty-icon {
+    width: 80px; height: 80px;
+    border-radius: 20px;
+    background: var(--brand-light);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2.5rem;
+    color: var(--brand-clr);
+    opacity: 0.5;
+    margin-bottom: 0.5rem;
+}
+
+.ws-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.ws-course-header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+}
+
+.ws-top-bar {
+    padding: 1.1rem 1.5rem;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.ws-title-block {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.85rem;
+    flex: 1;
+    min-width: 0;
+}
+
+.ws-icon {
+    width: 50px; height: 50px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--brand-clr), #7c3aed);
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 1.4rem;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.ws-course-title {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -0.02em;
+    line-height: 1.3;
+    border-radius: 6px;
+    padding: 1px 4px;
+}
+
+.ws-course-desc {
+    font-size: 0.82rem;
+    color: var(--text-3);
+    margin-top: 0.15rem;
+    border-radius: 6px;
+    padding: 1px 4px;
+    line-height: 1.4;
+}
+
+.ws-actions-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.toggle-group {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-3);
+    padding: 0.25rem 0.5rem;
+    background: var(--surface-alt);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+}
+
+/* Tabs */
+.ws-tabs {
+    display: flex;
+    padding: 0 1.5rem;
+}
+.ws-tab {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.6rem 0.9rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-3);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: var(--transition);
+}
+.ws-tab:hover { color: var(--text); }
+.ws-tab.active { color: var(--brand-clr); border-bottom-color: var(--brand-clr); }
+.tab-count {
+    background: var(--brand-light);
+    color: var(--brand-clr);
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 999px;
+}
+
+/* ── WORKSPACE BODY ── */
+.ws-tab-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.25rem 1.5rem 2rem;
+}
+.ws-tab-content::-webkit-scrollbar { width: 5px; }
+.ws-tab-content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.ws-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.85rem;
+}
+.ws-section-title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--text-4);
+}
+
+/* ── CHAPTER CARDS ── */
+.sortable-chapitres { display: flex; flex-direction: column; gap: 4px; }
+
+.chapter-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    transition: var(--transition);
+}
+.chapter-card:hover { border-color: #d1d5db; box-shadow: var(--shadow-sm); }
+.sortable-ghost { opacity: 0.4; border: 2px dashed var(--brand-clr); }
+
+.chapter-card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 0.9rem;
+    cursor: pointer;
+    user-select: none;
+}
+
+.drag-handle {
+    color: var(--text-4);
+    cursor: grab;
+    padding: 4px;
+    border-radius: 4px;
+    transition: var(--transition);
+    flex-shrink: 0;
+    font-size: 1rem;
+}
+.drag-handle:hover { background: var(--surface-alt); color: var(--text-3); }
+.drag-handle:active { cursor: grabbing; }
+
+.ch-num {
+    width: 22px; height: 22px;
+    border-radius: 6px;
+    background: var(--brand-light);
+    color: var(--brand-clr);
+    font-size: 0.68rem;
+    font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+}
+.ch-title {
+    font-weight: 600;
+    font-size: 0.86rem;
+    color: var(--text);
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.ch-badges { display: flex; gap: 0.3rem; align-items: center; flex-shrink: 0; }
+
+.cbadge {
+    display: inline-flex; align-items: center; gap: 2px;
+    padding: 1px 6px; border-radius: 999px;
+    font-size: 0.68rem; font-weight: 700;
+}
+.cbadge-blue { background: #eff6ff; color: #3b82f6; }
+.cbadge-purple { background: #f5f3ff; color: #7c3aed; }
+.cbadge-green { background: #dcfce7; color: #16a34a; }
+.cbadge-grey { background: #f3f4f6; color: #6b7280; }
+
+.ch-actions {
+    display: flex; align-items: center; gap: 0.2rem;
+    opacity: 0; transition: opacity 0.15s; flex-shrink: 0;
+}
+.chapter-card:hover .ch-actions { opacity: 1; }
+
+/* ── CHAPTER EXPAND ── */
+.chapter-expand-body {
+    display: none;
+    border-top: 1px solid var(--border);
+    padding: 0.85rem 1rem 1rem 3.2rem;
+}
+.chapter-expand-body.open { display: block; }
+
+.ch-chevron { transition: transform 0.2s; }
+.ch-chevron.rotated { transform: rotate(180deg); }
+
+.ch-desc-text {
+    font-size: 0.82rem;
+    color: var(--text-3);
+    margin-bottom: 0.75rem;
+    line-height: 1.5;
+}
+
+.resource-badge {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    padding: 0.4rem 0.75rem; border-radius: 8px;
+    font-size: 0.78rem; font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+.resource-yt { background: #fff7ed; color: #ea580c; border: 1px solid #fed7aa; }
+.resource-video { background: #eff6ff; color: #3b82f6; border: 1px solid #bfdbfe; }
+.resource-preview-link { margin-left: 0.4rem; text-decoration: underline; }
+
+/* ── DOC ITEMS ── */
+.doc-item-builder {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.5rem 0.65rem;
+    border-radius: 8px;
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    margin-bottom: 4px;
+    transition: var(--transition);
+}
+.doc-item-builder:hover { border-color: var(--brand-clr); }
+
+.doc-icon-builder {
+    width: 30px; height: 30px;
+    border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.9rem; flex-shrink: 0;
+}
+.doc-icon-builder.pdf { background: #fff1f2; color: #e11d48; }
+.doc-icon-builder.video { background: #eff6ff; color: #3b82f6; }
+
+.doc-info-builder { flex: 1; min-width: 0; }
+.doc-name-builder { font-size: 0.8rem; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.doc-meta-builder { font-size: 0.7rem; color: var(--text-4); }
+.doc-actions-builder { display: flex; gap: 0.2rem; align-items: center; }
+
+.no-docs-hint {
+    font-size: 0.78rem;
+    color: var(--text-4);
+    padding: 0.4rem 0;
+    display: flex; align-items: center; gap: 0.4rem;
+}
+
+/* ── BUTTONS ── */
+.wsbtn {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    padding: 0.45rem 0.85rem;
+    border-radius: var(--radius);
+    font-family: inherit; font-size: 0.8rem; font-weight: 600;
+    cursor: pointer; transition: var(--transition);
+    border: 1px solid transparent; text-decoration: none;
+    white-space: nowrap;
+}
+.wsbtn-primary { background: var(--brand-clr); color: white; border-color: var(--brand-clr); }
+.wsbtn-primary:hover { background: var(--brand-hover); }
+.wsbtn-outline { background: white; color: var(--text-2); border-color: var(--border); }
+.wsbtn-outline:hover { border-color: #d1d5db; background: var(--surface-alt); }
+.wsbtn-ghost { background: transparent; color: var(--text-3); border-color: transparent; padding: 0.35rem 0.6rem; font-size: 0.78rem; }
+.wsbtn-ghost:hover { background: var(--surface-alt); color: var(--text); }
+
+.wsbtn-icon {
+    width: 28px; height: 28px;
+    display: inline-flex; align-items: center; justify-content: center;
+    border: none; background: transparent; border-radius: 7px;
+    cursor: pointer; color: var(--text-3); font-size: 0.9rem;
+    transition: var(--transition); font-family: inherit;
+}
+.wsbtn-icon:hover { background: var(--surface-alt); color: var(--text); }
+.wsbtn-icon.danger { color: var(--danger); }
+.wsbtn-icon.danger:hover { background: var(--danger-light); }
+
+.add-chapter-btn-main {
+    display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+    width: 100%; padding: 0.8rem;
+    border: 2px dashed #d1d5db; border-radius: var(--radius);
+    background: transparent; color: var(--text-3);
+    font-family: inherit; font-size: 0.84rem; font-weight: 600;
+    cursor: pointer; transition: var(--transition); margin-top: 0.6rem;
+}
+.add-chapter-btn-main:hover { border-color: var(--brand-clr); color: var(--brand-clr); background: var(--brand-light); }
+
+.add-doc-btn {
+    display: flex; align-items: center; gap: 0.4rem;
+    width: 100%; padding: 0.45rem 0.6rem;
+    border: 1px dashed #d1d5db; border-radius: 8px;
+    background: transparent; color: var(--text-3);
+    font-family: inherit; font-size: 0.78rem; font-weight: 500;
+    cursor: pointer; transition: var(--transition); margin-top: 6px;
+}
+.add-doc-btn:hover { border-color: var(--brand-clr); color: var(--brand-clr); background: var(--brand-light); }
+
+/* ── TOGGLE ── */
+.toggle-switch {
+    position: relative; width: 36px; height: 20px; flex-shrink: 0;
+}
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.toggle-slider {
+    position: absolute; inset: 0;
+    background: #d1d5db; border-radius: 99px; cursor: pointer;
+    transition: var(--transition);
+}
+.toggle-slider::after {
+    content: ''; position: absolute;
+    width: 14px; height: 14px; background: white;
+    border-radius: 50%; top: 3px; left: 3px;
+    transition: var(--transition); box-shadow: var(--shadow-sm);
+}
+.toggle-switch input:checked + .toggle-slider { background: var(--success); }
+.toggle-switch input:checked + .toggle-slider::after { transform: translateX(16px); }
+.sm-toggle { width: 30px; height: 16px; }
+.sm-toggle .toggle-slider::after { width: 10px; height: 10px; top: 3px; left: 3px; }
+.sm-toggle input:checked + .toggle-slider::after { transform: translateX(14px); }
+
+/* ── MISC BADGES ── */
+.niveau-badge {
+    display: inline-flex; align-items: center; gap: 3px;
+    font-size: 0.7rem; font-weight: 700;
+    padding: 2px 7px; border-radius: 999px;
+}
+.meta-chip {
+    display: inline-flex; align-items: center; gap: 3px;
+    font-size: 0.72rem; color: var(--text-4); font-weight: 500;
+}
+
+.badge-active { background: #dcfce7; color: #16a34a; border-radius: 999px; padding: 2px 7px; font-size: 0.7rem; font-weight: 700; }
+.badge-inactive { background: #f3f4f6; color: #6b7280; border-radius: 999px; padding: 2px 7px; font-size: 0.7rem; font-weight: 700; }
+.badge-info { background: #eff6ff; color: #3b82f6; border-radius: 999px; padding: 2px 7px; font-size: 0.7rem; font-weight: 700; }
+
+/* ── DRAWER ── */
+.builder-drawer-overlay {
+    position: fixed; inset: 0;
+    background: rgba(17,24,39,0.45);
+    backdrop-filter: blur(4px);
+    z-index: 900;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.25s;
+}
+.builder-drawer-overlay.open { opacity: 1; pointer-events: all; }
+
+.builder-drawer {
+    position: fixed;
+    top: 0; right: 0;
+    width: 480px; max-width: 95vw;
+    height: 100vh;
+    background: white;
+    z-index: 901;
+    display: flex; flex-direction: column;
+    box-shadow: -10px 0 40px rgba(0,0,0,0.12);
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.builder-drawer.open { transform: translateX(0); }
+
+.drawer-hdr {
+    padding: 1.1rem 1.4rem;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 0.7rem;
+    flex-shrink: 0;
+}
+.drawer-hdr-icon {
+    width: 36px; height: 36px; border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem; flex-shrink: 0;
+}
+.drawer-hdr h3 { font-size: 0.95rem; font-weight: 700; flex: 1; }
+.drawer-hdr p { font-size: 0.75rem; color: var(--text-3); margin-top: 0.1rem; }
+
+.drawer-scrollbody {
+    flex: 1; overflow-y: auto; padding: 1.25rem;
+}
+.drawer-scrollbody::-webkit-scrollbar { width: 4px; }
+.drawer-scrollbody::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.drawer-ftr {
+    padding: 0.85rem 1.25rem;
+    border-top: 1px solid var(--border);
+    display: flex; justify-content: flex-end; gap: 0.6rem;
+    background: var(--surface-alt); flex-shrink: 0;
+}
+
+/* ── DEVOIRS ── */
+.devoir-group-title {
+    font-size: 0.75rem; font-weight: 700;
+    letter-spacing: 0.05em; text-transform: uppercase;
+    color: var(--text-4); margin: 1rem 0 0.4rem;
+}
+.devoir-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.6rem 0.75rem;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; margin-bottom: 4px;
+}
+.devoir-info { display: flex; flex-direction: column; }
+.devoir-title { font-size: 0.84rem; font-weight: 600; }
+.devoir-meta { font-size: 0.72rem; color: var(--text-4); margin-top: 0.1rem; }
+.devoir-actions { display: flex; gap: 0.3rem; }
+
+/* ── EMPTY STATES ── */
+.empty-state-builder {
+    text-align: center; padding: 2rem 1rem;
+    color: var(--text-4); display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+}
+.empty-state-builder p { font-size: 0.82rem; }
+
+/* ── TOAST ── */
+.builder-toast {
+    position: fixed; bottom: 1.5rem; right: 1.5rem;
+    padding: 0.7rem 1.1rem; border-radius: 10px;
+    background: #1f2937; color: white;
+    font-size: 0.82rem; font-weight: 500;
+    display: flex; align-items: center; gap: 0.4rem;
+    box-shadow: var(--shadow-lg); z-index: 2000;
+    transform: translateY(100px); opacity: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.builder-toast.show { transform: translateY(0); opacity: 1; }
+.builder-toast.success { background: #065f46; }
+.builder-toast.error { background: #991b1b; }
+
+/* ── IMPORT/EXPORT MODALS (same as before) ── */
+#import-preview-modal, #export-preview-modal {
+    position: fixed; inset: 0; background: rgba(15,23,42,0.75);
+    z-index: 9999; display: none; align-items: center; justify-content: center;
+    backdrop-filter: blur(8px);
+}
+#import-preview-modal > div, #export-preview-modal > div {
+    background: white; border-radius: 20px;
+    width: 580px; max-width: 95vw; max-height: 85vh; overflow-y: auto;
+    padding: 2rem; box-shadow: 0 25px 60px rgba(0,0,0,0.3);
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+    .builder-sidebar { width: 100%; max-height: 280px; border-right: none; border-bottom: 1px solid var(--border); }
+    .builder-content { flex-direction: column; }
+    .builder-workspace { height: calc(100vh - 280px - 72px - 50px); }
+    .ws-top-bar { flex-direction: column; }
+    .ws-actions-bar { align-self: flex-start; }
+}
+
+.builder-standalone-container { max-width: 1200px; margin: 2rem auto; background: var(--surface); border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border: 1px solid var(--border); overflow: hidden; }
 </style>
 
-<section class="page-shell">
-    <div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-end;">
-        <div>
-            <a href="{% url 'apprentissage:espace_formateur' %}" class="btn-ghost" style="padding: 4px 8px; margin-bottom: 10px; display: inline-block;">← Retour</a>
-            <h1>{{ cours.titre }}</h1>
-            <p>Constructeur de cours : Organisez vos chapitres et documents.</p>
+<div class="builder-standalone-container">
+
+
+{% with nb_chapitres=chapitres.count nb_docs=0 %}
+<div class="ws-course-header">
+    <div class="ws-top-bar">
+        <div class="ws-title-block">
+            <div class="ws-icon">
+                {% if cours.image_couverture %}
+                    <img src="{{ cours.image_couverture.url }}" alt="{{ cours.titre }}" style="width:100%;height:100%;object-fit:cover;border-radius:12px;">
+                {% else %}
+                    <i class="ti ti-certificate"></i>
+                {% endif %}
+            </div>
+            <div style="flex:1;min-width:0">
+                <div class="ws-course-title"
+                     data-cours-id="{{ cours.id }}"
+                     contenteditable="false"
+                     id="title-{{ cours.id }}">{{ cours.titre }}</div>
+                <div class="ws-course-desc"
+                     data-cours-id="{{ cours.id }}"
+                     contenteditable="false"
+                     id="desc-{{ cours.id }}">{{ cours.description|truncatechars:120 }}</div>
+                <div style="display:flex;align-items:center;gap:0.6rem;margin-top:0.4rem">
+                    <span class="niveau-badge niveau-{{ cours.niveau.code }}">{{ cours.niveau.nom }}</span>
+                    <span class="meta-chip"><i class="ti ti-books"></i> {{ nb_chapitres }} chapitre{{ nb_chapitres|pluralize }}</span>
+                    <span class="meta-chip"><i class="ti ti-clock"></i> Modifié {{ cours.date_modification|naturaltime }}</span>
+                </div>
+            </div>
         </div>
-        <div class="actions" style="display:flex; gap:0.75rem; align-items:center;">
-            <a class="btn btn-ghost" href="{% url 'apprentissage:detail_cours' cours.id %}">
-                Voir le cours
+        <div class="ws-actions-bar">
+            <!-- Toggle Actif -->
+            <div class="toggle-group" title="Activer / Désactiver le cours">
+                <span class="toggle-label">{{ cours.actif|yesno:"Actif,Inactif" }}</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" class="course-toggle" 
+                           data-url="{% url 'apprentissage:toggle_cours_actif' cours.pk %}"
+                           data-label-el="this.closest('.toggle-group').querySelector('.toggle-label')"
+                           {% if cours.actif %}checked{% endif %}
+                           onchange="handleCourseToggle(this)">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <a href="{% url 'apprentissage:detail_cours' cours.id %}" class="wsbtn wsbtn-ghost" target="_blank">
+                <i class="ti ti-eye"></i> Voir
             </a>
-            <button class="btn-primary"
-                    hx-get="{% url 'apprentissage:ajouter_chapitre' cours.id %}"
-                    hx-target="#modal-body"
-                    onclick="document.getElementById('form-modal').style.display='flex'">
-                <i class="ti ti-plus"></i> Nouveau Chapitre
+            <a href="{% url 'apprentissage:editer_cours' cours.pk %}" class="wsbtn wsbtn-ghost">
+                <i class="ti ti-settings"></i> Paramètres
+            </a>
+        </div>
+    </div>
+    <!-- Tabs -->
+    <div class="ws-tabs">
+        <div class="ws-tab active" onclick="switchWsTab(this, 'tab-chapitres')">
+            <i class="ti ti-layout-list"></i> Chapitres <span class="tab-count">{{ nb_chapitres }}</span>
+        </div>
+        <div class="ws-tab" onclick="switchWsTab(this, 'tab-devoirs')">
+            <i class="ti ti-clipboard-list"></i> Devoirs
+        </div>
+        <div class="ws-tab" onclick="switchWsTab(this, 'tab-inscrits')">
+            <i class="ti ti-users"></i> Inscrits <span class="tab-count">{{ progressions.count }}</span>
+        </div>
+    </div>
+</div>
+
+<!-- ── TAB CHAPITRES ── -->
+<div class="ws-tab-content" id="tab-chapitres">
+    <div class="ws-section-header">
+        <span class="ws-section-title">Chapitres du cours</span>
+        <div style="display:flex;gap:0.4rem">
+            <button class="wsbtn wsbtn-ghost" onclick="expandAllChapters()">
+                <i class="ti ti-arrows-maximize"></i> Tout déplier
             </button>
         </div>
     </div>
 
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 2rem; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem; background: var(--surface); padding: 1rem; border-radius: 8px; border: 1px solid var(--bordure);">
-        <div style="position: relative; width: 100%; max-width: 400px;">
-            <i class="ti ti-search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--texte-secondaire);"></i>
-            <input type="text" id="chapter-search" placeholder="Rechercher un chapitre, PDF ou devoir..." 
-                   style="width: 100%; padding: 8px 12px 8px 36px; border-radius: 6px; border: 1px solid var(--bordure); background: #f8fafc; font-size: 0.95rem; outline: none;">
-        </div>
-        <div style="display: flex; gap: 0.5rem;">
-            <button class="btn btn-ghost" onclick="toggleAllAccordions(true)" style="padding: 6px 12px; font-size: 0.85rem;"><i class="ti ti-arrows-maximize"></i> Tout déplier</button>
-            <button class="btn btn-ghost" onclick="toggleAllAccordions(false)" style="padding: 6px 12px; font-size: 0.85rem;"><i class="ti ti-arrows-minimize"></i> Tout replier</button>
-        </div>
-    </div>
-
-    <div id="chapitres-container">
-        {% include 'apprentissage/partials/chapitres_list.html' with cours=cours chapitres=chapitres %}
-    </div>
-
-    <div id="form-modal" class="modal-overlay">
-        <div class="modal-content" id="modal-body">
+    <div id="builder-chapitres-{{ cours.id }}" class="sortable-chapitres">
+        {% for chapitre in chapitres %}
+        <div class="chapter-card" data-id="{{ chapitre.id }}">
+            <div class="chapter-card-header" onclick="toggleExpandChapter('{{ chapitre.id }}')">
+                <span class="drag-handle" onclick="event.stopPropagation()" title="Glisser pour réordonner">
+                    <i class="ti ti-grip-vertical"></i>
+                </span>
+                <span class="ch-num">{{ chapitre.ordre }}</span>
+                <span class="ch-title">{{ chapitre.titre }}</span>
+                <div class="ch-badges">
+                    {% with doc_count=chapitre.documents.count %}
+                    {% if doc_count > 0 %}
+                    <span class="cbadge cbadge-blue"><i class="ti ti-paperclip"></i> {{ doc_count }}</span>
+                    {% endif %}
+                    {% endwith %}
+                    {% with dev_count=chapitre.devoirs.count %}
+                    {% if dev_count > 0 %}
+                    <span class="cbadge cbadge-purple"><i class="ti ti-clipboard"></i> {{ dev_count }}</span>
+                    {% endif %}
+                    {% endwith %}
+                    <span class="cbadge {% if chapitre.actif %}cbadge-green{% else %}cbadge-grey{% endif %}"
+                          id="ch-status-badge-{{ chapitre.id }}">
+                        {{ chapitre.actif|yesno:"Actif,Inactif" }}
+                    </span>
+                </div>
+                <div class="ch-actions" onclick="event.stopPropagation()">
+                    <label class="toggle-switch sm-toggle" title="Activer / Désactiver">
+                        <input type="checkbox" 
+                               data-url="{% url 'apprentissage:toggle_chapitre_actif' chapitre.id %}"
+                               {% if chapitre.actif %}checked{% endif %}
+                               onchange="handleChapterToggle(this, '{{ chapitre.id }}')">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <button class="wsbtn-icon" title="Modifier le chapitre"
+                            hx-get="{% url 'apprentissage:editer_chapitre' chapitre.id %}"
+                            hx-target="#builder-drawer-body"
+                            hx-swap="innerHTML"
+                            onclick="openBuilderDrawer('Modifier le chapitre', 'edit')">
+                        <i class="ti ti-pencil"></i>
+                    </button>
+                    <button class="wsbtn-icon danger" title="Supprimer le chapitre"
+                            onclick="confirmDeleteChapter('{{ chapitre.id }}', '{{ cours.id }}')">
+                        <i class="ti ti-trash"></i>
+                    </button>
+                </div>
+                <button class="wsbtn-icon" onclick="event.stopPropagation();toggleExpandChapter('{{ chapitre.id }}')" style="margin-left:0.25rem">
+                    <i class="ti ti-chevron-down ch-chevron" id="chevron-{{ chapitre.id }}"></i>
+                </button>
             </div>
+
+            <!-- Chapitre expand section -->
+            <div class="chapter-expand-body" id="expand-{{ chapitre.id }}">
+                {% if chapitre.description %}
+                <p class="ch-desc-text">{{ chapitre.description }}</p>
+                {% endif %}
+
+                {% if chapitre.url_video %}
+                <div class="resource-badge resource-yt">
+                    <i class="ti ti-brand-youtube"></i>
+                    <a href="{{ chapitre.url_video }}" target="_blank" rel="noopener">{{ chapitre.url_video|truncatechars:60 }}</a>
+                </div>
+                {% endif %}
+                {% if chapitre.video_fichier %}
+                <div class="resource-badge resource-video">
+                    <i class="ti ti-movie"></i>
+                    <span>Vidéo MP4 hors-ligne disponible</span>
+                    <a href="{{ chapitre.video_fichier.url }}" target="_blank" class="resource-preview-link">
+                        <i class="ti ti-player-play"></i> Prévisualiser
+                    </a>
+                </div>
+                {% endif %}
+
+                <!-- Documents list -->
+                <div id="docs-{{ chapitre.id }}">
+                    {% include 'apprentissage/partials/builder_docs_list.html' with chapitre=chapitre documents=chapitre.documents.all %}
+                </div>
+
+                <!-- Add doc button -->
+                <button class="add-doc-btn"
+                        hx-get="{% url 'apprentissage:ajouter_document' chapitre.id %}"
+                        hx-target="#builder-drawer-body"
+                        hx-swap="innerHTML"
+                        onclick="openBuilderDrawer('Ajouter un document', 'doc')">
+                    <i class="ti ti-plus"></i> Ajouter PDF / Document
+                </button>
+            </div>
+        </div>
+        {% empty %}
+        <div class="empty-state-builder" id="empty-chapitres-msg">
+            <i class="ti ti-books" style="font-size:2rem;color:var(--brand-clr);opacity:0.4"></i>
+            <p>Aucun chapitre. Commencez par en créer un.</p>
+        </div>
+        {% endfor %}
     </div>
-</section>
 
-<script>
-    document.getElementById('form-modal').addEventListener('click', function(e) {
-        if (e.target === this) this.style.display = 'none';
-    });
+    <button class="add-chapter-btn-main"
+            hx-get="{% url 'apprentissage:ajouter_chapitre' cours.pk %}"
+            hx-target="#builder-drawer-body"
+            hx-swap="innerHTML"
+            onclick="openBuilderDrawer('Ajouter un chapitre', 'chapitre')">
+        <i class="ti ti-plus"></i> Ajouter un chapitre
+    </button>
+</div>
 
-    // Filtrage instantané
-    document.getElementById('chapter-search').addEventListener('input', function(e) {
-        const term = e.target.value.toLowerCase();
-        const chapters = document.querySelectorAll('.builder-accordion');
-        
-        chapters.forEach(chap => {
-            const text = chap.textContent.toLowerCase();
-            if(text.includes(term)) {
-                chap.style.display = 'block';
-                if(term.length > 2 && !chap.hasAttribute('open')) {
-                    chap.setAttribute('open', '');
-                }
-            } else {
-                chap.style.display = 'none';
+<!-- ── TAB DEVOIRS ── -->
+<div class="ws-tab-content" id="tab-devoirs" style="display:none">
+    <div class="ws-section-header">
+        <span class="ws-section-title">Devoirs du cours</span>
+    </div>
+    {% with all_devoirs=chapitres %}
+    <div class="devoirs-list">
+        {% for chapitre in chapitres %}
+        {% with devoirs=chapitre.devoirs.all %}
+        {% if devoirs %}
+        <div class="devoir-group-title">{{ chapitre.titre }}</div>
+        {% for devoir in devoirs %}
+        <div class="devoir-row">
+            <div class="devoir-info">
+                <span class="devoir-title">{{ devoir.titre }}</span>
+                <span class="devoir-meta">/{{ devoir.note_max }} pts
+                    {% if devoir.date_limite %} · ⏰ {{ devoir.date_limite|date:"d/m/Y H:i" }}{% endif %}
+                </span>
+            </div>
+            <div class="devoir-actions">
+                <a href="{% url 'apprentissage:devoir_detail' devoir_id=devoir.pk %}" class="wsbtn wsbtn-ghost" title="Soumissions">
+                    <i class="ti ti-eye"></i>
+                </a>
+                <a href="{% url 'apprentissage:devoir_editer' devoir_id=devoir.pk %}" class="wsbtn wsbtn-ghost" title="Modifier">
+                    <i class="ti ti-pencil"></i>
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+        {% empty %}
+        <div class="empty-state-builder">
+            <i class="ti ti-clipboard-list" style="font-size:2rem;opacity:0.4"></i>
+            <p>Aucun devoir créé. Dépliez un chapitre pour en créer un.</p>
+        </div>
+        {% endfor %}
+    </div>
+    {% endwith %}
+</div>
+
+<!-- ── TAB INSCRITS ── -->
+<div class="ws-tab-content" id="tab-inscrits" style="display:none">
+    <div class="ws-section-header">
+        <span class="ws-section-title">Étudiants inscrits ({{ progressions.count }})</span>
+        <a href="{% url 'apprentissage:detail_cours' cours.id %}" class="wsbtn wsbtn-ghost" target="_blank">
+            <i class="ti ti-external-link"></i> Voir le cours public
+        </a>
+    </div>
+
+    {% if progressions %}
+    <div style="display:flex;flex-direction:column;gap:6px;">
+        {% for prog in progressions %}
+        {% with pct=prog.pourcentage etudiant=prog.etudiant %}
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:0.75rem 1rem;display:flex;align-items:center;gap:0.85rem;transition:var(--transition)" 
+             onmouseover="this.style.borderColor='#d1d5db'" onmouseout="this.style.borderColor='var(--border)'">
+            <!-- Avatar -->
+            <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--brand-clr),#7c3aed);color:white;display:flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:700;flex-shrink:0">
+                {{ etudiant.first_name|first|upper }}{{ etudiant.last_name|first|upper }}
+            </div>
+            <!-- Info -->
+            <div style="flex:1;min-width:0">
+                <div style="font-size:0.84rem;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+                    {{ etudiant.get_full_name }}
+                </div>
+                <div style="font-size:0.72rem;color:var(--text-4);display:flex;align-items:center;gap:0.5rem;margin-top:0.1rem">
+                    {% if etudiant.classe %}<span><i class="ti ti-building-community"></i> {{ etudiant.classe.nom }}</span>{% endif %}
+                    <span><i class="ti ti-clock"></i> {{ prog.date_derniere_consultation|naturaltime }}</span>
+                </div>
+            </div>
+            <!-- Progress -->
+            <div style="width:110px;flex-shrink:0;text-align:right">
+                <div style="display:flex;justify-content:space-between;font-size:0.72rem;font-weight:700;color:{% if pct >= 75 %}#16a34a{% elif pct >= 40 %}#d97706{% else %}var(--text-4){% endif %};margin-bottom:3px">
+                    <span>{{ prog.chapitres_valides.count }}/{{ nb_chapitres_total }} chap.</span>
+                    <span>{{ pct }}%</span>
+                </div>
+                <div style="height:5px;background:#e5e7eb;border-radius:999px;overflow:hidden">
+                    <div style="height:100%;width:{{ pct }}%;background:{% if pct >= 75 %}#22c55e{% elif pct >= 40 %}#f59e0b{% else %}#6b7280{% endif %};border-radius:999px;transition:width 0.5s"></div>
+                </div>
+            </div>
+        </div>
+        {% endwith %}
+        {% endfor %}
+    </div>
+    <!-- Summary stats -->
+    <div style="margin-top:1.25rem;display:flex;gap:0.75rem;flex-wrap:wrap">
+        {% with total=progressions.count %}
+        <div style="flex:1;min-width:120px;background:var(--brand-light);border:1px solid rgba(79,70,229,0.15);border-radius:var(--radius);padding:0.75rem;text-align:center">
+            <div style="font-size:1.4rem;font-weight:900;color:var(--brand-clr)">{{ total }}</div>
+            <div style="font-size:0.72rem;font-weight:600;color:var(--brand-clr);margin-top:0.1rem">Inscrits</div>
+        </div>
+        <div style="flex:1;min-width:120px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:var(--radius);padding:0.75rem;text-align:center">
+            <div style="font-size:1.4rem;font-weight:900;color:#16a34a" id="stat-termines-{{ cours.id }}">–</div>
+            <div style="font-size:0.72rem;font-weight:600;color:#16a34a;margin-top:0.1rem">Terminé (≥75%)</div>
+        </div>
+        <div style="flex:1;min-width:120px;background:#fffbeb;border:1px solid #fde68a;border-radius:var(--radius);padding:0.75rem;text-align:center">
+            <div style="font-size:1.4rem;font-weight:900;color:#d97706" id="stat-en-cours-{{ cours.id }}">–</div>
+            <div style="font-size:0.72rem;font-weight:600;color:#d97706;margin-top:0.1rem">En cours (40-74%)</div>
+        </div>
+        {% endwith %}
+    </div>
+    <script>
+    (function() {
+        // Compute stats from rendered bars
+        const bars = document.querySelectorAll('#tab-inscrits [style*="width:"]');
+        let done = 0, inProgress = 0;
+        bars.forEach(b => {
+            const m = b.style.width.match(/(\d+)%/);
+            if (m) {
+                const p = parseInt(m[1]);
+                if (p >= 75) done++;
+                else if (p >= 40) inProgress++;
             }
         });
-    });
+        const dEl = document.getElementById('stat-termines-{{ cours.id }}');
+        const iEl = document.getElementById('stat-en-cours-{{ cours.id }}');
+        if (dEl) dEl.textContent = done;
+        if (iEl) iEl.textContent = inProgress;
+    })();
+    </script>
+    {% else %}
+    <div class="empty-state-builder">
+        <i class="ti ti-user-off" style="font-size:2.5rem;opacity:0.3;color:var(--brand-clr)"></i>
+        <p>Aucun étudiant n'a encore commencé ce cours.</p>
+    </div>
+    {% endif %}
+</div>
 
-    // Tout (dé)plier
-    function toggleAllAccordions(expand) {
-        const chapters = document.querySelectorAll('.builder-accordion');
-        chapters.forEach(chap => {
-            if(expand) {
-                chap.setAttribute('open', '');
-            } else {
-                chap.removeAttribute('open');
+<script>
+(function() {
+    // Init SortableJS for this cours
+    const el = document.getElementById('builder-chapitres-{{ cours.id }}');
+    if (el && typeof Sortable !== 'undefined') {
+        Sortable.create(el, {
+            handle: '.drag-handle',
+            animation: 200,
+            ghostClass: 'sortable-ghost',
+            onEnd: function(evt) {
+                showBuilderToast('✅ Ordre mis à jour', 'success');
             }
         });
     }
+})();
+</script>
+{% endwith %}
+
+</div>
+
+
+<!-- ═══════════════════ BUILDER DRAWER ═══════════════════ -->
+<div class="builder-drawer-overlay" id="builder-drawer-overlay" onclick="closeBuilderDrawer()"></div>
+<div class="builder-drawer" id="builder-drawer">
+    <div class="drawer-hdr">
+        <div style="display:flex;align-items:center;gap:0.75rem">
+            <div class="drawer-hdr-icon" id="drawer-hdr-icon">
+                <i class="ti ti-bookmark"></i>
+            </div>
+            <h3 style="font-size:1.1rem;font-weight:700;color:var(--text);margin:0" id="drawer-hdr-title">Ajouter</h3>
+        </div>
+        <button class="drawer-close" onclick="closeBuilderDrawer()" style="background:transparent;border:none;font-size:1.25rem;color:var(--text-4);cursor:pointer;padding:0.25rem;border-radius:6px;display:flex;align-items:center;justify-content:center;margin-left:auto;transition:all 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.05)';this.style.color='var(--text)'" onmouseout="this.style.background='transparent';this.style.color='var(--text-4)'"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="drawer-scrollbody" id="builder-drawer-body">
+        <div style="padding:2rem;text-align:center;color:var(--text-4)">
+            <i class="ti ti-loader ti-spin" style="font-size:2rem"></i>
+            <p style="margin-top:0.5rem">Chargement...</p>
+        </div>
+    </div>
+</div>
+
+
+<div class="builder-toast" id="builder-toast"></div>
+<input type="hidden" id="csrf-token-val" value="{{ csrf_token }}">
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.3/Sortable.min.js"></script>
+<script>
+
+function toggleCtxMenu(e, id) {
+    if(e) e.stopPropagation();
+    document.querySelectorAll('.ws-ctx-menu').forEach(m => { if (m.id !== `ctx-${id}`) m.style.display = 'none'; });
+    const menu = document.getElementById(`ctx-${id}`);
+    if (menu) menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+}
+document.addEventListener('click', () => {
+    document.querySelectorAll('.ws-ctx-menu').forEach(m => m.style.display = 'none');
+});
+
+// ── DRAWER ──
+function openBuilderDrawer(title, mode) {
+    const iconMap = {
+        'chapitre': { icon: 'ti-bookmark', bg: 'var(--brand-light)', color: 'var(--brand-clr)' },
+        'doc': { icon: 'ti-file-upload', bg: '#eff6ff', color: '#3b82f6' },
+        'edit': { icon: 'ti-pencil', bg: '#fef3c7', color: '#d97706' },
+    };
+    const cfg = iconMap[mode] || iconMap['chapitre'];
+    const iconEl = document.getElementById('drawer-hdr-icon');
+    if (iconEl) {
+        iconEl.style.background = cfg.bg;
+        iconEl.style.color = cfg.color;
+        iconEl.innerHTML = `<i class="ti ${cfg.icon}"></i>`;
+    }
+    const titleEl = document.getElementById('drawer-hdr-title');
+    if (titleEl) titleEl.textContent = title;
+
+    document.getElementById('builder-drawer-overlay').classList.add('open');
+    document.getElementById('builder-drawer').classList.add('open');
+}
+
+function closeBuilderDrawer() {
+    document.getElementById('builder-drawer-overlay').classList.remove('open');
+    document.getElementById('builder-drawer').classList.remove('open');
+}
+
+// ── CHAPTER INTERACTIONS ──
+function toggleExpandChapter(id) {
+    const btn = document.querySelector(`button[onclick*="toggleExpandChapter('${id}')"]`);
+    const content = document.getElementById(`expand-${id}`);
+    const isExpanded = content.style.display !== 'none';
+    
+    if (isExpanded) {
+        content.style.display = 'none';
+        if(btn) {
+            btn.innerHTML = '<i class="ti ti-chevron-down"></i>';
+            btn.classList.remove('active');
+        }
+    } else {
+        content.style.display = 'block';
+        if(btn) {
+            btn.innerHTML = '<i class="ti ti-chevron-up"></i>';
+            btn.classList.add('active');
+        }
+    }
+}
+
+function expandAllChapters() {
+    document.querySelectorAll('[id^="expand-"]').forEach(el => el.style.display = 'block');
+    document.querySelectorAll('button[onclick^="toggleExpandChapter"]').forEach(btn => {
+        btn.innerHTML = '<i class="ti ti-chevron-up"></i>';
+        btn.classList.add('active');
+    });
+}
+
+function handleCourseToggle(checkbox) {
+    const url = checkbox.dataset.url;
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.getElementById('csrf-token-val').value,
+            'Content-Type': 'application/json'
+        }
+    }).then(r => r.json()).then(data => {
+        if (data.status === 'success') {
+            const label = checkbox.closest('.toggle-group').querySelector('.toggle-label');
+            if (label) label.textContent = data.actif ? 'Actif' : 'Inactif';
+            showBuilderToast(data.actif ? '✅ Cours activé' : 'ℹ️ Cours désactivé');
+        } else {
+            checkbox.checked = !checkbox.checked;
+            showBuilderToast('❌ Erreur', 'error');
+        }
+    });
+}
+
+function handleChapterToggle(checkbox, chapitreId) {
+    fetch(`/apprentissage/formateur/chapitre/${chapitreId}/toggle/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.getElementById('csrf-token-val').value,
+            'Content-Type': 'application/json'
+        }
+    }).then(r => r.json()).then(data => {
+        if (data.status === 'success') {
+            const label = checkbox.closest('.toggle-group').querySelector('.toggle-label');
+            if (label) label.textContent = data.actif ? 'Publié' : 'Brouillon';
+            const badge = document.querySelector(`.status-badge[data-chapitre-id="${chapitreId}"]`);
+            if (badge) {
+                badge.textContent = data.actif ? 'Publié' : 'Brouillon';
+                badge.className = `status-badge ${data.actif ? 'success' : 'warning'}`;
+            }
+            showBuilderToast(data.actif ? '✅ Chapitre publié' : 'ℹ️ Chapitre passé en brouillon');
+        } else {
+            checkbox.checked = !checkbox.checked;
+            showBuilderToast('❌ Erreur', 'error');
+        }
+    });
+}
+
+function confirmDeleteChapter(chapitreId, coursId) {
+    if (confirm('Êtes-vous sûr de vouloir supprimer ce chapitre ?')) {
+        fetch(`/apprentissage/formateur/chapitre/${chapitreId}/supprimer/`, {
+            method: 'POST',
+            headers: {'X-CSRFToken': document.getElementById('csrf-token-val').value}
+        }).then(r => {
+            if (r.ok) window.location.reload();
+        });
+    }
+}
+
+function confirmDeleteDocument(docId, chapitreId) {
+    if (confirm('Êtes-vous sûr de vouloir supprimer ce document ?')) {
+        fetch(`/apprentissage/formateur/chapitre/${chapitreId}/document/${docId}/supprimer/`, {
+            method: 'POST',
+            headers: {'X-CSRFToken': document.getElementById('csrf-token-val').value}
+        }).then(r => {
+            if (r.ok) window.location.reload();
+        });
+    }
+}
+
+// ── TABS ──
+function switchWsTab(el, tabId) {
+    const tabsContainer = el.closest('.ws-course-header');
+    if (!tabsContainer) return;
+    tabsContainer.querySelectorAll('.ws-tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    document.querySelectorAll('.ws-tab-content').forEach(t => t.style.display = 'none');
+    const selectedTab = document.getElementById(tabId);
+    if (selectedTab) selectedTab.style.display = 'block';
+}
+
+// ── TOAST ──
+function showBuilderToast(msg, type) {
+    const t = document.getElementById('builder-toast');
+    if (!t) return;
+    t.textContent = msg;
+    t.className = 'builder-toast' + (type ? ` ${type}` : '');
+    t.classList.add('show');
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+// ── HTMX EVENT LISTENERS ──
+document.body.addEventListener('htmx:afterSwap', function(e) {
+    if (e.target.classList.contains('ws-tab-content') || e.target.id === 'ws-detail-area') return;
+    if (e.target.id?.startsWith('docs-') || e.target.id?.startsWith('builder-chapitres-')) {
+        closeBuilderDrawer();
+        window.location.reload();
+    }
+});
+
+document.addEventListener('htmx:afterRequest', function(e) {
+    if (e.target.id === 'builder-drawer' || e.target.closest('#builder-drawer')) {
+        if (e.detail.successful) {
+            closeBuilderDrawer();
+            window.location.reload();
+        }
+    }
+});
+
 </script>
 {% endblock %}

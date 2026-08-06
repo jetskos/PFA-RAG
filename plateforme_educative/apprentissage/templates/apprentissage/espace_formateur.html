@@ -1040,6 +1040,20 @@
             `;
         });
         content.innerHTML = html;
+
+        // Add format select UI
+        const formatDiv = document.createElement('div');
+        formatDiv.style.marginTop = '1.5rem';
+        formatDiv.innerHTML = `
+            <label style="display:block; font-size:0.85rem; font-weight:700; color:var(--text); margin-bottom:0.5rem;">Format d'exportation :</label>
+            <select id="export-format" style="width:100%; padding:0.6rem 0.8rem; border-radius:8px; border:1px solid var(--border); background:var(--surface); font-size:0.85rem; font-weight:600; color:var(--text); outline:none;">
+                <option value="EDUTECH" selected>EduTech (Format Complet Propriétaire)</option>
+                <option value="KOLIBRI">Kolibri / Khan Academy (Format Standard)</option>
+                <option value="SCORM">SCORM 1.2 / 2004 (LMS)</option>
+            </select>
+            <p style="font-size:0.75rem; color:var(--text-4); margin-top:0.4rem;">EduTech inclut les QCMs IA et le format hors-ligne HLS.</p>
+        `;
+        content.appendChild(formatDiv);
         
         // Setup confirmation button
         document.getElementById('btn-confirm-export').onclick = function() {
@@ -1064,13 +1078,15 @@
             document.getElementById('export-progress-container').style.display = 'block';
             setEStepState(2, 'active');
 
+            const formatExport = document.getElementById('export-format') ? document.getElementById('export-format').value : 'EDUTECH';
+
             fetch('{% url "apprentissage:export_multiple_courses" %}', {
                 method: 'POST',
                 headers: {
                     'X-CSRFToken': csrfToken,
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ course_ids: courseIds })
+                body: JSON.stringify({ course_ids: courseIds, format_export: formatExport })
             })
             .then(r => r.json())
             .then(data => {

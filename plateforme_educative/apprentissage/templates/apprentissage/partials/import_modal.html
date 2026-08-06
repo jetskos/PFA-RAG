@@ -1,0 +1,146 @@
+<!-- Import Modal -->
+<div id="import-preview-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,23,42,0.8);z-index:9999;align-items:center;justify-content:center;backdrop-filter:blur(8px)">
+    <div style="background:white;border-radius:20px;width:580px;max-width:95%;padding:2rem;box-shadow:0 25px 60px rgba(0,0,0,0.3);max-height:85vh;overflow-y:auto">
+        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem">
+            <div style="width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#0d9488,#0f766e);color:white;display:flex;align-items:center;justify-content:center;font-size:1.5rem">
+                <i class="ti ti-file-import"></i>
+            </div>
+            <div>
+                <h3 style="font-size:1.1rem;font-weight:800;margin:0">Importer des cours</h3>
+                <p style="font-size:0.82rem;color:#64748b;margin:0">Importez un ou plusieurs fichiers ZIP de cours</p>
+            </div>
+            <button onclick="document.getElementById('import-preview-modal').style.display='none'" style="margin-left:auto;background:none;border:none;font-size:1.2rem;cursor:pointer;color:#64748b">
+                <i class="ti ti-x"></i>
+            </button>
+        </div>
+
+        <!-- Stepper -->
+        <div style="display:flex;align-items:center;gap:0;margin-bottom:2rem;background:#f8fafc;border-radius:12px;padding:1rem;border:1px solid #e2e8f0" id="import-stepper">
+            <div style="flex:1;text-align:center" id="import-step-1">
+                <div style="width:32px;height:32px;border-radius:50%;background:#0d9488;color:white;display:flex;align-items:center;justify-content:center;margin:0 auto 0.4rem;font-weight:700;font-size:0.85rem">1</div>
+                <div style="font-size:0.72rem;font-weight:700;color:#0d9488">Sélection</div>
+            </div>
+            <div style="flex:0.3;height:2px;background:#e2e8f0"></div>
+            <div style="flex:1;text-align:center" id="import-step-2">
+                <div style="width:32px;height:32px;border-radius:50%;background:#e2e8f0;color:#94a3b8;display:flex;align-items:center;justify-content:center;margin:0 auto 0.4rem;font-weight:700;font-size:0.85rem">2</div>
+                <div style="font-size:0.72rem;font-weight:700;color:#94a3b8">Transfert</div>
+            </div>
+            <div style="flex:0.3;height:2px;background:#e2e8f0"></div>
+            <div style="flex:1;text-align:center" id="import-step-3">
+                <div style="width:32px;height:32px;border-radius:50%;background:#e2e8f0;color:#94a3b8;display:flex;align-items:center;justify-content:center;margin:0 auto 0.4rem;font-weight:700;font-size:0.85rem">3</div>
+                <div style="font-size:0.72rem;font-weight:700;color:#94a3b8">Traitement</div>
+            </div>
+        </div>
+
+        <!-- File input zone -->
+        <div id="import-file-zone" style="border:2px dashed #e2e8f0;border-radius:14px;padding:2rem;text-align:center;background:#fafbfc;transition:all 0.2s;cursor:pointer"
+             ondragover="this.style.borderColor='#0d9488';this.style.background='#f0fdf4';event.preventDefault()"
+             ondragleave="this.style.borderColor='#e2e8f0';this.style.background='#fafbfc'"
+             ondrop="handleImportDrop(event)"
+             onclick="document.getElementById('import-file-input').click()">
+            <i class="ti ti-upload" style="font-size:2.5rem;color:#0d9488;margin-bottom:0.75rem;display:block"></i>
+            <p style="font-weight:700;color:#0f172a;margin:0">Glissez vos fichiers ZIP ici</p>
+            <p style="color:#64748b;font-size:0.82rem;margin:0.35rem 0 0">ou cliquez pour choisir</p>
+            <input type="file" id="import-file-input" accept=".zip" multiple style="display:none"
+                   onchange="handleImportFileSelect(this.files)">
+        </div>
+
+        <!-- Progress -->
+        <div id="import-upload-progress" style="display:none;margin-top:1rem;background:#f8fafc;border-radius:12px;padding:1rem;border:1px solid #e2e8f0">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem">
+                <span style="font-size:0.82rem;font-weight:600;color:#0f172a"><i class="ti ti-cloud-upload"></i> Envoi en cours...</span>
+                <span id="import-upload-pct" style="color:#0d9488;font-weight:700;font-size:0.82rem">0%</span>
+            </div>
+            <div style="height:8px;background:#e2e8f0;border-radius:999px;overflow:hidden">
+                <div id="import-upload-bar" style="height:100%;background:linear-gradient(90deg,#0d9488,#2dd4bf);border-radius:999px;width:0%;transition:width 0.2s"></div>
+            </div>
+        </div>
+
+        <!-- Selected files list -->
+        <div id="import-files-list" style="margin-top:1rem;display:none">
+            <div style="font-size:0.78rem;font-weight:700;color:#64748b;margin-bottom:0.5rem;text-transform:uppercase;letter-spacing:0.05em">Fichiers sélectionnés</div>
+            <div id="import-files-items"></div>
+        </div>
+
+        <div style="display:flex;justify-content:flex-end;gap:0.75rem;margin-top:1.5rem" id="import-actions">
+            <button onclick="document.getElementById('import-preview-modal').style.display='none'" class="wsbtn wsbtn-outline">Annuler</button>
+            <button id="import-confirm-btn" class="wsbtn wsbtn-primary" style="background:linear-gradient(135deg,#0d9488,#0f766e);border-color:transparent" onclick="launchImport()">
+                <i class="ti ti-upload"></i> Lancer l'import
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+let importFiles = [];
+
+function handleImportFileSelect(files) {
+    importFiles = Array.from(files);
+    showImportFileList();
+}
+
+function handleImportDrop(e) {
+    e.preventDefault();
+    const zone = document.getElementById('import-file-zone');
+    zone.style.borderColor = '#e2e8f0';
+    zone.style.background = '#fafbfc';
+    importFiles = Array.from(e.dataTransfer.files).filter(f => f.name.endsWith('.zip'));
+    showImportFileList();
+}
+
+function showImportFileList() {
+    const listDiv = document.getElementById('import-files-list');
+    const itemsDiv = document.getElementById('import-files-items');
+    if (!importFiles.length) { listDiv.style.display = 'none'; return; }
+    listDiv.style.display = 'block';
+    itemsDiv.innerHTML = importFiles.map(f => `
+        <div style="display:flex;align-items:center;gap:0.5rem;padding:0.5rem 0.75rem;background:white;border-radius:8px;border:1px solid #e2e8f0;margin-bottom:4px">
+            <i class="ti ti-file-zip" style="color:#f59e0b"></i>
+            <span style="font-size:0.82rem;font-weight:600;flex:1">${f.name}</span>
+            <span style="font-size:0.72rem;color:#94a3b8">${(f.size / 1024 / 1024).toFixed(1)} MB</span>
+        </div>
+    `).join('');
+}
+
+function launchImport() {
+    if (!importFiles.length) {
+        showBuilderToast('❌ Sélectionnez au moins un fichier ZIP', 'error');
+        return;
+    }
+    const csrf = document.getElementById('csrf-token-val').value;
+    const formData = new FormData();
+    importFiles.forEach(f => formData.append('fichiers', f));
+
+    // Show progress
+    document.getElementById('import-upload-progress').style.display = 'block';
+    document.getElementById('import-confirm-btn').disabled = true;
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', '/apprentissage/formateur/import-multiple/');
+    xhr.setRequestHeader('X-CSRFToken', csrf);
+
+    xhr.upload.onprogress = function(e) {
+        if (e.lengthComputable) {
+            const pct = Math.round((e.loaded / e.total) * 100);
+            document.getElementById('import-upload-bar').style.width = pct + '%';
+            document.getElementById('import-upload-pct').textContent = pct + '%';
+        }
+    };
+
+    xhr.onload = function() {
+        document.getElementById('import-preview-modal').style.display = 'none';
+        document.getElementById('import-confirm-btn').disabled = false;
+        document.getElementById('import-upload-bar').style.width = '0%';
+        document.getElementById('import-upload-progress').style.display = 'none';
+        showBuilderToast('✅ Import lancé en arrière-plan ! La page se rechargera dans quelques instants.', 'success');
+        setTimeout(() => location.reload(), 4000);
+    };
+
+    xhr.onerror = function() {
+        showBuilderToast('❌ Erreur lors de l\'envoi', 'error');
+        document.getElementById('import-confirm-btn').disabled = false;
+    };
+
+    xhr.send(formData);
+}
+</script>

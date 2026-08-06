@@ -40,6 +40,11 @@ urlpatterns = [
     path('formateur/document/<uuid:document_id>/editer/', views.editer_document, name='editer_document'),
     path('formateur/document/<uuid:document_id>/supprimer/', views.supprimer_document, name='supprimer_document'),
 
+    # --- COURSE BUILDER (New UI) ---
+
+    path('formateur/cours/<uuid:pk>/toggle-actif/', views.toggle_cours_actif, name='toggle_cours_actif'),
+    path('formateur/chapitre/<uuid:chapitre_id>/toggle-actif/', views.toggle_chapitre_actif, name='toggle_chapitre_actif'),
+
     # ── Notes (Formateur) ─────────────────────────────────────────────────────
     path('formateur/notes/', views.formateur_notes_view, name='formateur_notes'),
     path('formateur/notes/export/', views.exporter_notes_classe_csv, name='exporter_notes_classe_csv'),
