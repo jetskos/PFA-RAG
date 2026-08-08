@@ -233,6 +233,7 @@ def import_courses_task(self, import_job_id: str, user_id: str, zip_files: list)
                         if vid_file.exists():
                             with open(vid_file, 'rb') as f:
                                 chapitre.video_fichier.save(vid_file.name, File(f))
+                            convertir_video_hls.delay(str(chapitre.pk))
                                 
                     for doc_data in chap_data.get('documents', []):
                         doc = Document.objects.create(
