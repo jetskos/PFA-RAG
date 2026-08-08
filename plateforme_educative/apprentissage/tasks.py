@@ -65,6 +65,15 @@ from pathlib import Path
 from django.conf import settings
 from django.utils import timezone
 from .models import ExportJob, Cours
+import hashlib
+
+def calculate_checksum(file_path):
+    """Calcule le hash SHA-256 d'un fichier."""
+    sha256_hash = hashlib.sha256()
+    with open(file_path, "rb") as f:
+        for byte_block in iter(lambda: f.read(4096), b""):
+            sha256_hash.update(byte_block)
+    return sha256_hash.hexdigest()
 
 @shared_task(bind=True, max_retries=1, name='apprentissage.tasks.export_course_task')
 def export_course_task(self, export_job_id: str):
@@ -86,7 +95,8 @@ def export_course_task(self, export_job_id: str):
                 'resume': cours.resume,
                 'niveau': cours.niveau.code,
             },
-            'chapitres': []
+            'chapitres': [],
+            'checksums': {}
         }
         
         if cours.image_couverture:
@@ -94,6 +104,7 @@ def export_course_task(self, export_job_id: str):
             if img_path.exists():
                 shutil.copy2(img_path, base_export_dir / img_path.name)
                 metadata['cours']['image_couverture'] = img_path.name
+                metadata['checksums'][img_path.name] = calculate_checksum(img_path)
 
         for chapitre in cours.chapitres.all():
             chap_data = {
@@ -109,6 +120,7 @@ def export_course_task(self, export_job_id: str):
                 if vid_path.exists():
                     shutil.copy2(vid_path, base_export_dir / vid_path.name)
                     chap_data['video_fichier'] = vid_path.name
+                    metadata['checksums'][vid_path.name] = calculate_checksum(vid_path)
                     
             for doc in chapitre.documents.filter(actif=True):
                 if doc.fichier_pdf:
@@ -122,6 +134,7 @@ def export_course_task(self, export_job_id: str):
                             'ordre': doc.ordre,
                             'fichier_pdf': doc_path.name
                         })
+                        metadata['checksums'][doc_path.name] = calculate_checksum(doc_path)
             metadata['chapitres'].append(chap_data)
 
         # 3. Sauvegarder le JSON
@@ -196,6 +209,14 @@ def import_courses_task(self, import_job_id: str, user_id: str, zip_files: list)
                 with open(meta_file, 'r', encoding='utf-8') as f:
                     metadata = json.load(f)
                     
+                checksums = metadata.get('checksums', {})
+                def verify_file(file_path, filename):
+                    expected_hash = checksums.get(filename)
+                    if expected_hash:
+                        actual_hash = calculate_checksum(file_path)
+                        if actual_hash != expected_hash:
+                            raise ValueError(f"Fichier corrompu : {filename} (attendu {expected_hash}, obtenu {actual_hash})")
+                    
                 job.status = 'SAUVEGARDE_BDD'
                 job.titre_cours = metadata.get('cours', {}).get('titre', 'Cours importé')
                 job.save()
@@ -216,6 +237,7 @@ def import_courses_task(self, import_job_id: str, user_id: str, zip_files: list)
                 if 'image_couverture' in c_data:
                     img_file = extract_dir / c_data['image_couverture']
                     if img_file.exists():
+                        verify_file(img_file, img_file.name)
                         with open(img_file, 'rb') as f:
                             cours.image_couverture.save(img_file.name, File(f))
                             
@@ -231,6 +253,7 @@ def import_courses_task(self, import_job_id: str, user_id: str, zip_files: list)
                     if 'video_fichier' in chap_data:
                         vid_file = extract_dir / chap_data['video_fichier']
                         if vid_file.exists():
+                            verify_file(vid_file, vid_file.name)
                             with open(vid_file, 'rb') as f:
                                 chapitre.video_fichier.save(vid_file.name, File(f))
                             convertir_video_hls.delay(str(chapitre.pk))
@@ -246,6 +269,7 @@ def import_courses_task(self, import_job_id: str, user_id: str, zip_files: list)
                         if 'fichier_pdf' in doc_data:
                             pdf_file = extract_dir / doc_data['fichier_pdf']
                             if pdf_file.exists():
+                                verify_file(pdf_file, pdf_file.name)
                                 with open(pdf_file, 'rb') as f:
                                     doc.fichier_pdf.save(pdf_file.name, File(f))
                                 docs_to_index.append(doc)
