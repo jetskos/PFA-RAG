@@ -122,6 +122,21 @@ def export_course_task(self, export_job_id: str):
                     chap_data['video_fichier'] = vid_path.name
                     metadata['checksums'][vid_path.name] = calculate_checksum(vid_path)
                     
+            if getattr(chapitre, 'is_hls_ready', False) and chapitre.video_hls_url:
+                hls_rel_path = Path(chapitre.video_hls_url)
+                hls_abs_path = Path(settings.MEDIA_ROOT) / hls_rel_path
+                hls_dir = hls_abs_path.parent
+                if hls_dir.exists() and hls_dir.is_dir():
+                    dest_hls_dir = base_export_dir / hls_dir.name
+                    if not dest_hls_dir.exists():
+                        shutil.copytree(hls_dir, dest_hls_dir)
+                    chap_data['video_hls_dir'] = hls_dir.name
+                    chap_data['video_hls_playlist'] = hls_abs_path.name
+                    for hls_file in dest_hls_dir.rglob('*'):
+                        if hls_file.is_file():
+                            rel_name = f"{hls_dir.name}/{hls_file.name}"
+                            metadata['checksums'][rel_name] = calculate_checksum(hls_file)
+                    
             for doc in chapitre.documents.filter(actif=True):
                 if doc.fichier_pdf:
                     doc_path = Path(doc.fichier_pdf.path)
@@ -256,7 +271,31 @@ def import_courses_task(self, import_job_id: str, user_id: str, zip_files: list)
                             verify_file(vid_file, vid_file.name)
                             with open(vid_file, 'rb') as f:
                                 chapitre.video_fichier.save(vid_file.name, File(f))
-                            convertir_video_hls.delay(str(chapitre.pk))
+                                
+                            # Si le dossier HLS est aussi fourni, on le restaure et on bypass la génération FFmpeg
+                            if 'video_hls_dir' in chap_data and 'video_hls_playlist' in chap_data:
+                                hls_src_dir = extract_dir / chap_data['video_hls_dir']
+                                if hls_src_dir.exists() and hls_src_dir.is_dir():
+                                    for hls_file in hls_src_dir.rglob('*'):
+                                        if hls_file.is_file():
+                                            rel_name = f"{chap_data['video_hls_dir']}/{hls_file.name}"
+                                            verify_file(hls_file, rel_name)
+                                    
+                                    # Déplacer vers media/videos/hls/<uuid>
+                                    dest_hls_dir = Path(settings.MEDIA_ROOT) / 'videos' / 'hls' / f"chap_{chapitre.id}_hls"
+                                    dest_hls_dir.mkdir(parents=True, exist_ok=True)
+                                    
+                                    # Copier les fichiers
+                                    for item in hls_src_dir.iterdir():
+                                        if item.is_file():
+                                            shutil.copy2(item, dest_hls_dir / item.name)
+                                            
+                                    chapitre.is_hls_ready = True
+                                    rel_hls_path = str((dest_hls_dir / chap_data['video_hls_playlist']).relative_to(settings.MEDIA_ROOT)).replace('\\\\', '/').replace('\\', '/')
+                                    chapitre.video_hls_url = rel_hls_path
+                                    chapitre.save(update_fields=['is_hls_ready', 'video_hls_url'])
+                            else:
+                                convertir_video_hls.delay(str(chapitre.pk))
                                 
                     for doc_data in chap_data.get('documents', []):
                         doc = Document.objects.create(
@@ -321,7 +360,8 @@ def convertir_video_hls(self, chapitre_id: str):
         hls_dir = video_path.parent / f"{video_path.stem}_hls"
         hls_dir.mkdir(parents=True, exist_ok=True)
         
-        playlist_path = hls_dir / 'playlist.m3u8'
+        playlist_path = hls_dir / 'Playlist.m3u8'
+        segment_path = hls_dir / 'Chunk_%03d.ts'
         
         import shutil
         ffmpeg_path = shutil.which('ffmpeg')
@@ -341,6 +381,7 @@ def convertir_video_hls(self, chapitre_id: str):
             '-profile:v', 'baseline', '-level', '3.0',
             '-s', '1280x720', '-start_number', '0',
             '-hls_time', '10', '-hls_list_size', '0',
+            '-hls_segment_filename', str(segment_path),
             '-f', 'hls', str(playlist_path)
         ]
         
