@@ -20,6 +20,7 @@ def indexer_document_task(self, document_id: str, pdf_path: str):
         pdf_path    : Chemin absolu vers le fichier PDF sur le disque.
     """
     logger.info(f"[ChromaDB] Indexation démarrée — doc {document_id[:8]}...")
+    print(f"\n[🚀 ChromaDB] Démarrage de l'indexation pour le document {document_id[:8]}...")
     try:
         from apprentissage.models import Document
         from tuteur_ia.tools.pdf_extractor import extract_and_chunk_pdf
@@ -78,6 +79,7 @@ def calculate_checksum(file_path):
 @shared_task(bind=True, max_retries=1, name='apprentissage.tasks.export_course_task')
 def export_course_task(self, export_job_id: str):
     logger.info(f"[Export] Démarrage de la tâche pour le job {export_job_id}")
+    print(f"\n[📦 Export] Démarrage de l'exportation du cours (Job: {export_job_id})")
     try:
         job = ExportJob.objects.get(pk=export_job_id)
         cours = job.cours
@@ -178,6 +180,7 @@ def export_course_task(self, export_job_id: str):
         job.save()
 
         logger.info(f"[Export] Succès pour le job {export_job_id}")
+        print(f"[✅ Export] Exportation terminée avec succès ! (Fichier: {zip_filename})")
 
     except Exception as e:
         logger.error(f"[Export] Erreur pour le job {export_job_id}: {e}", exc_info=True)
@@ -192,6 +195,7 @@ import uuid
 @shared_task(bind=True, name='apprentissage.tasks.import_courses_task')
 def import_courses_task(self, import_job_id: str, user_id: str, zip_files: list):
     logger.info(f"[Import] Démarrage de l'importation (job {import_job_id}) de {len(zip_files)} fichier(s) par l'utilisateur {user_id}")
+    print(f"\n[📥 Import] Démarrage de l'importation de {len(zip_files)} fichier(s) ZIP...")
     from apprentissage.models import ImportJob
     job = ImportJob.objects.filter(pk=import_job_id).first()
     if job:
@@ -339,6 +343,7 @@ def import_courses_task(self, import_job_id: str, user_id: str, zip_files: list)
             job.save()
 
         logger.info(f"[Import] Fin de l'importation par l'utilisateur {user_id}")
+        print(f"[✅ Import] Importation terminée avec succès ! ({', '.join(imported_cours_titres) if imported_cours_titres else 'Aucun cours'})")
     except Exception as e:
         logger.error(f"[Import] Erreur globale: {e}", exc_info=True)
         if job:
@@ -352,6 +357,7 @@ import subprocess
 @shared_task(bind=True, name='apprentissage.tasks.convertir_video_hls')
 def convertir_video_hls(self, chapitre_id: str):
     logger.info(f"[HLS] Démarrage de la conversion pour le chapitre {chapitre_id}")
+    print(f"\n[🎬 HLS] Démarrage de l'encodage vidéo (Chapitre: {chapitre_id})...")
     try:
         from apprentissage.models import Chapitre
         chapitre = Chapitre.objects.get(pk=chapitre_id)
@@ -407,6 +413,7 @@ def convertir_video_hls(self, chapitre_id: str):
         )
         
         logger.info(f"[HLS] Succès: Playlist générée à {rel_hls_path}")
+        print(f"[✅ HLS] Conversion terminée avec succès ! (Playlist: {rel_hls_path})")
         
     except FileNotFoundError:
         logger.warning("[HLS] FFmpeg non installé sur le système. Conversion vidéo HLS ignorée.")
