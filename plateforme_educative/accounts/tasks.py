@@ -23,6 +23,13 @@ def envoyer_email_task(self, subject: str, text_content: str, html_content: str,
         to_list      : Liste des destinataires.
     """
     from django.core.mail import EmailMultiAlternatives
+    from accounts.models import ConfigurationSysteme
+
+    # Vérifier le mode hors-ligne global
+    config = ConfigurationSysteme.get_config()
+    if config.mode_hors_ligne:
+        logger.info(f"[Email] Envoi bloqué par la configuration Système (Mode Hors-Ligne activé) pour: {to_list}")
+        return  # Annule silencieusement la tâche
 
     try:
         email = EmailMultiAlternatives(

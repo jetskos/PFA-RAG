@@ -17,7 +17,8 @@ urlpatterns = [
     path('profil/securite/', views.change_password_view, name='change_password'),
     path('gestion/', views.admin_dashboard, name='admin_dashboard'),
     path('gestion/utilisateurs/<uuid:user_id>/details/', views.user_details, name='user_details'),
-
+    path('gestion/parametres/', views.system_settings_view, name='system_settings'),
+    path('gestion/utilisateurs/reset-password/', views.reset_user_password_ajax, name='reset_user_password_ajax'),
     # Réinitialisation de mot de passe (via mot de passe temporaire)
     path('password-reset/', views.custom_password_reset_view, name='password_reset'),
     path('password-reset/done/', auth_views.PasswordResetDoneView.as_view(

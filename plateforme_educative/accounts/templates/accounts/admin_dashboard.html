@@ -516,6 +516,9 @@
                             <button class="action-btn btn-view details-user" title="Voir les détails">
                                 <i class="ti ti-eye"></i>
                             </button>
+                            <button class="action-btn btn-reset reset-pwd-user" title="Générer un mot de passe temporaire" style="color: #f59e0b;" onclick="resetPassword('{{ user.id }}', '{{ user.get_full_name|escapejs }}')">
+                                <i class="ti ti-key"></i>
+                            </button>
                             <button class="action-btn btn-del delete-user" title="Supprimer l'utilisateur">
                                 <i class="ti ti-trash"></i>
                             </button>
@@ -926,6 +929,34 @@ document.addEventListener('click', function(e){
         }).catch(function(err){ console.error(err); alert('Erreur details: ' + err.message); });
     }
 });
+
+// Reset Password Logic
+function resetPassword(userId, userName) {
+    if (confirm("Êtes-vous sûr de vouloir générer un mot de passe temporaire pour " + userName + " ?")) {
+        const formData = new FormData();
+        formData.append('user_id', userId);
+        
+        fetch("{% url 'accounts:reset_user_password_ajax' %}", {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken()
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.status === 'success') {
+                alert("Nouveau mot de passe pour " + data.user_email + " :\n\n" + data.temp_password + "\n\nVeuillez le communiquer à l'utilisateur.");
+            } else {
+                alert("Erreur: " + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Erreur:', error);
+            alert("Une erreur est survenue.");
+        });
+    }
+}
 
 // CSS spin animation for loaders
 const style = document.createElement('style');

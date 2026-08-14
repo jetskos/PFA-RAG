@@ -270,3 +270,44 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"{self.titre} -> {self.destinataire.email} ({'Lu' if self.lu else 'Non lu'})"
+
+class ConfigurationSysteme(models.Model):
+    id = models.IntegerField(primary_key=True, default=1)
+    
+    mode_hors_ligne = models.BooleanField(
+        default=False, 
+        verbose_name="Mode Hors-Ligne",
+        help_text="Active le mode déconnecté. Coupe l'envoi d'e-mails et force l'IA locale."
+    )
+    
+    PROVIDER_CHOICES = (
+        ('AUTO', 'Automatique (Groq -> Ollama)'),
+        ('GROQ', 'Forcer Groq (API)'),
+        ('OPENAI', 'Forcer OpenAI (API)'),
+        ('OLLAMA', 'Forcer Ollama (Local)'),
+    )
+    llm_provider = models.CharField(
+        max_length=20, 
+        choices=PROVIDER_CHOICES, 
+        default='AUTO',
+        verbose_name="Fournisseur IA (LLM)"
+    )
+    
+    activer_hls = models.BooleanField(
+        default=True, 
+        verbose_name="Activer HLS (Projet FLUTE)",
+        help_text="Active la génération de vidéos par morceaux avec FFmpeg."
+    )
+
+    class Meta:
+        verbose_name = "Configuration Système"
+        verbose_name_plural = "Configurations Système"
+
+    def save(self, *args, **kwargs):
+        self.id = 1
+        super().save(*args, **kwargs)
+
+    @classmethod
+    def get_config(cls):
+        config, created = cls.objects.get_or_create(id=1)
+        return config

@@ -3,11 +3,11 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.core.paginator import Paginator
 from django.http import HttpResponse
 from django.urls import reverse
-from .forms import InscriptionForm, ProfileForm, PasswordResetRequestForm
+from .forms import InscriptionForm, ProfileForm, PasswordResetRequestForm, ConfigurationSystemeForm
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.decorators.http import require_http_methods
 from django.http import JsonResponse
-from .models import Utilisateur, Niveau, Classe, Notification
+from .models import Utilisateur, Niveau, Classe, Notification, ConfigurationSysteme
 from .services import UserService
 from apprentissage.models import Progression, ChapitreVisite, ChapitreComplete, Cours
 import secrets
@@ -615,3 +615,56 @@ def onboarding_view(request):
     if is_htmx:
         return render(request, 'accounts/partials/onboarding_step.html', ctx)
     return render(request, 'accounts/onboarding.html', ctx)
+
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def system_settings_view(request):
+    """Vue d'administration pour la Configuration du Système."""
+    config = ConfigurationSysteme.get_config()
+    
+    if request.method == 'POST':
+        form = ConfigurationSystemeForm(request.POST, instance=config)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Configuration système mise à jour avec succès.")
+            return redirect('accounts:system_settings')
+    else:
+        form = ConfigurationSystemeForm(instance=config)
+        
+    return render(request, 'accounts/system_settings.html', {
+        'form': form,
+    })
+
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+@require_http_methods(['POST'])
+def reset_user_password_ajax(request):
+    """
+    Point d'accès AJAX permettant à l'admin de générer un mot de passe temporaire
+    instantané pour un utilisateur, sans utiliser l'envoi d'e-mail (utile en mode hors-ligne).
+    """
+    user_id = request.POST.get('user_id')
+    if not user_id:
+        return JsonResponse({'status': 'error', 'message': 'ID utilisateur manquant.'}, status=400)
+        
+    try:
+        user = Utilisateur.objects.get(pk=user_id)
+    except Utilisateur.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Utilisateur introuvable.'}, status=404)
+        
+    # Génération du mot de passe aléatoire (8 caractères)
+    chars = string.ascii_letters + string.digits
+    temp_pass = ''.join(secrets.choice(chars) for _ in range(8))
+    
+    user.set_password(temp_pass)
+    user.is_temp_password = True
+    user.temp_password_created_at = timezone.now()
+    user.save()
+    
+    return JsonResponse({
+        'status': 'success',
+        'temp_password': temp_pass,
+        'user_email': user.email
+    })

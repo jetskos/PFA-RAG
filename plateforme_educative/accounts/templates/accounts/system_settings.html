@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+
+{% block title %}Paramètres Système - Administration{% endblock %}
+
+{% block content %}
+<style>
+    .settings-shell {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 1.5rem 3rem;
+    }
+
+    .settings-hero {
+        position: relative; border-radius: 20px; overflow: hidden;
+        padding: 2rem 2.5rem; margin: 1.5rem 0 2rem;
+        display: flex; justify-content: space-between; align-items: center;
+        gap: 2rem; flex-wrap: wrap;
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f2027 100%);
+        box-shadow: 0 16px 48px -8px rgba(13,148,136,0.22);
+    }
+    
+    .settings-hero-title {
+        font-size: 1.75rem; font-weight: 900; color: #fff;
+        letter-spacing: -0.03em; margin: 0 0 0.3rem;
+    }
+    
+    .settings-hero-sub { font-size: 0.875rem; color: rgba(255,255,255,0.55); margin: 0; }
+
+    .settings-card {
+        background: var(--bg-surface, #ffffff);
+        border: 1px solid var(--border-light, #e2e8f0);
+        border-radius: 16px; padding: 2rem;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-label {
+        font-weight: 700;
+        color: var(--text-primary, #0f172a);
+        display: block;
+        margin-bottom: 0.5rem;
+    }
+
+    .help-text {
+        font-size: 0.8rem;
+        color: var(--text-muted, #64748b);
+        margin-top: 0.2rem;
+    }
+
+    .admin-btn-primary {
+        display: inline-flex; align-items: center; gap: 0.4rem;
+        padding: 0.75rem 1.5rem;
+        background: linear-gradient(135deg, #0D9488, #0F766E); color: #fff;
+        border: none; border-radius: 10px;
+        font-size: 0.95rem; font-weight: 700; font-family: inherit;
+        cursor: pointer; transition: all 0.2s;
+        box-shadow: 0 4px 12px rgba(13,148,136,0.3);
+    }
+    
+    .admin-btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+    /* Custom Checkbox Toggle (Switch) */
+    .switch-wrapper {
+        display: flex; align-items: center; gap: 10px;
+    }
+
+</style>
+
+<div class="settings-shell">
+    <div class="settings-hero">
+        <div>
+            <h1 class="settings-hero-title"><i class="ti ti-settings"></i> Configuration Système</h1>
+            <p class="settings-hero-sub">Gérez le fonctionnement global de la plateforme, de l'IA au réseau.</p>
+        </div>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}" style="background: rgba(16, 185, 129, 0.1); border-left: 4px solid #10b981; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; color: #047857; font-weight: 600;">
+                <i class="ti ti-check"></i> {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="settings-card">
+        <form method="POST">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label class="form-label">Mode Hors-Ligne</label>
+                <div class="switch-wrapper">
+                    {{ form.mode_hors_ligne }}
+                    <span style="font-weight: 600; color: var(--text-primary);">Activer le mode réseau local déconnecté</span>
+                </div>
+                <p class="help-text">{{ form.mode_hors_ligne.help_text }}</p>
+                <div class="help-text" style="color: #f59e0b; margin-top: 5px;"><i class="ti ti-alert-triangle"></i> L'activation empêche les tentatives d'envoi d'e-mails (pour éviter les crashs) et force l'IA locale par défaut.</div>
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid var(--border-light, #e2e8f0); margin: 2rem 0;">
+
+            <div class="form-group">
+                <label class="form-label">Fournisseur d'Intelligence Artificielle</label>
+                {{ form.llm_provider }}
+                <p class="help-text">Si vous choisissez "Automatique", le système vérifiera la connexion Internet avant de décider.</p>
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid var(--border-light, #e2e8f0); margin: 2rem 0;">
+
+            <div class="form-group">
+                <label class="form-label">Configuration Vidéo</label>
+                <div class="switch-wrapper">
+                    {{ form.activer_hls }}
+                    <span style="font-weight: 600; color: var(--text-primary);">Activer le streaming HLS</span>
+                </div>
+                <p class="help-text">{{ form.activer_hls.help_text }}</p>
+            </div>
+
+            <div style="margin-top: 2rem; display: flex; justify-content: flex-end;">
+                <button type="submit" class="admin-btn-primary">
+                    <i class="ti ti-device-floppy"></i> Sauvegarder les paramètres
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -92,26 +92,41 @@ def get_llm(temperature: float = 0.7, model_name: str = None, max_tokens: int = 
     """
     global _llm_cache
     from django.conf import settings as django_settings
+    from accounts.models import ConfigurationSysteme
+    
+    config = ConfigurationSysteme.get_config()
 
     groq_key   = os.getenv("GROQ_API_KEY", "") or getattr(django_settings, "GROQ_API_KEY", "")
     openai_key = os.getenv("OPENAI_API_KEY", "") or getattr(django_settings, "OPENAI_API_KEY", "")
 
-    online = (groq_key or openai_key) and _has_internet()
+    # Forcer la connexion sur False si mode_hors_ligne est activé manuellement
+    online = False if config.mode_hors_ligne else ((groq_key or openai_key) and _has_internet())
 
-    # Déterminer le fournisseur et le modèle
-    if groq_key and online:
+    # Déterminer le fournisseur et le modèle selon la configuration
+    if config.llm_provider == 'OLLAMA' or not online:
+        provider = "ollama"
+        model = OLLAMA_MODEL
+        if config.llm_provider == 'OLLAMA':
+            logger.info("Ollama forcé par la Configuration Système.")
+        elif not online:
+            logger.warning("Pas de connexion internet (ou mode hors-ligne activé) — repli sur Ollama local (%s).", model)
+    elif config.llm_provider == 'GROQ' and groq_key:
         provider = "groq"
         model = model_name if model_name else GROQ_MODEL
-    elif openai_key and online:
+    elif config.llm_provider == 'OPENAI' and openai_key:
         provider = "openai"
         model = model_name if model_name else OPENAI_MODEL
     else:
-        provider = "ollama"
-        model = OLLAMA_MODEL
-        if not (groq_key or openai_key):
-            logger.info("Aucune clé Groq/OpenAI configurée — utilisation d'Ollama (%s).", model)
+        # AUTO (ou provider choisi indisponible faute de clé)
+        if groq_key:
+            provider = "groq"
+            model = model_name if model_name else GROQ_MODEL
+        elif openai_key:
+            provider = "openai"
+            model = model_name if model_name else OPENAI_MODEL
         else:
-            logger.warning("Pas de connexion internet détectée — repli sur Ollama local (%s).", model)
+            provider = "ollama"
+            model = OLLAMA_MODEL
 
     # Clé de cache unique pour ce modèle, cette température et ce plafond de tokens
     cache_key = (provider, model, temperature, max_tokens)

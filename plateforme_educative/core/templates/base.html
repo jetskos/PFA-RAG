@@ -106,6 +106,10 @@
                     class="{% if current_url == 'admin_dashboard' or current_url == 'user_details' %}active{% endif %}">
                     <i class="ti ti-users"></i> <span>Utilisateurs</span>
                 </a>
+                <a href="{% url 'accounts:system_settings' %}"
+                    class="{% if current_url == 'system_settings' %}active{% endif %}">
+                    <i class="ti ti-settings"></i> <span>Paramètres</span>
+                </a>
                 {% endif %}
             </nav>
 

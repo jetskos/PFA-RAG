@@ -56,3 +56,15 @@ class PasswordResetRequestForm(forms.Form):
             'placeholder': 'votre.email@exemple.com'
         })
     )
+
+from .models import ConfigurationSysteme
+
+class ConfigurationSystemeForm(forms.ModelForm):
+    class Meta:
+        model = ConfigurationSysteme
+        fields = ['mode_hors_ligne', 'llm_provider', 'activer_hls']
+        widgets = {
+            'mode_hors_ligne': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'llm_provider': forms.Select(attrs={'class': 'form-control'}),
+            'activer_hls': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
