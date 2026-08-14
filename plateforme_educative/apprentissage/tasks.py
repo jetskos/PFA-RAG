@@ -65,6 +65,15 @@ from pathlib import Path
 from django.conf import settings
 from django.utils import timezone
 from .models import ExportJob, Cours
+import hashlib
+
+def calculate_checksum(file_path):
+    """Calcule le hash SHA-256 d'un fichier."""
+    sha256_hash = hashlib.sha256()
+    with open(file_path, "rb") as f:
+        for byte_block in iter(lambda: f.read(4096), b""):
+            sha256_hash.update(byte_block)
+    return sha256_hash.hexdigest()
 
 @shared_task(bind=True, max_retries=1, name='apprentissage.tasks.export_course_task')
 def export_course_task(self, export_job_id: str):
@@ -86,7 +95,8 @@ def export_course_task(self, export_job_id: str):
                 'resume': cours.resume,
                 'niveau': cours.niveau.code,
             },
-            'chapitres': []
+            'chapitres': [],
+            'checksums': {}
         }
         
         if cours.image_couverture:
@@ -94,6 +104,7 @@ def export_course_task(self, export_job_id: str):
             if img_path.exists():
                 shutil.copy2(img_path, base_export_dir / img_path.name)
                 metadata['cours']['image_couverture'] = img_path.name
+                metadata['checksums'][img_path.name] = calculate_checksum(img_path)
 
         for chapitre in cours.chapitres.all():
             chap_data = {
@@ -109,6 +120,22 @@ def export_course_task(self, export_job_id: str):
                 if vid_path.exists():
                     shutil.copy2(vid_path, base_export_dir / vid_path.name)
                     chap_data['video_fichier'] = vid_path.name
+                    metadata['checksums'][vid_path.name] = calculate_checksum(vid_path)
+                    
+            if getattr(chapitre, 'is_hls_ready', False) and chapitre.video_hls_url:
+                hls_rel_path = Path(chapitre.video_hls_url)
+                hls_abs_path = Path(settings.MEDIA_ROOT) / hls_rel_path
+                hls_dir = hls_abs_path.parent
+                if hls_dir.exists() and hls_dir.is_dir():
+                    dest_hls_dir = base_export_dir / hls_dir.name
+                    if not dest_hls_dir.exists():
+                        shutil.copytree(hls_dir, dest_hls_dir)
+                    chap_data['video_hls_dir'] = hls_dir.name
+                    chap_data['video_hls_playlist'] = hls_abs_path.name
+                    for hls_file in dest_hls_dir.rglob('*'):
+                        if hls_file.is_file():
+                            rel_name = f"{hls_dir.name}/{hls_file.name}"
+                            metadata['checksums'][rel_name] = calculate_checksum(hls_file)
                     
             for doc in chapitre.documents.filter(actif=True):
                 if doc.fichier_pdf:
@@ -122,6 +149,7 @@ def export_course_task(self, export_job_id: str):
                             'ordre': doc.ordre,
                             'fichier_pdf': doc_path.name
                         })
+                        metadata['checksums'][doc_path.name] = calculate_checksum(doc_path)
             metadata['chapitres'].append(chap_data)
 
         # 3. Sauvegarder le JSON
@@ -163,20 +191,25 @@ import uuid
 
 @shared_task(bind=True, name='apprentissage.tasks.import_courses_task')
 def import_courses_task(self, import_job_id: str, user_id: str, zip_files: list):
-    logger.info(f"[Import] Démarrage de l'importation (job {import_job_id}) par l'utilisateur {user_id}")
+    logger.info(f"[Import] Démarrage de l'importation (job {import_job_id}) de {len(zip_files)} fichier(s) par l'utilisateur {user_id}")
     from apprentissage.models import ImportJob
-    import_job = ImportJob.objects.filter(pk=import_job_id).first()
-    if import_job:
-        import_job.status = 'EXTRACTION'
-        import_job.save()
-
+    job = ImportJob.objects.filter(pk=import_job_id).first()
+    if job:
+        job.status = 'EXTRACTION'
+        job.save()
     try:
         from accounts.models import Utilisateur
-        from apprentissage.models import Niveau, Cours, Chapitre, Document
+        from apprentissage.models import Niveau, Cours, Chapitre, Document, ImportJob
         from django.core.files import File
         
+        job = ImportJob.objects.get(pk=import_job_id)
         user = Utilisateur.objects.get(pk=user_id)
         imported_cours_titres = []
+        
+        job.status = 'EXTRACTION'
+        job.save()
+        
+        docs_to_index = []
         
         for zip_path_str in zip_files:
             zip_path = Path(zip_path_str)
@@ -197,6 +230,18 @@ def import_courses_task(self, import_job_id: str, user_id: str, zip_files: list)
                 with open(meta_file, 'r', encoding='utf-8') as f:
                     metadata = json.load(f)
                     
+                checksums = metadata.get('checksums', {})
+                def verify_file(file_path, filename):
+                    expected_hash = checksums.get(filename)
+                    if expected_hash:
+                        actual_hash = calculate_checksum(file_path)
+                        if actual_hash != expected_hash:
+                            raise ValueError(f"Fichier corrompu : {filename} (attendu {expected_hash}, obtenu {actual_hash})")
+                    
+                job.status = 'SAUVEGARDE_BDD'
+                job.titre_cours = metadata.get('cours', {}).get('titre', 'Cours importé')
+                job.save()
+                    
                 c_data = metadata.get('cours', {})
                 niveau_code = c_data.get('niveau') or "NA"
                 niveau, _ = Niveau.objects.get_or_create(code=niveau_code, defaults={'nom': niveau_code})
@@ -215,6 +260,7 @@ def import_courses_task(self, import_job_id: str, user_id: str, zip_files: list)
                 if 'image_couverture' in c_data:
                     img_file = extract_dir / c_data['image_couverture']
                     if img_file.exists():
+                        verify_file(img_file, img_file.name)
                         with open(img_file, 'rb') as f:
                             cours.image_couverture.save(img_file.name, File(f))
                             
@@ -230,8 +276,34 @@ def import_courses_task(self, import_job_id: str, user_id: str, zip_files: list)
                     if 'video_fichier' in chap_data:
                         vid_file = extract_dir / chap_data['video_fichier']
                         if vid_file.exists():
+                            verify_file(vid_file, vid_file.name)
                             with open(vid_file, 'rb') as f:
                                 chapitre.video_fichier.save(vid_file.name, File(f))
+                                
+                            # Si le dossier HLS est aussi fourni, on le restaure et on bypass la génération FFmpeg
+                            if 'video_hls_dir' in chap_data and 'video_hls_playlist' in chap_data:
+                                hls_src_dir = extract_dir / chap_data['video_hls_dir']
+                                if hls_src_dir.exists() and hls_src_dir.is_dir():
+                                    for hls_file in hls_src_dir.rglob('*'):
+                                        if hls_file.is_file():
+                                            rel_name = f"{chap_data['video_hls_dir']}/{hls_file.name}"
+                                            verify_file(hls_file, rel_name)
+                                    
+                                    # Déplacer vers media/videos/hls/<uuid>
+                                    dest_hls_dir = Path(settings.MEDIA_ROOT) / 'videos' / 'hls' / f"chap_{chapitre.id}_hls"
+                                    dest_hls_dir.mkdir(parents=True, exist_ok=True)
+                                    
+                                    # Copier les fichiers
+                                    for item in hls_src_dir.iterdir():
+                                        if item.is_file():
+                                            shutil.copy2(item, dest_hls_dir / item.name)
+                                            
+                                    chapitre.is_hls_ready = True
+                                    rel_hls_path = str((dest_hls_dir / chap_data['video_hls_playlist']).relative_to(settings.MEDIA_ROOT)).replace('\\\\', '/').replace('\\', '/')
+                                    chapitre.video_hls_url = rel_hls_path
+                                    chapitre.save(update_fields=['is_hls_ready', 'video_hls_url'])
+                            else:
+                                convertir_video_hls.delay(str(chapitre.pk))
                                 
                     for doc_data in chap_data.get('documents', []):
                         doc = Document.objects.create(
@@ -244,29 +316,36 @@ def import_courses_task(self, import_job_id: str, user_id: str, zip_files: list)
                         if 'fichier_pdf' in doc_data:
                             pdf_file = extract_dir / doc_data['fichier_pdf']
                             if pdf_file.exists():
+                                verify_file(pdf_file, pdf_file.name)
                                 with open(pdf_file, 'rb') as f:
                                     doc.fichier_pdf.save(pdf_file.name, File(f))
+                                docs_to_index.append(doc)
                                     
             finally:
                 # Cleanup
                 shutil.rmtree(extract_dir, ignore_errors=True)
                 if zip_path.exists():
                     zip_path.unlink()
+        if job:
+            if docs_to_index:
+                job.status = 'INDEXATION_IA'
+                job.save()
+                for doc in docs_to_index:
+                    indexer_document_task.delay(str(doc.id), doc.fichier_pdf.path)
 
-        if import_job:
-            import_job.status = 'TERMINE'
-            import_job.titre_cours = ", ".join(imported_cours_titres) if imported_cours_titres else "Cours importé"
-            import_job.date_fin = timezone.now()
-            import_job.save()
+            job.status = 'TERMINE'
+            job.titre_cours = ", ".join(imported_cours_titres) if imported_cours_titres else "Cours importé"
+            job.date_fin = timezone.now()
+            job.save()
 
         logger.info(f"[Import] Fin de l'importation par l'utilisateur {user_id}")
     except Exception as e:
         logger.error(f"[Import] Erreur globale: {e}", exc_info=True)
-        if import_job:
-            import_job.status = 'FAILED'
-            import_job.erreur = str(e)
-            import_job.date_fin = timezone.now()
-            import_job.save()
+        if job:
+            job.status = 'FAILED'
+            job.erreur = str(e)
+            job.date_fin = timezone.now()
+            job.save()
 
 import subprocess
 
@@ -291,7 +370,8 @@ def convertir_video_hls(self, chapitre_id: str):
         hls_dir = video_path.parent / f"{video_path.stem}_hls"
         hls_dir.mkdir(parents=True, exist_ok=True)
         
-        playlist_path = hls_dir / 'playlist.m3u8'
+        playlist_path = hls_dir / 'Playlist.m3u8'
+        segment_path = hls_dir / 'Chunk_%03d.ts'
         
         import shutil
         ffmpeg_path = shutil.which('ffmpeg')
@@ -311,6 +391,7 @@ def convertir_video_hls(self, chapitre_id: str):
             '-profile:v', 'baseline', '-level', '3.0',
             '-s', '1280x720', '-start_number', '0',
             '-hls_time', '10', '-hls_list_size', '0',
+            '-hls_segment_filename', str(segment_path),
             '-f', 'hls', str(playlist_path)
         ]
         

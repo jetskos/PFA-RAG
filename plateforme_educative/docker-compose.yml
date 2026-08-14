@@ -32,7 +32,7 @@ services:
     volumes:
       - .:/app
     ports:
-      - "8000:8000"
+      - "8001:8000"
     environment:
       - DB_HOST=db
       - CELERY_BROKER_URL=redis://redis:6379/0
@@ -50,7 +50,7 @@ services:
     build: .
     container_name: pfarag_celery
     restart: always
-    command: celery -A core worker -l info
+    command: celery -A core worker -l info --pool=solo
     volumes:
       - .:/app
     environment:
