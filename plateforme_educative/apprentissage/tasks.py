@@ -79,7 +79,7 @@ def calculate_checksum(file_path):
 @shared_task(bind=True, max_retries=1, name='apprentissage.tasks.export_course_task')
 def export_course_task(self, export_job_id: str):
     logger.info(f"[Export] Démarrage de la tâche pour le job {export_job_id}")
-    print(f"\n[📦 Export] Démarrage de l'exportation du cours (Job: {export_job_id})")
+    print(f"\n[Export] Démarrage de l'exportation du cours (Job: {export_job_id})")
     try:
         job = ExportJob.objects.get(pk=export_job_id)
         cours = job.cours
@@ -343,7 +343,7 @@ def import_courses_task(self, import_job_id: str, user_id: str, zip_files: list)
             job.save()
 
         logger.info(f"[Import] Fin de l'importation par l'utilisateur {user_id}")
-        print(f"[✅ Import] Importation terminée avec succès ! ({', '.join(imported_cours_titres) if imported_cours_titres else 'Aucun cours'})")
+        print(f"[ Import] Importation terminée avec succès ! ({', '.join(imported_cours_titres) if imported_cours_titres else 'Aucun cours'})")
     except Exception as e:
         logger.error(f"[Import] Erreur globale: {e}", exc_info=True)
         if job:
@@ -357,7 +357,7 @@ import subprocess
 @shared_task(bind=True, name='apprentissage.tasks.convertir_video_hls')
 def convertir_video_hls(self, chapitre_id: str):
     logger.info(f"[HLS] Démarrage de la conversion pour le chapitre {chapitre_id}")
-    print(f"\n[🎬 HLS] Démarrage de l'encodage vidéo (Chapitre: {chapitre_id})...")
+    print(f"\n[ HLS] Démarrage de l'encodage vidéo (Chapitre: {chapitre_id})...")
     try:
         from apprentissage.models import Chapitre
         chapitre = Chapitre.objects.get(pk=chapitre_id)
@@ -413,7 +413,7 @@ def convertir_video_hls(self, chapitre_id: str):
         )
         
         logger.info(f"[HLS] Succès: Playlist générée à {rel_hls_path}")
-        print(f"[✅ HLS] Conversion terminée avec succès ! (Playlist: {rel_hls_path})")
+        print(f"[ HLS] Conversion terminée avec succès ! (Playlist: {rel_hls_path})")
         
     except FileNotFoundError:
         logger.warning("[HLS] FFmpeg non installé sur le système. Conversion vidéo HLS ignorée.")
