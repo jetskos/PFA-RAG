@@ -19,27 +19,16 @@ logger = logging.getLogger(__name__)
 # Modèle Groq à jour (avril 2025+)
 GROQ_MODEL   = "llama-3.3-70b-versatile"
 OPENAI_MODEL = "gpt-4o-mini"
-OLLAMA_MODEL     = os.getenv("OLLAMA_MODEL", "qwen2.5:1.5b-instruct")
-OLLAMA_BASE_URL  = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
-# Garde le modèle chargé en RAM en continu : évite les 10-20s de rechargement
-# qu'Ollama impose par défaut après 5 min d'inactivité entre deux messages.
-OLLAMA_KEEP_ALIVE = os.getenv("OLLAMA_KEEP_ALIVE", "30m")
-# Plafonne la longueur de génération (au lieu de laisser Ollama tourner sans
+LLAMACPP_MODEL     = os.getenv("LLAMACPP_MODEL", "qwen2.5:1.5b-instruct")
+# Llama-server est déjà lancé sur le port 8181 de la station
+LLAMACPP_BASE_URL  = os.getenv("LLAMACPP_BASE_URL", "http://172.17.0.1:8181/v1")
+
+# Plafonne la longueur de génération (au lieu de laisser le modèle tourner sans
 # limite jusqu'à la fenêtre de contexte). 1024 tokens laisse assez de marge
 # pour le cas le plus long — les 8 questions QCM en JSON (views_qcm.py,
 # ~900 tokens) — tout en bornant un tuteur/évaluateur qui partirait en boucle.
-OLLAMA_NUM_PREDICT = int(os.getenv("OLLAMA_NUM_PREDICT", "512"))
-# Fenêtre de contexte : RAG + prompt système + historique sous 2048 tokens sur CPU.
-OLLAMA_NUM_CTX = int(os.getenv("OLLAMA_NUM_CTX", "2048"))
-# Laisse Ollama auto-détecter GPU/CPU par défaut (ne pas fixer num_gpu).
-# Testé sur machine de dev : forcer le CPU (num_gpu=0) s'est avéré NETTEMENT
-# plus lent et instable (17-32s/appel) que l'auto-détection GPU (1,5-1,9s
-# stable) — contre-intuitif, mais mesuré. Sur un serveur cible sans GPU
-# (ex. Intel N100/RPi4 du cahier des charges), ça n'a aucun effet puisqu'il
-# n'y a pas de GPU à détecter. Positionner OLLAMA_NUM_GPU=0 explicitement
-# pour forcer le CPU si un test sur le matériel cible réel montre l'inverse.
-_ollama_num_gpu_env = os.getenv("OLLAMA_NUM_GPU")
-OLLAMA_NUM_GPU = int(_ollama_num_gpu_env) if _ollama_num_gpu_env is not None else None
+LLAMACPP_NUM_PREDICT = int(os.getenv("LLAMACPP_NUM_PREDICT", "512"))
+
 
 
 # Cache global des instances LLM
@@ -104,12 +93,12 @@ def get_llm(temperature: float = 0.7, model_name: str = None, max_tokens: int = 
 
     # Déterminer le fournisseur et le modèle selon la configuration
     if config.llm_provider == 'OLLAMA' or not online:
-        provider = "ollama"
-        model = OLLAMA_MODEL
+        provider = "llamacpp"
+        model = LLAMACPP_MODEL
         if config.llm_provider == 'OLLAMA':
-            logger.info("Ollama forcé par la Configuration Système.")
+            logger.info("Llama.cpp forcé par la Configuration Système (remplace Ollama).")
         elif not online:
-            logger.warning("Pas de connexion internet (ou mode hors-ligne activé) — repli sur Ollama local (%s).", model)
+            logger.warning("Pas de connexion internet (ou mode hors-ligne activé) — repli sur Llama.cpp local (%s).", model)
     elif config.llm_provider == 'GROQ' and groq_key:
         provider = "groq"
         model = model_name if model_name else GROQ_MODEL
@@ -125,8 +114,8 @@ def get_llm(temperature: float = 0.7, model_name: str = None, max_tokens: int = 
             provider = "openai"
             model = model_name if model_name else OPENAI_MODEL
         else:
-            provider = "ollama"
-            model = OLLAMA_MODEL
+            provider = "llamacpp"
+            model = LLAMACPP_MODEL
 
     # Clé de cache unique pour ce modèle, cette température et ce plafond de tokens
     cache_key = (provider, model, temperature, max_tokens)
@@ -157,15 +146,15 @@ def get_llm(temperature: float = 0.7, model_name: str = None, max_tokens: int = 
             max_tokens=max_tokens,
         )
     else:
-        from langchain_ollama import ChatOllama
-        llm = ChatOllama(
+        # Mode LLAMACPP (utilise l'API compatible OpenAI de llama-server)
+        from langchain_openai import ChatOpenAI
+        llm = ChatOpenAI(
             model=model,
             temperature=temperature,
-            base_url=OLLAMA_BASE_URL,
-            keep_alive=OLLAMA_KEEP_ALIVE,
-            num_predict=max_tokens if max_tokens is not None else OLLAMA_NUM_PREDICT,
-            num_ctx=OLLAMA_NUM_CTX,
-            num_gpu=OLLAMA_NUM_GPU,
+            api_key="sk-no-key-required", # Llama.cpp ne requiert pas de clé
+            base_url=LLAMACPP_BASE_URL,
+            max_retries=1,
+            max_tokens=max_tokens if max_tokens is not None else LLAMACPP_NUM_PREDICT,
         )
 
     _llm_cache[cache_key] = llm
