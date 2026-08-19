@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load static i18n %}
 {% block title %}{{ devoir.titre }} | EduTech{% endblock %}
 
 {% block content %}
@@ -259,9 +259,9 @@
 
     <!-- Breadcrumb -->
     <div class="dd-breadcrumb">
-        <a href="{% url 'apprentissage:espace_formateur' %}">Espace Formateur</a>
+        <a href="{% url 'apprentissage:espace_formateur' %}">{% translate "Espace Formateur" %}</a>
         <i class="ti ti-chevron-right"></i>
-        <a href="{% url 'apprentissage:devoirs_liste' %}">Devoirs</a>
+        <a href="{% url 'apprentissage:devoirs_liste' %}">{% translate "Devoirs" %}</a>
         <i class="ti ti-chevron-right"></i>
         <span>{{ devoir.chapitre.cours.titre }}</span>
         <i class="ti ti-chevron-right"></i>
@@ -270,7 +270,7 @@
 
     <!-- Header card -->
     <div class="dd-header-card">
-        <div class="dd-header-eyebrow"><i class="ti ti-clipboard-list"></i> Devoir</div>
+        <div class="dd-header-eyebrow"><i class="ti ti-clipboard-list"></i> {% translate "Devoir" %}</div>
         <h1 class="dd-header-title">{{ devoir.titre }}</h1>
         <div class="dd-header-meta">
             <div class="dd-meta-pill">
@@ -283,12 +283,12 @@
             </div>
             <div class="dd-meta-pill">
                 <i class="ti ti-star"></i>
-                Note max : {{ devoir.note_max }} pts
+                {% blocktranslate with n=devoir.note_max %}Note max : {{ n }} pts{% endblocktranslate %}
             </div>
             {% if devoir.date_limite %}
             <div class="dd-meta-pill deadline">
                 <i class="ti ti-clock"></i>
-                Limite : {{ devoir.date_limite|date:"d/m/Y H:i" }}
+                {% blocktranslate with d=devoir.date_limite|date:"d/m/Y H:i" %}Limite : {{ d }}{% endblocktranslate %}
             </div>
             {% endif %}
         </div>
@@ -302,7 +302,7 @@
             <!-- Consigne -->
             <div class="dd-card">
                 <div class="dd-card-header">
-                    <i class="ti ti-align-left"></i> Consigne
+                    <i class="ti ti-align-left"></i> {% translate "Consigne" %}
                 </div>
                 <div class="dd-card-body">
                     <div class="consigne-text">{{ devoir.consigne }}</div>
@@ -310,7 +310,7 @@
                     <div style="margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--border-light, #e8edf3);">
                         <a href="{{ devoir.fichier_consigne.url }}" target="_blank"
                            style="display: inline-flex; align-items: center; gap: 6px; padding: 0.55rem 1rem; border-radius: 10px; background: rgba(13,148,136,0.08); border: 1.5px solid rgba(13,148,136,0.2); color: #0D9488; font-weight: 700; font-size: 0.85rem; text-decoration: none; transition: all 0.2s;">
-                            <i class="ti ti-download"></i> Télécharger la consigne
+                            <i class="ti ti-download"></i> {% translate "Télécharger la consigne" %}
                         </a>
                     </div>
                     {% endif %}
@@ -322,7 +322,7 @@
             <div class="dd-card">
                 <div class="dd-card-header">
                     <i class="ti ti-users"></i>
-                    Soumissions reçues
+                    {% translate "Soumissions reçues" %}
                     <span style="font-size: 0.78rem; font-weight: 600; color: var(--text-muted, #94a3b8); margin-left: 4px;">
                         ({{ soumissions_all|length }})
                     </span>
@@ -332,10 +332,10 @@
                 <table class="submissions-table">
                     <thead>
                         <tr>
-                            <th>Élève</th>
-                            <th>Date</th>
-                            <th>Note</th>
-                            <th>Actions</th>
+                            <th>{% translate "Élève" %}</th>
+                            <th>{% translate "Date" %}</th>
+                            <th>{% translate "Note" %}</th>
+                            <th>{% translate "Actions" %}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -357,19 +357,19 @@
                                         {{ s.note }}/{{ devoir.note_max }}
                                     </span>
                                 {% else %}
-                                    <span class="note-badge none">— À noter</span>
+                                    <span class="note-badge none">— {% translate "À noter" %}</span>
                                 {% endif %}
                             </td>
                             <td>
                                 <div class="action-btns">
-                                    <a href="{{ s.fichier.url }}" target="_blank" class="action-btn view" title="Voir le fichier">
+                                    <a href="{{ s.fichier.url }}" target="_blank" class="action-btn view" title="{% translate 'Voir le fichier' %}">
                                         <i class="ti ti-eye"></i>
                                     </a>
                                     <a href="{% url 'apprentissage:soumission_noter' soumission_id=s.pk %}" class="action-btn {% if s.note is not None %}regrade{% else %}grade{% endif %}">
                                         {% if s.note is not None %}
-                                            <i class="ti ti-pencil"></i> Modifier
+                                            <i class="ti ti-pencil"></i> {% translate "Modifier" %}
                                         {% else %}
-                                            <i class="ti ti-check"></i> Noter
+                                            <i class="ti ti-check"></i> {% translate "Noter" %}
                                         {% endif %}
                                     </a>
                                 </div>
@@ -382,8 +382,8 @@
                 {% else %}
                 <div class="empty-submissions">
                     <i class="ti ti-inbox"></i>
-                    <strong style="color: var(--text-primary, #0f172a);">Aucune soumission reçue</strong>
-                    <span style="font-size: 0.85rem;">Les travaux de vos élèves apparaîtront ici.</span>
+                    <strong style="color: var(--text-primary, #0f172a);">{% translate "Aucune soumission reçue" %}</strong>
+                    <span style="font-size: 0.85rem;">{% translate "Les travaux de vos élèves apparaîtront ici." %}</span>
                 </div>
                 {% endif %}
             </div>
@@ -394,7 +394,7 @@
             <div class="dd-card">
                 <div class="dd-card-header">
                     <i class="ti ti-upload"></i>
-                    {% if soumission %}Modifier ma soumission{% else %}Déposer mon travail{% endif %}
+                    {% if soumission %}{% translate "Modifier ma soumission" %}{% else %}{% translate "Déposer mon travail" %}{% endif %}
                 </div>
                 <div class="dd-card-body">
                     <!-- Result if corrected -->
@@ -404,7 +404,7 @@
                         <div class="result-banner-icon">🏆</div>
                         <div>
                             <div class="result-banner-score" style="color: {{ app.color }};">
-                                {{ soumission.note }} / {{ devoir.note_max }} pts
+                                {% blocktranslate with note=soumission.note max=devoir.note_max %}{{ note }} / {{ max }} pts{% endblocktranslate %}
                             </div>
                             <div class="result-banner-label" style="color: {{ app.color }};">{{ app.text }}</div>
                             {% if soumission.feedback %}
@@ -422,7 +422,7 @@
                         <div class="form-group">
                             <label class="form-label" style="display:block; font-weight:700; margin-bottom:0.5rem; color:var(--text-primary);">
                                 {{ form.fichier.label }}
-                                <span style="color: var(--text-muted, #94a3b8); font-size: 0.78rem; font-weight: normal; margin-left: 5px;">(PDF, DOC, image · max 10 Mo)</span>
+                                <span style="color: var(--text-muted, #94a3b8); font-size: 0.78rem; font-weight: normal; margin-left: 5px;">({% translate "PDF, DOC, image · max 10 Mo" %})</span>
                             </label>
                             {{ form.fichier }}
                             {% if form.fichier.errors %}<div class="form-error" style="color: #ef4444; font-size: 0.8rem; margin-top: 4px;">{{ form.fichier.errors }}</div>{% endif %}
@@ -435,16 +435,16 @@
                                 {% if soumission and soumission.est_corrigee %}disabled{% endif %}>
                             <i class="ti ti-upload"></i>
                             {% if soumission and soumission.est_corrigee %}
-                                Devoir déjà corrigé
+                                {% translate "Devoir déjà corrigé" %}
                             {% elif soumission %}
-                                Remplacer ma soumission
+                                {% translate "Remplacer ma soumission" %}
                             {% else %}
-                                Envoyer mon travail
+                                {% translate "Envoyer mon travail" %}
                             {% endif %}
                         </button>
                         {% if soumission and soumission.est_corrigee %}
                         <p style="font-size: 0.8rem; color: var(--text-muted, #94a3b8); display: flex; align-items: center; gap: 5px; margin: 0;">
-                            <i class="ti ti-lock"></i> Ce devoir a été corrigé. Vous ne pouvez plus le modifier.
+                            <i class="ti ti-lock"></i> {% translate "Ce devoir a été corrigé. Vous ne pouvez plus le modifier." %}
                         </p>
                         {% endif %}
                     </form>
@@ -457,27 +457,27 @@
         <div>
             <!-- Info card -->
             <div class="dd-sidebar-card">
-                <div class="dd-sidebar-header"><i class="ti ti-info-circle"></i> Informations</div>
+                <div class="dd-sidebar-header"><i class="ti ti-info-circle"></i> {% translate "Informations" %}</div>
                 <div class="dd-sidebar-body">
                     <div class="info-row">
-                        <span>Note maximale</span>
+                        <span>{% translate "Note maximale" %}</span>
                         <span>{{ devoir.note_max }} pts</span>
                     </div>
                     <div class="info-row">
-                        <span>Date limite</span>
-                        <span>{% if devoir.date_limite %}{{ devoir.date_limite|date:"d/m/Y H:i" }}{% else %}Pas de limite{% endif %}</span>
+                        <span>{% translate "Date limite" %}</span>
+                        <span>{% if devoir.date_limite %}{{ devoir.date_limite|date:"d/m/Y H:i" }}{% else %}{% translate "Pas de limite" %}{% endif %}</span>
                     </div>
                     <div class="info-row">
-                        <span>Chapitre</span>
+                        <span>{% translate "Chapitre" %}</span>
                         <span>{{ devoir.chapitre.titre }}</span>
                     </div>
                     <div class="info-row">
-                        <span>Cours</span>
+                        <span>{% translate "Cours" %}</span>
                         <span>{{ devoir.chapitre.cours.titre }}</span>
                     </div>
                     {% if is_formateur %}
                     <div class="info-row">
-                        <span>Soumissions</span>
+                        <span>{% translate "Soumissions" %}</span>
                         <span style="color: #0D9488;">{{ soumissions_all|length }}</span>
                     </div>
                     {% endif %}
@@ -492,14 +492,14 @@
                 <div style="font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em;
                             color: {% if soumission.est_corrigee %}{{ app.color }}{% else %}#3b82f6{% endif %}; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 5px;">
                     <i class="ti ti-{% if soumission.est_corrigee %}rosette-discount-check{% else %}clock{% endif %}"></i>
-                    {% if soumission.est_corrigee %}{{ app.text }}{% else %}En attente de correction{% endif %}
+                    {% if soumission.est_corrigee %}{{ app.text }}{% else %}{% translate "En attente de correction" %}{% endif %}
                 </div>
                 <div style="font-size: 0.82rem; color: var(--text-muted, #64748b);">
-                    Envoyé le {{ soumission.date_soumission|date:"d/m/Y à H:i" }}
+                    {% blocktranslate with d=soumission.date_soumission|date:"d/m/Y à H:i" %}Envoyé le {{ d }}{% endblocktranslate %}
                 </div>
                 <a href="{{ soumission.fichier.url }}" target="_blank"
                    style="display: inline-flex; align-items: center; gap: 4px; font-size: 0.8rem; font-weight: 600; color: #0D9488; margin-top: 0.6rem; text-decoration: none;">
-                    <i class="ti ti-download"></i> Mon fichier soumis
+                    <i class="ti ti-download"></i> {% translate "Mon fichier soumis" %}
                 </a>
             </div>
             {% endwith %}
@@ -507,7 +507,7 @@
 
             <!-- Back button -->
             <a href="{% url 'apprentissage:devoirs_liste' %}" class="dd-btn-back">
-                <i class="ti ti-arrow-left"></i> Retour aux devoirs
+                <i class="ti ti-arrow-left"></i> {% translate "Retour aux devoirs" %}
             </a>
         </div>
 

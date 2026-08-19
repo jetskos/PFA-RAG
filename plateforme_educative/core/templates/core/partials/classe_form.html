@@ -1,5 +1,6 @@
+{% load i18n %}
 <style>
-    /* Si les styles de la modal sont déjà dans niveau_form.html, pas besoin de tout dupliquer, 
+    /* Si les styles de la modal sont déjà dans niveau_form.html, pas besoin de tout dupliquer,
        mais pour être sûr que ça marche quel que soit l'ordre de chargement, on les inclut. */
     .modal-backdrop {
         position: fixed;
@@ -190,72 +191,72 @@
 <div class="modal-backdrop" id="classe-modal">
     <div class="modal-dialog">
         <div class="modal-header">
-            <h3 class="modal-title">{% if is_create %}Créer une classe{% else %}Modifier la classe{% endif %}</h3>
-            <button class="btn-close" onclick="document.getElementById('modal-container').innerHTML=''" aria-label="Fermer">
+            <h3 class="modal-title">{% if is_create %}{% translate "Créer une classe" %}{% else %}{% translate "Modifier la classe" %}{% endif %}</h3>
+            <button class="btn-close" onclick="document.getElementById('modal-container').innerHTML=''" aria-label="{% translate 'Fermer' %}">
                 <i class="ti ti-x"></i>
             </button>
         </div>
-        
+
         <form method="post"
               hx-post="{{ action_url }}"
               hx-target="#classe-modal"
               hx-swap="outerHTML">
             {% csrf_token %}
-            
+
             <div class="modal-body">
-                
+
                 <div class="form-grid-2">
                     <div class="modal-form-field">
-                        <label for="{{ classe_form.niveau.id_for_label }}">Niveau d'appartenance</label>
+                        <label for="{{ classe_form.niveau.id_for_label }}">{% translate "Niveau d'appartenance" %}</label>
                         {{ classe_form.niveau }}
                         {% if classe_form.niveau.errors %}<span class="error-text">{{ classe_form.niveau.errors.0 }}</span>{% endif %}
                     </div>
-                    
+
                     <div class="modal-form-field">
-                        <label for="{{ classe_form.code.id_for_label }}">Code de la classe (ex: BTS-1)</label>
+                        <label for="{{ classe_form.code.id_for_label }}">{% translate "Code de la classe (ex: BTS-1)" %}</label>
                         {{ classe_form.code }}
                         {% if classe_form.code.errors %}<span class="error-text">{{ classe_form.code.errors.0 }}</span>{% endif %}
                     </div>
                 </div>
-                
+
                 <div class="modal-form-field">
-                    <label for="{{ classe_form.nom.id_for_label }}">Nom complet de la classe</label>
+                    <label for="{{ classe_form.nom.id_for_label }}">{% translate "Nom complet de la classe" %}</label>
                     {{ classe_form.nom }}
                     {% if classe_form.nom.errors %}<span class="error-text">{{ classe_form.nom.errors.0 }}</span>{% endif %}
                 </div>
-                
+
                 <div class="form-grid-2">
                     <div class="modal-form-field">
-                        <label for="{{ classe_form.annee_scolaire.id_for_label }}">Année scolaire</label>
+                        <label for="{{ classe_form.annee_scolaire.id_for_label }}">{% translate "Année scolaire" %}</label>
                         {{ classe_form.annee_scolaire }}
                         {% if classe_form.annee_scolaire.errors %}<span class="error-text">{{ classe_form.annee_scolaire.errors.0 }}</span>{% endif %}
                     </div>
-                    
+
                     <div class="modal-form-field">
-                        <label for="{{ classe_form.capacite.id_for_label }}">Capacité maximale</label>
+                        <label for="{{ classe_form.capacite.id_for_label }}">{% translate "Capacité maximale" %}</label>
                         {{ classe_form.capacite }}
                         {% if classe_form.capacite.errors %}<span class="error-text">{{ classe_form.capacite.errors.0 }}</span>{% endif %}
                     </div>
                 </div>
-                
+
                 <div class="modal-checkbox-field">
                     {{ classe_form.actif }}
-                    <label for="{{ classe_form.actif.id_for_label }}">Classe active sur la plateforme</label>
+                    <label for="{{ classe_form.actif.id_for_label }}">{% translate "Classe active sur la plateforme" %}</label>
                 </div>
-                
+
                 {% if classe_form.non_field_errors %}
                     <div style="margin-top: 1rem; padding: 0.75rem; background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; color: #b91c1c;">
                         {{ classe_form.non_field_errors.0 }}
                     </div>
                 {% endif %}
             </div>
-            
+
             <div class="modal-footer">
                 <button type="button" class="btn-modal-cancel" onclick="document.getElementById('modal-container').innerHTML=''">
-                    {{ cancel_label|default:'Annuler' }}
+                    {% if cancel_label %}{{ cancel_label }}{% else %}{% translate "Annuler" %}{% endif %}
                 </button>
                 <button type="submit" class="btn-modal-submit-blue">
-                    {{ submit_label|default:'Enregistrer' }}
+                    {% if submit_label %}{{ submit_label }}{% else %}{% translate "Enregistrer" %}{% endif %}
                 </button>
             </div>
         </form>

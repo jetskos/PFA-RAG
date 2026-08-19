@@ -1,3 +1,4 @@
+{% load i18n %}
 <style>
     /* Course Grid Modern */
     .courses-grid-modern {
@@ -113,18 +114,18 @@
                         <h3>{{ cours.titre }}</h3>
                         <div class="c-meta">
                             <span><i class="ti ti-bookmark" style="margin-right:4px;"></i>{{ cours.niveau.nom }}</span>
-                            <span><i class="ti ti-calendar" style="margin-right:4px;"></i>Modifié le {{ cours.date_creation|date:'d/m/Y' }}</span>
+                            <span><i class="ti ti-calendar" style="margin-right:4px;"></i>{% blocktranslate with d=cours.date_creation|date:'d/m/Y' %}Modifié le {{ d }}{% endblocktranslate %}</span>
                             {% if cours.actif %}
-                                <span class="c-status status-publie">Publié</span>
+                                <span class="c-status status-publie">{% translate "Publié" %}</span>
                             {% else %}
-                                <span class="c-status status-brouillon">Brouillon</span>
+                                <span class="c-status status-brouillon">{% translate "Brouillon" %}</span>
                             {% endif %}
                         </div>
                     </div>
                 </div>
                 <div class="c-row-right">
                     <a href="{% url 'apprentissage:gerer_cours' cours.id %}" class="btn-primary" style="padding: 0.5rem 1rem; background: #0f172a; color: white;">
-                        Gérer le contenu
+                        {% translate "Gérer le contenu" %}
                     </a>
                     <a href="{% url 'apprentissage:editer_cours' cours.id %}" class="btn-outline" style="padding: 0.5rem; color: #64748b;">
                         <i class="ti ti-dots-vertical"></i>
@@ -135,10 +136,10 @@
     {% else %}
         <div class="empty-state-modern">
             <i class="ti ti-notebook" style="font-size: 4rem; color: #94a3b8; margin-bottom: 1rem;"></i>
-            <h3>Votre espace de travail est prêt</h3>
-            <p>Vous n'avez pas encore de cours. Créez votre premier module pour commencer à enseigner.</p>
+            <h3>{% translate "Votre espace de travail est prêt" %}</h3>
+            <p>{% translate "Vous n'avez pas encore de cours. Créez votre premier module pour commencer à enseigner." %}</p>
             <a href="{% url 'apprentissage:nouveau_cours' %}" class="btn-primary" style="background: #3b82f6;">
-                <i class="ti ti-plus" style="margin-right: 6px;"></i> Créer mon premier cours
+                <i class="ti ti-plus" style="margin-right: 6px;"></i> {% translate "Créer mon premier cours" %}
             </a>
         </div>
     {% endif %}
@@ -146,7 +147,7 @@
 
 <!-- SECTION DEMANDES LOGISTIQUES -->
 <div style="margin-top: 3rem;">
-    <h2 style="font-size: 1.5rem; font-weight: 800; color: #0f172a; margin-bottom: 1.5rem;">Suivi Logistique</h2>
+    <h2 style="font-size: 1.5rem; font-weight: 800; color: #0f172a; margin-bottom: 1.5rem;">{% translate "Suivi Logistique" %}</h2>
     
     <style>
         .logistics-tracking-grid {
@@ -250,29 +251,29 @@
                     <div class="tracking-header">
                         <div>
                             <h3 class="tracking-equipement">{{ demande.equipement.nom }}</h3>
-                            <span class="tracking-date">Demande du {{ demande.date_creation|date:"d M Y" }}</span>
+                            <span class="tracking-date">{% blocktranslate with d=demande.date_creation|date:"d M Y" %}Demande du {{ d }}{% endblocktranslate %}</span>
                         </div>
                         <div class="tracking-badge badge-{{ demande.statut }}">
-                            {% if demande.statut == 'PENDING' %}<i class="ti ti-hourglass"></i> En attente
-                            {% elif demande.statut == 'APPROVED' %}<i class="ti ti-check"></i> Approuvée
-                            {% elif demande.statut == 'REJECTED' %}<i class="ti ti-x"></i> Rejetée
-                            {% elif demande.statut == 'RETURNED' %}<i class="ti ti-arrow-back-up"></i> Retournée
+                            {% if demande.statut == 'PENDING' %}<i class="ti ti-hourglass"></i> {% translate "En attente" %}
+                            {% elif demande.statut == 'APPROVED' %}<i class="ti ti-check"></i> {% translate "Approuvée" %}
+                            {% elif demande.statut == 'REJECTED' %}<i class="ti ti-x"></i> {% translate "Rejetée" %}
+                            {% elif demande.statut == 'RETURNED' %}<i class="ti ti-arrow-back-up"></i> {% translate "Retournée" %}
                             {% endif %}
                         </div>
                     </div>
-                    
+
                     <div class="tracking-details">
                         <div class="detail-item">
-                            <span class="detail-label">Quantité</span>
+                            <span class="detail-label">{% translate "Quantité" %}</span>
                             <span class="detail-value"><i class="ti ti-box"></i> {{ demande.quantite }}</span>
                         </div>
                         <div class="detail-item">
-                            <span class="detail-label">Atelier</span>
+                            <span class="detail-label">{% translate "Atelier" %}</span>
                             <span class="detail-value">
                                 {% if demande.atelier_cible %}
                                     <i class="ti ti-building-community"></i> {{ demande.atelier_cible.titre }}
                                 {% else %}
-                                    <span style="color: #94a3b8; font-style: italic;">Non spécifié</span>
+                                    <span style="color: #94a3b8; font-style: italic;">{% translate "Non spécifié" %}</span>
                                 {% endif %}
                             </span>
                         </div>
@@ -283,8 +284,8 @@
     {% else %}
         <div class="empty-state-modern" style="padding: 2rem;">
             <i class="ti ti-box-off" style="font-size: 3rem; color: #94a3b8; margin-bottom: 1rem;"></i>
-            <h3 style="font-size: 1.1rem;">Aucune demande de matériel</h3>
-            <p style="margin-bottom: 0;">Vous n'avez effectué aucune demande logistique pour le moment.</p>
+            <h3 style="font-size: 1.1rem;">{% translate "Aucune demande de matériel" %}</h3>
+            <p style="margin-bottom: 0;">{% translate "Vous n'avez effectué aucune demande logistique pour le moment." %}</p>
         </div>
     {% endif %}
 </div>

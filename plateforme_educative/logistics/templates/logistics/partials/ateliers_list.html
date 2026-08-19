@@ -1,3 +1,4 @@
+{% load i18n %}
 {% if page_obj.object_list %}
 <div class="logi-eq-list">
     {% for atelier in page_obj %}
@@ -36,19 +37,22 @@
                         {% elif atelier.statut_dynamique == 'En cours' %}badge-en_cours
                         {% elif atelier.statut_dynamique == 'À venir' %}badge-a_venir
                         {% else %}badge-termine{% endif %}">
-                        {{ atelier.statut_dynamique }}
+                        {% if atelier.est_annule %}{% translate "Annulé" %}
+                        {% elif atelier.statut_dynamique == 'En cours' %}{% translate "En cours" %}
+                        {% elif atelier.statut_dynamique == 'À venir' %}{% translate "À venir" %}
+                        {% else %}{% translate "Terminé" %}{% endif %}
                     </span>
                     {% if user.is_staff or user == atelier.createur %}
                     <div class="eq-item-actions">
-                        <button type="button" class="eq-action-btn" title="Modifier"
+                        <button type="button" class="eq-action-btn" title="{% translate 'Modifier' %}"
                                 hx-get="{% url 'logistics:editer_atelier' atelier.pk %}"
                                 hx-target="#form-atelier-container" hx-swap="innerHTML">
                             <i class="ti ti-edit"></i>
                         </button>
                         {% if not atelier.est_annule %}
-                        <button type="button" class="eq-action-btn btn-danger" title="Supprimer"
+                        <button type="button" class="eq-action-btn btn-danger" title="{% translate 'Supprimer' %}"
                                 hx-post="{% url 'logistics:supprimer_atelier' atelier.pk %}"
-                                hx-confirm="Êtes-vous sûr de vouloir supprimer cet atelier ?"
+                                hx-confirm="{% translate "Êtes-vous sûr de vouloir supprimer cet atelier ?" %}"
                                 hx-target="#ateliers-list">
                             <i class="ti ti-trash"></i>
                         </button>
@@ -61,15 +65,15 @@
             <!-- Meta Grid -->
             <div class="eq-meta-grid">
                 <div class="eq-meta-item">
-                    <span class="eq-meta-lbl"><i class="ti ti-user"></i> Tuteur</span>
+                    <span class="eq-meta-lbl"><i class="ti ti-user"></i> {% translate "Tuteur" %}</span>
                     <span class="eq-meta-val">{{ atelier.tuteur.get_full_name|default:atelier.tuteur.email }}</span>
                 </div>
                 <div class="eq-meta-item">
-                    <span class="eq-meta-lbl"><i class="ti ti-stairs-up"></i> Niveau</span>
-                    <span class="eq-meta-val">{{ atelier.niveau_cible|default:"Non spécifié" }}</span>
+                    <span class="eq-meta-lbl"><i class="ti ti-stairs-up"></i> {% translate "Niveau" %}</span>
+                    <span class="eq-meta-val">{% if atelier.niveau_cible %}{{ atelier.niveau_cible }}{% else %}{% translate "Non spécifié" %}{% endif %}</span>
                 </div>
                 <div class="eq-meta-item" style="grid-column: span 2;">
-                    <span class="eq-meta-lbl"><i class="ti ti-calendar-time"></i> Période</span>
+                    <span class="eq-meta-lbl"><i class="ti ti-calendar-time"></i> {% translate "Période" %}</span>
                     <span class="eq-meta-val">{{ atelier.date_debut|date:"d M Y, H:i" }} → {{ atelier.date_fin|date:"d M Y, H:i" }}</span>
                 </div>
             </div>
@@ -83,7 +87,7 @@
 {% else %}
 <div class="eq-empty-state">
     <div class="eq-empty-icon"><i class="ti ti-building-community"></i></div>
-    <h3>Aucun atelier trouvé</h3>
-    <p>Créez votre premier atelier en cliquant sur <strong>"Nouvel atelier"</strong>.</p>
+    <h3>{% translate "Aucun atelier trouvé" %}</h3>
+    <p>{% blocktranslate %}Créez votre premier atelier en cliquant sur <strong>"Nouvel atelier"</strong>.{% endblocktranslate %}</p>
 </div>
 {% endif %}

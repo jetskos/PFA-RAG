@@ -1,0 +1,5431 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-20 00:20+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:5
+msgid "Administration Pédagogique"
+msgstr "Educational Administration"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:324
+#: .\core\templates\base.html:94
+#: .\core\templates\core\dashboard_admin_structure.html:78
+msgid "Administration"
+msgstr "Administration"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:325
+msgid "Gestion des utilisateurs"
+msgstr "User Management"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:326
+msgid "Gérez l'accès, les rôles et les profils de votre plateforme."
+msgstr "Manage access, roles, and profiles across your platform."
+
+#: .\accounts\templates\accounts\admin_dashboard.html:339
+msgid "Création de profil"
+msgstr "Profile Creation"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:343
+#: .\accounts\templates\accounts\admin_dashboard.html:889
+#: .\accounts\templates\accounts\partials\onboarding_step.html:236
+#: .\accounts\templates\accounts\partials\onboarding_step.html:397
+#: .\accounts\templates\accounts\profile_edit.html:287
+#: .\core\templates\core\classe_students_page.html:77
+#: .\core\templates\core\classe_students_page.html:78
+msgid "Prénom"
+msgstr "First name"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:343
+msgid "Ex: Jean"
+msgstr "E.g., John"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:344
+#: .\accounts\templates\accounts\admin_dashboard.html:893
+#: .\accounts\templates\accounts\partials\onboarding_step.html:240
+#: .\accounts\templates\accounts\partials\onboarding_step.html:401
+#: .\accounts\templates\accounts\profile_edit.html:296
+#: .\core\templates\core\classe_students_page.html:81
+#: .\core\templates\core\classe_students_page.html:82
+msgid "Nom"
+msgstr "Last name"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:344
+msgid "Ex: Dupont"
+msgstr "E.g., Smith"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:345
+#: .\core\templates\core\classe_students_page.html:29
+#: .\core\templates\core\classe_students_page.html:86
+msgid "Email"
+msgstr "Email"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:346
+#: .\core\templates\core\classe_students_page.html:90
+msgid "Mot de passe"
+msgstr "Password"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:347
+#: .\accounts\templates\accounts\admin_dashboard.html:901
+#: .\accounts\templates\accounts\admin_dashboard.html:1011
+msgid "Rôle"
+msgstr "Role"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:354
+msgid "Niveau (Optionnel)"
+msgstr "Level (Optional)"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:356
+#: .\accounts\templates\accounts\admin_dashboard.html:633
+#: .\accounts\templates\accounts\admin_dashboard.html:906
+msgid "Aucun"
+msgstr "None"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:364
+msgid "Confirmer"
+msgstr "Confirm"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:376
+#: .\core\templates\base.html:107
+#: .\core\templates\core\dashboard_admin_structure.html:84
+msgid "Utilisateurs"
+msgstr "Users"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:378
+msgid "Comptes enregistrés"
+msgstr "Registered accounts"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:386
+#: .\accounts\templates\accounts\admin_dashboard.html:453
+#: .\accounts\templates\accounts\admin_dashboard.html:1002
+#: .\apprentissage\templates\apprentissage\analytics_admin.html:90
+msgid "Élèves"
+msgstr "Students"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:388
+msgid "Profils étudiants"
+msgstr "Student profiles"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:396
+#: .\accounts\templates\accounts\admin_dashboard.html:454
+#: .\accounts\templates\accounts\admin_dashboard.html:1002
+#: .\apprentissage\templates\apprentissage\analytics_admin.html:90
+#: .\core\templates\core\dashboard_admin.html:699
+msgid "Formateurs"
+msgstr "Instructors"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:398
+msgid "Enseignants & tuteurs"
+msgstr "Teachers & tutors"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:406
+#: .\accounts\templates\accounts\admin_dashboard.html:455
+#: .\accounts\templates\accounts\admin_dashboard.html:1002
+#: .\apprentissage\templates\apprentissage\analytics_admin.html:90
+msgid "Administrateurs"
+msgstr "Administrators"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:408
+msgid "Accès supervision"
+msgstr "Supervisory access"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:417
+msgid "Rechercher par nom, email..."
+msgstr "Search by name, email..."
+
+#: .\accounts\templates\accounts\admin_dashboard.html:424
+msgid "Tous les rôles"
+msgstr "All roles"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:447
+msgid "Exporter Excel..."
+msgstr "Export to Excel..."
+
+#: .\accounts\templates\accounts\admin_dashboard.html:451
+#: .\accounts\templates\accounts\admin_dashboard.html:1002
+msgid "Tous les utilisateurs"
+msgstr "All users"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:452
+msgid "Vue filtrée actuelle"
+msgstr "Current filtered view"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:459
+msgid "Nouvel utilisateur"
+msgstr "New user"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:469
+#: .\accounts\templates\accounts\partials\users_table_body.html:6
+msgid "Utilisateur"
+msgstr "User"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:470
+#: .\accounts\templates\accounts\partials\users_table_body.html:7
+msgid "Rôle Principal"
+msgstr "Primary Role"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:472
+#: .\accounts\templates\accounts\partials\users_table_body.html:8
+msgid "Niveau Assigné"
+msgstr "Assigned Level"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:473
+#: .\accounts\templates\accounts\partials\users_table_body.html:9
+#: .\apprentissage\templates\apprentissage\devoir_detail.html:338
+#: .\core\templates\core\classe_students_page.html:31
+#: .\core\templates\core\partials\equipements_section.html:143
+msgid "Actions"
+msgstr "Actions"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:515
+#: .\accounts\templates\accounts\admin_dashboard.html:662
+msgid "Sauvegarder les modifications"
+msgstr "Save changes"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:518
+#: .\accounts\templates\accounts\admin_dashboard.html:663
+#: .\accounts\templates\accounts\notifications.html:62
+msgid "Voir les détails"
+msgstr "View details"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:521
+#: .\accounts\templates\accounts\password_reset_form.html:16
+msgid "Générer un mot de passe temporaire"
+msgstr "Generate a temporary password"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:524
+#: .\accounts\templates\accounts\admin_dashboard.html:664
+msgid "Supprimer l'utilisateur"
+msgstr "Delete the user"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:536
+msgid "Aucun utilisateur ne correspond à votre recherche."
+msgstr "No user matches your search."
+
+#: .\accounts\templates\accounts\admin_dashboard.html:545
+#: .\accounts\templates\accounts\partials\users_table_body.html:84
+#: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:823
+#: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:826
+#: .\core\templates\core\partials\classes_section.html:363
+#: .\core\templates\core\partials\equipements_section.html:169
+#: .\core\templates\core\partials\niveaux_section.html:312
+#: .\core\templates\core\partials\pagination.html:62
+#: .\core\templates\core\partials\pending_demandes_section.html:237
+#: .\core\templates\core\partials\pending_students_section.html:285
+#: .\tuteur_ia\templates\tuteur_ia\qcm.html:62
+msgid "Précédent"
+msgstr "Previous"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:548
+#, python-format
+msgid "Page %(current)s / %(total)s"
+msgstr "Page %(current)s of %(total)s"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:551
+#: .\accounts\templates\accounts\partials\users_table_body.html:88
+#: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:837
+#: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:840
+#: .\core\templates\core\partials\classes_section.html:367
+#: .\core\templates\core\partials\equipements_section.html:173
+#: .\core\templates\core\partials\niveaux_section.html:316
+#: .\core\templates\core\partials\pagination.html:84
+#: .\core\templates\core\partials\pending_demandes_section.html:241
+#: .\core\templates\core\partials\pending_students_section.html:289
+#: .\tuteur_ia\templates\tuteur_ia\qcm.html:63
+msgid "Suivant"
+msgstr "Next"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:680
+msgid "Email et mot de passe sont obligatoires."
+msgstr "Email and password are required."
+
+#: .\accounts\templates\accounts\admin_dashboard.html:717
+#: .\accounts\templates\accounts\admin_dashboard.html:770
+#: .\accounts\templates\accounts\admin_dashboard.html:799
+#: .\accounts\templates\accounts\admin_dashboard.html:819
+#: .\accounts\templates\accounts\admin_dashboard.html:953
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:819
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1081
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1364
+#: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:1353
+#: .\core\templates\core\classe_students_page.html:144
+#: .\core\templates\core\dashboard_formateur.html:770
+#: .\core\templates\core\dashboard_formateur.html:811
+msgid "Erreur"
+msgstr "Error"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:717
+#: .\accounts\templates\accounts\admin_dashboard.html:770
+#: .\accounts\templates\accounts\admin_dashboard.html:799
+#: .\accounts\templates\accounts\admin_dashboard.html:819
+msgid "Échec"
+msgstr "Failed"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:721
+#: .\accounts\templates\accounts\admin_dashboard.html:775
+#: .\accounts\templates\accounts\admin_dashboard.html:801
+msgid "Erreur réseau"
+msgstr "Network error"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:783
+msgid "Supprimer définitivement cet utilisateur ?"
+msgstr "Permanently delete this user?"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:874
+msgid "Fiche Utilisateur"
+msgstr "User Record"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:890
+#: .\accounts\templates\accounts\admin_dashboard.html:894
+msgid "Non renseigné"
+msgstr "Not provided"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:897
+msgid "Adresse Email"
+msgstr "Email Address"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:905
+#: .\core\templates\core\dashboard_student.html:855
+#: .\core\templates\core\dashboard_student.html:872
+msgid "Niveau d'études"
+msgstr "Level of study"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:909
+#: .\accounts\templates\accounts\profile.html:72
+#: .\apprentissage\templates\apprentissage\formateur_notes.html:271
+#: .\core\templates\core\dashboard_student.html:868
+msgid "Classe"
+msgstr "Class"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:910
+msgid "Aucune"
+msgstr "None"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:913
+msgid "Statut du Compte"
+msgstr "Account Status"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:917
+msgid "Formateur Actif"
+msgstr "Active Instructor"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:918
+#: .\accounts\templates\accounts\admin_dashboard.html:995
+#: .\accounts\templates\accounts\admin_dashboard.html:1041
+msgid "Oui"
+msgstr "Yes"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:918
+#: .\accounts\templates\accounts\admin_dashboard.html:995
+msgid "Non"
+msgstr "No"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:921
+msgid "Date d'inscription"
+msgstr "Registration Date"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:925
+msgid "Dernière connexion"
+msgstr "Last Login"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:931
+msgid "Erreur détails"
+msgstr "Details error"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:937
+msgid "Êtes-vous sûr de vouloir générer un mot de passe temporaire pour"
+msgstr "Are you sure you want to generate a temporary password for"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:951
+msgid "Nouveau mot de passe pour"
+msgstr "New password for"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:951
+msgid "Veuillez le communiquer à l'utilisateur."
+msgstr "Please share it with the user."
+
+#: .\accounts\templates\accounts\admin_dashboard.html:958
+#: .\core\templates\core\classe_students_page.html:144
+msgid "Une erreur est survenue."
+msgstr "An error occurred."
+
+#: .\accounts\templates\accounts\admin_dashboard.html:1000
+msgid "Aucun utilisateur à exporter."
+msgstr "No users to export."
+
+#: .\accounts\templates\accounts\admin_dashboard.html:1002
+msgid "Vue filtrée"
+msgstr "Filtered view"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:1008
+#: .\accounts\templates\accounts\admin_dashboard.html:1049
+msgid "Export"
+msgstr "Export"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:1009
+msgid "Généré le"
+msgstr "Generated on"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:1011
+msgid "Nom complet"
+msgstr "Full name"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:1011
+#: .\accounts\templates\accounts\profile_edit.html:307
+msgid "Adresse email"
+msgstr "Email address"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:1011
+msgid "Formateur actif"
+msgstr "Active instructor"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:1011
+msgid "Niveau assigné"
+msgstr "Assigned level"
+
+#: .\accounts\templates\accounts\change_password.html:4
+msgid "Changer mon mot de passe"
+msgstr "Change my password"
+
+#: .\accounts\templates\accounts\change_password.html:113
+#: .\accounts\templates\accounts\partials\profile_nav.html:13
+msgid "Sécurité"
+msgstr "Security"
+
+#: .\accounts\templates\accounts\change_password.html:114
+msgid "Modifier mon mot de passe"
+msgstr "Change my password"
+
+#: .\accounts\templates\accounts\change_password.html:116
+msgid ""
+"Pour sécuriser votre compte, veuillez choisir un mot de passe robuste d'au "
+"moins 8 caractères."
+msgstr ""
+"To secure your account, please choose a strong password of at least 8 "
+"characters."
+
+#: .\accounts\templates\accounts\change_password.html:146
+msgid "Mettre à jour le mot de passe"
+msgstr "Update password"
+
+#: .\accounts\templates\accounts\change_password.html:149
+#: .\accounts\templates\accounts\profile_edit.html:322
+#: .\apprentissage\templates\apprentissage\cours_form.html:356
+#: .\apprentissage\templates\apprentissage\devoir_form.html:62
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:902
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:950
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1005
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1163
+#: .\apprentissage\templates\apprentissage\evenement_form.html:328
+#: .\apprentissage\templates\apprentissage\partials\chapitre_form.html:94
+#: .\apprentissage\templates\apprentissage\partials\document_form.html:155
+#: .\apprentissage\templates\apprentissage\soumission_eval.html:54
+#: .\core\templates\core\partials\classe_form.html:256
+#: .\core\templates\core\partials\demande_materiel_modal.html:51
+#: .\core\templates\core\partials\equipement_form_modal.html:93
+#: .\core\templates\core\partials\niveau_form.html:231
+#: .\logistics\templates\logistics\partials\atelier_form.html:96
+#: .\logistics\templates\logistics\partials\demande_form.html:120
+#: .\logistics\templates\logistics\partials\equipement_form.html:49
+#: .\logistics\templates\logistics\partials\ticket_form_modal.html:49
+#: .\logistics\templates\logistics\partials\ticket_formateur_form.html:25
+#: .\logistics\templates\logistics\ticket_form.html:250
+msgid "Annuler"
+msgstr "Cancel"
+
+#: .\accounts\templates\accounts\emails\activation_email.html:6
+msgid "Votre compte est activé !"
+msgstr "Your account is activated!"
+
+#: .\accounts\templates\accounts\emails\activation_email.html:10
+msgid "Bienvenue sur EduTech !"
+msgstr "Welcome to EduTech!"
+
+#: .\accounts\templates\accounts\emails\activation_email.html:12
+#: .\accounts\templates\accounts\emails\role_activation.html:158
+#, python-format
+msgid "Bonjour %(nom)s,"
+msgstr "Hello %(nom)s,"
+
+#: .\accounts\templates\accounts\emails\activation_email.html:15
+msgid ""
+"Nous avons le plaisir de vous informer que votre compte a été activé par "
+"l'administration."
+msgstr ""
+"We are pleased to inform you that your account has been activated by the "
+"administration."
+
+#: .\accounts\templates\accounts\emails\activation_email.html:19
+#, python-format
+msgid ""
+"Vous êtes désormais affecté(e) à la classe <strong>%(classe)s</strong> et "
+"vous pouvez accéder à tous vos cours et devoirs."
+msgstr ""
+"You have now been assigned to the class <strong>%(classe)s</strong> and can "
+"access all your courses and assignments."
+
+#: .\accounts\templates\accounts\emails\activation_email.html:21
+msgid ""
+"Vous êtes désormais affecté(e) à la classe <strong>(Non assignée)</strong> "
+"et vous pouvez accéder à tous vos cours et devoirs."
+msgstr ""
+"You have now been assigned to the class <strong>(Not assigned)</strong> and "
+"can access all your courses and assignments."
+
+#: .\accounts\templates\accounts\emails\activation_email.html:26
+#: .\accounts\templates\accounts\emails\notification.html:93
+#: .\accounts\templates\accounts\partials\onboarding_step.html:465
+msgid "Accéder à la plateforme"
+msgstr "Go to the platform"
+
+#: .\accounts\templates\accounts\emails\activation_email.html:30
+msgid ""
+"Si vous avez des questions, n'hésitez pas à contacter votre formateur ou "
+"l'administration."
+msgstr ""
+"If you have any questions, feel free to contact your instructor or the "
+"administration."
+
+#: .\accounts\templates\accounts\emails\activation_email.html:31
+msgid "L'équipe EduTech."
+msgstr "The EduTech Team."
+
+#: .\accounts\templates\accounts\emails\notification.html:98
+#: .\accounts\templates\accounts\emails\temp_password_email.html:126
+msgid ""
+"Cet e-mail vous a été envoyé automatiquement par la plateforme EduTech."
+msgstr "This email was sent automatically by the EduTech platform."
+
+#: .\accounts\templates\accounts\emails\notification.html:99
+#: .\accounts\templates\accounts\emails\temp_password_email.html:127
+msgid "Tous droits réservés."
+msgstr "All rights reserved."
+
+#: .\accounts\templates\accounts\emails\role_activation.html:7
+msgid "Votre compte est activé"
+msgstr "Your account is activated"
+
+#: .\accounts\templates\accounts\emails\role_activation.html:152
+#: .\apprentissage\templates\apprentissage\wizard\success.html:9
+msgid "Félicitations !"
+msgstr "Congratulations!"
+
+#: .\accounts\templates\accounts\emails\role_activation.html:153
+msgid "Votre compte a été activé avec succès."
+msgstr "Your account has been successfully activated."
+
+#: .\accounts\templates\accounts\emails\role_activation.html:161
+msgid ""
+"Nous avons le plaisir de vous informer que votre compte sur la plateforme "
+"<strong>EduTech</strong> est désormais actif et que vos droits d'accès ont "
+"été mis à jour."
+msgstr ""
+"We are pleased to inform you that your account on the "
+"<strong>EduTech</strong> platform is now active and your access rights have "
+"been updated."
+
+#: .\accounts\templates\accounts\emails\role_activation.html:163
+msgid "Votre rôle officiel sur la plateforme est :"
+msgstr "Your official role on the platform is:"
+
+#: .\accounts\templates\accounts\emails\role_activation.html:165
+msgid "Administrateur"
+msgstr "Administrator"
+
+#: .\accounts\templates\accounts\emails\role_activation.html:167
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:246
+#: .\core\templates\base.html:77
+#: .\logistics\templates\logistics\partials\demandes_list.html:101
+msgid "Formateur"
+msgstr "Instructor"
+
+#: .\accounts\templates\accounts\emails\role_activation.html:171
+msgid ""
+"En tant que membre de l'équipe, vous avez accès à des fonctionnalités "
+"avancées vous permettant de piloter l'apprentissage et de contribuer au "
+"succès de nos apprenants."
+msgstr ""
+"As a team member, you now have access to advanced features that let you "
+"manage learning and contribute to our learners' success."
+
+#: .\accounts\templates\accounts\emails\role_activation.html:175
+msgid "Accéder à mon espace"
+msgstr "Go to my space"
+
+#: .\accounts\templates\accounts\emails\role_activation.html:179
+msgid ""
+"Si vous avez des questions ou si vous avez besoin d'assistance pour "
+"démarrer, notre support technique reste à votre entière disposition."
+msgstr ""
+"If you have any questions or need help getting started, our technical "
+"support team is fully available to assist you."
+
+#: .\accounts\templates\accounts\emails\role_activation.html:180
+msgid "Bienvenue à bord !"
+msgstr "Welcome aboard!"
+
+#: .\accounts\templates\accounts\emails\role_activation.html:180
+msgid "L'équipe EduTech"
+msgstr "The EduTech Team"
+
+#: .\accounts\templates\accounts\emails\role_activation.html:187
+msgid "La plateforme éducative de l'avenir."
+msgstr "The educational platform of the future."
+
+#: .\accounts\templates\accounts\emails\role_activation.html:189
+#: .\core\templates\base.html:61 .\core\templates\base.html:65
+msgid "Accueil"
+msgstr "Home"
+
+#: .\accounts\templates\accounts\emails\role_activation.html:190
+msgid "Support"
+msgstr "Support"
+
+#: .\accounts\templates\accounts\emails\role_activation.html:193
+msgid "Cet e-mail est généré automatiquement. Merci de ne pas y répondre."
+msgstr "This email was generated automatically. Please do not reply to it."
+
+#: .\accounts\templates\accounts\emails\temp_password_email.html:6
+msgid "Votre mot de passe temporaire"
+msgstr "Your temporary password"
+
+#: .\accounts\templates\accounts\emails\temp_password_email.html:102
+msgid "Bonjour,"
+msgstr "Hello,"
+
+#: .\accounts\templates\accounts\emails\temp_password_email.html:103
+msgid ""
+"Vous avez demandé la réinitialisation de votre mot de passe pour votre "
+"compte sur la plateforme <strong>EduTech</strong>."
+msgstr ""
+"You requested a password reset for your account on the "
+"<strong>EduTech</strong> platform."
+
+#: .\accounts\templates\accounts\emails\temp_password_email.html:104
+msgid "Voici votre mot de passe temporaire :"
+msgstr "Here is your temporary password:"
+
+#: .\accounts\templates\accounts\emails\temp_password_email.html:111
+msgid ""
+"Ce mot de passe temporaire est valide pour une durée limitée de 10 minutes."
+msgstr "This temporary password is valid for a limited time of 10 minutes."
+
+#: .\accounts\templates\accounts\emails\temp_password_email.html:114
+msgid ""
+"Veuillez l'utiliser pour vous connecter, puis changez-le immédiatement dans "
+"la section <strong>Sécurité</strong> de votre profil."
+msgstr ""
+"Please use it to log in, then change it immediately in the "
+"<strong>Security</strong> section of your profile."
+
+#: .\accounts\templates\accounts\emails\temp_password_email.html:118
+msgid "Se connecter à la plateforme"
+msgstr "Log in to the platform"
+
+#: .\accounts\templates\accounts\emails\temp_password_email.html:122
+msgid ""
+"Si vous n'êtes pas à l'origine de cette demande, vous pouvez ignorer cet "
+"e-mail en toute sécurité. Votre mot de passe actuel restera inchangé dès "
+"lors que vous ne vous connectez pas avec ce code."
+msgstr ""
+"If you did not request this, you can safely ignore this email. Your current "
+"password will remain unchanged as long as you don't log in with this code."
+
+#: .\accounts\templates\accounts\login.html:3
+#: .\accounts\templates\accounts\login.html:290 .\core\templates\base.html:264
+msgid "Connexion"
+msgstr "Login"
+
+#: .\accounts\templates\accounts\login.html:268
+msgid "La plateforme<br>éducative <em>nouvelle<br>génération.</em>"
+msgstr "The next-generation<br>educational <em>platform.</em>"
+
+#: .\accounts\templates\accounts\login.html:271
+msgid ""
+"Apprentissage structuré en IoT, assisté par une IA pédagogique locale et un "
+"système logistique intégré."
+msgstr ""
+"Structured IoT learning, assisted by local pedagogical AI and an integrated "
+"logistics system."
+
+#: .\accounts\templates\accounts\login.html:277
+#: .\accounts\templates\accounts\register.html:269
+msgid "Tuteur IA socratique basé sur vos cours"
+msgstr "Socratic AI tutor based on your courses"
+
+#: .\accounts\templates\accounts\login.html:278
+#: .\accounts\templates\accounts\register.html:270
+msgid "Cours structurés par niveau"
+msgstr "Structured courses by level"
+
+#: .\accounts\templates\accounts\login.html:279
+#: .\accounts\templates\accounts\register.html:271
+msgid "QCM et devoirs automatisés"
+msgstr "Automated quizzes and assignments"
+
+#: .\accounts\templates\accounts\login.html:280
+#: .\accounts\templates\accounts\register.html:272
+msgid "Analytics de progression en temps réel"
+msgstr "Real-time progression analytics"
+
+#: .\accounts\templates\accounts\login.html:281
+msgid "Gestion d'ateliers intégrée"
+msgstr "Integrated workshop management"
+
+#: .\accounts\templates\accounts\login.html:289
+msgid "Bienvenue"
+msgstr "Welcome"
+
+#: .\accounts\templates\accounts\login.html:291
+msgid "Connectez-vous à votre espace personnel."
+msgstr "Log in to your personal space."
+
+#: .\accounts\templates\accounts\login.html:305
+#: .\accounts\templates\accounts\register.html:288
+#: .\core\templates\core\home.html:431
+msgid "Se connecter"
+msgstr "Log In"
+
+#: .\accounts\templates\accounts\login.html:310
+msgid "Mot de passe oublié ?"
+msgstr "Forgot password?"
+
+#: .\accounts\templates\accounts\login.html:311
+msgid "Pas encore de compte ?"
+msgstr "Don't have an account yet?"
+
+#: .\accounts\templates\accounts\login.html:311
+msgid "Créer un compte"
+msgstr "Sign Up"
+
+#: .\accounts\templates\accounts\notifications.html:4
+#: .\accounts\templates\accounts\notifications.html:10
+msgid "Mes Notifications"
+msgstr "My Notifications"
+
+#: .\accounts\templates\accounts\notifications.html:11
+msgid "Consultez vos alertes et l'activité de votre compte."
+msgstr "Check your alerts and account activity."
+
+#: .\accounts\templates\accounts\notifications.html:18
+msgid "Tout marquer comme lu"
+msgstr "Mark all as read"
+
+#: .\accounts\templates\accounts\notifications.html:75
+msgid "Marquer comme lu"
+msgstr "Mark as read"
+
+#: .\accounts\templates\accounts\notifications.html:88
+msgid "Aucune notification"
+msgstr "No notifications"
+
+#: .\accounts\templates\accounts\notifications.html:89
+msgid "Vous êtes à jour ! Vos nouvelles alertes apparaîtront ici."
+msgstr "You're all caught up! Your new alerts will appear here."
+
+#: .\accounts\templates\accounts\onboarding.html:3
+msgid "Bienvenue — Configuration"
+msgstr "Welcome — Setup"
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:177
+#, python-format
+msgid "ÉTAPE %(step_num)s / %(total)s"
+msgstr "STEP %(step_num)s of %(total)s"
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:187
+#: .\accounts\templates\accounts\partials\onboarding_step.html:348
+msgid "Bienvenue sur EduTech&nbsp;!"
+msgstr "Welcome to EduTech&nbsp;!"
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:188
+msgid ""
+"Votre espace formateur est prêt. Voici ce que vous pouvez faire sur la "
+"plateforme."
+msgstr ""
+"Your instructor space is ready. Here is what you can do on the platform."
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:194
+msgid "Créer & gérer des cours"
+msgstr "Create & manage courses"
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:195
+msgid "Publiez des modules avec chapitres, documents et évaluations."
+msgstr "Publish modules with chapters, documents, and assessments."
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:201
+msgid "Gérer vos ateliers"
+msgstr "Manage your workshops"
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:202
+msgid "Planifiez et organisez vos séances de travail pratique."
+msgstr "Plan and organize your hands-on work sessions."
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:208
+msgid "Demander du matériel"
+msgstr "Request equipment"
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:209
+msgid "Soumettez des demandes d'équipement directement à l'administration."
+msgstr "Submit equipment requests directly to the administration."
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:218
+msgid "Commencer la configuration"
+msgstr "Start setup"
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:226
+msgid "Votre profil formateur"
+msgstr "Your instructor profile"
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:227
+msgid "Ces informations seront visibles par vos apprenants."
+msgstr "This information will be visible to your learners."
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:245
+#: .\accounts\templates\accounts\partials\onboarding_step.html:406
+#: .\accounts\templates\accounts\profile.html:19
+#: .\accounts\templates\accounts\profile_edit.html:236
+msgid "Photo de profil"
+msgstr "Profile photo"
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:245
+#: .\accounts\templates\accounts\partials\onboarding_step.html:406
+msgid "optionnel"
+msgstr "optional"
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:249
+#: .\accounts\templates\accounts\partials\onboarding_step.html:410
+msgid "Photo"
+msgstr "Photo"
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:255
+#: .\accounts\templates\accounts\partials\onboarding_step.html:416
+msgid "Choisir une photo"
+msgstr "Choose a photo"
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:256
+#: .\accounts\templates\accounts\partials\onboarding_step.html:417
+msgid "Max 5 Mo"
+msgstr "Max 5 MB"
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:264
+#: .\accounts\templates\accounts\partials\onboarding_step.html:425
+msgid "Enregistrer & continuer"
+msgstr "Save & continue"
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:272
+msgid "Créez votre premier cours"
+msgstr "Create your first course"
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:273
+msgid "Publiez vos connaissances en quelques étapes simples."
+msgstr "Publish your knowledge in a few simple steps."
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:277
+msgid "Structure d'un cours EduTech"
+msgstr "Structure of an EduTech course"
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:278
+msgid "Organisez votre contenu en chapitres et modules"
+msgstr "Organize your content into chapters and modules"
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:281
+#: .\accounts\templates\accounts\profile.html:133
+#: .\apprentissage\templates\apprentissage\formateur_notes.html:371
+#: .\core\templates\core\dashboard_formateur.html:478
+msgid "Chapitres"
+msgstr "Chapters"
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:282
+msgid "Vidéos"
+msgstr "Videos"
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:283
+msgid "Documents"
+msgstr "Documents"
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:284
+#: .\apprentissage\templates\apprentissage\mes_notes.html:10
+msgid "Évaluations"
+msgstr "Assessments"
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:293
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:729
+#: .\core\templates\core\dashboard_formateur.html:577
+#: .\core\templates\core\partials\formateur_structure.html:142
+msgid "Créer mon premier cours"
+msgstr "Create my first course"
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:299
+msgid "Passer pour l'instant"
+msgstr "Skip for now"
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:307
+msgid "Découvrez la logistique"
+msgstr "Discover logistics"
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:308
+msgid ""
+"Gérez vos ateliers et commandez le matériel nécessaire à vos formations."
+msgstr ""
+"Manage your workshops and order the equipment your training sessions need."
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:313
+#: .\core\templates\core\dashboard_formateur.html:488
+#: .\core\templates\core\home.html:470 .\core\templates\core\home.html:471
+#: .\logistics\templates\logistics\ateliers.html:212
+#: .\logistics\templates\logistics\demandes.html:225
+#: .\logistics\templates\logistics\inventaire.html:265
+#: .\logistics\templates\logistics\tickets.html:135
+msgid "Ateliers"
+msgstr "Workshops"
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:314
+msgid "Planifiez et gérez vos séances pratiques en salle"
+msgstr "Plan and manage your in-person hands-on sessions"
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:318
+#: .\core\templates\core\home.html:492
+msgid "Matériel"
+msgstr "Equipment"
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:319
+msgid "Soumettez des demandes d'équipement à l'admin"
+msgstr "Submit equipment requests to the admin"
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:323
+msgid "Notifications"
+msgstr "Notifications"
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:324
+msgid "Recevez des alertes sur l'état de vos demandes"
+msgstr "Receive alerts on the status of your requests"
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:328
+msgid "Suivi"
+msgstr "Tracking"
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:329
+msgid "Consultez l'historique complet de vos demandes"
+msgstr "View the full history of your requests"
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:338
+msgid "Accéder à mon tableau de bord"
+msgstr "Go to my dashboard"
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:349
+msgid ""
+"Votre espace d'apprentissage personnalisé vous attend. Découvrez tout ce que"
+" la plateforme vous offre."
+msgstr ""
+"Your personalized learning space awaits. Discover everything the platform "
+"has to offer."
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:355
+msgid "Accéder à vos cours"
+msgstr "Go to your courses"
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:356
+msgid "Consultez vos modules, chapitres et documents pédagogiques."
+msgstr "View your modules, chapters, and course materials."
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:362
+msgid "Tuteur IA personnalisé"
+msgstr "Personalized AI Tutor"
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:363
+msgid "Posez vos questions à votre assistant intelligent disponible 24h/24."
+msgstr "Ask your questions to your AI assistant, available around the clock."
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:369
+msgid "Calendrier & événements"
+msgstr "Calendar & events"
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:370
+msgid "Suivez vos cours, devoirs et examens à venir."
+msgstr "Track your upcoming courses, assignments, and exams."
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:379
+msgid "C'est parti !"
+msgstr "Let's go!"
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:387
+msgid "Complétez votre profil"
+msgstr "Complete your profile"
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:388
+msgid ""
+"Personnalisez votre espace pour une meilleure expérience d'apprentissage."
+msgstr "Personalize your space for a better learning experience."
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:433
+msgid "Explorez vos cours !"
+msgstr "Explore your courses!"
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:434
+msgid ""
+"Vos formateurs ont préparé des contenus riches pour vous accompagner tout au"
+" long de votre parcours."
+msgstr ""
+"Your instructors have prepared rich content to support you throughout your "
+"journey."
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:440
+msgid "Cours & chapitres"
+msgstr "Courses & chapters"
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:441
+msgid "Progressez à votre rythme avec des contenus interactifs"
+msgstr "Progress at your own pace with interactive content"
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:447
+msgid "Évaluations & devoirs"
+msgstr "Assessments & assignments"
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:448
+msgid "Testez vos connaissances et suivez votre progression"
+msgstr "Test your knowledge and track your progress"
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:454
+#: .\core\templates\core\home.html:456 .\core\templates\core\home.html:459
+#: .\tuteur_ia\templates\tuteur_ia\session.html:476
+msgid "Tuteur IA"
+msgstr "AI Tutor"
+
+#: .\accounts\templates\accounts\partials\onboarding_step.html:455
+msgid "Obtenez des explications personnalisées en temps réel"
+msgstr "Get personalized explanations in real time"
+
+#: .\accounts\templates\accounts\partials\profile_nav.html:2
+msgid "Navigation du profil"
+msgstr "Profile navigation"
+
+#: .\accounts\templates\accounts\partials\profile_nav.html:5
+msgid "Aperçu du profil"
+msgstr "Profile overview"
+
+#: .\accounts\templates\accounts\partials\profile_nav.html:9
+#: .\accounts\templates\accounts\profile.html:95
+#: .\core\templates\base.html:111
+msgid "Paramètres"
+msgstr "Settings"
+
+#: .\accounts\templates\accounts\partials\register_form.html:17
+msgid "Créer mon compte"
+msgstr "Create my account"
+
+#: .\accounts\templates\accounts\partials\users_table_body.html:47
+msgid "Aucun niveau"
+msgstr "No level"
+
+#: .\accounts\templates\accounts\partials\users_table_body.html:55
+#: .\core\templates\core\partials\equipement_row.html:59
+msgid "Éditer"
+msgstr "Edit"
+
+#: .\accounts\templates\accounts\partials\users_table_body.html:58
+msgid "Détails complets"
+msgstr "Full details"
+
+#: .\accounts\templates\accounts\partials\users_table_body.html:62
+msgid "Supprimer le profil"
+msgstr "Delete profile"
+
+#: .\accounts\templates\accounts\partials\users_table_body.html:73
+msgid "Aucun utilisateur trouvé"
+msgstr "No users found"
+
+#: .\accounts\templates\accounts\partials\users_table_body.html:74
+msgid "Modifiez vos filtres de recherche."
+msgstr "Adjust your search filters."
+
+#: .\accounts\templates\accounts\partials\users_table_body.html:86
+#: .\core\templates\core\partials\classes_section.html:365
+#: .\core\templates\core\partials\equipements_section.html:171
+#: .\core\templates\core\partials\niveaux_section.html:314
+#: .\core\templates\core\partials\pending_demandes_section.html:239
+#: .\core\templates\core\partials\pending_students_section.html:287
+#, python-format
+msgid "Page %(num)s sur %(total)s"
+msgstr "Page %(num)s of %(total)s"
+
+#: .\accounts\templates\accounts\password_reset_done.html:4
+msgid "E-mail envoyé"
+msgstr "Email sent"
+
+#: .\accounts\templates\accounts\password_reset_done.html:12
+msgid "Mot de passe temporaire envoyé"
+msgstr "Temporary password sent"
+
+#: .\accounts\templates\accounts\password_reset_done.html:14
+msgid ""
+"Nous vous avons envoyé un mot de passe temporaire par e-mail. Si le compte "
+"existe avec cette adresse, vous devriez recevoir le message sous peu."
+msgstr ""
+"We have sent you a temporary password by email. If an account exists with "
+"this address, you should receive the message shortly."
+
+#: .\accounts\templates\accounts\password_reset_done.html:17
+msgid ""
+"Ce mot de passe temporaire expire après 10 minutes. Connectez-vous avec, "
+"puis changez-le dans les paramètres de votre profil."
+msgstr ""
+"This temporary password expires after 10 minutes. Log in with it, then "
+"change it in your profile settings."
+
+#: .\accounts\templates\accounts\password_reset_done.html:19
+#: .\accounts\templates\accounts\password_reset_form.html:19
+msgid "Retour à la connexion"
+msgstr "Back to login"
+
+#: .\accounts\templates\accounts\password_reset_form.html:4
+#: .\accounts\templates\accounts\password_reset_form.html:9
+msgid "Réinitialisation du mot de passe"
+msgstr "Password reset"
+
+#: .\accounts\templates\accounts\password_reset_form.html:11
+msgid ""
+"Saisissez votre adresse e-mail. Nous vous enverrons un mot de passe "
+"temporaire valide pendant 10 minutes."
+msgstr ""
+"Enter your email address. We will send you a temporary password valid for 10"
+" minutes."
+
+#: .\accounts\templates\accounts\pending.html:4
+msgid "Compte en attente"
+msgstr "Account pending"
+
+#: .\accounts\templates\accounts\pending.html:8
+msgid "Inscription reçue"
+msgstr "Registration received"
+
+#: .\accounts\templates\accounts\pending.html:9
+msgid "Votre compte est en attente de validation"
+msgstr "Your account is pending validation"
+
+#: .\accounts\templates\accounts\pending.html:11
+msgid ""
+"Un administrateur scolaire doit maintenant attribuer votre classe et activer"
+" votre compte. Vous pourrez ensuite vous connecter normalement."
+msgstr ""
+"A school administrator must now assign your class and activate your account."
+" You will then be able to log in normally."
+
+#: .\accounts\templates\accounts\pending.html:16
+msgid "Étape actuelle"
+msgstr "Current step"
+
+#: .\accounts\templates\accounts\pending.html:17
+msgid "Compte créé, en attente d'approbation."
+msgstr "Account created, pending approval."
+
+#: .\accounts\templates\accounts\pending.html:20
+msgid "Étape suivante"
+msgstr "Next step"
+
+#: .\accounts\templates\accounts\pending.html:21
+msgid "L'administrateur vous affecte à une classe puis active votre accès."
+msgstr ""
+"The administrator will assign you to a class and then activate your access."
+
+#: .\accounts\templates\accounts\pending.html:26
+msgid "Aller à la connexion"
+msgstr "Go to login"
+
+#: .\accounts\templates\accounts\pending.html:27
+msgid "Retour à l'accueil"
+msgstr "Back to home"
+
+#: .\accounts\templates\accounts\profile.html:4
+msgid "Mon profil"
+msgstr "My profile"
+
+#: .\accounts\templates\accounts\profile.html:22
+#: .\apprentissage\templates\apprentissage\calendrier.html:507
+#: .\apprentissage\templates\apprentissage\devoir_detail.html:370
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:711
+#: .\apprentissage\templates\apprentissage\partials\chapitre_detail.html:48
+#: .\apprentissage\templates\apprentissage\partials\chapitres_list.html:28
+#: .\apprentissage\templates\apprentissage\partials\chapitres_list.html:83
+#: .\apprentissage\templates\apprentissage\partials\documents_list.html:33
+#: .\apprentissage\templates\apprentissage\partials\documents_list.html:71
+#: .\core\templates\core\partials\classes_section.html:342
+#: .\core\templates\core\partials\niveaux_section.html:295
+#: .\logistics\templates\logistics\partials\ateliers_list.html:47
+#: .\logistics\templates\logistics\partials\demandes_list.html:52
+#: .\logistics\templates\logistics\partials\equipements_list.html:35
+msgid "Modifier"
+msgstr "Edit"
+
+#: .\accounts\templates\accounts\profile.html:24
+msgid "Supprimer votre photo actuelle ?"
+msgstr "Delete your current photo?"
+
+#: .\accounts\templates\accounts\profile.html:25
+#: .\apprentissage\templates\apprentissage\calendrier.html:510
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:717
+#: .\apprentissage\templates\apprentissage\partials\chapitre_detail.html:53
+#: .\apprentissage\templates\apprentissage\partials\chapitres_list.html:35
+#: .\apprentissage\templates\apprentissage\partials\chapitres_list.html:88
+#: .\logistics\templates\logistics\partials\ateliers_list.html:53
+#: .\logistics\templates\logistics\partials\demandes_list.html:57
+#: .\logistics\templates\logistics\partials\equipements_list.html:43
+msgid "Supprimer"
+msgstr "Delete"
+
+#: .\accounts\templates\accounts\profile.html:38
+#: .\apprentissage\templates\apprentissage\partials\document_form.html:162
+#: .\core\templates\core\partials\equipement_form_modal.html:95
+msgid "Ajouter"
+msgstr "Add"
+
+#: .\accounts\templates\accounts\profile.html:58
+msgid "Statut du compte"
+msgstr "Account status"
+
+#: .\accounts\templates\accounts\profile.html:61
+#: .\core\templates\core\partials\equipement_row.html:42
+#: .\logistics\templates\logistics\inventaire.html:385
+#: .\logistics\templates\logistics\partials\equipements_list.html:24
+msgid "Actif"
+msgstr "Active"
+
+#: .\accounts\templates\accounts\profile.html:61
+#: .\core\templates\core\partials\formateur_structure.html:257
+#: .\core\templates\core\partials\kanban_assignation_section.html:24
+#: .\logistics\templates\logistics\demandes.html:263
+#: .\logistics\templates\logistics\demandes.html:299
+#: .\logistics\templates\logistics\partials\demandes_list.html:43
+#: .\logistics\templates\logistics\partials\tickets_list.html:19
+#: .\logistics\templates\logistics\tickets.html:166
+msgid "En attente"
+msgstr "Pending"
+
+#: .\accounts\templates\accounts\profile.html:66
+#: .\apprentissage\templates\apprentissage\liste_cours.html:530
+#: .\core\templates\core\partials\classes_section.html:313
+#: .\logistics\templates\logistics\partials\ateliers_list.html:72
+msgid "Niveau"
+msgstr "Level"
+
+#: .\accounts\templates\accounts\profile.html:77
+msgid "Inscrit le"
+msgstr "Registered on"
+
+#: .\accounts\templates\accounts\profile.html:86
+msgid "Accès & Actions"
+msgstr "Access & Actions"
+
+#: .\accounts\templates\accounts\profile.html:98
+msgid "Sécurité & Mot de passe"
+msgstr "Security & Password"
+
+#: .\accounts\templates\accounts\profile.html:112
+msgid "Commencés"
+msgstr "Started"
+
+#: .\accounts\templates\accounts\profile.html:119
+#: .\core\templates\core\dashboard_student.html:915
+#: .\logistics\templates\logistics\ateliers.html:250
+#: .\logistics\templates\logistics\inventaire.html:320
+#: .\logistics\templates\logistics\partials\ateliers_list.html:41
+#: .\tuteur_ia\templates\tuteur_ia\session.html:455
+msgid "En cours"
+msgstr "In progress"
+
+#: .\accounts\templates\accounts\profile.html:126
+msgid "Terminés"
+msgstr "Completed"
+
+#: .\accounts\templates\accounts\profile.html:141
+msgid "Cours en cours de lecture"
+msgstr "Courses in progress"
+
+#: .\accounts\templates\accounts\profile.html:142
+#, python-format
+msgid "%(counter)s en cours"
+msgid_plural "%(counter)s en cours"
+msgstr[0] "%(counter)s in progress"
+msgstr[1] "%(counter)s in progress"
+
+#: .\accounts\templates\accounts\profile.html:152
+#: .\accounts\templates\accounts\profile.html:260
+msgid "Général"
+msgstr "General"
+
+#: .\accounts\templates\accounts\profile.html:162
+#, python-format
+msgid "%(v)s / %(t)s chapitres"
+msgstr "%(v)s / %(t)s chapters"
+
+#: .\accounts\templates\accounts\profile.html:166
+#: .\accounts\templates\accounts\profile.html:273
+#, python-format
+msgid "Dernière visite : %(d)s"
+msgstr "Last visit: %(d)s"
+
+#: .\accounts\templates\accounts\profile.html:171
+msgid "Reprendre le cours"
+msgstr "Resume course"
+
+#: .\accounts\templates\accounts\profile.html:179
+msgid "Aucun cours commencé actuellement."
+msgstr "No courses currently started."
+
+#: .\accounts\templates\accounts\profile.html:181
+msgid "Parcourir le catalogue"
+msgstr "Browse catalog"
+
+#: .\accounts\templates\accounts\profile.html:193
+msgid "Récemment visités"
+msgstr "Recently visited"
+
+#: .\accounts\templates\accounts\profile.html:205
+#: .\accounts\templates\accounts\profile.html:233
+#, python-format
+msgid "Le %(d)s"
+msgstr "On %(d)s"
+
+#: .\accounts\templates\accounts\profile.html:212
+msgid "Aucune visite récente."
+msgstr "No recent visits."
+
+#: .\accounts\templates\accounts\profile.html:221
+msgid "Chapitres validés"
+msgstr "Chapters completed"
+
+#: .\accounts\templates\accounts\profile.html:232
+msgid "Succès"
+msgstr "Achievements"
+
+#: .\accounts\templates\accounts\profile.html:240
+msgid "Aucun chapitre validé récemment."
+msgstr "No chapters completed recently."
+
+#: .\accounts\templates\accounts\profile.html:250
+msgid "Parcours terminés"
+msgstr "Completed paths"
+
+#: .\accounts\templates\accounts\profile.html:251
+#, python-format
+msgid "%(counter)s certifié"
+msgid_plural "%(counter)s certifiés"
+msgstr[0] "%(counter)s certified"
+msgstr[1] "%(counter)s certified"
+
+#: .\accounts\templates\accounts\profile.html:270
+msgid "Félicitations ! Parcours achevé."
+msgstr "Congratulations! Path completed."
+
+#: .\accounts\templates\accounts\profile.html:281
+msgid "Terminez des cours pour voir vos badges de réussite ici !"
+msgstr "Complete courses to see your achievement badges here!"
+
+#: .\accounts\templates\accounts\profile_edit.html:4
+msgid "Modifier mon profil"
+msgstr "Edit my profile"
+
+#: .\accounts\templates\accounts\profile_edit.html:219
+msgid "Configuration"
+msgstr "Configuration"
+
+#: .\accounts\templates\accounts\profile_edit.html:220
+msgid "Modifier mes informations"
+msgstr "Edit my information"
+
+#: .\accounts\templates\accounts\profile_edit.html:222
+msgid ""
+"Mettez à jour vos identifiants ou importez une nouvelle photo de profil pour"
+" personnaliser votre espace."
+msgstr ""
+"Update your credentials or upload a new profile photo to personalize your "
+"space."
+
+#: .\accounts\templates\accounts\profile_edit.html:241
+#: .\apprentissage\templates\apprentissage\wizard\step2_image.html:17
+msgid "Aperçu"
+msgstr "Preview"
+
+#: .\accounts\templates\accounts\profile_edit.html:255
+msgid "Choisir une image"
+msgstr "Choose an image"
+
+#: .\accounts\templates\accounts\profile_edit.html:257
+msgid "Fichiers autorisés : JPG ou PNG. Format carré recommandé."
+msgstr "Allowed files: JPG or PNG. Square format recommended."
+
+#: .\accounts\templates\accounts\profile_edit.html:278
+msgid "Supprimer la photo de profil actuelle"
+msgstr "Delete current profile photo"
+
+#: .\accounts\templates\accounts\profile_edit.html:319
+msgid "Enregistrer les modifications"
+msgstr "Save changes"
+
+#: .\accounts\templates\accounts\profile_edit.html:358
+msgid "Aperçu de la nouvelle image"
+msgstr "Preview of the new image"
+
+#: .\accounts\templates\accounts\register.html:3
+#: .\accounts\templates\accounts\register.html:281
+#: .\core\templates\base.html:261
+msgid "Inscription"
+msgstr "Sign Up"
+
+#: .\accounts\templates\accounts\register.html:260
+msgid "Rejoignez la<br>plateforme <em>nouvelle<br>génération.</em>"
+msgstr "Join the next-generation<br>platform."
+
+#: .\accounts\templates\accounts\register.html:263
+msgid ""
+"Inscrivez-vous pour accéder à vos cours, interagir avec le tuteur IA et "
+"soumettre vos travaux."
+msgstr ""
+"Sign up to access your courses, interact with the AI tutor, and submit your "
+"work."
+
+#: .\accounts\templates\accounts\register.html:280
+msgid "Nouveau Compte"
+msgstr "New Account"
+
+#: .\accounts\templates\accounts\register.html:282
+msgid "Créez votre compte EduTech pour commencer."
+msgstr "Create your EduTech account to get started."
+
+#: .\accounts\templates\accounts\register.html:288
+msgid "Déjà un compte ?"
+msgstr "Already have an account?"
+
+#: .\accounts\templates\accounts\system_settings.html:4
+msgid "Paramètres Système - Administration"
+msgstr "System Settings - Administration"
+
+#: .\accounts\templates\accounts\system_settings.html:76
+msgid "Configuration Système"
+msgstr "System Configuration"
+
+#: .\accounts\templates\accounts\system_settings.html:77
+msgid "Gérez le fonctionnement global de la plateforme, de l'IA au réseau."
+msgstr "Manage the platform's overall operation, from AI to network."
+
+#: .\accounts\templates\accounts\system_settings.html:94
+msgid "Mode Hors-Ligne"
+msgstr "Offline Mode"
+
+#: .\accounts\templates\accounts\system_settings.html:97
+msgid "Activer le mode réseau local déconnecté"
+msgstr "Enable disconnected local network mode"
+
+#: .\accounts\templates\accounts\system_settings.html:100
+msgid ""
+"L'activation empêche les tentatives d'envoi d'e-mails (pour éviter les "
+"crashs) et force l'IA locale par défaut."
+msgstr ""
+"Enabling this prevents email sending attempts (to avoid crashes) and forces "
+"the local AI by default."
+
+#: .\accounts\templates\accounts\system_settings.html:106
+msgid "Fournisseur d'Intelligence Artificielle"
+msgstr "Artificial Intelligence Provider"
+
+#: .\accounts\templates\accounts\system_settings.html:108
+msgid ""
+"Si vous choisissez \"Automatique\", le système vérifiera la connexion "
+"Internet avant de décider."
+msgstr ""
+"If you choose \"Automatic\", the system will check the Internet connection "
+"before deciding."
+
+#: .\accounts\templates\accounts\system_settings.html:114
+msgid "Configuration Vidéo"
+msgstr "Video Configuration"
+
+#: .\accounts\templates\accounts\system_settings.html:117
+msgid "Activer le streaming HLS"
+msgstr "Enable HLS streaming"
+
+#: .\accounts\templates\accounts\system_settings.html:124
+msgid "Sauvegarder les paramètres"
+msgstr "Save settings"
+
+#: .\apprentissage\templates\apprentissage\analytics_admin.html:11
+msgid "Tableau de bord Analytics — Administrateur"
+msgstr "Analytics Dashboard — Administrator"
+
+#: .\apprentissage\templates\apprentissage\analytics_admin.html:12
+msgid "Statistiques et indicateurs généraux de l'activité sur la plateforme."
+msgstr "General statistics and activity indicators for the platform."
+
+#: .\apprentissage\templates\apprentissage\analytics_admin.html:23
+msgid "Utilisateurs inscrits"
+msgstr "Registered Users"
+
+#: .\apprentissage\templates\apprentissage\analytics_admin.html:31
+msgid "Cours publiés"
+msgstr "Published Courses"
+
+#: .\apprentissage\templates\apprentissage\analytics_admin.html:39
+msgid "QCMs complétés"
+msgstr "Quizzes Completed"
+
+#: .\apprentissage\templates\apprentissage\analytics_admin.html:47
+msgid "Taux d'activité"
+msgstr "Activity Rate"
+
+#: .\apprentissage\templates\apprentissage\analytics_admin.html:56
+msgid "Répartition des rôles"
+msgstr "Role Distribution"
+
+#: .\apprentissage\templates\apprentissage\analytics_admin.html:64
+msgid "Détails utilisateurs actifs"
+msgstr "Active User Details"
+
+#: .\apprentissage\templates\apprentissage\analytics_admin.html:67
+msgid "Élèves actifs :"
+msgstr "Active Students:"
+
+#: .\apprentissage\templates\apprentissage\analytics_admin.html:71
+msgid "Formateurs actifs :"
+msgstr "Active Instructors:"
+
+#: .\apprentissage\templates\apprentissage\analytics_admin.html:75
+msgid "Administrateurs actifs :"
+msgstr "Active Administrators:"
+
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:3
+msgid "Analytics Formateur"
+msgstr "Instructor Analytics"
+
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:245
+#: .\core\templates\core\dashboard_formateur.html:664
+msgid "Analytics"
+msgstr "Analytics"
+
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:246
+msgid "Tableau de bord"
+msgstr "Dashboard"
+
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:247
+msgid "Vue d'ensemble de la progression et des performances de vos élèves."
+msgstr "Overview of your students' progress and performance."
+
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:251
+#: .\apprentissage\templates\apprentissage\devoir_detail.html:262
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:3
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:597
+#: .\apprentissage\templates\apprentissage\gerer_chapitre.html:14
+#: .\core\templates\core\dashboard_formateur.html:427
+msgid "Espace Formateur"
+msgstr "Instructor Space"
+
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:254
+msgid "Notes détaillées"
+msgstr "Detailed Grades"
+
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:265
+#: .\core\templates\core\dashboard_formateur.html:471
+msgid "Cours créés"
+msgstr "Courses created"
+
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:272
+msgid "Élèves uniques"
+msgstr "Unique Students"
+
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:279
+msgid "Moyenne QCM Globale"
+msgstr "Overall Quiz Average"
+
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:286
+#: .\apprentissage\templates\apprentissage\formateur_notes.html:311
+msgid "En difficulté"
+msgstr "Struggling"
+
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:295
+#, python-format
+msgid "Complétion moyenne par cours (%%)"
+msgstr "Average Completion by Course (%%)"
+
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:303
+msgid "Répartition globale des progressions"
+msgstr "Overall Progress Distribution"
+
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:317
+msgid "Détails de vos cours"
+msgstr "Your Course Details"
+
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:322
+#: .\apprentissage\templates\apprentissage\devoir_detail.html:475
+#: .\apprentissage\templates\apprentissage\liste_cours.html:485
+#: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:807
+#: .\apprentissage\templates\apprentissage\partials\detail_cours.html:5
+#: .\core\templates\core\dashboard_formateur.html:468
+msgid "Cours"
+msgstr "Courses"
+
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:323
+msgid "Inscrits"
+msgstr "Enrolled"
+
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:324
+msgid "Complétion"
+msgstr "Completion"
+
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:325
+msgid "Moy. QCM"
+msgstr "Avg. Quiz"
+
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:350
+msgid "Aucun cours créé pour le moment."
+msgstr "No courses created yet."
+
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:361
+msgid "Élèves en difficulté"
+msgstr "Struggling Students"
+
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:371
+#, python-format
+msgid "%(p)s%% complet"
+msgstr "%(p)s%% complete"
+
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:380
+msgid "Excellent !"
+msgstr "Excellent!"
+
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:381
+msgid "Aucun élève sous le seuil d'alerte."
+msgstr "No students below the alert threshold."
+
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:411
+#, python-format
+msgid "Complétion (%%)"
+msgstr "Completion (%%)"
+
+#: .\apprentissage\templates\apprentissage\calendrier.html:4
+msgid "Calendrier scolaire"
+msgstr "School Calendar"
+
+#: .\apprentissage\templates\apprentissage\calendrier.html:425
+msgid "PLANNING"
+msgstr "PLANNING"
+
+#: .\apprentissage\templates\apprentissage\calendrier.html:426
+msgid "Calendrier Scolaire"
+msgstr "School Calendar"
+
+#: .\apprentissage\templates\apprentissage\calendrier.html:427
+msgid "Visualisez et gérez les devoirs, examens et sessions planifiés."
+msgstr "View and manage scheduled assignments, exams, and sessions."
+
+#: .\apprentissage\templates\apprentissage\calendrier.html:432
+msgid "Nouvel événement"
+msgstr "New Event"
+
+#: .\apprentissage\templates\apprentissage\calendrier.html:453
+#: .\apprentissage\templates\apprentissage\devoir_detail.html:264
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:642
+msgid "Devoirs"
+msgstr "Assignments"
+
+#: .\apprentissage\templates\apprentissage\calendrier.html:457
+msgid "Sessions"
+msgstr "Sessions"
+
+#: .\apprentissage\templates\apprentissage\calendrier.html:461
+msgid "Examens"
+msgstr "Exams"
+
+#: .\apprentissage\templates\apprentissage\calendrier.html:465
+msgid "Autres"
+msgstr "Other"
+
+#: .\apprentissage\templates\apprentissage\calendrier.html:471
+msgid "Légende"
+msgstr "Legend"
+
+#: .\apprentissage\templates\apprentissage\calendrier.html:472
+msgid "Devoir / Échéance"
+msgstr "Assignment / Deadline"
+
+#: .\apprentissage\templates\apprentissage\calendrier.html:473
+msgid "Session de cours"
+msgstr "Course Session"
+
+#: .\apprentissage\templates\apprentissage\calendrier.html:474
+msgid "Examen"
+msgstr "Exam"
+
+#: .\apprentissage\templates\apprentissage\calendrier.html:475
+msgid "Autre événement"
+msgstr "Other Event"
+
+#: .\apprentissage\templates\apprentissage\calendrier.html:488
+msgid "Cliquez sur un jour pour voir les événements."
+msgstr "Click on a day to see the events."
+
+#: .\apprentissage\templates\apprentissage\calendrier.html:508
+msgid "Supprimer cet événement ?"
+msgstr "Delete this event?"
+
+#: .\apprentissage\templates\apprentissage\calendrier.html:525
+msgid "Dimanche"
+msgstr "Sunday"
+
+#: .\apprentissage\templates\apprentissage\calendrier.html:525
+msgid "Lundi"
+msgstr "Monday"
+
+#: .\apprentissage\templates\apprentissage\calendrier.html:525
+msgid "Mardi"
+msgstr "Tuesday"
+
+#: .\apprentissage\templates\apprentissage\calendrier.html:525
+msgid "Mercredi"
+msgstr "Wednesday"
+
+#: .\apprentissage\templates\apprentissage\calendrier.html:525
+msgid "Jeudi"
+msgstr "Thursday"
+
+#: .\apprentissage\templates\apprentissage\calendrier.html:525
+msgid "Vendredi"
+msgstr "Friday"
+
+#: .\apprentissage\templates\apprentissage\calendrier.html:525
+msgid "Samedi"
+msgstr "Saturday"
+
+#: .\apprentissage\templates\apprentissage\calendrier.html:526
+msgid "Janvier"
+msgstr "January"
+
+#: .\apprentissage\templates\apprentissage\calendrier.html:526
+msgid "Février"
+msgstr "February"
+
+#: .\apprentissage\templates\apprentissage\calendrier.html:526
+msgid "Mars"
+msgstr "March"
+
+#: .\apprentissage\templates\apprentissage\calendrier.html:526
+msgid "Avril"
+msgstr "April"
+
+#: .\apprentissage\templates\apprentissage\calendrier.html:526
+msgid "Mai"
+msgstr "May"
+
+#: .\apprentissage\templates\apprentissage\calendrier.html:526
+msgid "Juin"
+msgstr "June"
+
+#: .\apprentissage\templates\apprentissage\calendrier.html:526
+msgid "Juillet"
+msgstr "July"
+
+#: .\apprentissage\templates\apprentissage\calendrier.html:526
+msgid "Août"
+msgstr "August"
+
+#: .\apprentissage\templates\apprentissage\calendrier.html:526
+msgid "Septembre"
+msgstr "September"
+
+#: .\apprentissage\templates\apprentissage\calendrier.html:526
+msgid "Octobre"
+msgstr "October"
+
+#: .\apprentissage\templates\apprentissage\calendrier.html:526
+msgid "Novembre"
+msgstr "November"
+
+#: .\apprentissage\templates\apprentissage\calendrier.html:526
+msgid "Décembre"
+msgstr "December"
+
+#: .\apprentissage\templates\apprentissage\calendrier.html:543
+msgid "Aujourd'hui"
+msgstr "Today"
+
+#: .\apprentissage\templates\apprentissage\calendrier.html:543
+msgid "Mois"
+msgstr "Month"
+
+#: .\apprentissage\templates\apprentissage\calendrier.html:543
+msgid "Liste"
+msgstr "List"
+
+#: .\apprentissage\templates\apprentissage\calendrier.html:629
+msgid "Aucun événement ce jour."
+msgstr "No events this day."
+
+#: .\apprentissage\templates\apprentissage\calendrier.html:638
+#: .\apprentissage\templates\apprentissage\calendrier.html:655
+msgid "Événement"
+msgstr "Event"
+
+#: .\apprentissage\templates\apprentissage\cours_form.html:4
+#: .\apprentissage\templates\apprentissage\partials\liste_cours.html:45
+msgid "Modifier le cours"
+msgstr "Edit course"
+
+#: .\apprentissage\templates\apprentissage\cours_form.html:4
+#: .\core\templates\core\dashboard_formateur.html:527
+#: .\core\templates\core\dashboard_formateur.html:636
+msgid "Nouveau cours"
+msgstr "New course"
+
+#: .\apprentissage\templates\apprentissage\cours_form.html:273
+#: .\apprentissage\templates\apprentissage\devoirs_liste.html:11
+#: .\core\templates\base.html:71 .\core\templates\core\home.html:502
+msgid "Apprentissage"
+msgstr "Learning"
+
+#: .\apprentissage\templates\apprentissage\cours_form.html:275
+msgid "Modifier le <span>cours</span>"
+msgstr "Edit <span>course</span>"
+
+#: .\apprentissage\templates\apprentissage\cours_form.html:276
+msgid "Mettez à jour les détails de votre cours ci-dessous."
+msgstr "Update your course details below."
+
+#: .\apprentissage\templates\apprentissage\cours_form.html:278
+msgid "Nouveau <span>cours</span>"
+msgstr "New <span>course</span>"
+
+#: .\apprentissage\templates\apprentissage\cours_form.html:279
+msgid "Créez un nouveau cours interactif pour votre espace formateur."
+msgstr "Create a new interactive course for your instructor space."
+
+#: .\apprentissage\templates\apprentissage\cours_form.html:284
+#: .\apprentissage\templates\apprentissage\formateur_notes.html:264
+#: .\apprentissage\templates\apprentissage\gerer_cours.html:21
+msgid "Retour"
+msgstr "Back"
+
+#: .\apprentissage\templates\apprentissage\cours_form.html:323
+#: .\apprentissage\templates\apprentissage\wizard\step2_image.html:5
+msgid "Image de couverture"
+msgstr "Cover image"
+
+#: .\apprentissage\templates\apprentissage\cours_form.html:328
+msgid "Changer l'image de couverture"
+msgstr "Change cover image"
+
+#: .\apprentissage\templates\apprentissage\cours_form.html:328
+msgid "Choisir une image de couverture"
+msgstr "Choose a cover image"
+
+#: .\apprentissage\templates\apprentissage\cours_form.html:329
+msgid "Formats acceptés : PNG, JPG, WEBP (max 5 Mo)"
+msgstr "Accepted formats: PNG, JPG, WEBP (max 5 MB)"
+
+#: .\apprentissage\templates\apprentissage\cours_form.html:332
+msgid "Aucun fichier"
+msgstr "No file"
+
+#: .\apprentissage\templates\apprentissage\cours_form.html:354
+#: .\apprentissage\templates\apprentissage\partials\chapitre_form.html:100
+#: .\apprentissage\templates\apprentissage\partials\document_form.html:162
+#: .\core\templates\core\partials\classe_form.html:259
+#: .\core\templates\core\partials\niveau_form.html:234
+#: .\logistics\templates\logistics\partials\equipement_form.html:52
+#: .\logistics\templates\logistics\partials\ticket_form_modal.html:52
+msgid "Enregistrer"
+msgstr "Save"
+
+#: .\apprentissage\templates\apprentissage\cours_inactif.html:11
+msgid "Ce cours n'est pas encore actif"
+msgstr "This course is not yet active"
+
+#: .\apprentissage\templates\apprentissage\cours_inactif.html:14
+msgid ""
+"Le formateur travaille actuellement sur ce contenu. Il sera disponible ici "
+"dès qu'il aura été publié. Revenez plus tard !"
+msgstr ""
+"The instructor is currently working on this content. It will be available "
+"here once published. Check back later!"
+
+#: .\apprentissage\templates\apprentissage\cours_inactif.html:18
+msgid "Retour au catalogue"
+msgstr "Back to catalog"
+
+#: .\apprentissage\templates\apprentissage\devoir_detail.html:273
+msgid "Devoir"
+msgstr "Assignment"
+
+#: .\apprentissage\templates\apprentissage\devoir_detail.html:286
+#, python-format
+msgid "Note max : %(n)s pts"
+msgstr "Max grade: %(n)s pts"
+
+#: .\apprentissage\templates\apprentissage\devoir_detail.html:291
+#, python-format
+msgid "Limite : %(d)s"
+msgstr "Deadline: %(d)s"
+
+#: .\apprentissage\templates\apprentissage\devoir_detail.html:305
+msgid "Consigne"
+msgstr "Instructions"
+
+#: .\apprentissage\templates\apprentissage\devoir_detail.html:313
+msgid "Télécharger la consigne"
+msgstr "Download instructions"
+
+#: .\apprentissage\templates\apprentissage\devoir_detail.html:325
+msgid "Soumissions reçues"
+msgstr "Submissions received"
+
+#: .\apprentissage\templates\apprentissage\devoir_detail.html:335
+msgid "Élève"
+msgstr "Student"
+
+#: .\apprentissage\templates\apprentissage\devoir_detail.html:336
+msgid "Date"
+msgstr "Date"
+
+#: .\apprentissage\templates\apprentissage\devoir_detail.html:337
+msgid "Note"
+msgstr "Grade"
+
+#: .\apprentissage\templates\apprentissage\devoir_detail.html:360
+msgid "À noter"
+msgstr "To grade"
+
+#: .\apprentissage\templates\apprentissage\devoir_detail.html:365
+msgid "Voir le fichier"
+msgstr "View file"
+
+#: .\apprentissage\templates\apprentissage\devoir_detail.html:372
+msgid "Noter"
+msgstr "Grade"
+
+#: .\apprentissage\templates\apprentissage\devoir_detail.html:385
+msgid "Aucune soumission reçue"
+msgstr "No submissions received"
+
+#: .\apprentissage\templates\apprentissage\devoir_detail.html:386
+msgid "Les travaux de vos élèves apparaîtront ici."
+msgstr "Your students' work will appear here."
+
+#: .\apprentissage\templates\apprentissage\devoir_detail.html:397
+msgid "Modifier ma soumission"
+msgstr "Edit my submission"
+
+#: .\apprentissage\templates\apprentissage\devoir_detail.html:397
+msgid "Déposer mon travail"
+msgstr "Submit my work"
+
+#: .\apprentissage\templates\apprentissage\devoir_detail.html:407
+#, python-format
+msgid "%(note)s / %(max)s pts"
+msgstr "%(note)s / %(max)s pts"
+
+#: .\apprentissage\templates\apprentissage\devoir_detail.html:425
+msgid "PDF, DOC, image · max 10 Mo"
+msgstr "PDF, DOC, image · max 10 MB"
+
+#: .\apprentissage\templates\apprentissage\devoir_detail.html:438
+msgid "Devoir déjà corrigé"
+msgstr "Assignment already graded"
+
+#: .\apprentissage\templates\apprentissage\devoir_detail.html:440
+msgid "Remplacer ma soumission"
+msgstr "Replace my submission"
+
+#: .\apprentissage\templates\apprentissage\devoir_detail.html:442
+msgid "Envoyer mon travail"
+msgstr "Submit my work"
+
+#: .\apprentissage\templates\apprentissage\devoir_detail.html:447
+msgid "Ce devoir a été corrigé. Vous ne pouvez plus le modifier."
+msgstr "This assignment has been graded. You can no longer edit it."
+
+#: .\apprentissage\templates\apprentissage\devoir_detail.html:460
+msgid "Informations"
+msgstr "Information"
+
+#: .\apprentissage\templates\apprentissage\devoir_detail.html:463
+msgid "Note maximale"
+msgstr "Maximum grade"
+
+#: .\apprentissage\templates\apprentissage\devoir_detail.html:467
+msgid "Date limite"
+msgstr "Deadline"
+
+#: .\apprentissage\templates\apprentissage\devoir_detail.html:468
+msgid "Pas de limite"
+msgstr "No deadline"
+
+#: .\apprentissage\templates\apprentissage\devoir_detail.html:471
+#: .\apprentissage\templates\apprentissage\mes_notes.html:75
+#: .\apprentissage\templates\apprentissage\partials\chapitre_detail.html:4
+msgid "Chapitre"
+msgstr "Chapter"
+
+#: .\apprentissage\templates\apprentissage\devoir_detail.html:480
+msgid "Soumissions"
+msgstr "Submissions"
+
+#: .\apprentissage\templates\apprentissage\devoir_detail.html:495
+msgid "En attente de correction"
+msgstr "Awaiting grading"
+
+#: .\apprentissage\templates\apprentissage\devoir_detail.html:498
+#, python-format
+msgid "Envoyé le %(d)s"
+msgstr "Sent on %(d)s"
+
+#: .\apprentissage\templates\apprentissage\devoir_detail.html:502
+msgid "Mon fichier soumis"
+msgstr "My submitted file"
+
+#: .\apprentissage\templates\apprentissage\devoir_detail.html:510
+msgid "Retour aux devoirs"
+msgstr "Back to assignments"
+
+#: .\apprentissage\templates\apprentissage\devoir_form.html:4
+#: .\apprentissage\templates\apprentissage\devoir_form.html:14
+#, python-format
+msgid "%(action)s un devoir"
+msgstr "%(action)s an assignment"
+
+#: .\apprentissage\templates\apprentissage\devoir_form.html:38
+msgid "facultatif · PDF, DOC, image · max 10 Mo"
+msgstr "optional · PDF, DOC, image · max 10 MB"
+
+#: .\apprentissage\templates\apprentissage\devoir_form.html:45
+msgid "facultatif"
+msgstr "optional"
+
+#: .\apprentissage\templates\apprentissage\devoir_form.html:58
+msgid "Devoir visible par les élèves"
+msgstr "Assignment visible to students"
+
+#: .\apprentissage\templates\apprentissage\devoirs_liste.html:4
+msgid "Mes Devoirs"
+msgstr "My Assignments"
+
+#: .\apprentissage\templates\apprentissage\devoirs_liste.html:12
+#: .\core\templates\core\dashboard_student.html:785
+msgid "Mes devoirs"
+msgstr "My assignments"
+
+#: .\apprentissage\templates\apprentissage\devoirs_liste.html:13
+msgid "Consultez et déposez vos travaux, organisés par cours."
+msgstr "View and submit your work, organized by course."
+
+#: .\apprentissage\templates\apprentissage\devoirs_liste.html:20
+#: .\apprentissage\templates\apprentissage\devoirs_liste.html:62
+#: .\apprentissage\templates\apprentissage\devoirs_liste.html:171
+msgid "À rendre"
+msgstr "Due"
+
+#: .\apprentissage\templates\apprentissage\devoirs_liste.html:24
+#: .\apprentissage\templates\apprentissage\devoirs_liste.html:75
+msgid "Soumis"
+msgstr "Submitted"
+
+#: .\apprentissage\templates\apprentissage\devoirs_liste.html:28
+#: .\apprentissage\templates\apprentissage\devoirs_liste.html:88
+msgid "Corrigés"
+msgstr "Graded"
+
+#: .\apprentissage\templates\apprentissage\devoirs_liste.html:32
+#: .\apprentissage\templates\apprentissage\devoirs_liste.html:101
+#: .\apprentissage\templates\apprentissage\devoirs_liste.html:169
+msgid "Délai dépassé"
+msgstr "Overdue"
+
+#: .\apprentissage\templates\apprentissage\devoirs_liste.html:49
+#: .\apprentissage\templates\apprentissage\liste_cours.html:533
+#: .\logistics\templates\logistics\inventaire.html:360
+msgid "Tous"
+msgstr "All"
+
+#: .\apprentissage\templates\apprentissage\devoirs_liste.html:130
+#, python-format
+msgid "%(counter)s devoir"
+msgid_plural "%(counter)s devoirs"
+msgstr[0] "%(counter)s assignment"
+msgstr[1] "%(counter)s assignments"
+
+#: .\apprentissage\templates\apprentissage\devoirs_liste.html:136
+#: .\apprentissage\templates\apprentissage\gerer_cours.html:27
+msgid "Voir le cours"
+msgstr "View course"
+
+#: .\apprentissage\templates\apprentissage\devoirs_liste.html:167
+msgid "Soumis — en attente de correction"
+msgstr "Submitted — awaiting grading"
+
+#: .\apprentissage\templates\apprentissage\devoirs_liste.html:213
+#: .\apprentissage\templates\apprentissage\devoirs_liste.html:215
+#: .\apprentissage\templates\apprentissage\devoirs_liste.html:217
+#: .\apprentissage\templates\apprentissage\partials\chapitres_list.html:22
+msgid "Voir"
+msgstr "View"
+
+#: .\apprentissage\templates\apprentissage\devoirs_liste.html:219
+msgid "Déposer"
+msgstr "Submit"
+
+#: .\apprentissage\templates\apprentissage\devoirs_liste.html:245
+msgid "Aucun devoir pour le moment"
+msgstr "No assignments yet"
+
+#: .\apprentissage\templates\apprentissage\devoirs_liste.html:246
+msgid ""
+"Vos formateurs n'ont pas encore publié de devoirs pour vos cours actuels."
+msgstr ""
+"Your instructors haven't published any assignments for your current courses "
+"yet."
+
+#: .\apprentissage\templates\apprentissage\devoirs_liste.html:248
+msgid "Aucun devoir dans cette catégorie"
+msgstr "No assignments in this category"
+
+#: .\apprentissage\templates\apprentissage\devoirs_liste.html:250
+msgid "Vous n'avez aucun devoir avec ce statut pour le moment."
+msgstr "You don't have any assignments with this status at the moment."
+
+#: .\apprentissage\templates\apprentissage\devoirs_liste.html:252
+msgid "Voir tous mes devoirs assignés"
+msgstr "View all my assigned assignments"
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:600
+#, python-format
+msgid "Bienvenue, <span>%(nom)s</span>"
+msgstr "Welcome, <span>%(nom)s</span>"
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:602
+msgid ""
+"Gérez vos cours, suivez vos devoirs et pilotez l'apprentissage de vos "
+"étudiants."
+msgstr ""
+"Manage your courses, track assignments, and drive your students' learning."
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:607
+#: .\core\templates\core\dashboard_formateur.html:437
+msgid "cours"
+msgid_plural "cours"
+msgstr[0] "course"
+msgstr[1] "courses"
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:611
+msgid "devoir"
+msgid_plural "devoirs"
+msgstr[0] "assignment"
+msgstr[1] "assignments"
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:616
+msgid "Mes étudiants"
+msgstr "My students"
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:624
+msgid "Créer un cours"
+msgstr "Create a course"
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:627
+#: .\apprentissage\templates\apprentissage\formateur_notes.html:3
+msgid "Notes des étudiants"
+msgstr "Students' Grades"
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:637
+#: .\core\templates\core\dashboard_formateur.html:514
+msgid "Mes Cours"
+msgstr "My Courses"
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:646
+msgid "Historique des Exports"
+msgstr "Export History"
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:656
+#: .\core\templates\core\dashboard_formateur.html:517
+msgid "Importer (ZIP)"
+msgstr "Import (ZIP)"
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:661
+#: .\core\templates\core\dashboard_formateur.html:521
+#: .\logistics\templates\logistics\ateliers.html:222
+#: .\logistics\templates\logistics\demandes.html:235
+#: .\logistics\templates\logistics\inventaire.html:274
+msgid "Exporter"
+msgstr "Export"
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:661
+msgid "sélectionné"
+msgstr "selected"
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:681
+#: .\core\templates\core\dashboard_formateur.html:545
+#: .\core\templates\core\partials\formateur_structure.html:119
+msgid "Publié"
+msgstr "Published"
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:681
+#: .\apprentissage\templates\apprentissage\partials\liste_cours.html:15
+#: .\core\templates\core\dashboard_formateur.html:547
+#: .\core\templates\core\partials\formateur_structure.html:121
+msgid "Brouillon"
+msgstr "Draft"
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:692
+#: .\apprentissage\templates\apprentissage\partials\liste_cours.html:30
+#: .\core\templates\core\dashboard_formateur.html:556
+#: .\core\templates\core\dashboard_student.html:918
+#, python-format
+msgid "%(counter)s chapitre"
+msgid_plural "%(counter)s chapitres"
+msgstr[0] "%(counter)s chapter"
+msgstr[1] "%(counter)s chapters"
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:709
+#: .\core\templates\core\partials\formateur_structure.html:128
+msgid "Gérer le contenu"
+msgstr "Manage content"
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:715
+#, python-format
+msgid ""
+"⚠️ Supprimer définitivement le cours « %(titre)s » ?\\n\\nCette action est "
+"irréversible."
+msgstr ""
+"⚠️ Permanently delete the course \"%(titre)s\"?\\n\\nThis action cannot be "
+"undone."
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:726
+msgid "Aucun cours pour le moment"
+msgstr "No courses yet"
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:727
+msgid ""
+"Commencez par créer votre premier cours et partagez votre savoir avec vos "
+"étudiants."
+msgstr ""
+"Start by creating your first course and share your knowledge with your "
+"students."
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:769
+msgid "Reçues"
+msgstr "Received"
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:774
+#, python-format
+msgid "%(counter)s à noter"
+msgid_plural "%(counter)s à noter"
+msgstr[0] "%(counter)s to grade"
+msgstr[1] "%(counter)s to grade"
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:776
+msgid "À jour"
+msgstr "Up to date"
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:781
+msgid "Voir les copies"
+msgstr "View submissions"
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:791
+msgid "Aucun devoir créé"
+msgstr "No assignment created"
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:792
+msgid ""
+"Pour assigner des devoirs, rendez-vous dans la gestion de l'un de vos cours "
+"puis ouvrez un chapitre."
+msgstr ""
+"To assign work, go to the management page of one of your courses and open a "
+"chapter."
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:808
+#, python-format
+msgid "Export: %(titre)s"
+msgstr "Export: %(titre)s"
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:812
+#, python-format
+msgid "Lancé le %(d)s"
+msgstr "Started on %(d)s"
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:815
+#: .\apprentissage\templates\apprentissage\mes_notes.html:77
+#: .\core\templates\core\classe_students_page.html:30
+#: .\core\templates\core\partials\equipements_section.html:142
+msgid "Statut"
+msgstr "Status"
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:829
+msgid "Télécharger le ZIP"
+msgstr "Download the ZIP"
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:833
+msgid "En cours..."
+msgstr "In progress..."
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:843
+msgid "Aucun export en cours"
+msgstr "No export in progress"
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:844
+msgid ""
+"Sélectionnez des cours dans l'onglet \"Mes Cours\" et cliquez sur "
+"\"Exporter\" pour générer des fichiers ZIP."
+msgstr ""
+"Select courses in the \"My Courses\" tab and click \"Export\" to generate "
+"ZIP files."
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:856
+msgid "Importer un Cours"
+msgstr "Import a Course"
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:865
+msgid "Analyse locale"
+msgstr "Local analysis"
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:870
+msgid "Transfert"
+msgstr "Transfer"
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:875
+msgid "Création Base de données"
+msgstr "Database creation"
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:882
+msgid "Lecture de l'archive ZIP en cours..."
+msgstr "Reading ZIP archive..."
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:892
+msgid "Envoi vers le serveur..."
+msgstr "Uploading to server..."
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:904
+msgid "Confirmer l'Importation"
+msgstr "Confirm Import"
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:915
+msgid "Exporter des Cours"
+msgstr "Export Courses"
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:924
+msgid "Préparation"
+msgstr "Preparation"
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:929
+msgid "Génération ZIP"
+msgstr "ZIP Generation"
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:934
+#: .\logistics\templates\logistics\partials\ateliers_list.html:43
+msgid "Terminé"
+msgstr "Done"
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:945
+msgid "Compression de vos cours en arrière-plan..."
+msgstr "Compressing your courses in the background..."
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:952
+msgid "Lancer l'Exportation"
+msgstr "Start Export"
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1021
+msgid ""
+"Veuillez sélectionner au moins un cours à exporter en cochant la case sur "
+"son image."
+msgstr ""
+"Please select at least one course to export by checking the box on its "
+"image."
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1032
+msgid "Vous avez sélectionné"
+msgstr "You have selected"
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1032
+msgid "cours à exporter :"
+msgstr "course(s) to export:"
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1054
+msgid "Masquer (Continuer en arrière-plan)"
+msgstr "Hide (Continue in background)"
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1060
+msgid "L'exportation continue en arrière-plan."
+msgstr "The export continues in the background."
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1087
+#: .\core\templates\core\dashboard_formateur.html:775
+msgid "Erreur lors du lancement de l'export."
+msgstr "Error while starting the export."
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1122
+msgid "Génération des archives ZIP en cours..."
+msgstr "Generating ZIP archives..."
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1127
+msgid "Exportation terminée avec succès !"
+msgstr "Export completed successfully!"
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1132
+msgid "Les archives ZIP sont prêtes ! Téléchargement en cours..."
+msgstr "The ZIP archives are ready! Downloading..."
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1172
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1175
+msgid "Octets"
+msgstr "Bytes"
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1231
+msgid "Erreur : JSZip n'est pas chargé."
+msgstr "Error: JSZip is not loaded."
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1238
+msgid "Erreur : Archive invalide (course_metadata.json introuvable)."
+msgstr "Error: Invalid archive (course_metadata.json not found)."
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1296
+msgid "Erreur : Impossible de lire les métadonnées."
+msgstr "Error: Unable to read metadata."
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1302
+msgid "Erreur : Impossible d'ouvrir l'archive ZIP."
+msgstr "Error: Unable to open the ZIP archive."
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1322
+msgid ""
+"L'importation continue en arrière-plan. Vous pouvez suivre l'historique."
+msgstr ""
+"The import continues in the background. You can follow its progress in the "
+"history."
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1347
+msgid "Traitement de la base de données..."
+msgstr "Processing database..."
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1361
+#: .\apprentissage\templates\apprentissage\partials\document_form.html:137
+msgid "Sauvegarde et Indexation en cours..."
+msgstr "Saving and indexing in progress..."
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1368
+msgid "Erreur fatale. Le serveur ne répond pas correctement."
+msgstr "Fatal error. The server is not responding correctly."
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1372
+msgid "Erreur HTTP"
+msgstr "HTTP Error"
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1378
+msgid "Erreur réseau. Connexion interrompue."
+msgstr "Network error. Connection interrupted."
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1398
+msgid "Extraction des fichiers..."
+msgstr "Extracting files..."
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1401
+msgid "Sauvegarde en base de données..."
+msgstr "Saving to database..."
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1404
+msgid "Indexation pour l'IA en cours (cela peut prendre du temps)..."
+msgstr "AI indexing in progress (this may take a while)..."
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1409
+msgid "Cours importé et indexé avec succès !"
+msgstr "Course imported and indexed successfully!"
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1414
+msgid "Importation terminée ! Redirection..."
+msgstr "Import complete! Redirecting..."
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1423
+msgid "Erreur lors de l'importation"
+msgstr "Error during import"
+
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1423
+msgid "Erreur inconnue"
+msgstr "Unknown error"
+
+#: .\apprentissage\templates\apprentissage\evenement_form.html:213
+msgid "Retour au calendrier"
+msgstr "Back to calendar"
+
+#: .\apprentissage\templates\apprentissage\evenement_form.html:216
+msgid "Planifiez vos événements, cours et sessions d'apprentissage."
+msgstr "Schedule your events, courses, and learning sessions."
+
+#: .\apprentissage\templates\apprentissage\evenement_form.html:231
+msgid "Informations générales"
+msgstr "General information"
+
+#: .\apprentissage\templates\apprentissage\evenement_form.html:272
+msgid "Planification"
+msgstr "Scheduling"
+
+#: .\apprentissage\templates\apprentissage\evenement_form.html:296
+msgid "Association pédagogique"
+msgstr "Course association"
+
+#: .\apprentissage\templates\apprentissage\evenement_form.html:331
+msgid "Enregistrer l'événement"
+msgstr "Save event"
+
+#: .\apprentissage\templates\apprentissage\formateur_notes.html:255
+msgid "Suivi pédagogique"
+msgstr "Learning tracking"
+
+#: .\apprentissage\templates\apprentissage\formateur_notes.html:256
+msgid "Notes de mes"
+msgstr "Grades of my"
+
+#: .\apprentissage\templates\apprentissage\formateur_notes.html:256
+msgid "étudiants"
+msgstr "students"
+
+#: .\apprentissage\templates\apprentissage\formateur_notes.html:257
+msgid ""
+"Scores QCM agrégés, progression par cours et détection des élèves en "
+"difficulté."
+msgstr ""
+"Aggregated quiz scores, course progress, and detection of struggling "
+"students."
+
+#: .\apprentissage\templates\apprentissage\formateur_notes.html:261
+#: .\apprentissage\templates\apprentissage\mes_notes.html:27
+msgid "Exporter CSV"
+msgstr "Export CSV"
+
+#: .\apprentissage\templates\apprentissage\formateur_notes.html:273
+msgid "Toutes les classes"
+msgstr "All classes"
+
+#: .\apprentissage\templates\apprentissage\formateur_notes.html:292
+msgid "Sans classe"
+msgstr "No class"
+
+#: .\apprentissage\templates\apprentissage\formateur_notes.html:294
+#, python-format
+msgid "%(counter)s élève"
+msgid_plural "%(counter)s élèves"
+msgstr[0] "%(counter)s student"
+msgstr[1] "%(counter)s students"
+
+#: .\apprentissage\templates\apprentissage\formateur_notes.html:321
+msgid "Moy. Générale"
+msgstr "Overall Avg."
+
+#: .\apprentissage\templates\apprentissage\formateur_notes.html:327
+msgid "Pas de note"
+msgstr "No grade"
+
+#: .\apprentissage\templates\apprentissage\formateur_notes.html:347
+#, python-format
+msgid "Moy. classe : %(moy)s/100"
+msgstr "Class avg.: %(moy)s/100"
+
+#: .\apprentissage\templates\apprentissage\formateur_notes.html:354
+#: .\apprentissage\templates\apprentissage\mes_notes.html:59
+#: .\tuteur_ia\templates\tuteur_ia\session.html:447
+msgid "Progression"
+msgstr "Progress"
+
+#: .\apprentissage\templates\apprentissage\formateur_notes.html:359
+msgid "Note cours"
+msgstr "Course grade"
+
+#: .\apprentissage\templates\apprentissage\formateur_notes.html:378
+#, python-format
+msgid "Chap. %(n)s"
+msgstr "Ch. %(n)s"
+
+#: .\apprentissage\templates\apprentissage\formateur_notes.html:393
+msgid "Réduire"
+msgstr "Collapse"
+
+#: .\apprentissage\templates\apprentissage\formateur_notes.html:405
+msgid "Aucun étudiant trouvé"
+msgstr "No students found"
+
+#: .\apprentissage\templates\apprentissage\formateur_notes.html:406
+msgid ""
+"Aucun élève ne correspond aux critères sélectionnés ou aucun élève n'a "
+"débuté vos cours."
+msgstr ""
+"No students match the selected criteria, or no students have started your "
+"courses."
+
+#: .\apprentissage\templates\apprentissage\gerer_chapitre.html:3
+msgid "Gérer le chapitre"
+msgstr "Manage chapter"
+
+#: .\apprentissage\templates\apprentissage\gerer_cours.html:3
+msgid "Gérer le cours"
+msgstr "Manage course"
+
+#: .\apprentissage\templates\apprentissage\gerer_cours.html:23
+msgid "Constructeur de cours : Organisez vos chapitres et documents."
+msgstr "Course builder: Organize your chapters and documents."
+
+#: .\apprentissage\templates\apprentissage\gerer_cours.html:33
+msgid "Nouveau Chapitre"
+msgstr "New Chapter"
+
+#: .\apprentissage\templates\apprentissage\gerer_cours.html:41
+msgid "Rechercher un chapitre, PDF ou devoir..."
+msgstr "Search for a chapter, PDF, or assignment..."
+
+#: .\apprentissage\templates\apprentissage\gerer_cours.html:45
+msgid "Tout déplier"
+msgstr "Expand all"
+
+#: .\apprentissage\templates\apprentissage\gerer_cours.html:46
+msgid "Tout replier"
+msgstr "Collapse all"
+
+#: .\apprentissage\templates\apprentissage\liste_cours.html:3
+msgid "Catalogue des cours"
+msgstr "Course Catalog"
+
+#: .\apprentissage\templates\apprentissage\liste_cours.html:476
+msgid "Votre"
+msgstr "Your"
+
+#: .\apprentissage\templates\apprentissage\liste_cours.html:476
+msgid "Catalogue de Cours"
+msgstr "Course Catalog"
+
+#: .\apprentissage\templates\apprentissage\liste_cours.html:479
+msgid ""
+"Explorez nos formations en Intelligence Artificielle, IoT et Robotique. "
+"Apprenez à votre rythme, guidé par nos experts."
+msgstr ""
+"Explore our courses in Artificial Intelligence, IoT, and Robotics. Learn at "
+"your own pace, guided by our experts."
+
+#: .\apprentissage\templates\apprentissage\liste_cours.html:490
+#: .\core\templates\core\partials\admin_structure.html:104
+msgid "Niveaux"
+msgstr "Levels"
+
+#: .\apprentissage\templates\apprentissage\liste_cours.html:496
+msgid "Accès complet"
+msgstr "Full access"
+
+#: .\apprentissage\templates\apprentissage\liste_cours.html:509
+#: .\apprentissage\templates\apprentissage\mes_notes.html:37
+msgid "Rechercher un cours..."
+msgstr "Search for a course..."
+
+#: .\apprentissage\templates\apprentissage\liste_cours.html:515
+msgid "Tous niveaux"
+msgstr "All levels"
+
+#: .\apprentissage\templates\apprentissage\liste_cours.html:548
+#, python-format
+msgid "<strong>%(counter)s</strong> cours correspond à votre recherche."
+msgid_plural ""
+"<strong>%(counter)s</strong> cours correspondent à votre recherche."
+msgstr[0] "<strong>%(counter)s</strong> course matches your search."
+msgstr[1] "<strong>%(counter)s</strong> courses match your search."
+
+#: .\apprentissage\templates\apprentissage\liste_cours.html:550
+#, python-format
+msgid "<strong>%(counter)s</strong> cours disponible."
+msgid_plural "<strong>%(counter)s</strong> cours disponibles."
+msgstr[0] "<strong>%(counter)s</strong> course available."
+msgstr[1] "<strong>%(counter)s</strong> courses available."
+
+#: .\apprentissage\templates\apprentissage\mes_notes.html:4
+msgid "Mon Carnet de Notes"
+msgstr "My Gradebook"
+
+#: .\apprentissage\templates\apprentissage\mes_notes.html:11
+msgid "Mon carnet de notes"
+msgstr "My gradebook"
+
+#: .\apprentissage\templates\apprentissage\mes_notes.html:12
+msgid "Vue d'ensemble de vos scores QCM par chapitre."
+msgstr "Overview of your quiz scores by chapter."
+
+#: .\apprentissage\templates\apprentissage\mes_notes.html:23
+#, python-format
+msgid "Moyenne générale : %(m)s/100"
+msgstr "Overall average: %(m)s/100"
+
+#: .\apprentissage\templates\apprentissage\mes_notes.html:40
+msgid "Tous les statuts (Chapitres)"
+msgstr "All statuses (Chapters)"
+
+#: .\apprentissage\templates\apprentissage\mes_notes.html:41
+#: .\apprentissage\templates\apprentissage\mes_notes.html:96
+msgid "Réussi"
+msgstr "Passed"
+
+#: .\apprentissage\templates\apprentissage\mes_notes.html:42
+#: .\apprentissage\templates\apprentissage\mes_notes.html:98
+msgid "Échoué"
+msgstr "Failed"
+
+#: .\apprentissage\templates\apprentissage\mes_notes.html:43
+#: .\apprentissage\templates\apprentissage\mes_notes.html:100
+msgid "Non tenté"
+msgstr "Not attempted"
+
+#: .\apprentissage\templates\apprentissage\mes_notes.html:45
+msgid "Filtrer"
+msgstr "Filter"
+
+#: .\apprentissage\templates\apprentissage\mes_notes.html:63
+#, python-format
+msgid "Moyenne : %(m)s/100"
+msgstr "Average: %(m)s/100"
+
+#: .\apprentissage\templates\apprentissage\mes_notes.html:76
+msgid "Meilleur score"
+msgstr "Best score"
+
+#: .\apprentissage\templates\apprentissage\mes_notes.html:113
+msgid "Aucune évaluation pour le moment"
+msgstr "No assessment yet"
+
+#: .\apprentissage\templates\apprentissage\mes_notes.html:114
+msgid ""
+"Commencez un cours et passez des QCM pour voir vos notes apparaître ici."
+msgstr "Start a course and take quizzes to see your grades appear here."
+
+#: .\apprentissage\templates\apprentissage\mes_notes.html:115
+msgid "Voir les cours"
+msgstr "View courses"
+
+#: .\apprentissage\templates\apprentissage\partials\chapitre_detail.html:17
+#: .\apprentissage\templates\apprentissage\partials\chapitres_list.html:53
+msgid "Ajouter un PDF"
+msgstr "Add a PDF"
+
+#: .\apprentissage\templates\apprentissage\partials\chapitre_detail.html:20
+#: .\apprentissage\templates\apprentissage\partials\chapitres_list.html:56
+msgid "Créer un devoir"
+msgstr "Create an assignment"
+
+#: .\apprentissage\templates\apprentissage\partials\chapitre_detail.html:33
+#, python-format
+msgid "Devoir (%(counter)s)"
+msgid_plural "Devoirs (%(counter)s)"
+msgstr[0] "Assignment (%(counter)s)"
+msgstr[1] "Assignments (%(counter)s)"
+
+#: .\apprentissage\templates\apprentissage\partials\chapitre_detail.html:45
+#: .\apprentissage\templates\apprentissage\partials\chapitres_list.html:80
+msgid "Voir les soumissions"
+msgstr "View submissions"
+
+#: .\apprentissage\templates\apprentissage\partials\chapitre_detail.html:51
+#: .\apprentissage\templates\apprentissage\partials\chapitres_list.html:86
+msgid "Supprimer ce devoir ?"
+msgstr "Delete this assignment?"
+
+#: .\apprentissage\templates\apprentissage\partials\chapitre_form.html:17
+msgid "Modifier le chapitre"
+msgstr "Edit chapter"
+
+#: .\apprentissage\templates\apprentissage\partials\chapitre_form.html:17
+msgid "Ajouter un chapitre"
+msgstr "Add a chapter"
+
+#: .\apprentissage\templates\apprentissage\partials\chapitre_form.html:20
+msgid "Organisez le contenu de votre cours."
+msgstr "Organize your course content."
+
+#: .\apprentissage\templates\apprentissage\partials\chapitre_form.html:82
+msgid "Envoi du fichier..."
+msgstr "Uploading file..."
+
+#: .\apprentissage\templates\apprentissage\partials\chapitre_form.html:100
+msgid "Créer"
+msgstr "Create"
+
+#: .\apprentissage\templates\apprentissage\partials\chapitre_form.html:120
+msgid "Envoi..."
+msgstr "Uploading..."
+
+#: .\apprentissage\templates\apprentissage\partials\chapitre_form.html:128
+msgid "Traitement côté serveur"
+msgstr "Server-side processing"
+
+#: .\apprentissage\templates\apprentissage\partials\chapitres_list.html:8
+#, python-format
+msgid "Chapitre %(n)s : %(t)s"
+msgstr "Chapter %(n)s: %(t)s"
+
+#: .\apprentissage\templates\apprentissage\partials\chapitres_list.html:11
+#, python-format
+msgid "%(counter)s PDF"
+msgid_plural "%(counter)s PDF"
+msgstr[0] "%(counter)s PDF"
+msgstr[1] "%(counter)s PDFs"
+
+#: .\apprentissage\templates\apprentissage\partials\chapitres_list.html:14
+#, python-format
+msgid "%(counter)s Devoir"
+msgid_plural "%(counter)s Devoirs"
+msgstr[0] "%(counter)s Assignment"
+msgstr[1] "%(counter)s Assignments"
+
+#: .\apprentissage\templates\apprentissage\partials\chapitres_list.html:33
+msgid "Confirmer la suppression de ce chapitre et de TOUS ses documents ?"
+msgstr "Confirm deletion of this chapter and ALL its documents?"
+
+#: .\apprentissage\templates\apprentissage\partials\chapitres_list.html:47
+#: .\apprentissage\templates\apprentissage\wizard\step4_pdfs.html:5
+msgid "Documents du chapitre"
+msgstr "Chapter documents"
+
+#: .\apprentissage\templates\apprentissage\partials\chapitres_list.html:69
+msgid "Devoirs du chapitre"
+msgstr "Chapter assignments"
+
+#: .\apprentissage\templates\apprentissage\partials\chapitres_list.html:106
+msgid "Ce cours est vide. Commencez par ajouter un chapitre."
+msgstr "This course is empty. Start by adding a chapter."
+
+#: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:822
+msgid "Chapitre précédent"
+msgstr "Previous chapter"
+
+#: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:836
+#: .\tuteur_ia\templates\tuteur_ia\qcm.html:325
+msgid "Chapitre suivant"
+msgstr "Next chapter"
+
+#: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:846
+#: .\apprentissage\templates\apprentissage\partials\detail_cours.html:27
+#, python-format
+msgid "Chapitre %(n)s"
+msgstr "Chapter %(n)s"
+
+#: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:852
+msgid "Vidéo Pédagogique"
+msgstr "Educational Video"
+
+#: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:871
+msgid "Mode hors-ligne — Streaming Rapide HLS (Optimisé)"
+msgstr "Offline mode — Fast HLS Streaming (Optimized)"
+
+#: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:876
+#: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:887
+msgid "Votre navigateur ne supporte pas la lecture de vidéos."
+msgstr "Your browser does not support video playback."
+
+#: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:879
+msgid "Mode hors-ligne — Vidéo locale"
+msgstr "Offline mode — Local video"
+
+#: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:880
+msgid "Optimisation HLS en arrière-plan..."
+msgstr "HLS optimization in progress..."
+
+#: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:903
+msgid "Source"
+msgstr "Source"
+
+#: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:908
+msgid ""
+"Vidéo indisponible hors-ligne — connectez-vous à internet, ou demandez à "
+"votre formateur d'ajouter une version locale."
+msgstr ""
+"Video unavailable offline — connect to the internet, or ask your instructor "
+"to add a local version."
+
+#: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:913
+msgid "Aucune vidéo disponible pour ce chapitre."
+msgstr "No video available for this chapter."
+
+#: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:927
+msgid "Documents pédagogiques"
+msgstr "Learning materials"
+
+#: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:936
+msgid "Document"
+msgstr "Document"
+
+#: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:942
+#: .\apprentissage\templates\apprentissage\partials\documents_list.html:18
+#: .\apprentissage\templates\apprentissage\partials\documents_list.html:56
+msgid "Visualiser"
+msgstr "View"
+
+#: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:946
+#: .\apprentissage\templates\apprentissage\partials\documents_list.html:21
+#: .\apprentissage\templates\apprentissage\partials\documents_list.html:59
+msgid "Télécharger"
+msgstr "Download"
+
+#: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:961
+msgid "Le fichier PDF n'est pas disponible pour ce document."
+msgstr "The PDF file is not available for this document."
+
+#: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:974
+msgid "Évaluer mes connaissances"
+msgstr "Test my knowledge"
+
+#: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:975
+msgid ""
+"Testez votre compréhension de ce chapitre avec les outils IA interactifs."
+msgstr "Test your understanding of this chapter with interactive AI tools."
+
+#: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:979
+msgid "Passer le QCM"
+msgstr "Take the quiz"
+
+#: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:982
+#, python-format
+msgid ""
+"Un questionnaire interactif auto-corrigé généré en temps réel par l'IA à "
+"partir du contenu des PDF du chapitre. Requis pour valider le chapitre "
+"(score minimal : 80%%)."
+msgstr ""
+"An interactive, self-graded quiz generated in real time by AI from the "
+"chapter's PDF content. Required to validate the chapter (minimum score: "
+"80%%)."
+
+#: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:987
+msgid "mode socratique"
+msgstr "Socratic mode"
+
+#: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:990
+#, python-format
+msgid ""
+"Une discussion interactive où l'IA vous pose des questions et vous guide "
+"étape par étape. Atteindre 100%% de maîtrise valide également le chapitre !"
+msgstr ""
+"An interactive discussion where the AI asks you questions and guides you "
+"step by step. Reaching 100%% mastery also validates the chapter!"
+
+#: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:997
+msgid "Validation du chapitre"
+msgstr "Chapter validation"
+
+#: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:998
+msgid ""
+"Validez ce chapitre pour mettre à jour votre progression dans le cours."
+msgstr "Validate this chapter to update your progress in the course."
+
+#: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:1004
+msgid "Chapitre terminé"
+msgstr "Chapter completed"
+
+#: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:1009
+msgid "Passer au chapitre suivant"
+msgstr "Go to next chapter"
+
+#: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:1020
+msgid "Marquer comme terminé"
+msgstr "Mark as completed"
+
+#: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:1036
+msgid "Tuteur Assistant"
+msgstr "Tutor Assistant"
+
+#: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:1039
+msgid "Réduire le chat"
+msgstr "Minimize chat"
+
+#: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:1044
+msgid "Options de session (Placeholder)"
+msgstr "Session options (Placeholder)"
+
+#: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:1059
+#: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:1321
+msgid "Sources utilisées"
+msgstr "Sources used"
+
+#: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:1070
+#, python-format
+msgid ""
+"Bonjour ! Je suis connecté au contexte du chapitre "
+"<strong>%(titre)s</strong>. Que souhaitez-vous approfondir ?"
+msgstr ""
+"Hello! I am connected to the context of the chapter "
+"<strong>%(titre)s</strong>. What would you like to explore?"
+
+#: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:1083
+msgid "L'assistant réfléchit..."
+msgstr "The assistant is thinking..."
+
+#: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:1091
+msgid "Résumer le chapitre"
+msgstr "Summarize the chapter"
+
+#: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:1094
+msgid "Générer un QCM"
+msgstr "Generate a quiz"
+
+#: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:1097
+msgid "Expliquer un point"
+msgstr "Explain a point"
+
+#: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:1103
+msgid "Posez une question..."
+msgstr "Ask a question..."
+
+#: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:1104
+msgid "Envoyer la question"
+msgstr "Send the question"
+
+#: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:1113
+msgid "Ouvrir le Tuteur Assistant"
+msgstr "Open the Tutor Assistant"
+
+#: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:1276
+msgid "Erreur : session d'assistant indisponible."
+msgstr "Error: assistant session unavailable."
+
+#: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:1292
+msgid "Erreur de communication avec le serveur."
+msgstr "Error communicating with the server."
+
+#: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:1339
+msgid "Une erreur réseau est survenue."
+msgstr "A network error occurred."
+
+#: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:1382
+msgid "Résume-moi ce chapitre de façon claire"
+msgstr "Summarize this chapter for me clearly"
+
+#: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:1388
+msgid "Explique-moi le concept de : "
+msgstr "Explain to me the concept of: "
+
+#: .\apprentissage\templates\apprentissage\partials\detail_cours.html:12
+msgid "Progression totale"
+msgstr "Overall progress"
+
+#: .\apprentissage\templates\apprentissage\partials\detail_cours.html:20
+msgid "Tous les cours"
+msgstr "All courses"
+
+#: .\apprentissage\templates\apprentissage\partials\detail_cours.html:37
+msgid "Consulter ce chapitre"
+msgstr "View this chapter"
+
+#: .\apprentissage\templates\apprentissage\partials\detail_cours.html:52
+msgid "Aucun document."
+msgstr "No documents."
+
+#: .\apprentissage\templates\apprentissage\partials\detail_cours.html:66
+msgid "Aperçu du cours"
+msgstr "Course preview"
+
+#: .\apprentissage\templates\apprentissage\partials\detail_cours.html:69
+msgid "Aucun chapitre disponible dans ce cours."
+msgstr "No chapters available in this course."
+
+#: .\apprentissage\templates\apprentissage\partials\document_form.html:47
+msgid "Modifier le document"
+msgstr "Edit document"
+
+#: .\apprentissage\templates\apprentissage\partials\document_form.html:47
+msgid "Ajouter un document"
+msgstr "Add a document"
+
+#: .\apprentissage\templates\apprentissage\partials\document_form.html:50
+msgid "Associez un PDF, support ou devoir à ce chapitre."
+msgstr "Attach a PDF, resource, or assignment to this chapter."
+
+#: .\apprentissage\templates\apprentissage\partials\document_form.html:119
+msgid "1. Envoi PDF"
+msgstr "1. PDF Upload"
+
+#: .\apprentissage\templates\apprentissage\partials\document_form.html:126
+msgid "2. Indexation IA"
+msgstr "2. AI Indexing"
+
+#: .\apprentissage\templates\apprentissage\partials\document_form.html:131
+msgid "3. RAG Prêt"
+msgstr "3. RAG Ready"
+
+#: .\apprentissage\templates\apprentissage\partials\document_form.html:147
+msgid ""
+"Extraction du texte PDF & génération des embeddings vectoriels en cours. "
+"Veuillez patienter..."
+msgstr "Extracting PDF text & generating vector embeddings. Please wait..."
+
+#: .\apprentissage\templates\apprentissage\partials\document_form.html:165
+msgid "Indexation..."
+msgstr "Indexing..."
+
+#: .\apprentissage\templates\apprentissage\partials\documents_list.html:41
+#: .\apprentissage\templates\apprentissage\partials\documents_list.html:77
+msgid "Aucun document pour ce chapitre."
+msgstr "No documents for this chapter."
+
+#: .\apprentissage\templates\apprentissage\partials\liste_cours.html:23
+msgid "Par vous"
+msgstr "By you"
+
+#: .\apprentissage\templates\apprentissage\partials\liste_cours.html:38
+msgid "Aucun résumé disponible."
+msgstr "No summary available."
+
+#: .\apprentissage\templates\apprentissage\partials\liste_cours.html:42
+msgid "Commencer"
+msgstr "Start"
+
+#: .\apprentissage\templates\apprentissage\partials\liste_cours.html:62
+msgid "Aucun cours trouvé"
+msgstr "No courses found"
+
+#: .\apprentissage\templates\apprentissage\partials\liste_cours.html:63
+msgid ""
+"Essayez de modifier votre recherche ou de sélectionner un niveau différent."
+msgstr "Try adjusting your search or selecting a different level."
+
+#: .\apprentissage\templates\apprentissage\soumission_eval.html:4
+msgid "Évaluer la soumission"
+msgstr "Grade the submission"
+
+#: .\apprentissage\templates\apprentissage\soumission_eval.html:14
+#, python-format
+msgid "Évaluer la soumission de %(nom)s"
+msgstr "Grade %(nom)s's submission"
+
+#: .\apprentissage\templates\apprentissage\soumission_eval.html:20
+msgid "Fichier soumis"
+msgstr "Submitted file"
+
+#: .\apprentissage\templates\apprentissage\soumission_eval.html:23
+msgid "Ouvrir le fichier"
+msgstr "Open file"
+
+#: .\apprentissage\templates\apprentissage\soumission_eval.html:32
+#, python-format
+msgid "Soumis le %(d)s"
+msgstr "Submitted on %(d)s"
+
+#: .\apprentissage\templates\apprentissage\soumission_eval.html:39
+#, python-format
+msgid "Attribution de la note (sur %(max)s)"
+msgstr "Grade assignment (out of %(max)s)"
+
+#: .\apprentissage\templates\apprentissage\soumission_eval.html:56
+msgid "Valider la note"
+msgstr "Confirm grade"
+
+#: .\apprentissage\templates\apprentissage\wizard\step2_image.html:6
+msgid "Rendez votre cours attractif avec une belle image (optionnel)."
+msgstr "Make your course attractive with a nice image (optional)."
+
+#: .\apprentissage\templates\apprentissage\wizard\step2_image.html:14
+msgid "Image (JPG, PNG)"
+msgstr "Image (JPG, PNG)"
+
+#: .\apprentissage\templates\apprentissage\wizard\step2_image.html:48
+msgid "Passer cette étape"
+msgstr "Skip this step"
+
+#: .\apprentissage\templates\apprentissage\wizard\step2_image.html:51
+msgid "Étape suivante : Chapitre"
+msgstr "Next step: Chapter"
+
+#: .\apprentissage\templates\apprentissage\wizard\step2_image.html:57
+msgid "Enregistrement..."
+msgstr "Saving..."
+
+#: .\apprentissage\templates\apprentissage\wizard\step3_chapitre.html:5
+msgid "Premier Chapitre"
+msgstr "First Chapter"
+
+#: .\apprentissage\templates\apprentissage\wizard\step3_chapitre.html:6
+#, python-format
+msgid ""
+"Définissez le premier module de votre cours <strong>%(titre)s</strong>."
+msgstr "Define the first module of your course <strong>%(titre)s</strong>."
+
+#: .\apprentissage\templates\apprentissage\wizard\step3_chapitre.html:14
+msgid "Titre du chapitre *"
+msgstr "Chapter title *"
+
+#: .\apprentissage\templates\apprentissage\wizard\step3_chapitre.html:15
+msgid "Ex: Chapitre 1 : Les bases"
+msgstr "E.g.: Chapter 1: The basics"
+
+#: .\apprentissage\templates\apprentissage\wizard\step3_chapitre.html:19
+msgid "Résumé / Objectifs"
+msgstr "Summary / Objectives"
+
+#: .\apprentissage\templates\apprentissage\wizard\step3_chapitre.html:20
+msgid "Qu'allez-vous aborder dans ce chapitre ?"
+msgstr "What will you cover in this chapter?"
+
+#: .\apprentissage\templates\apprentissage\wizard\step3_chapitre.html:24
+msgid "Étape suivante : Documents"
+msgstr "Next step: Documents"
+
+#: .\apprentissage\templates\apprentissage\wizard\step3_chapitre.html:29
+msgid "Création du chapitre..."
+msgstr "Creating chapter..."
+
+#: .\apprentissage\templates\apprentissage\wizard\step4_pdfs.html:6
+msgid ""
+"Ajoutez vos PDF. Notre IA (Tuteur RAG) va les indexer automatiquement en "
+"arrière-plan."
+msgstr ""
+"Add your PDFs. Our AI (RAG Tutor) will index them automatically in the "
+"background."
+
+#: .\apprentissage\templates\apprentissage\wizard\step4_pdfs.html:14
+msgid "Fichiers PDF (Plusieurs possibles)"
+msgstr "PDF files (multiple allowed)"
+
+#: .\apprentissage\templates\apprentissage\wizard\step4_pdfs.html:20
+msgid "Vous pouvez sélectionner plusieurs fichiers PDF en même temps."
+msgstr "You can select multiple PDF files at once."
+
+#: .\apprentissage\templates\apprentissage\wizard\step4_pdfs.html:44
+msgid "Terminer sans PDF"
+msgstr "Finish without PDF"
+
+#: .\apprentissage\templates\apprentissage\wizard\step4_pdfs.html:47
+msgid "Envoyer & Terminer"
+msgstr "Send & Finish"
+
+#: .\apprentissage\templates\apprentissage\wizard\step4_pdfs.html:53
+msgid "Upload et indexation en cours... Veuillez patienter."
+msgstr "Uploading and indexing in progress... Please wait."
+
+#: .\apprentissage\templates\apprentissage\wizard\success.html:11
+#, python-format
+msgid "Votre cours <strong>%(titre)s</strong> a été créé avec succès."
+msgstr "Your course <strong>%(titre)s</strong> was created successfully."
+
+#: .\apprentissage\templates\apprentissage\wizard\success.html:14
+#, python-format
+msgid "%(counter)s document en cours d'indexation IA"
+msgid_plural "%(counter)s documents en cours d'indexation IA"
+msgstr[0] "%(counter)s document being AI-indexed"
+msgstr[1] "%(counter)s documents being AI-indexed"
+
+#: .\apprentissage\templates\apprentissage\wizard\success.html:20
+msgid "Gérer mon cours"
+msgstr "Manage my course"
+
+#: .\apprentissage\templates\apprentissage\wizard\success.html:24
+msgid "Retour au tableau de bord"
+msgstr "Back to dashboard"
+
+#: .\apprentissage\templates\apprentissage\wizard\wizard_layout.html:4
+msgid "Création de Cours - Super Wizard"
+msgstr "Course Creation - Super Wizard"
+
+#: .\apprentissage\templates\apprentissage\wizard\wizard_layout.html:159
+msgid "Créer un nouveau cours"
+msgstr "Create a new course"
+
+#: .\apprentissage\templates\apprentissage\wizard\wizard_layout.html:160
+msgid "Suivez les étapes pour configurer votre cours de A à Z."
+msgstr "Follow the steps to set up your course from start to finish."
+
+#: .\apprentissage\templates\apprentissage\wizard\wizard_layout.html:175
+msgid "Titre du cours *"
+msgstr "Course title *"
+
+#: .\apprentissage\templates\apprentissage\wizard\wizard_layout.html:176
+msgid "Ex: Introduction à Python"
+msgstr "E.g.: Introduction to Python"
+
+#: .\apprentissage\templates\apprentissage\wizard\wizard_layout.html:180
+msgid "Niveau cible *"
+msgstr "Target level *"
+
+#: .\apprentissage\templates\apprentissage\wizard\wizard_layout.html:182
+msgid "Sélectionnez un niveau"
+msgstr "Select a level"
+
+#: .\apprentissage\templates\apprentissage\wizard\wizard_layout.html:190
+msgid "Résumé court"
+msgstr "Short summary"
+
+#: .\apprentissage\templates\apprentissage\wizard\wizard_layout.html:191
+msgid "Résumé affiché dans les listes"
+msgstr "Summary shown in listings"
+
+#: .\apprentissage\templates\apprentissage\wizard\wizard_layout.html:195
+msgid "Description globale"
+msgstr "Overall description"
+
+#: .\apprentissage\templates\apprentissage\wizard\wizard_layout.html:196
+msgid "De quoi parle ce cours ?"
+msgstr "What is this course about?"
+
+#: .\apprentissage\templates\apprentissage\wizard\wizard_layout.html:199
+msgid "Étape suivante : Couverture"
+msgstr "Next step: Cover"
+
+#: .\apprentissage\templates\apprentissage\wizard\wizard_layout.html:202
+msgid "Création du cours..."
+msgstr "Creating course..."
+
+#: .\core\settings.py:146
+msgid "Français"
+msgstr "French"
+
+#: .\core\settings.py:147
+msgid "English"
+msgstr "English"
+
+#: .\core\templates\base.html:81 .\core\templates\base.html:101
+#: .\core\templates\core\dashboard_formateur.html:498
+msgid "Logistique"
+msgstr "Logistics"
+
+#: .\core\templates\base.html:88
+#: .\core\templates\core\dashboard_student.html:794
+msgid "Calendrier"
+msgstr "Calendar"
+
+#: .\core\templates\base.html:244
+msgid "Paramètres du profil"
+msgstr "Profile Settings"
+
+#: .\core\templates\base.html:254
+msgid "Déconnexion"
+msgstr "Logout"
+
+#: .\core\templates\core\classe_students_page.html:4
+#, python-format
+msgid "Élèves - %(nom)s"
+msgstr "Students - %(nom)s"
+
+#: .\core\templates\core\classe_students_page.html:10
+msgid "Gestion de Classe"
+msgstr "Class Management"
+
+#: .\core\templates\core\classe_students_page.html:11
+#, python-format
+msgid "Élèves : %(nom)s"
+msgstr "Students: %(nom)s"
+
+#: .\core\templates\core\classe_students_page.html:12
+#, python-format
+msgid "Niveau : %(niveau)s | Année : %(annee)s"
+msgstr "Level: %(niveau)s | Year: %(annee)s"
+
+#: .\core\templates\core\classe_students_page.html:16
+msgid "Exporter (Excel)"
+msgstr "Export (Excel)"
+
+#: .\core\templates\core\classe_students_page.html:18
+msgid "Retour aux classes"
+msgstr "Back to classes"
+
+#: .\core\templates\core\classe_students_page.html:24
+#, python-format
+msgid "Liste des élèves (%(n)s)"
+msgstr "Student list (%(n)s)"
+
+#: .\core\templates\core\classe_students_page.html:50
+msgid "Réinitialiser le mot de passe (Hors-ligne)"
+msgstr "Reset password (Offline)"
+
+#: .\core\templates\core\classe_students_page.html:53
+msgid "Retirer cet élève de la classe ?"
+msgstr "Remove this student from the class?"
+
+#: .\core\templates\core\classe_students_page.html:53
+msgid "Retirer"
+msgstr "Remove"
+
+#: .\core\templates\core\classe_students_page.html:57
+msgid "Supprimer DEFINITIVEMENT cet utilisateur ?"
+msgstr "PERMANENTLY delete this user?"
+
+#: .\core\templates\core\classe_students_page.html:66
+msgid "Aucun élève dans cette classe."
+msgstr "No students in this class."
+
+#: .\core\templates\core\classe_students_page.html:72
+msgid "Créer un nouvel élève"
+msgstr "Create a new student"
+
+#: .\core\templates\core\classe_students_page.html:93
+msgid "Créer et Ajouter"
+msgstr "Create and Add"
+
+#: .\core\templates\core\classe_students_page.html:98
+msgid "Assigner un élève existant"
+msgstr "Assign an existing student"
+
+#: .\core\templates\core\classe_students_page.html:102
+msgid "Élèves sans classe / En attente"
+msgstr "Students without a class / Pending"
+
+#: .\core\templates\core\classe_students_page.html:104
+msgid "Sélectionner un élève..."
+msgstr "Select a student..."
+
+#: .\core\templates\core\classe_students_page.html:116
+msgid "Assigner"
+msgstr "Assign"
+
+#: .\core\templates\core\classe_students_page.html:125
+msgid ""
+"Voulez-vous vraiment générer un nouveau mot de passe aléatoire pour cet "
+"utilisateur ?"
+msgstr ""
+"Are you sure you want to generate a new random password for this user?"
+
+#: .\core\templates\core\classe_students_page.html:142
+msgid ""
+"IMPORTANT: Veuillez communiquer ce mot de passe à l'utilisateur. Il devra "
+"obligatoirement le changer lors de sa première connexion (Valable 10 "
+"heures)."
+msgstr ""
+"IMPORTANT: Please share this password with the user. They will be required "
+"to change it on their first login (Valid for 10 hours)."
+
+#: .\core\templates\core\classe_students_page.html:149
+msgid "Erreur lors de la requête."
+msgstr "Error during the request."
+
+#: .\core\templates\core\dashboard_admin.html:5
+#: .\core\templates\core\dashboard_admin.html:529
+msgid "Centre de Commandement"
+msgstr "Command Center"
+
+#: .\core\templates\core\dashboard_admin.html:5
+#: .\core\templates\core\dashboard_admin.html:670
+#: .\core\templates\core\dashboard_admin_structure.html:4
+#: .\core\templates\core\dashboard_admin_structure.html:79
+msgid "Gestion de la Structure"
+msgstr "Structure Management"
+
+#: .\core\templates\core\dashboard_admin.html:538
+msgid "Inscriptions en attente"
+msgstr "Pending registrations"
+
+#: .\core\templates\core\dashboard_admin.html:540
+msgid "Validation requise immédiatement"
+msgstr "Immediate validation required"
+
+#: .\core\templates\core\dashboard_admin.html:544
+msgid "Formateurs Actifs"
+msgstr "Active Instructors"
+
+#: .\core\templates\core\dashboard_admin.html:546
+msgid "Sur la plateforme"
+msgstr "On the platform"
+
+#: .\core\templates\core\dashboard_admin.html:550
+msgid "Tickets Logistique"
+msgstr "Logistics Tickets"
+
+#: .\core\templates\core\dashboard_admin.html:554
+msgid "Urgents (GMAO)"
+msgstr "Urgent (CMMS)"
+
+#: .\core\templates\core\dashboard_admin.html:554
+msgid "Tout est fonctionnel"
+msgstr "Everything is operational"
+
+#: .\core\templates\core\dashboard_admin.html:559
+msgid "Cours Publiés"
+msgstr "Published Courses"
+
+#: .\core\templates\core\dashboard_admin.html:561
+#, python-format
+msgid "Dans %(n)s niveaux actifs"
+msgstr "Across %(n)s active levels"
+
+#: .\core\templates\core\dashboard_admin.html:568
+msgid "Démographie Utilisateurs"
+msgstr "User Demographics"
+
+#: .\core\templates\core\dashboard_admin.html:574
+msgid "Inscriptions (7J)"
+msgstr "Registrations (7D)"
+
+#: .\core\templates\core\dashboard_admin.html:580
+msgid "État des Tickets GMAO"
+msgstr "CMMS Ticket Status"
+
+#: .\core\templates\core\dashboard_admin.html:591
+msgid "Flux d'Activité Système"
+msgstr "System Activity Feed"
+
+#: .\core\templates\core\dashboard_admin.html:609
+msgid "Maintenant"
+msgstr "Just now"
+
+#: .\core\templates\core\dashboard_admin.html:610
+msgid "Système initialisé"
+msgstr "System initialized"
+
+#: .\core\templates\core\dashboard_admin.html:611
+msgid "Aucune activité récente détectée sur la plateforme."
+msgstr "No recent activity detected on the platform."
+
+#: .\core\templates\core\dashboard_admin.html:620
+msgid "Actions Rapides"
+msgstr "Quick Actions"
+
+#: .\core\templates\core\dashboard_admin.html:626
+msgid "Valider les inscriptions"
+msgstr "Validate registrations"
+
+#: .\core\templates\core\dashboard_admin.html:634
+msgid "Gérer les formateurs"
+msgstr "Manage instructors"
+
+#: .\core\templates\core\dashboard_admin.html:642
+msgid "Gérer le matériel"
+msgstr "Manage equipment"
+
+#: .\core\templates\core\dashboard_admin.html:650
+msgid "Tickets GMAO"
+msgstr "CMMS Tickets"
+
+#: .\core\templates\core\dashboard_admin.html:658
+msgid "Superviser les cours"
+msgstr "Supervise courses"
+
+#: .\core\templates\core\dashboard_admin.html:699
+#: .\core\templates\core\partials\classes_section.html:346
+msgid "Étudiants"
+msgstr "Students"
+
+#: .\core\templates\core\dashboard_admin.html:699
+msgid "Admins"
+msgstr "Admins"
+
+#: .\core\templates\core\dashboard_admin.html:725
+msgid "Nouvelles Inscriptions"
+msgstr "New Registrations"
+
+#: .\core\templates\core\dashboard_admin.html:755
+msgid "Ouverts"
+msgstr "Open"
+
+#: .\core\templates\core\dashboard_admin.html:755
+msgid "En Cours"
+msgstr "In Progress"
+
+#: .\core\templates\core\dashboard_admin.html:755
+#: .\logistics\templates\logistics\tickets.html:184
+msgid "Résolus"
+msgstr "Resolved"
+
+#: .\core\templates\core\dashboard_admin.html:757
+#: .\logistics\templates\logistics\ateliers.html:208
+#: .\logistics\templates\logistics\demandes.html:221
+#: .\logistics\templates\logistics\inventaire.html:262
+#: .\logistics\templates\logistics\tickets.html:132
+msgid "Tickets"
+msgstr "Tickets"
+
+#: .\core\templates\core\dashboard_admin_structure.html:80
+msgid "Gérez les niveaux, classes, inscriptions et matériel de la plateforme."
+msgstr "Manage the platform's levels, classes, registrations, and equipment."
+
+#: .\core\templates\core\dashboard_formateur.html:3
+msgid "Tableau de bord — Formateur"
+msgstr "Instructor Dashboard"
+
+#: .\core\templates\core\dashboard_formateur.html:430
+#, python-format
+msgid "Bonjour, <em>%(nom)s</em> 👋"
+msgstr "Hello, <em>%(nom)s</em> 👋"
+
+#: .\core\templates\core\dashboard_formateur.html:433
+msgid "Prêt à inspirer vos apprenants aujourd'hui ?"
+msgstr "Ready to inspire your learners today?"
+
+#: .\core\templates\core\dashboard_formateur.html:440
+msgid "chapitre"
+msgid_plural "chapitres"
+msgstr[0] "chapter"
+msgstr[1] "chapters"
+
+#: .\core\templates\core\dashboard_formateur.html:443
+msgid "demande en attente"
+msgid_plural "demandes en attente"
+msgstr[0] "pending request"
+msgstr[1] "pending requests"
+
+#: .\core\templates\core\dashboard_formateur.html:481
+msgid "Chapitres rédigés"
+msgstr "Chapters written"
+
+#: .\core\templates\core\dashboard_formateur.html:491
+msgid "Ateliers organisés"
+msgstr "Workshops organized"
+
+#: .\core\templates\core\dashboard_formateur.html:501
+#: .\core\templates\core\partials\pending_demandes_section.html:162
+msgid "Demandes en attente"
+msgstr "Pending requests"
+
+#: .\core\templates\core\dashboard_formateur.html:524
+msgid "Notes"
+msgstr "Grades"
+
+#: .\core\templates\core\dashboard_formateur.html:562
+#: .\core\templates\core\dashboard_formateur.html:587
+msgid "Gérer"
+msgstr "Manage"
+
+#: .\core\templates\core\dashboard_formateur.html:574
+msgid "Votre espace est prêt"
+msgstr "Your space is ready"
+
+#: .\core\templates\core\dashboard_formateur.html:575
+msgid ""
+"Vous n'avez pas encore de cours. Créez votre premier module en quelques "
+"étapes."
+msgstr ""
+"You don't have any courses yet. Create your first module in a few steps."
+
+#: .\core\templates\core\dashboard_formateur.html:586
+msgid "Mes Ateliers"
+msgstr "My Workshops"
+
+#: .\core\templates\core\dashboard_formateur.html:613
+msgid "Pas encore d'atelier"
+msgstr "No workshops yet"
+
+#: .\core\templates\core\dashboard_formateur.html:614
+msgid "Organisez des séances pratiques pour vos apprenants."
+msgstr "Organize hands-on sessions for your learners."
+
+#: .\core\templates\core\dashboard_formateur.html:616
+msgid "Créer un atelier"
+msgstr "Create a workshop"
+
+#: .\core\templates\core\dashboard_formateur.html:629
+msgid "Actions rapides"
+msgstr "Quick actions"
+
+#: .\core\templates\core\dashboard_formateur.html:643
+msgid "Mes ateliers"
+msgstr "My workshops"
+
+#: .\core\templates\core\dashboard_formateur.html:650
+msgid "Demande matériel"
+msgstr "Equipment request"
+
+#: .\core\templates\core\dashboard_formateur.html:657
+msgid "Notes & Résultats"
+msgstr "Grades & Results"
+
+#: .\core\templates\core\dashboard_formateur.html:673
+msgid "Mes Demandes"
+msgstr "My Requests"
+
+#: .\core\templates\core\dashboard_formateur.html:674
+msgid "Voir tout"
+msgstr "View all"
+
+#: .\core\templates\core\dashboard_formateur.html:695
+msgid "Attente"
+msgstr "Pending"
+
+#: .\core\templates\core\dashboard_formateur.html:696
+msgid "Approuvé"
+msgstr "Approved"
+
+#: .\core\templates\core\dashboard_formateur.html:697
+msgid "Rejeté"
+msgstr "Rejected"
+
+#: .\core\templates\core\dashboard_formateur.html:698
+#: .\logistics\templates\logistics\emails\demande_traitee.html:185
+msgid "Retourné"
+msgstr "Returned"
+
+#: .\core\templates\core\dashboard_formateur.html:702
+msgid "Panne"
+msgstr "Report issue"
+
+#: .\core\templates\core\dashboard_formateur.html:709
+#: .\logistics\templates\logistics\demandes.html:242
+msgid "Nouvelle demande"
+msgstr "New request"
+
+#: .\core\templates\core\dashboard_formateur.html:715
+msgid "Aucune demande"
+msgstr "No requests"
+
+#: .\core\templates\core\dashboard_formateur.html:716
+msgid "Demandez du matériel pour vos ateliers."
+msgstr "Request equipment for your workshops."
+
+#: .\core\templates\core\dashboard_formateur.html:718
+msgid "Faire une demande"
+msgstr "Make a request"
+
+#: .\core\templates\core\dashboard_formateur.html:766
+msgid ""
+"Les exports ZIP s'exécutent en arrière-plan. (Vérifiez le dossier "
+"exports/cours/ de la plateforme)"
+msgstr ""
+"ZIP exports run in the background. (Check the platform's exports/courses/ "
+"folder)"
+
+#: .\core\templates\core\dashboard_formateur.html:791
+msgid "Importation..."
+msgstr "Importing..."
+
+#: .\core\templates\core\dashboard_formateur.html:816
+msgid "Erreur lors de l'importation."
+msgstr "Error during import."
+
+#: .\core\templates\core\dashboard_student.html:4
+msgid "Mon tableau de bord étudiant"
+msgstr "My Student Dashboard"
+
+#: .\core\templates\core\dashboard_student.html:750
+msgid "Espace Élève"
+msgstr "Student Space"
+
+#: .\core\templates\core\dashboard_student.html:751
+#, python-format
+msgid "Bienvenue, %(prenom)s"
+msgstr "Welcome, %(prenom)s"
+
+#: .\core\templates\core\dashboard_student.html:752
+msgid "Aperçu de votre progression académique et de vos cours."
+msgstr "An overview of your academic progress and courses."
+
+#: .\core\templates\core\dashboard_student.html:756
+#: .\core\templates\core\dashboard_student.html:813
+#: .\core\templates\core\dashboard_student.html:877
+msgid "Inscrit Actif"
+msgstr "Active Enrollment"
+
+#: .\core\templates\core\dashboard_student.html:767
+msgid "Mes cours"
+msgstr "My courses"
+
+#: .\core\templates\core\dashboard_student.html:768
+msgid "Parcourir les modules"
+msgstr "Browse modules"
+
+#: .\core\templates\core\dashboard_student.html:776
+msgid "Carnet de notes"
+msgstr "Gradebook"
+
+#: .\core\templates\core\dashboard_student.html:777
+msgid "Résultats et QCM"
+msgstr "Results and quizzes"
+
+#: .\core\templates\core\dashboard_student.html:786
+msgid "Travaux à rendre"
+msgstr "Work to submit"
+
+#: .\core\templates\core\dashboard_student.html:795
+msgid "Échéances et planning"
+msgstr "Deadlines and schedule"
+
+#: .\core\templates\core\dashboard_student.html:808
+msgid "Progression académique"
+msgstr "Academic progress"
+
+#: .\core\templates\core\dashboard_student.html:811
+msgid "Classe non assignée"
+msgstr "No class assigned"
+
+#: .\core\templates\core\dashboard_student.html:812
+msgid "Niveau non assigné"
+msgstr "No level assigned"
+
+#: .\core\templates\core\dashboard_student.html:816
+msgid "Progression globale"
+msgstr "Overall progress"
+
+#: .\core\templates\core\dashboard_student.html:837
+msgid "Cours en cours"
+msgstr "Courses in progress"
+
+#: .\core\templates\core\dashboard_student.html:846
+msgid "Ma classe"
+msgstr "My class"
+
+#: .\core\templates\core\dashboard_student.html:865
+msgid "Mon profil scolaire"
+msgstr "My academic profile"
+
+#: .\core\templates\core\dashboard_student.html:869
+msgid "Non assignée"
+msgstr "Not assigned"
+
+#: .\core\templates\core\dashboard_student.html:873
+msgid "Non assigné"
+msgstr "Not assigned"
+
+#: .\core\templates\core\dashboard_student.html:876
+msgid "Statut académique"
+msgstr "Academic status"
+
+#: .\core\templates\core\dashboard_student.html:884
+msgid "Bilan de progression par matière"
+msgstr "Progress summary by subject"
+
+#: .\core\templates\core\dashboard_student.html:896
+msgid "Mes cours en cours"
+msgstr "My courses in progress"
+
+#: .\core\templates\core\dashboard_student.html:940
+msgid "Aucun cours assigné"
+msgstr "No courses assigned"
+
+#: .\core\templates\core\dashboard_student.html:941
+msgid "Vous n'avez pas encore de cours assignés pour votre niveau actuel."
+msgstr "You don't have any courses assigned for your current level yet."
+
+#: .\core\templates\core\home.html:3
+msgid "La Plateforme Éducative Nouvelle Génération"
+msgstr "The Next-Generation Educational Platform"
+
+#: .\core\templates\core\home.html:414
+msgid "IoT · Intelligence Artificielle · Logistique"
+msgstr "IoT · Artificial Intelligence · Logistics"
+
+#: .\core\templates\core\home.html:418
+msgid ""
+"La plateforme<br>éducative\n"
+"                <span class=\"grad\"><br>nouvelle génération.</span>"
+msgstr ""
+"The educational<br>platform\n"
+"                <span class=\"grad\"><br>next generation.</span>"
+
+#: .\core\templates\core\home.html:423
+msgid ""
+"Des parcours pédagogiques structurés en IoT et Réseaux, soutenus par un "
+"Tuteur IA socratique basé sur vos cours et un système de gestion d'atelier "
+"intégré."
+msgstr ""
+"Structured learning paths in IoT and Networks, supported by a Socratic AI "
+"Tutor based on your courses and an integrated workshop management system."
+
+#: .\core\templates\core\home.html:428
+msgid "Commencer maintenant"
+msgstr "Get started"
+
+#: .\core\templates\core\home.html:438
+msgid "Profils"
+msgstr "Profiles"
+
+#: .\core\templates\core\home.html:443
+msgid "Tuteur RAG local"
+msgstr "Local RAG Tutor"
+
+#: .\core\templates\core\home.html:448
+msgid "Contenu ciblé"
+msgstr "Targeted content"
+
+#: .\core\templates\core\home.html:460
+msgid "Session socratique intelligente"
+msgstr "Smart Socratic session"
+
+#: .\core\templates\core\home.html:466
+msgid "Cours IoT"
+msgstr "IoT Courses"
+
+#: .\core\templates\core\home.html:467
+msgid "PDFs & chapitres indexés"
+msgstr "PDFs & indexed chapters"
+
+#: .\core\templates\core\home.html:472
+msgid "Gestion logistique"
+msgstr "Logistics management"
+
+#: .\core\templates\core\home.html:483
+msgid "Cours structurés"
+msgstr "Structured courses"
+
+#: .\core\templates\core\home.html:484
+msgid ""
+"Chapitres progressifs avec documents, vidéos et QCM auto-générés par l'IA."
+msgstr ""
+"Progressive chapters with documents, videos, and AI-generated quizzes."
+
+#: .\core\templates\core\home.html:489
+msgid "Robotique IoT"
+msgstr "IoT Robotics"
+
+#: .\core\templates\core\home.html:493
+msgid "Une gestion d'atelier intégrée et fluide."
+msgstr "Seamless, integrated workshop management."
+
+#: .\core\templates\core\home.html:499
+msgid "Apprentissage concret"
+msgstr "Hands-on learning"
+
+#: .\core\templates\core\home.html:503
+msgid "Construire, tester et itérer sur de vrais projets."
+msgstr "Build, test, and iterate on real projects."
+
+#: .\core\templates\core\home.html:509
+msgid "Tuteur IA Dédié"
+msgstr "Dedicated AI Tutor"
+
+#: .\core\templates\core\home.html:510
+#, python-format
+msgid ""
+"Assistant 100%% basé sur les supports de cours fournis par les formateurs."
+msgstr "Assistant based 100%% on course materials provided by instructors."
+
+#: .\core\templates\core\home.html:518
+msgid "Modules IoT & Composants"
+msgstr "IoT Modules & Components"
+
+#: .\core\templates\core\home.html:519
+msgid "Le matériel devient<br>un support d'apprentissage."
+msgstr "Hardware becomes<br>a learning tool."
+
+#: .\core\templates\core\home.html:524
+msgid "Composants IoT Arduino"
+msgstr "Arduino IoT Components"
+
+#: .\core\templates\core\home.html:527
+msgid "IoT Hardware"
+msgstr "IoT Hardware"
+
+#: .\core\templates\core\home.html:528
+msgid "Capteurs, microcontrôleurs et protocoles réseaux."
+msgstr "Sensors, microcontrollers, and network protocols."
+
+#: .\core\templates\core\home.html:529
+msgid ""
+"De l'Arduino aux modules sans fil, chaque composant fait partie d'un cours "
+"structuré avec documentation technique."
+msgstr ""
+"From Arduino to wireless modules, every component is part of a structured "
+"course with technical documentation."
+
+#: .\core\templates\core\home.html:535
+msgid "IA Tuteur"
+msgstr "AI Tutor"
+
+#: .\core\templates\core\home.html:538
+#: .\tuteur_ia\templates\tuteur_ia\profil.html:10
+msgid "Intelligence Artificielle"
+msgstr "Artificial Intelligence"
+
+#: .\core\templates\core\home.html:539
+msgid "L'IA au service de la pratique."
+msgstr "AI at the service of hands-on practice."
+
+#: .\core\templates\core\home.html:545
+msgid "Atelier Robotique"
+msgstr "Robotics Workshop"
+
+#: .\core\templates\core\home.html:548
+msgid "Ateliers Pratiques"
+msgstr "Hands-on Workshops"
+
+#: .\core\templates\core\home.html:549
+msgid "Prototypage & expérimentation réels."
+msgstr "Real prototyping & experimentation."
+
+#: .\core\templates\core\home.html:558
+msgid "Comment ça marche"
+msgstr "How it works"
+
+#: .\core\templates\core\home.html:559
+msgid "Un parcours en 4 étapes."
+msgstr "A journey in 4 steps."
+
+#: .\core\templates\core\home.html:560
+msgid "De l'inscription à la maîtrise du contenu."
+msgstr "From registration to content mastery."
+
+#: .\core\templates\core\home.html:564
+msgid "Étape 1"
+msgstr "Step 1"
+
+#: .\core\templates\core\home.html:566
+msgid "Inscription & Validation"
+msgstr "Registration & Validation"
+
+#: .\core\templates\core\home.html:567
+msgid ""
+"Créez votre compte, choisissez votre rôle et attendez la validation par "
+"l'admin."
+msgstr "Create your account, choose your role, and wait for admin validation."
+
+#: .\core\templates\core\home.html:570
+msgid "Étape 2"
+msgstr "Step 2"
+
+#: .\core\templates\core\home.html:572
+msgid "Accès aux Cours"
+msgstr "Access to Courses"
+
+#: .\core\templates\core\home.html:573
+msgid ""
+"Explorez le catalogue, accédez aux chapitres correspondant à votre niveau."
+msgstr "Browse the catalog and access the chapters matching your level."
+
+#: .\core\templates\core\home.html:576
+msgid "Étape 3"
+msgstr "Step 3"
+
+#: .\core\templates\core\home.html:578
+msgid "Session Tuteur IA"
+msgstr "AI Tutor Session"
+
+#: .\core\templates\core\home.html:579
+msgid ""
+"Après chaque chapitre, démarrez une session socratique avec votre tuteur IA."
+msgstr "After each chapter, start a Socratic session with your AI tutor."
+
+#: .\core\templates\core\home.html:582
+msgid "Étape 4"
+msgstr "Step 4"
+
+#: .\core\templates\core\home.html:584
+msgid "Validation & QCM"
+msgstr "Validation & Quiz"
+
+#: .\core\templates\core\home.html:585
+msgid ""
+"Obtenez votre score de maîtrise et validez vos connaissances avec le QCM."
+msgstr "Get your mastery score and validate your knowledge with the quiz."
+
+#: .\core\templates\core\home.html:596
+msgid "Prêt à rejoindre l'aventure technologique ?"
+msgstr "Ready to join the tech adventure?"
+
+#: .\core\templates\core\home.html:597
+msgid ""
+"Rejoignez des étudiants et formateurs qui utilisent EduTech pour des "
+"formations en IoT, Réseaux et Intelligence Artificielle."
+msgstr ""
+"Join students and instructors who use EduTech for training in IoT, Networks,"
+" and Artificial Intelligence."
+
+#: .\core\templates\core\home.html:599
+msgid "Créer mon compte — c'est gratuit"
+msgstr "Create my account — it's free"
+
+#: .\core\templates\core\partials\admin_structure.html:111
+msgid "Classes"
+msgstr "Classes"
+
+#: .\core\templates\core\partials\admin_structure.html:118
+msgid "Étudiants en attente"
+msgstr "Pending Students"
+
+#: .\core\templates\core\partials\classe_form.html:194
+msgid "Créer une classe"
+msgstr "Create a class"
+
+#: .\core\templates\core\partials\classe_form.html:194
+msgid "Modifier la classe"
+msgstr "Edit class"
+
+#: .\core\templates\core\partials\classe_form.html:195
+#: .\core\templates\core\partials\niveau_form.html:187
+msgid "Fermer"
+msgstr "Close"
+
+#: .\core\templates\core\partials\classe_form.html:210
+msgid "Niveau d'appartenance"
+msgstr "Level"
+
+#: .\core\templates\core\partials\classe_form.html:216
+msgid "Code de la classe (ex: BTS-1)"
+msgstr "Class code (e.g. BTS-1)"
+
+#: .\core\templates\core\partials\classe_form.html:223
+msgid "Nom complet de la classe"
+msgstr "Full class name"
+
+#: .\core\templates\core\partials\classe_form.html:230
+msgid "Année scolaire"
+msgstr "School year"
+
+#: .\core\templates\core\partials\classe_form.html:236
+msgid "Capacité maximale"
+msgstr "Maximum capacity"
+
+#: .\core\templates\core\partials\classe_form.html:244
+msgid "Classe active sur la plateforme"
+msgstr "Class active on the platform"
+
+#: .\core\templates\core\partials\classes_section.html:268
+msgid "Rechercher une classe..."
+msgstr "Search for a class..."
+
+#: .\core\templates\core\partials\classes_section.html:281
+#: .\core\templates\core\partials\niveaux_section.html:239
+msgid "Tous les statuts"
+msgstr "All statuses"
+
+#: .\core\templates\core\partials\classes_section.html:282
+msgid "Actives uniquement"
+msgstr "Active only"
+
+#: .\core\templates\core\partials\classes_section.html:283
+msgid "Inactives uniquement"
+msgstr "Inactive only"
+
+#: .\core\templates\core\partials\classes_section.html:292
+#: .\core\templates\core\partials\kanban_assignation_section.html:78
+msgid "Créer une Classe"
+msgstr "Create a Class"
+
+#: .\core\templates\core\partials\classes_section.html:320
+msgid "ACTIVE"
+msgstr "ACTIVE"
+
+#: .\core\templates\core\partials\classes_section.html:320
+msgid "ARCHIVÉE"
+msgstr "ARCHIVED"
+
+#: .\core\templates\core\partials\classes_section.html:327
+msgid "Remplissage"
+msgstr "Occupancy"
+
+#: .\core\templates\core\partials\classes_section.html:330
+#, python-format
+msgid "%(n)s élèves sur une capacité de %(cap)s"
+msgstr "%(n)s students out of a capacity of %(cap)s"
+
+#: .\core\templates\core\partials\classes_section.html:355
+msgid "Aucune classe configurée dans la plateforme."
+msgstr "No classes configured on the platform."
+
+#: .\core\templates\core\partials\demande_materiel_modal.html:6
+msgid "Nouvelle Demande Logistique"
+msgstr "New Logistics Request"
+
+#: .\core\templates\core\partials\demande_materiel_modal.html:7
+msgid "Sélectionnez le matériel nécessaire pour votre prochain atelier."
+msgstr "Select the equipment needed for your next workshop."
+
+#: .\core\templates\core\partials\demande_materiel_modal.html:20
+msgid "Équipement requis"
+msgstr "Required equipment"
+
+#: .\core\templates\core\partials\demande_materiel_modal.html:29
+#: .\logistics\templates\logistics\emails\demande_traitee.html:158
+#: .\logistics\templates\logistics\ticket_form.html:236
+msgid "Atelier cible"
+msgstr "Target workshop"
+
+#: .\core\templates\core\partials\demande_materiel_modal.html:37
+#: .\core\templates\core\partials\formateur_structure.html:267
+#: .\logistics\templates\logistics\emails\demande_traitee.html:147
+msgid "Quantité"
+msgstr "Quantity"
+
+#: .\core\templates\core\partials\demande_materiel_modal.html:53
+#: .\logistics\templates\logistics\partials\demande_form.html:123
+msgid "Envoyer la demande"
+msgstr "Send request"
+
+#: .\core\templates\core\partials\demande_materiel_modal.html:259
+#: .\logistics\templates\logistics\partials\ticket_form_modal.html:101
+#: .\logistics\templates\logistics\ticket_form.html:267
+msgid "Rechercher un équipement..."
+msgstr "Search for equipment..."
+
+#: .\core\templates\core\partials\demande_materiel_modal.html:268
+#: .\logistics\templates\logistics\ateliers.html:277
+#: .\logistics\templates\logistics\partials\ticket_form_modal.html:92
+#: .\logistics\templates\logistics\ticket_form.html:263
+msgid "Rechercher un atelier..."
+msgstr "Search for a workshop..."
+
+#: .\core\templates\core\partials\equipement_form_modal.html:8
+msgid "Modifier l'équipement"
+msgstr "Edit equipment"
+
+#: .\core\templates\core\partials\equipement_form_modal.html:10
+msgid "Ajouter au Catalogue"
+msgstr "Add to Catalog"
+
+#: .\core\templates\core\partials\equipement_form_modal.html:17
+msgid "Saisissez les détails du nouvel équipement."
+msgstr "Enter the details of the new equipment."
+
+#: .\core\templates\core\partials\equipement_form_modal.html:37
+msgid "Nom de l'équipement"
+msgstr "Equipment name"
+
+#: .\core\templates\core\partials\equipement_form_modal.html:45
+msgid "Référence"
+msgstr "Reference"
+
+#: .\core\templates\core\partials\equipement_form_modal.html:55
+msgid "Stock total"
+msgstr "Total stock"
+
+#: .\core\templates\core\partials\equipement_form_modal.html:63
+msgid "Stock dispo"
+msgstr "Available stock"
+
+#: .\core\templates\core\partials\equipement_form_modal.html:71
+msgid "Seuil d'alerte"
+msgstr "Alert threshold"
+
+#: .\core\templates\core\partials\equipement_form_modal.html:80
+msgid "Note (Optionnelle)"
+msgstr "Note (Optional)"
+
+#: .\core\templates\core\partials\equipement_form_modal.html:95
+msgid "Mettre à jour"
+msgstr "Update"
+
+#: .\core\templates\core\partials\equipement_row.html:30
+msgid "Stock Critique"
+msgstr "Critical Stock"
+
+#: .\core\templates\core\partials\equipement_row.html:46
+msgid "Archivé"
+msgstr "Archived"
+
+#: .\core\templates\core\partials\equipement_row.html:69
+msgid "Archiver"
+msgstr "Archive"
+
+#: .\core\templates\core\partials\equipement_row.html:69
+msgid "Réactiver"
+msgstr "Reactivate"
+
+#: .\core\templates\core\partials\equipements_section.html:121
+msgid "Catalogue Matériel"
+msgstr "Equipment Catalog"
+
+#: .\core\templates\core\partials\equipements_section.html:122
+msgid "Gérez l'inventaire complet, les stocks et les alertes GMAO."
+msgstr "Manage the full inventory, stock levels, and CMMS alerts."
+
+#: .\core\templates\core\partials\equipements_section.html:130
+msgid "Nouvel équipement"
+msgstr "New equipment"
+
+#: .\core\templates\core\partials\equipements_section.html:139
+msgid "Équipement & Réf."
+msgstr "Equipment & Ref."
+
+#: .\core\templates\core\partials\equipements_section.html:140
+msgid "État du Stock"
+msgstr "Stock Status"
+
+#: .\core\templates\core\partials\equipements_section.html:141
+msgid "Seuil"
+msgstr "Threshold"
+
+#: .\core\templates\core\partials\equipements_section.html:156
+msgid "Catalogue vide"
+msgstr "Empty catalog"
+
+#: .\core\templates\core\partials\equipements_section.html:157
+msgid ""
+"Commencez à ajouter du matériel pour permettre aux formateurs de faire des "
+"demandes."
+msgstr "Start adding equipment to let instructors make requests."
+
+#: .\core\templates\core\partials\formateur_structure.html:117
+#, python-format
+msgid "Modifié le %(d)s"
+msgstr "Modified on %(d)s"
+
+#: .\core\templates\core\partials\formateur_structure.html:139
+msgid "Votre espace de travail est prêt"
+msgstr "Your workspace is ready"
+
+#: .\core\templates\core\partials\formateur_structure.html:140
+msgid ""
+"Vous n'avez pas encore de cours. Créez votre premier module pour commencer à"
+" enseigner."
+msgstr ""
+"You don't have any courses yet. Create your first module to start teaching."
+
+#: .\core\templates\core\partials\formateur_structure.html:150
+msgid "Suivi Logistique"
+msgstr "Logistics Tracking"
+
+#: .\core\templates\core\partials\formateur_structure.html:254
+#, python-format
+msgid "Demande du %(d)s"
+msgstr "Requested on %(d)s"
+
+#: .\core\templates\core\partials\formateur_structure.html:258
+#: .\logistics\templates\logistics\emails\demande_traitee.html:173
+#: .\logistics\templates\logistics\partials\demandes_list.html:44
+msgid "Approuvée"
+msgstr "Approved"
+
+#: .\core\templates\core\partials\formateur_structure.html:259
+#: .\logistics\templates\logistics\emails\demande_traitee.html:179
+#: .\logistics\templates\logistics\partials\demandes_list.html:45
+msgid "Rejetée"
+msgstr "Rejected"
+
+#: .\core\templates\core\partials\formateur_structure.html:260
+#: .\logistics\templates\logistics\partials\demandes_list.html:46
+msgid "Retournée"
+msgstr "Returned"
+
+#: .\core\templates\core\partials\formateur_structure.html:271
+#: .\logistics\templates\logistics\partials\tickets_list.html:38
+msgid "Atelier"
+msgstr "Workshop"
+
+#: .\core\templates\core\partials\formateur_structure.html:276
+#: .\logistics\templates\logistics\emails\demande_traitee.html:161
+#: .\logistics\templates\logistics\partials\ateliers_list.html:73
+msgid "Non spécifié"
+msgstr "Not specified"
+
+#: .\core\templates\core\partials\formateur_structure.html:287
+msgid "Aucune demande de matériel"
+msgstr "No equipment requests"
+
+#: .\core\templates\core\partials\formateur_structure.html:288
+msgid "Vous n'avez effectué aucune demande logistique pour le moment."
+msgstr "You haven't made any logistics requests yet."
+
+#: .\core\templates\core\partials\kanban_assignation_section.html:7
+msgid "Assignation Kanban"
+msgstr "Kanban Assignment"
+
+#: .\core\templates\core\partials\kanban_assignation_section.html:8
+msgid ""
+"Glissez-déposez les étudiants en attente vers la classe de votre choix pour "
+"les assigner et activer leur compte."
+msgstr ""
+"Drag and drop pending students onto the class of your choice to assign them "
+"and activate their account."
+
+#: .\core\templates\core\partials\kanban_assignation_section.html:13
+#, python-format
+msgid "%(counter)s en attente"
+msgid_plural "%(counter)s en attente"
+msgstr[0] "%(counter)s pending"
+msgstr[1] "%(counter)s pending"
+
+#: .\core\templates\core\partials\kanban_assignation_section.html:25
+msgid "Glisser vers une classe →"
+msgstr "Drag to a class →"
+
+#: .\core\templates\core\partials\kanban_assignation_section.html:40
+msgid "Aucun étudiant en attente"
+msgstr "No students pending"
+
+#: .\core\templates\core\partials\kanban_assignation_section.html:66
+msgid "Déposez ici"
+msgstr "Drop here"
+
+#: .\core\templates\core\partials\kanban_assignation_section.html:74
+msgid "Aucune classe active. Créez d'abord des classes."
+msgstr "No active classes. Create classes first."
+
+#: .\core\templates\core\partials\kanban_assignation_section.html:156
+msgid "Erreur lors de l'assignation. Veuillez réessayer."
+msgstr "Error during assignment. Please try again."
+
+#: .\core\templates\core\partials\niveau_form.html:186
+msgid "Créer un niveau"
+msgstr "Create a level"
+
+#: .\core\templates\core\partials\niveau_form.html:186
+msgid "Modifier le niveau"
+msgstr "Edit level"
+
+#: .\core\templates\core\partials\niveau_form.html:200
+msgid "Code d'identification"
+msgstr "Identification code"
+
+#: .\core\templates\core\partials\niveau_form.html:206
+msgid "Nom complet du niveau"
+msgstr "Full level name"
+
+#: .\core\templates\core\partials\niveau_form.html:212
+msgid "Ordre d'affichage (ex: 1, 2, 3)"
+msgstr "Display order (e.g. 1, 2, 3)"
+
+#: .\core\templates\core\partials\niveau_form.html:219
+msgid "Niveau actif sur la plateforme"
+msgstr "Level active on the platform"
+
+#: .\core\templates\core\partials\niveaux_section.html:226
+msgid "Rechercher un niveau..."
+msgstr "Search for a level..."
+
+#: .\core\templates\core\partials\niveaux_section.html:240
+msgid "Actifs uniquement"
+msgstr "Active only"
+
+#: .\core\templates\core\partials\niveaux_section.html:241
+msgid "Inactifs uniquement"
+msgstr "Inactive only"
+
+#: .\core\templates\core\partials\niveaux_section.html:250
+msgid "Créer un Niveau"
+msgstr "Create a Level"
+
+#: .\core\templates\core\partials\niveaux_section.html:269
+msgid "Ordre"
+msgstr "Order"
+
+#: .\core\templates\core\partials\niveaux_section.html:271
+msgid "Code unique"
+msgstr "Unique code"
+
+#: .\core\templates\core\partials\niveaux_section.html:278
+#, python-format
+msgid "%(counter)s classe"
+msgid_plural "%(counter)s classes"
+msgstr[0] "%(counter)s class"
+msgstr[1] "%(counter)s classes"
+
+#: .\core\templates\core\partials\niveaux_section.html:284
+msgid "ACTIF"
+msgstr "ACTIVE"
+
+#: .\core\templates\core\partials\niveaux_section.html:284
+msgid "ARCHIVÉ"
+msgstr "ARCHIVED"
+
+#: .\core\templates\core\partials\niveaux_section.html:304
+msgid "Aucun niveau configuré dans la plateforme."
+msgstr "No levels configured on the platform."
+
+#: .\core\templates\core\partials\pending_demandes_section.html:163
+msgid "Validez les besoins en matériel des formateurs pour leurs ateliers."
+msgstr "Validate instructors' equipment needs for their workshops."
+
+#: .\core\templates\core\partials\pending_demandes_section.html:168
+msgid "Rechercher équipement, formateur..."
+msgstr "Search equipment, instructor..."
+
+#: .\core\templates\core\partials\pending_demandes_section.html:186
+#, python-format
+msgid "Il y a %(t)s"
+msgstr "%(t)s ago"
+
+#: .\core\templates\core\partials\pending_demandes_section.html:194
+#: .\logistics\templates\logistics\emails\demande_traitee.html:150
+#, python-format
+msgid "%(counter)s unité"
+msgid_plural "%(counter)s unités"
+msgstr[0] "%(counter)s unit"
+msgstr[1] "%(counter)s units"
+
+#: .\core\templates\core\partials\pending_demandes_section.html:197
+msgid "Dispo"
+msgstr "Available"
+
+#: .\core\templates\core\partials\pending_demandes_section.html:206
+#: .\logistics\templates\logistics\partials\demandes_list.html:33
+msgid "Atelier non spécifié"
+msgstr "Workshop not specified"
+
+#: .\core\templates\core\partials\pending_demandes_section.html:216
+#: .\logistics\templates\logistics\partials\demandes_list.html:71
+msgid "Rejeter"
+msgstr "Reject"
+
+#: .\core\templates\core\partials\pending_demandes_section.html:225
+msgid "Stock insuffisant"
+msgstr "Insufficient stock"
+
+#: .\core\templates\core\partials\pending_demandes_section.html:226
+#: .\logistics\templates\logistics\partials\demandes_list.html:65
+msgid "Approuver"
+msgstr "Approve"
+
+#: .\core\templates\core\partials\pending_demandes_section.html:250
+msgid "Tout est à jour !"
+msgstr "Everything is up to date!"
+
+#: .\core\templates\core\partials\pending_demandes_section.html:251
+msgid "Il n'y a aucune demande logistique en attente. Vous pouvez souffler."
+msgstr "There are no pending logistics requests. You can take a breather."
+
+#: .\core\templates\core\partials\pending_students_section.html:196
+msgid "Inscriptions d'étudiants en attente"
+msgstr "Pending student registrations"
+
+#: .\core\templates\core\partials\pending_students_section.html:197
+msgid "Attribuez une classe pour activer et valider les comptes."
+msgstr "Assign a class to activate and validate accounts."
+
+#: .\core\templates\core\partials\pending_students_section.html:206
+msgid "Rechercher un étudiant..."
+msgstr "Search for a student..."
+
+#: .\core\templates\core\partials\pending_students_section.html:245
+#, python-format
+msgid "Demandé le %(d)s"
+msgstr "Requested on %(d)s"
+
+#: .\core\templates\core\partials\pending_students_section.html:247
+msgid "Validation requise"
+msgstr "Validation required"
+
+#: .\core\templates\core\partials\pending_students_section.html:261
+msgid "Attribuer une classe"
+msgstr "Assign a class"
+
+#: .\core\templates\core\partials\pending_students_section.html:269
+msgid "Valider"
+msgstr "Validate"
+
+#: .\core\templates\core\partials\pending_students_section.html:278
+msgid "Aucune demande d'inscription d'étudiant en attente actuellement."
+msgstr "No pending student registration requests at this time."
+
+#: .\logistics\templates\logistics\ateliers.html:3
+msgid "Ateliers — Logistics"
+msgstr "Workshops — Logistics"
+
+#: .\logistics\templates\logistics\ateliers.html:200
+msgid "Gestion des ateliers"
+msgstr "Workshop Management"
+
+#: .\logistics\templates\logistics\ateliers.html:201
+msgid "Planifiez et gérez les ateliers de formation IoT."
+msgstr "Plan and manage IoT training workshops."
+
+#: .\logistics\templates\logistics\ateliers.html:205
+#: .\logistics\templates\logistics\demandes.html:218
+#: .\logistics\templates\logistics\inventaire.html:259
+#: .\logistics\templates\logistics\tickets.html:129
+msgid "Inventaire"
+msgstr "Inventory"
+
+#: .\logistics\templates\logistics\ateliers.html:215
+#: .\logistics\templates\logistics\demandes.html:228
+#: .\logistics\templates\logistics\inventaire.html:268
+#: .\logistics\templates\logistics\tickets.html:138
+msgid "Demandes"
+msgstr "Requests"
+
+#: .\logistics\templates\logistics\ateliers.html:221
+#: .\logistics\templates\logistics\demandes.html:234
+#: .\logistics\templates\logistics\inventaire.html:273
+msgid "Exporter en Excel"
+msgstr "Export to Excel"
+
+#: .\logistics\templates\logistics\ateliers.html:229
+msgid "Nouvel atelier"
+msgstr "New workshop"
+
+#: .\logistics\templates\logistics\ateliers.html:240
+#: .\logistics\templates\logistics\demandes.html:253
+#: .\logistics\templates\logistics\inventaire.html:294
+#: .\tuteur_ia\templates\tuteur_ia\qcm.html:86
+msgid "Total"
+msgstr "Total"
+
+#: .\logistics\templates\logistics\ateliers.html:242
+msgid "Ateliers créés"
+msgstr "Workshops created"
+
+#: .\logistics\templates\logistics\ateliers.html:248
+#: .\logistics\templates\logistics\inventaire.html:364
+msgid "Actifs"
+msgstr "Active"
+
+#: .\logistics\templates\logistics\ateliers.html:256
+msgid "Planifiés"
+msgstr "Scheduled"
+
+#: .\logistics\templates\logistics\ateliers.html:258
+#: .\logistics\templates\logistics\partials\ateliers_list.html:42
+msgid "À venir"
+msgstr "Upcoming"
+
+#: .\logistics\templates\logistics\ateliers.html:264
+#: .\logistics\templates\logistics\ateliers.html:266
+msgid "Annulés"
+msgstr "Cancelled"
+
+#: .\logistics\templates\logistics\ateliers.html:274
+msgid "Liste des ateliers"
+msgstr "Workshop list"
+
+#: .\logistics\templates\logistics\demandes.html:3
+msgid "Demandes Logistiques — Logistics"
+msgstr "Logistics Requests — Logistics"
+
+#: .\logistics\templates\logistics\demandes.html:213
+msgid "Demandes Logistiques"
+msgstr "Logistics Requests"
+
+#: .\logistics\templates\logistics\demandes.html:214
+msgid "Gérez vos demandes de matériel pour les ateliers."
+msgstr "Manage your equipment requests for workshops."
+
+#: .\logistics\templates\logistics\demandes.html:255
+msgid "Demandes soumises"
+msgstr "Requests submitted"
+
+#: .\logistics\templates\logistics\demandes.html:261
+msgid "À traiter"
+msgstr "To process"
+
+#: .\logistics\templates\logistics\demandes.html:269
+#: .\logistics\templates\logistics\demandes.html:303
+msgid "Approuvées"
+msgstr "Approved"
+
+#: .\logistics\templates\logistics\demandes.html:271
+msgid "Validées"
+msgstr "Validated"
+
+#: .\logistics\templates\logistics\demandes.html:277
+msgid "Refusées"
+msgstr "Refused"
+
+#: .\logistics\templates\logistics\demandes.html:279
+msgid "Rejetées"
+msgstr "Rejected"
+
+#: .\logistics\templates\logistics\demandes.html:287
+msgid "Historique des demandes"
+msgstr "Request history"
+
+#: .\logistics\templates\logistics\demandes.html:295
+msgid "Tout"
+msgstr "All"
+
+#: .\logistics\templates\logistics\demandes.html:307
+msgid "Retournées"
+msgstr "Returned"
+
+#: .\logistics\templates\logistics\demandes.html:312
+msgid "Rechercher une demande..."
+msgstr "Search for a request..."
+
+#: .\logistics\templates\logistics\emails\demande_traitee.html:7
+msgid "Votre demande a été traitée"
+msgstr "Your request has been processed"
+
+#: .\logistics\templates\logistics\emails\demande_traitee.html:62
+msgid "Demande approuvée !"
+msgstr "Request approved!"
+
+#: .\logistics\templates\logistics\emails\demande_traitee.html:63
+msgid "Demande rejetée"
+msgstr "Request rejected"
+
+#: .\logistics\templates\logistics\emails\demande_traitee.html:64
+msgid "Équipement retourné"
+msgstr "Equipment returned"
+
+#: .\logistics\templates\logistics\emails\demande_traitee.html:68
+msgid "Notification automatique · EduTech Logistics"
+msgstr "Automatic notification · EduTech Logistics"
+
+#: .\logistics\templates\logistics\emails\demande_traitee.html:84
+msgid "APPROUVÉE — Matériel disponible"
+msgstr "APPROVED — Equipment available"
+
+#: .\logistics\templates\logistics\emails\demande_traitee.html:92
+msgid "REJETÉE — Demande non accordée"
+msgstr "REJECTED — Request not granted"
+
+#: .\logistics\templates\logistics\emails\demande_traitee.html:100
+msgid "RETOURNÉ — Équipement récupéré"
+msgstr "RETURNED — Equipment collected"
+
+#: .\logistics\templates\logistics\emails\demande_traitee.html:113
+#, python-format
+msgid "Bonjour %(formateur_nom)s&nbsp;👋"
+msgstr "Hello %(formateur_nom)s&nbsp;👋"
+
+#: .\logistics\templates\logistics\emails\demande_traitee.html:116
+msgid ""
+"Votre demande de matériel a été traitée par l'administration. Voici le "
+"détail de la décision&nbsp;:"
+msgstr ""
+"Your equipment request has been processed by the administration. Here are "
+"the details of the decision&nbsp;:"
+
+#: .\logistics\templates\logistics\emails\demande_traitee.html:127
+msgid "Détail de la demande"
+msgstr "Request details"
+
+#: .\logistics\templates\logistics\emails\demande_traitee.html:138
+#: .\logistics\templates\logistics\partials\demande_form.html:72
+#: .\logistics\templates\logistics\partials\tickets_list.html:34
+msgid "Équipement"
+msgstr "Equipment"
+
+#: .\logistics\templates\logistics\emails\demande_traitee.html:167
+msgid "Décision"
+msgstr "Decision"
+
+#: .\logistics\templates\logistics\emails\demande_traitee.html:203
+#, python-format
+msgid ""
+"<strong>Félicitations !</strong> Votre demande a été approuvée.\n"
+"                      Vous pouvez récupérer %(qte)sx <strong>%(nom)s</strong>\n"
+"                      auprès du service logistique."
+msgstr ""
+"<strong>Congratulations!</strong> Your request has been approved.\n"
+"                      You can collect %(qte)sx <strong>%(nom)s</strong>\n"
+"                      from the logistics department."
+
+#: .\logistics\templates\logistics\emails\demande_traitee.html:217
+msgid ""
+"Nous sommes désolés, votre demande n'a pas pu être accordée. Vous pouvez "
+"contacter l'administration ou soumettre une nouvelle demande via la "
+"plateforme."
+msgstr ""
+"We're sorry, your request could not be granted. You can contact the "
+"administration or submit a new request via the platform."
+
+#: .\logistics\templates\logistics\emails\demande_traitee.html:231
+msgid "Voir mes demandes"
+msgstr "View my requests"
+
+#: .\logistics\templates\logistics\emails\demande_traitee.html:243
+msgid ""
+"Cet email a été envoyé automatiquement par la plateforme <strong "
+"style=\"color:#0f766e;\">EduTech</strong>."
+msgstr ""
+"This email was sent automatically by the <strong "
+"style=\"color:#0f766e;\">EduTech</strong> platform."
+
+#: .\logistics\templates\logistics\emails\demande_traitee.html:246
+msgid "Ne pas répondre à cet email"
+msgstr "Do not reply to this email"
+
+#: .\logistics\templates\logistics\inventaire.html:3
+msgid "Inventaire — Logistics"
+msgstr "Inventory — Logistics"
+
+#: .\logistics\templates\logistics\inventaire.html:255
+msgid "Inventaire des équipements"
+msgstr "Equipment inventory"
+
+#: .\logistics\templates\logistics\inventaire.html:256
+msgid "Consultez, filtrez et gérez tout le parc matériel IoT."
+msgstr "View, filter, and manage the entire IoT equipment fleet."
+
+#: .\logistics\templates\logistics\inventaire.html:281
+msgid "Ajouter un équipement"
+msgstr "Add equipment"
+
+#: .\logistics\templates\logistics\inventaire.html:298
+#: .\logistics\templates\logistics\inventaire.html:346
+msgid "Équipements"
+msgstr "Equipment"
+
+#: .\logistics\templates\logistics\inventaire.html:307
+msgid "Opérationnel"
+msgstr "Operational"
+
+#: .\logistics\templates\logistics\inventaire.html:311
+msgid "Disponibles"
+msgstr "Available"
+
+#: .\logistics\templates\logistics\inventaire.html:324
+msgid "En maintenance"
+msgstr "Under maintenance"
+
+#: .\logistics\templates\logistics\inventaire.html:333
+msgid "Alerte"
+msgstr "Alert"
+
+#: .\logistics\templates\logistics\inventaire.html:337
+msgid "En panne"
+msgstr "Faulty"
+
+#: .\logistics\templates\logistics\inventaire.html:347
+#, python-format
+msgid "%(counter)s au total"
+msgid_plural "%(counter)s au total"
+msgstr[0] "%(counter)s in total"
+msgstr[1] "%(counter)s in total"
+
+#: .\logistics\templates\logistics\inventaire.html:368
+msgid "Inactifs"
+msgstr "Inactive"
+
+#: .\logistics\templates\logistics\inventaire.html:373
+msgid "Rechercher (S/N, Nom...)"
+msgstr "Search (S/N, Name...)"
+
+#: .\logistics\templates\logistics\inventaire.html:386
+msgid "Inactif / En panne"
+msgstr "Inactive / Faulty"
+
+#: .\logistics\templates\logistics\partials\atelier_form.html:8
+msgid "Modifier l'atelier"
+msgstr "Edit workshop"
+
+#: .\logistics\templates\logistics\partials\atelier_form.html:8
+msgid "Planifier un atelier"
+msgstr "Schedule a workshop"
+
+#: .\logistics\templates\logistics\partials\atelier_form.html:11
+msgid "Renseignez les détails de la session de formation IoT."
+msgstr "Enter the details of the IoT training session."
+
+#: .\logistics\templates\logistics\partials\atelier_form.html:39
+msgid "TITRE DE L'ATELIER"
+msgstr "WORKSHOP TITLE"
+
+#: .\logistics\templates\logistics\partials\atelier_form.html:47
+msgid "DATE DE DÉBUT"
+msgstr "START DATE"
+
+#: .\logistics\templates\logistics\partials\atelier_form.html:52
+msgid "DATE DE FIN"
+msgstr "END DATE"
+
+#: .\logistics\templates\logistics\partials\atelier_form.html:61
+msgid "SALLE"
+msgstr "ROOM"
+
+#: .\logistics\templates\logistics\partials\atelier_form.html:66
+msgid "NIVEAU CIBLE"
+msgstr "TARGET LEVEL"
+
+#: .\logistics\templates\logistics\partials\atelier_form.html:74
+msgid "TUTEUR"
+msgstr "TUTOR"
+
+#: .\logistics\templates\logistics\partials\atelier_form.html:77
+msgid "Sélectionnez un tuteur..."
+msgstr "Select a tutor..."
+
+#: .\logistics\templates\logistics\partials\atelier_form.html:84
+msgid "Vous"
+msgstr "You"
+
+#: .\logistics\templates\logistics\partials\atelier_form.html:99
+msgid "Créer l'atelier"
+msgstr "Create workshop"
+
+#: .\logistics\templates\logistics\partials\atelier_form.html:137
+#: .\logistics\templates\logistics\partials\demande_form.html:163
+msgid "Rechercher..."
+msgstr "Search..."
+
+#: .\logistics\templates\logistics\partials\ateliers_list.html:40
+msgid "Annulé"
+msgstr "Cancelled"
+
+#: .\logistics\templates\logistics\partials\ateliers_list.html:55
+msgid "Êtes-vous sûr de vouloir supprimer cet atelier ?"
+msgstr "Are you sure you want to delete this workshop?"
+
+#: .\logistics\templates\logistics\partials\ateliers_list.html:68
+msgid "Tuteur"
+msgstr "Tutor"
+
+#: .\logistics\templates\logistics\partials\ateliers_list.html:76
+msgid "Période"
+msgstr "Period"
+
+#: .\logistics\templates\logistics\partials\ateliers_list.html:90
+msgid "Aucun atelier trouvé"
+msgstr "No workshop found"
+
+#: .\logistics\templates\logistics\partials\ateliers_list.html:91
+msgid ""
+"Créez votre premier atelier en cliquant sur <strong>\"Nouvel "
+"atelier\"</strong>."
+msgstr "Create your first workshop by clicking <strong>\"New Workshop\"</strong>."
+
+#: .\logistics\templates\logistics\partials\demande_form.html:8
+msgid "Éditer la Demande"
+msgstr "Edit Request"
+
+#: .\logistics\templates\logistics\partials\demande_form.html:8
+msgid "Panier de Matériel"
+msgstr "Equipment Cart"
+
+#: .\logistics\templates\logistics\partials\demande_form.html:11
+msgid "Modifiez les informations de la demande."
+msgstr "Edit the request information."
+
+#: .\logistics\templates\logistics\partials\demande_form.html:11
+msgid "Ajoutez plusieurs équipements pour votre atelier."
+msgstr "Add multiple pieces of equipment for your workshop."
+
+#: .\logistics\templates\logistics\partials\demande_form.html:40
+msgid "ÉQUIPEMENT"
+msgstr "EQUIPMENT"
+
+#: .\logistics\templates\logistics\partials\demande_form.html:46
+msgid "ATELIER"
+msgstr "WORKSHOP"
+
+#: .\logistics\templates\logistics\partials\demande_form.html:51
+msgid "QUANTITÉ"
+msgstr "QUANTITY"
+
+#: .\logistics\templates\logistics\partials\demande_form.html:59
+msgid "Atelier concerné"
+msgstr "Related workshop"
+
+#: .\logistics\templates\logistics\partials\demande_form.html:61
+msgid "Sélectionnez l'atelier..."
+msgstr "Select the workshop..."
+
+#: .\logistics\templates\logistics\partials\demande_form.html:74
+#: .\logistics\templates\logistics\partials\demande_form.html:99
+msgid "Choisir..."
+msgstr "Choose..."
+
+#: .\logistics\templates\logistics\partials\demande_form.html:76
+#: .\logistics\templates\logistics\partials\demande_form.html:101
+#, python-format
+msgid "%(nom)s (Dispo: %(stock)s)"
+msgstr "%(nom)s (Available: %(stock)s)"
+
+#: .\logistics\templates\logistics\partials\demande_form.html:81
+msgid "Qté"
+msgstr "Qty"
+
+#: .\logistics\templates\logistics\partials\demande_form.html:91
+msgid "Ajouter un autre équipement"
+msgstr "Add another piece of equipment"
+
+#: .\logistics\templates\logistics\partials\demandes_list.html:59
+msgid "Annuler cette demande ?"
+msgstr "Cancel this request?"
+
+#: .\logistics\templates\logistics\partials\demandes_list.html:80
+msgid "Marquer comme retourné"
+msgstr "Mark as returned"
+
+#: .\logistics\templates\logistics\partials\demandes_list.html:88
+#: .\logistics\templates\logistics\partials\ticket_formateur_form.html:6
+msgid "Signaler une panne"
+msgstr "Report a fault"
+
+#: .\logistics\templates\logistics\partials\demandes_list.html:105
+msgid "Date de demande"
+msgstr "Request date"
+
+#: .\logistics\templates\logistics\partials\demandes_list.html:119
+msgid "Aucune demande trouvée"
+msgstr "No request found"
+
+#: .\logistics\templates\logistics\partials\demandes_list.html:120
+msgid ""
+"Soumettez votre première demande de matériel en cliquant sur "
+"<strong>\"Nouvelle demande\"</strong>."
+msgstr ""
+"Submit your first equipment request by clicking <strong>\"New "
+"Request\"</strong>."
+
+#: .\logistics\templates\logistics\partials\equipement_form.html:10
+msgid "Formulaire équipement"
+msgstr "Equipment form"
+
+#: .\logistics\templates\logistics\partials\equipements_list.html:13
+msgid "Réf."
+msgstr "Ref."
+
+#: .\logistics\templates\logistics\partials\equipements_list.html:13
+msgid "Stock"
+msgstr "Stock"
+
+#: .\logistics\templates\logistics\partials\equipements_list.html:20
+msgid "Inactif"
+msgstr "Inactive"
+
+#: .\logistics\templates\logistics\partials\equipements_list.html:22
+msgid "Alerte stock"
+msgstr "Stock alert"
+
+#: .\logistics\templates\logistics\partials\equipements_list.html:39
+msgid "Supprimer cet équipement ?"
+msgstr "Delete this equipment?"
+
+#: .\logistics\templates\logistics\partials\equipements_list.html:55
+msgid "Aucun équipement trouvé."
+msgstr "No equipment found."
+
+#: .\logistics\templates\logistics\partials\ticket_form_modal.html:10
+msgid "Formulaire Ticket"
+msgstr "Ticket Form"
+
+#: .\logistics\templates\logistics\partials\ticket_formateur_form.html:12
+#, python-format
+msgid ""
+"Vous signalez un problème pour l'équipement <strong>%(equipement)s</strong> "
+"emprunté pour l'atelier <strong>%(atelier)s</strong>."
+msgstr ""
+"You are reporting an issue with the equipment "
+"<strong>%(equipement)s</strong> borrowed for the workshop "
+"<strong>%(atelier)s</strong>."
+
+#: .\logistics\templates\logistics\partials\ticket_formateur_form.html:17
+msgid "Titre du problème"
+msgstr "Issue title"
+
+#: .\logistics\templates\logistics\partials\ticket_formateur_form.html:18
+msgid "Ex: Ne s'allume plus"
+msgstr "E.g., Won't turn on"
+
+#: .\logistics\templates\logistics\partials\ticket_formateur_form.html:21
+msgid "Description détaillée"
+msgstr "Detailed description"
+
+#: .\logistics\templates\logistics\partials\ticket_formateur_form.html:22
+msgid "Décrivez les circonstances de la panne..."
+msgstr "Describe the circumstances of the fault..."
+
+#: .\logistics\templates\logistics\partials\ticket_formateur_form.html:26
+msgid "Envoyer le Ticket"
+msgstr "Send Ticket"
+
+#: .\logistics\templates\logistics\partials\tickets_list.html:23
+#: .\logistics\templates\logistics\tickets.html:175
+msgid "En traitement"
+msgstr "In progress"
+
+#: .\logistics\templates\logistics\partials\tickets_list.html:48
+msgid "Marquer Résolu"
+msgstr "Mark Resolved"
+
+#: .\logistics\templates\logistics\partials\tickets_list.html:64
+msgid "Aucun ticket actif"
+msgstr "No active ticket"
+
+#: .\logistics\templates\logistics\partials\tickets_list.html:65
+msgid "Il n'y a actuellement aucun problème signalé sur le matériel."
+msgstr "There are currently no reported equipment issues."
+
+#: .\logistics\templates\logistics\ticket_form.html:3
+msgid "Nouveau Ticket — Logistics"
+msgstr "New Ticket — Logistics"
+
+#: .\logistics\templates\logistics\ticket_form.html:180
+#: .\logistics\templates\logistics\tickets.html:144
+msgid "Nouveau ticket"
+msgstr "New ticket"
+
+#: .\logistics\templates\logistics\ticket_form.html:181
+msgid "Signalez un problème ou une demande de maintenance."
+msgstr "Report an issue or a maintenance request."
+
+#: .\logistics\templates\logistics\ticket_form.html:185
+msgid "Retour aux tickets"
+msgstr "Back to tickets"
+
+#: .\logistics\templates\logistics\ticket_form.html:193
+msgid "Informations du ticket"
+msgstr "Ticket information"
+
+#: .\logistics\templates\logistics\ticket_form.html:210
+msgid "Titre du ticket"
+msgstr "Ticket title"
+
+#: .\logistics\templates\logistics\ticket_form.html:219
+msgid "Description"
+msgstr "Description"
+
+#: .\logistics\templates\logistics\ticket_form.html:229
+msgid "Équipement concerné"
+msgstr "Related equipment"
+
+#: .\logistics\templates\logistics\ticket_form.html:247
+msgid "Soumettre le ticket"
+msgstr "Submit the ticket"
+
+#: .\logistics\templates\logistics\tickets.html:3
+msgid "Tickets — Logistics"
+msgstr "Tickets — Logistics"
+
+#: .\logistics\templates\logistics\tickets.html:125
+msgid "Tickets de maintenance"
+msgstr "Maintenance Tickets"
+
+#: .\logistics\templates\logistics\tickets.html:126
+msgid "Suivi des signalements et demandes de maintenance."
+msgstr "Track issue reports and maintenance requests."
+
+#: .\logistics\templates\logistics\tickets.html:157
+#: .\logistics\templates\logistics\tickets.html:192
+msgid "Tickets actifs"
+msgstr "Active tickets"
+
+#: .\logistics\templates\logistics\tickets.html:195
+msgid "Rechercher un ticket..."
+msgstr "Search for a ticket..."
+
+#: .\tuteur_ia\templates\tuteur_ia\profil.html:4
+#| msgid "Mon profil"
+msgid "Mon Profil IA"
+msgstr "My AI Profile"
+
+#: .\tuteur_ia\templates\tuteur_ia\profil.html:11
+msgid "Mon Profil Cognitif IA"
+msgstr "My AI Cognitive Profile"
+
+#: .\tuteur_ia\templates\tuteur_ia\profil.html:12
+msgid ""
+"Découvrez comment l'IA s'adapte à votre apprentissage en temps réel en "
+"identifiant vos forces et vos axes d'amélioration."
+msgstr ""
+"Discover how the AI adapts to your learning in real time by identifying your"
+" strengths and areas for improvement."
+
+#: .\tuteur_ia\templates\tuteur_ia\profil.html:22
+msgid "Concepts Maîtrisés"
+msgstr "Mastered Concepts"
+
+#: .\tuteur_ia\templates\tuteur_ia\profil.html:33
+msgid ""
+"L'IA n'a pas encore validé de concepts majeurs. Continuez vos sessions avec "
+"le Tuteur IA !"
+msgstr ""
+"The AI hasn't validated any major concepts yet. Keep going with your AI "
+"Tutor sessions!"
+
+#: .\tuteur_ia\templates\tuteur_ia\profil.html:40
+msgid "Concepts Fragiles (À réviser)"
+msgstr "Weak Concepts (To Review)"
+
+#: .\tuteur_ia\templates\tuteur_ia\profil.html:51
+#| msgid "Aucun cours créé pour le moment."
+msgid "Aucun concept fragile détecté pour le moment."
+msgstr "No weak concepts detected at the moment."
+
+#: .\tuteur_ia\templates\tuteur_ia\profil.html:58
+msgid "Erreurs Communes Détectées"
+msgstr "Common Errors Detected"
+
+#: .\tuteur_ia\templates\tuteur_ia\profil.html:67
+msgid "Génial ! Le tuteur n'a relevé aucune erreur récurrente."
+msgstr "Great! The tutor hasn't found any recurring errors."
+
+#: .\tuteur_ia\templates\tuteur_ia\profil.html:75
+#| msgid "Apprentissage"
+msgid "Style d'apprentissage"
+msgstr "Learning style"
+
+#: .\tuteur_ia\templates\tuteur_ia\profil.html:77
+msgid ""
+"Votre profil d'apprentissage IA aide le tuteur à personnaliser ses "
+"explications."
+msgstr ""
+"Your AI learning profile helps the tutor personalize its explanations."
+
+#: .\tuteur_ia\templates\tuteur_ia\profil.html:85
+msgid "Prêt à progresser ?"
+msgstr "Ready to progress?"
+
+#: .\tuteur_ia\templates\tuteur_ia\profil.html:87
+msgid ""
+"Lancez une nouvelle session de tutorat ou un QCM pour affiner votre profil."
+msgstr "Start a new tutoring session or a quiz to refine your profile."
+
+#: .\tuteur_ia\templates\tuteur_ia\profil.html:89
+#| msgid "Accès aux Cours"
+msgid "Aller aux Cours"
+msgstr "Go to Courses"
+
+#: .\tuteur_ia\templates\tuteur_ia\qcm.html:4
+#: .\tuteur_ia\templates\tuteur_ia\qcm.html:22
+#, python-format
+msgid "QCM — %(chapitre_titre)s"
+msgstr "Quiz — %(chapitre_titre)s"
+
+#: .\tuteur_ia\templates\tuteur_ia\qcm.html:23
+msgid "Tentative n°"
+msgstr "Attempt No."
+
+#: .\tuteur_ia\templates\tuteur_ia\qcm.html:26
+#| msgid "Sessions"
+msgid "questions"
+msgstr "questions"
+
+#: .\tuteur_ia\templates\tuteur_ia\qcm.html:27
+msgid "Seuil : 80/100"
+msgstr "Threshold: 80/100"
+
+#: .\tuteur_ia\templates\tuteur_ia\qcm.html:34
+#| msgid "Génération des archives ZIP en cours..."
+msgid "Génération du QCM en cours..."
+msgstr "Generating the quiz..."
+
+#: .\tuteur_ia\templates\tuteur_ia\qcm.html:35
+msgid ""
+"L'IA ou le cache génèrent vos questions basées sur le cours. Merci de "
+"patienter quelques secondes."
+msgstr ""
+"The AI or the cache is generating your questions based on the course. Please"
+" wait a few seconds."
+
+#: .\tuteur_ia\templates\tuteur_ia\qcm.html:64
+#: .\tuteur_ia\templates\tuteur_ia\qcm.html:278
+#| msgid "Voir les détails"
+msgid "Voir mes résultats"
+msgstr "View my results"
+
+#: .\tuteur_ia\templates\tuteur_ia\qcm.html:78
+msgid "Correctes"
+msgstr "Correct"
+
+#: .\tuteur_ia\templates\tuteur_ia\qcm.html:82
+msgid "Incorrectes"
+msgstr "Incorrect"
+
+#: .\tuteur_ia\templates\tuteur_ia\qcm.html:105
+#: .\tuteur_ia\templates\tuteur_ia\session.html:630
+#: .\tuteur_ia\templates\tuteur_ia\session.html:664
+#| msgid "Erreur réseau"
+msgid "Erreur serveur"
+msgstr "Server error"
+
+#: .\tuteur_ia\templates\tuteur_ia\qcm.html:136
+#: .\tuteur_ia\templates\tuteur_ia\session.html:458
+#| msgid "Description"
+msgid "Question"
+msgstr "Question"
+
+#: .\tuteur_ia\templates\tuteur_ia\qcm.html:187
+#| msgid "Aucune vidéo disponible pour ce chapitre."
+msgid "Aucun PDF disponible pour ce chapitre"
+msgstr "No PDF available for this chapter"
+
+#: .\tuteur_ia\templates\tuteur_ia\qcm.html:187
+msgid "Impossible de charger le QCM"
+msgstr "Unable to load the quiz"
+
+#: .\tuteur_ia\templates\tuteur_ia\qcm.html:191
+msgid ""
+"Le formateur doit d'abord uploader un document PDF dans ce chapitre pour "
+"activer la génération automatique du QCM."
+msgstr ""
+"The instructor must first upload a PDF document to this chapter to enable "
+"automatic quiz generation."
+
+#: .\tuteur_ia\templates\tuteur_ia\qcm.html:192
+#| msgid "Erreur inconnue"
+msgid "Erreur de connexion."
+msgstr "Connection error."
+
+#: .\tuteur_ia\templates\tuteur_ia\qcm.html:194
+#: .\tuteur_ia\templates\tuteur_ia\qcm.html:327
+#: .\tuteur_ia\templates\tuteur_ia\qcm_resultats.html:53
+#: .\tuteur_ia\templates\tuteur_ia\session.html:464
+#: .\tuteur_ia\templates\tuteur_ia\session.html:603
+#| msgid "Retour aux devoirs"
+msgid "Retour au cours"
+msgstr "Back to course"
+
+#: .\tuteur_ia\templates\tuteur_ia\qcm.html:255
+msgid "Tu n'as pas répondu à"
+msgstr "You haven't answered"
+
+#: .\tuteur_ia\templates\tuteur_ia\qcm.html:255
+msgid "question(s). Réponds à toutes avant de soumettre."
+msgstr "question(s). Please answer all of them before submitting."
+
+#: .\tuteur_ia\templates\tuteur_ia\qcm.html:261
+#| msgid "Cours en cours"
+msgid "Correction en cours…"
+msgstr "Grading in progress…"
+
+#: .\tuteur_ia\templates\tuteur_ia\qcm.html:279
+#| msgid "Erreur lors de l'importation"
+msgid "Erreur lors de la correction :"
+msgstr "Error during grading:"
+
+#: .\tuteur_ia\templates\tuteur_ia\qcm.html:331
+#: .\tuteur_ia\templates\tuteur_ia\session.html:613
+#| msgid "Résumer le chapitre"
+msgid "Réviser le chapitre"
+msgstr "Review the chapter"
+
+#: .\tuteur_ia\templates\tuteur_ia\qcm.html:332
+#: .\tuteur_ia\templates\tuteur_ia\qcm_resultats.html:50
+#| msgid "Passer le QCM"
+msgid "Refaire le QCM"
+msgstr "Retake the quiz"
+
+#: .\tuteur_ia\templates\tuteur_ia\qcm_resultats.html:4
+#, python-format
+msgid "Résultats du QCM — %(chapitre_titre)s"
+msgstr "Quiz Results — %(chapitre_titre)s"
+
+#: .\tuteur_ia\templates\tuteur_ia\qcm_resultats.html:13
+#| msgid "Résultats et QCM"
+msgid "Résultats du QCM"
+msgstr "Quiz Results"
+
+#: .\tuteur_ia\templates\tuteur_ia\qcm_resultats.html:14
+#, python-format
+msgid "Tentative n°%(n)s · Réalisé le %(d)s"
+msgstr "Attempt No.%(n)s · Completed on %(d)s"
+
+#: .\tuteur_ia\templates\tuteur_ia\qcm_resultats.html:27
+#| msgid "Excellent !"
+msgid "Excellent travail !"
+msgstr "Excellent work!"
+
+#: .\tuteur_ia\templates\tuteur_ia\qcm_resultats.html:29
+msgid "Pas mal ! Encore un petit effort."
+msgstr "Not bad! Just a bit more effort."
+
+#: .\tuteur_ia\templates\tuteur_ia\qcm_resultats.html:31
+msgid "Continue d'apprendre !"
+msgstr "Keep learning!"
+
+#: .\tuteur_ia\templates\tuteur_ia\qcm_resultats.html:36
+msgid ""
+"Tu as validé ce chapitre avec succès ! Tu maîtrises les notions clés "
+"présentées dans le document."
+msgstr ""
+"You successfully passed this chapter! You have mastered the key concepts "
+"presented in the document."
+
+#: .\tuteur_ia\templates\tuteur_ia\qcm_resultats.html:38
+msgid ""
+"Le seuil de réussite est de <strong>80/100</strong>. Prends le temps de "
+"relire le document du chapitre et tente à nouveau le QCM."
+msgstr ""
+"The passing threshold is <strong>80/100</strong>. Take the time to re-read "
+"the chapter document and try the quiz again."
+
+#: .\tuteur_ia\templates\tuteur_ia\qcm_resultats.html:46
+#, python-format
+#| msgid "Chapitre suivant"
+msgid "Chapitre suivant: %(titre)s →"
+msgstr "Next chapter: %(titre)s →"
+
+#: .\tuteur_ia\templates\tuteur_ia\qcm_resultats.html:60
+#| msgid "Description détaillée"
+msgid "Correction détaillée"
+msgstr "Detailed correction"
+
+#: .\tuteur_ia\templates\tuteur_ia\qcm_resultats.html:70
+msgid "Correct"
+msgstr "Correct"
+
+#: .\tuteur_ia\templates\tuteur_ia\qcm_resultats.html:72
+msgid "Incorrect"
+msgstr "Incorrect"
+
+#: .\tuteur_ia\templates\tuteur_ia\qcm_resultats.html:78
+#, python-format
+msgid "Q%(num)s."
+msgstr "Q%(num)s."
+
+#: .\tuteur_ia\templates\tuteur_ia\qcm_resultats.html:118
+#| msgid "Félicitations !"
+msgid "Explication :"
+msgstr "Explanation:"
+
+#: .\tuteur_ia\templates\tuteur_ia\session.html:4
+#, python-format
+msgid "Tuteur IA — %(chapitre_titre)s"
+msgstr "AI Tutor — %(chapitre_titre)s"
+
+#: .\tuteur_ia\templates\tuteur_ia\session.html:427
+#| msgid "Session Tuteur IA"
+msgid "Session Active"
+msgstr "Active Session"
+
+#: .\tuteur_ia\templates\tuteur_ia\session.html:434
+msgid "Score de maîtrise"
+msgstr "Mastery score"
+
+#: .\tuteur_ia\templates\tuteur_ia\session.html:440
+#| msgid "Seuil d'alerte"
+msgid "Seuil de validation"
+msgstr "Passing threshold"
+
+#: .\tuteur_ia\templates\tuteur_ia\session.html:477
+#, python-format
+#| msgid "Session socratique intelligente"
+msgid "Session socratique · %(chapitre_titre)s"
+msgstr "Socratic session · %(chapitre_titre)s"
+
+#: .\tuteur_ia\templates\tuteur_ia\session.html:479
+msgid "Chargement…"
+msgstr "Loading…"
+
+#: .\tuteur_ia\templates\tuteur_ia\session.html:498
+msgid "Écris ta réponse… (Entrée pour envoyer, Maj+Entrée = nouvelle ligne)"
+msgstr "Type your answer… (Enter to send, Shift+Enter = new line)"
+
+#: .\tuteur_ia\templates\tuteur_ia\session.html:505
+msgid "Entrée pour envoyer · Maj+Entrée pour saut de ligne"
+msgstr "Enter to send · Shift+Enter for a new line"
+
+#: .\tuteur_ia\templates\tuteur_ia\session.html:565
+msgid "Q"
+msgstr "Q"
+
+#: .\tuteur_ia\templates\tuteur_ia\session.html:597
+msgid "Maîtrisé"
+msgstr "Mastered"
+
+#: .\tuteur_ia\templates\tuteur_ia\session.html:599
+#| msgid "Félicitations !"
+msgid "Félicitations ! Score :"
+msgstr "Congratulations! Score:"
+
+#: .\tuteur_ia\templates\tuteur_ia\session.html:600
+#| msgid ""
+#| "Obtenez votre score de maîtrise et validez vos connaissances avec le QCM."
+msgid "Tu maîtrises bien ce chapitre ! Teste tes connaissances avec le QCM."
+msgstr ""
+"You have a good grasp of this chapter! Test your knowledge with the quiz."
+
+#: .\tuteur_ia\templates\tuteur_ia\session.html:602
+#| msgid "Passer le QCM"
+msgid "Faire le QCM"
+msgstr "Take the quiz"
+
+#: .\tuteur_ia\templates\tuteur_ia\session.html:608
+#| msgid "Devoir"
+msgid "À revoir"
+msgstr "To review"
+
+#: .\tuteur_ia\templates\tuteur_ia\session.html:610
+msgid "Score :"
+msgstr "Score:"
+
+#: .\tuteur_ia\templates\tuteur_ia\session.html:610
+msgid "Continue !"
+msgstr "Keep going!"
+
+#: .\tuteur_ia\templates\tuteur_ia\session.html:611
+#, python-format
+msgid ""
+"Tu n'as pas encore atteint 75%%. Relis le chapitre et recommence la session."
+msgstr ""
+"You haven't reached 75%% yet. Review the chapter and restart the session."
+
+#: .\tuteur_ia\templates\tuteur_ia\session.html:614
+#| msgid "Commencer"
+msgid "Recommencer"
+msgstr "Restart"
+
+#: .\tuteur_ia\templates\tuteur_ia\session.html:640
+#| msgid "Erreur réseau"
+msgid "Erreur réseau :"
+msgstr "Network error:"
+
+#: .\tuteur_ia\templates\tuteur_ia\session.html:678
+#| msgid "Erreur"
+msgid "Erreur :"
+msgstr "Error:"

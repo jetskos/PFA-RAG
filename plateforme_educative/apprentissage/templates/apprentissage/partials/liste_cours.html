@@ -1,3 +1,4 @@
+{% load i18n %}
 {% if page_obj.object_list %}
     {% for cours in page_obj %}
     <div class="course-cover-card">
@@ -11,7 +12,7 @@
             <div class="cover-top">
                 <span class="badge-niveau">{{ cours.niveau.nom }}</span>
                 {% if not cours.actif %}
-                    <span class="badge-brouillon">Brouillon</span>
+                    <span class="badge-brouillon">{% translate "Brouillon" %}</span>
                 {% endif %}
             </div>
 
@@ -19,14 +20,14 @@
                 <span class="cover-creator">
                     <i class="ti ti-user-circle"></i>
                     {% if cours.createur == request.user %}
-                        Par vous
+                        {% translate "Par vous" %}
                     {% else %}
                         {{ cours.createur.get_full_name|default:cours.createur.email }}
                     {% endif %}
                 </span>
                 <span class="cover-chapters">
                     <i class="ti ti-layout-list"></i>
-                    {{ cours.chapitres.count }} chapitre{{ cours.chapitres.count|pluralize }}
+                    {% blocktranslate count counter=cours.chapitres.count %}{{ counter }} chapitre{% plural %}{{ counter }} chapitres{% endblocktranslate %}
                 </span>
             </div>
         </div>
@@ -34,14 +35,14 @@
         <!-- Card Content -->
         <div class="card-content">
             <h3 class="course-title">{{ cours.titre }}</h3>
-            <p class="course-resume">{{ cours.resume|default:"Aucun résumé disponible." }}</p>
+            <p class="course-resume">{% if cours.resume %}{{ cours.resume }}{% else %}{% translate "Aucun résumé disponible." %}{% endif %}</p>
 
             <div class="card-footer">
                 <a href="{% url 'apprentissage:detail_cours' cours.id %}" class="btn-consult">
-                    <i class="ti ti-player-play"></i> Commencer
+                    <i class="ti ti-player-play"></i> {% translate "Commencer" %}
                 </a>
                 {% if cours.createur == request.user or request.user.role == 'ADMIN' or request.user.is_superuser %}
-                <a href="{% url 'apprentissage:editer_cours' cours.id %}" class="btn-edit-card" title="Modifier le cours">
+                <a href="{% url 'apprentissage:editer_cours' cours.id %}" class="btn-edit-card" title="{% translate 'Modifier le cours' %}">
                     <i class="ti ti-pencil"></i>
                 </a>
                 {% endif %}
@@ -49,7 +50,7 @@
         </div>
     </div>
     {% endfor %}
-    
+
     <div style="grid-column: 1 / -1; width: 100%;">
         {% include 'core/partials/pagination.html' with hx_target='#catalog-grid' %}
     </div>
@@ -58,7 +59,7 @@
         <div style="width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg, rgba(13,148,136,0.1), rgba(59,130,246,0.1)); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem;">
             <i class="ti ti-search" style="font-size: 2rem; color: #0D9488;"></i>
         </div>
-        <h3 style="color: var(--text-primary, #1e293b); margin: 0 0 0.5rem; font-size: 1.3rem;">Aucun cours trouvé</h3>
-        <p style="color: var(--text-muted, #64748b); margin: 0; max-width: 360px; margin: 0 auto;">Essayez de modifier votre recherche ou de sélectionner un niveau différent.</p>
+        <h3 style="color: var(--text-primary, #1e293b); margin: 0 0 0.5rem; font-size: 1.3rem;">{% translate "Aucun cours trouvé" %}</h3>
+        <p style="color: var(--text-muted, #64748b); margin: 0; max-width: 360px; margin: 0 auto;">{% translate "Essayez de modifier votre recherche ou de sélectionner un niveau différent." %}</p>
     </div>
 {% endif %}

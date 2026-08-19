@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
-{% load static %}
-{% block title %}Catalogue des cours | EduTech{% endblock %}
+{% load static i18n %}
+{% block title %}{% translate "Catalogue des cours" %} | EduTech{% endblock %}
 
 {% block content %}
 <style>
@@ -473,27 +473,27 @@
                 <i class="ti ti-sparkles"></i> EduTech · IoT & IA Platform
             </span>
             <h1 class="hero-title">
-                Votre <span>Catalogue de Cours</span>
+                {% translate "Votre" %} <span>{% translate "Catalogue de Cours" %}</span>
             </h1>
             <p class="hero-desc">
-                Explorez nos formations en Intelligence Artificielle, IoT et Robotique. Apprenez à votre rythme, guidé par nos experts.
+                {% translate "Explorez nos formations en Intelligence Artificielle, IoT et Robotique. Apprenez à votre rythme, guidé par nos experts." %}
             </p>
 
             <div class="hero-stats">
                 <div class="hero-stat">
                     <span class="hero-stat-num">{{ cours_list|length }}</span>
-                    <span class="hero-stat-label">Cours</span>
+                    <span class="hero-stat-label">{% translate "Cours" %}</span>
                 </div>
                 <div class="hero-stat-divider"></div>
                 <div class="hero-stat">
                     <span class="hero-stat-num">{{ niveaux|length }}</span>
-                    <span class="hero-stat-label">Niveaux</span>
+                    <span class="hero-stat-label">{% translate "Niveaux" %}</span>
                 </div>
                 {% if request.user.is_formateur or request.user.is_superuser %}
                 <div class="hero-stat-divider"></div>
                 <div class="hero-stat">
                     <i class="ti ti-shield-check" style="font-size: 1.8rem; color: #2dd4bf; line-height: 1;"></i>
-                    <span class="hero-stat-label">Accès complet</span>
+                    <span class="hero-stat-label">{% translate "Accès complet" %}</span>
                 </div>
                 {% endif %}
             </div>
@@ -506,13 +506,13 @@
 
                 <div class="catalog-search-container">
                     <i class="ti ti-search"></i>
-                    <input type="search" name="q" placeholder="Rechercher un cours..." autocomplete="off" value="{{ q }}">
+                    <input type="search" name="q" placeholder="{% translate 'Rechercher un cours...' %}" autocomplete="off" value="{{ q }}">
                 </div>
 
                 {% if request.user.is_superuser or request.user.is_formateur %}
                 <div class="nivel-select-wrap">
                     <select name="niveau_id">
-                        <option value="">Tous niveaux</option>
+                        <option value="">{% translate "Tous niveaux" %}</option>
                         {% for n in niveaux %}
                         <option value="{{ n.id }}" {% if n.id|stringformat:"s" == niveau_filter_id %}selected{% endif %}>{{ n.nom }}</option>
                         {% endfor %}
@@ -527,10 +527,10 @@
     <!-- ═══════════════════ CHIP FILTERS (Formateur/Admin only) ═══════════════════ -->
     {% if request.user.is_superuser or request.user.is_formateur %}
     <div class="filter-chips-bar">
-        <span class="filter-chips-label"><i class="ti ti-filter"></i> Niveau :</span>
+        <span class="filter-chips-label"><i class="ti ti-filter"></i> {% translate "Niveau" %} :</span>
         <a href="{% url 'apprentissage:liste_cours' %}{% if q %}?q={{ q }}{% endif %}"
            class="chip {% if not niveau_filter_id %}active{% endif %}">
-            Tous <span class="chip-count">{{ cours_list|length }}</span>
+            {% translate "Tous" %} <span class="chip-count">{{ cours_list|length }}</span>
         </a>
         {% for n in niveaux %}
         <a href="?niveau_id={{ n.id }}{% if q %}&q={{ q }}{% endif %}"
@@ -545,9 +545,9 @@
     <p class="results-info">
         <i class="ti ti-books"></i>
         {% if q or niveau_filter_id %}
-            <strong>{{ cours_list|length }}</strong> cours correspondent à votre recherche.
+            {% blocktranslate count counter=cours_list|length %}<strong>{{ counter }}</strong> cours correspond à votre recherche.{% plural %}<strong>{{ counter }}</strong> cours correspondent à votre recherche.{% endblocktranslate %}
         {% else %}
-            <strong>{{ cours_list|length }}</strong> cours disponibles.
+            {% blocktranslate count counter=cours_list|length %}<strong>{{ counter }}</strong> cours disponible.{% plural %}<strong>{{ counter }}</strong> cours disponibles.{% endblocktranslate %}
         {% endif %}
     </p>
 

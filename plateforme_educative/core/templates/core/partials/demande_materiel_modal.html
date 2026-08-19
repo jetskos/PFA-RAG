@@ -1,55 +1,56 @@
+{% load i18n %}
 <div class="modal-backdrop-premium" onclick="closeModal()">
     <div class="modal-card-premium glassmorphism" onclick="event.stopPropagation()">
         <div class="modal-header-premium">
             <div>
-                <h2 class="modal-title-premium">Nouvelle Demande Logistique</h2>
-                <p class="modal-subtitle-premium">Sélectionnez le matériel nécessaire pour votre prochain atelier.</p>
+                <h2 class="modal-title-premium">{% translate "Nouvelle Demande Logistique" %}</h2>
+                <p class="modal-subtitle-premium">{% translate "Sélectionnez le matériel nécessaire pour votre prochain atelier." %}</p>
             </div>
             <button onclick="closeModal()" class="close-btn-premium"><i class="ti ti-x"></i></button>
         </div>
-        
+
         <form method="post"
               hx-post="{% url 'dashboard_formateur_create_demande' %}"
               hx-target="#modal-container"
               class="modal-form-premium">
             {% csrf_token %}
-            
+
             <div class="form-group-premium">
                 <label for="{{ demande_form.equipement.id_for_label }}">
-                    <i class="ti ti-box"></i> Équipement requis
+                    <i class="ti ti-box"></i> {% translate "Équipement requis" %}
                 </label>
                 {{ demande_form.equipement }}
                 {% if demande_form.equipement.errors %}<span class="error-text-premium"><i class="ti ti-alert-circle"></i> {{ demande_form.equipement.errors.0 }}</span>{% endif %}
             </div>
-            
+
             <div class="form-row-premium">
                 <div class="form-group-premium" style="flex: 2;">
                     <label for="{{ demande_form.atelier_cible.id_for_label }}">
-                        <i class="ti ti-building-community"></i> Atelier cible
+                        <i class="ti ti-building-community"></i> {% translate "Atelier cible" %}
                     </label>
                     {{ demande_form.atelier_cible }}
                     {% if demande_form.atelier_cible.errors %}<span class="error-text-premium"><i class="ti ti-alert-circle"></i> {{ demande_form.atelier_cible.errors.0 }}</span>{% endif %}
                 </div>
-                
+
                 <div class="form-group-premium" style="flex: 1;">
                     <label for="{{ demande_form.quantite.id_for_label }}">
-                        <i class="ti ti-123"></i> Quantité
+                        <i class="ti ti-123"></i> {% translate "Quantité" %}
                     </label>
                     {{ demande_form.quantite }}
                     {% if demande_form.quantite.errors %}<span class="error-text-premium"><i class="ti ti-alert-circle"></i> {{ demande_form.quantite.errors.0 }}</span>{% endif %}
                 </div>
             </div>
-            
+
             {% if demande_form.non_field_errors %}
                 <div class="alert-premium error-alert">
                     <i class="ti ti-alert-triangle"></i> {{ demande_form.non_field_errors.0 }}
                 </div>
             {% endif %}
-            
+
             <div class="modal-footer-premium">
-                <button type="button" class="btn-cancel-premium" onclick="closeModal()">Annuler</button>
+                <button type="button" class="btn-cancel-premium" onclick="closeModal()">{% translate "Annuler" %}</button>
                 <button type="submit" class="btn-submit-premium">
-                    Envoyer la demande <i class="ti ti-send"></i>
+                    {% translate "Envoyer la demande" %} <i class="ti ti-send"></i>
                 </button>
             </div>
         </form>
@@ -255,16 +256,16 @@
             if (equipSelect && !equipSelect.tomselect) {
                 new TomSelect(equipSelect, {
                     create: false,
-                    placeholder: "Rechercher un équipement...",
+                    placeholder: "{% translate 'Rechercher un équipement...' %}",
                     maxOptions: 50
                 });
             }
-            
+
             const atelierSelect = document.getElementById("{{ demande_form.atelier_cible.id_for_label }}");
             if (atelierSelect && !atelierSelect.tomselect) {
                 new TomSelect(atelierSelect, {
                     create: false,
-                    placeholder: "Rechercher un atelier...",
+                    placeholder: "{% translate 'Rechercher un atelier...' %}",
                     maxOptions: 50
                 });
             }

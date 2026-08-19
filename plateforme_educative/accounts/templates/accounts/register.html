@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
-{% load static %}
-{% block title %}Inscription | EduTech Platform{% endblock %}
+{% load static i18n %}
+{% block title %}{% translate "Inscription" %} | EduTech Platform{% endblock %}
 
 {% block content %}
 <style>
@@ -257,19 +257,19 @@
                 </div>
 
                 <h2 class="auth-brand-headline">
-                    Rejoignez la<br>plateforme <em>nouvelle<br>génération.</em>
+                    {% blocktranslate %}Rejoignez la<br>plateforme <em>nouvelle<br>génération.</em>{% endblocktranslate %}
                 </h2>
                 <p class="auth-brand-desc">
-                    Inscrivez-vous pour accéder à vos cours, interagir avec le tuteur IA et soumettre vos travaux.
+                    {% translate "Inscrivez-vous pour accéder à vos cours, interagir avec le tuteur IA et soumettre vos travaux." %}
                 </p>
             </div>
 
             <div class="auth-brand-bottom">
                 <ul class="auth-feature-list">
-                    <li><i class="ti ti-robot"></i> Tuteur IA socratique basé sur vos cours</li>
-                    <li><i class="ti ti-books"></i> Cours structurés par niveau</li>
-                    <li><i class="ti ti-clipboard-check"></i> QCM et devoirs automatisés</li>
-                    <li><i class="ti ti-chart-bar"></i> Analytics de progression en temps réel</li>
+                    <li><i class="ti ti-robot"></i> {% translate "Tuteur IA socratique basé sur vos cours" %}</li>
+                    <li><i class="ti ti-books"></i> {% translate "Cours structurés par niveau" %}</li>
+                    <li><i class="ti ti-clipboard-check"></i> {% translate "QCM et devoirs automatisés" %}</li>
+                    <li><i class="ti ti-chart-bar"></i> {% translate "Analytics de progression en temps réel" %}</li>
                 </ul>
             </div>
         </div>
@@ -277,15 +277,15 @@
         <!-- Right Form Panel -->
         <div class="auth-form-panel">
             <div class="auth-form-header">
-                <p class="auth-form-eyebrow">Nouveau Compte</p>
-                <h1 class="auth-form-title">Inscription</h1>
-                <p class="auth-form-sub">Créez votre compte EduTech pour commencer.</p>
+                <p class="auth-form-eyebrow">{% translate "Nouveau Compte" %}</p>
+                <h1 class="auth-form-title">{% translate "Inscription" %}</h1>
+                <p class="auth-form-sub">{% translate "Créez votre compte EduTech pour commencer." %}</p>
             </div>
 
             {% include 'accounts/partials/register_form.html' %}
 
             <div class="auth-links">
-                <span>Déjà un compte ? <a href="{% url 'accounts:login' %}" hx-get="{% url 'accounts:login' %}" hx-target="#zone-principale" hx-select="#zone-principale" hx-swap="outerHTML" hx-push-url="true">Se connecter</a></span>
+                <span>{% translate "Déjà un compte ?" %} <a href="{% url 'accounts:login' %}" hx-get="{% url 'accounts:login' %}" hx-target="#zone-principale" hx-select="#zone-principale" hx-swap="outerHTML" hx-push-url="true">{% translate "Se connecter" %}</a></span>
             </div>
         </div>
 

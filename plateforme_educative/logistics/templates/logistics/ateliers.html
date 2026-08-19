@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
-{% block title %}Ateliers — Logistics{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Ateliers — Logistics" %}{% endblock %}
 {% block content %}
 <style>
   /* ═══════════════════════════════════════════════════
@@ -196,36 +197,36 @@
   <div class="logi-hero">
     <div class="logi-hero-left">
       <span class="logi-eyebrow"><i class="ti ti-building-community"></i> Logistics</span>
-      <h1 class="logi-page-title">Gestion des ateliers</h1>
-      <p class="logi-page-sub">Planifiez et gérez les ateliers de formation IoT.</p>
+      <h1 class="logi-page-title">{% translate "Gestion des ateliers" %}</h1>
+      <p class="logi-page-sub">{% translate "Planifiez et gérez les ateliers de formation IoT." %}</p>
       <div class="logi-subtabs">
         {% if user.is_staff or user.role == 'ADMIN' %}
         <a href="{% url 'logistics:inventaire' %}" class="logi-subtab">
-          <i class="ti ti-package"></i> Inventaire
+          <i class="ti ti-package"></i> {% translate "Inventaire" %}
         </a>
         <a href="{% url 'logistics:tickets' %}" class="logi-subtab">
-          <i class="ti ti-ticket"></i> Tickets
+          <i class="ti ti-ticket"></i> {% translate "Tickets" %}
         </a>
         {% endif %}
         <a href="{% url 'logistics:ateliers' %}" class="logi-subtab active">
-          <i class="ti ti-building-community"></i> Ateliers
+          <i class="ti ti-building-community"></i> {% translate "Ateliers" %}
         </a>
         <a href="{% url 'logistics:demandes' %}" class="logi-subtab">
-          <i class="ti ti-truck-delivery"></i> Demandes
+          <i class="ti ti-truck-delivery"></i> {% translate "Demandes" %}
         </a>
       </div>
     </div>
     <div class="logi-hero-right">
 
-      <a href="{% url 'logistics:exporter_ateliers' %}" class="logi-btn-ghost" title="Exporter en Excel">
-        <i class="ti ti-download"></i> Exporter
+      <a href="{% url 'logistics:exporter_ateliers' %}" class="logi-btn-ghost" title="{% translate 'Exporter en Excel' %}">
+        <i class="ti ti-download"></i> {% translate "Exporter" %}
       </a>
       {% if user.is_staff or user.is_formateur %}
       <button class="logi-btn-primary" type="button"
         hx-get="{% url 'logistics:ajouter_atelier' %}"
         hx-target="#form-atelier-container"
         hx-swap="innerHTML">
-        <i class="ti ti-plus"></i> Nouvel atelier
+        <i class="ti ti-plus"></i> {% translate "Nouvel atelier" %}
       </button>
       {% endif %}
     </div>
@@ -236,33 +237,33 @@
     <div class="stat-tile">
       <div class="stat-tile-top">
         <div class="stat-tile-icon" style="background:rgba(13,148,136,0.1);color:#0D9488;"><i class="ti ti-building-community"></i></div>
-        <span class="stat-tile-trend" style="background:rgba(13,148,136,0.08);color:#0D9488;">Total</span>
+        <span class="stat-tile-trend" style="background:rgba(13,148,136,0.08);color:#0D9488;">{% translate "Total" %}</span>
       </div>
-      <div><div class="stat-tile-val">{{ ateliers_total }}</div><div class="stat-tile-lbl">Ateliers créés</div></div>
+      <div><div class="stat-tile-val">{{ ateliers_total }}</div><div class="stat-tile-lbl">{% translate "Ateliers créés" %}</div></div>
       <div class="stat-tile-bar"><div class="stat-tile-bar-fill" style="width:100%;background:#0D9488;"></div></div>
     </div>
     <div class="stat-tile">
       <div class="stat-tile-top">
         <div class="stat-tile-icon" style="background:rgba(16,185,129,0.1);color:#10b981;"><i class="ti ti-player-play"></i></div>
-        <span class="stat-tile-trend" style="background:rgba(16,185,129,0.1);color:#059669;">Actifs</span>
+        <span class="stat-tile-trend" style="background:rgba(16,185,129,0.1);color:#059669;">{% translate "Actifs" %}</span>
       </div>
-      <div><div class="stat-tile-val">{{ ateliers_en_cours }}</div><div class="stat-tile-lbl">En cours</div></div>
+      <div><div class="stat-tile-val">{{ ateliers_en_cours }}</div><div class="stat-tile-lbl">{% translate "En cours" %}</div></div>
       <div class="stat-tile-bar"><div class="stat-tile-bar-fill" style="width:60%;background:#10b981;"></div></div>
     </div>
     <div class="stat-tile">
       <div class="stat-tile-top">
         <div class="stat-tile-icon" style="background:rgba(59,130,246,0.1);color:#3b82f6;"><i class="ti ti-calendar-event"></i></div>
-        <span class="stat-tile-trend" style="background:rgba(59,130,246,0.1);color:#3b82f6;">Planifiés</span>
+        <span class="stat-tile-trend" style="background:rgba(59,130,246,0.1);color:#3b82f6;">{% translate "Planifiés" %}</span>
       </div>
-      <div><div class="stat-tile-val">{{ ateliers_a_venir }}</div><div class="stat-tile-lbl">À venir</div></div>
+      <div><div class="stat-tile-val">{{ ateliers_a_venir }}</div><div class="stat-tile-lbl">{% translate "À venir" %}</div></div>
       <div class="stat-tile-bar"><div class="stat-tile-bar-fill" style="width:40%;background:#3b82f6;"></div></div>
     </div>
     <div class="stat-tile">
       <div class="stat-tile-top">
         <div class="stat-tile-icon" style="background:rgba(239,68,68,0.1);color:#ef4444;"><i class="ti ti-ban"></i></div>
-        <span class="stat-tile-trend" style="background:rgba(239,68,68,0.08);color:#dc2626;">Annulés</span>
+        <span class="stat-tile-trend" style="background:rgba(239,68,68,0.08);color:#dc2626;">{% translate "Annulés" %}</span>
       </div>
-      <div><div class="stat-tile-val">{{ ateliers_annules }}</div><div class="stat-tile-lbl">Annulés</div></div>
+      <div><div class="stat-tile-val">{{ ateliers_annules }}</div><div class="stat-tile-lbl">{% translate "Annulés" %}</div></div>
       <div class="stat-tile-bar"><div class="stat-tile-bar-fill" style="width:20%;background:#ef4444;"></div></div>
     </div>
   </div>
@@ -270,10 +271,10 @@
   <!-- ══ ATELIERS PANEL ══ -->
   <div class="logi-panel">
     <div class="logi-panel-head">
-      <span class="logi-panel-title"><i class="ti ti-list-details"></i> Liste des ateliers</span>
+      <span class="logi-panel-title"><i class="ti ti-list-details"></i> {% translate "Liste des ateliers" %}</span>
       <div class="logi-filter-search">
         <i class="ti ti-search"></i>
-        <input type="text" name="q" placeholder="Rechercher un atelier..."
+        <input type="text" name="q" placeholder="{% translate 'Rechercher un atelier...' %}"
                hx-get="{% url 'logistics:ateliers' %}"
                hx-target="#ateliers-list"
                hx-trigger="keyup changed delay:300ms">

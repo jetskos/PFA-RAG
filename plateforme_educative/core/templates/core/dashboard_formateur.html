@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
-{% load static %}
-{% block title %}Tableau de bord — Formateur{% endblock %}
+{% load static i18n %}
+{% block title %}{% translate "Tableau de bord — Formateur" %}{% endblock %}
 {% block content %}
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
@@ -424,23 +424,23 @@
       <div class="fmt-hero-left">
         <div class="fmt-hero-eyebrow">
           <span class="live-dot"></span>
-          EduTech · Espace Formateur
+          EduTech · {% translate "Espace Formateur" %}
         </div>
         <h1 class="fmt-hero-title">
-          Bonjour, <em>{{ user.get_full_name|default:user.email|truncatechars:20 }}</em> 👋
+          {% blocktranslate with nom=user.get_full_name|default:user.email|truncatechars:20 %}Bonjour, <em>{{ nom }}</em> 👋{% endblocktranslate %}
         </h1>
         <p class="fmt-hero-sub">
-          {% now "l d F Y" %} · Prêt à inspirer vos apprenants aujourd'hui ?
+          {% now "l d F Y" %} · {% translate "Prêt à inspirer vos apprenants aujourd'hui ?" %}
         </p>
         <div class="fmt-hero-pills">
           <div class="fmt-hero-pill">
-            <span class="ph-num">{{ total_cours }}</span> cours
+            <span class="ph-num">{{ total_cours }}</span> {% blocktranslate count counter=total_cours %}cours{% plural %}cours{% endblocktranslate %}
           </div>
           <div class="fmt-hero-pill">
-            <span class="ph-num">{{ total_chapitres }}</span> chapitres
+            <span class="ph-num">{{ total_chapitres }}</span> {% blocktranslate count counter=total_chapitres %}chapitre{% plural %}chapitres{% endblocktranslate %}
           </div>
           <div class="fmt-hero-pill">
-            <span class="ph-num">{{ demandes_en_attente }}</span> demande{{ demandes_en_attente|pluralize }} en attente
+            <span class="ph-num">{{ demandes_en_attente }}</span> {% blocktranslate count counter=demandes_en_attente %}demande en attente{% plural %}demandes en attente{% endblocktranslate %}
           </div>
         </div>
       </div>
@@ -465,40 +465,40 @@
       <div class="kpi-card kpi-card--teal">
         <div class="kpi-card-top">
           <div class="kpi-icon"><i class="ti ti-books"></i></div>
-          <span class="kpi-badge">Cours</span>
+          <span class="kpi-badge">{% translate "Cours" %}</span>
         </div>
         <div class="kpi-num">{{ total_cours }}</div>
-        <div class="kpi-label">Cours créés</div>
+        <div class="kpi-label">{% translate "Cours créés" %}</div>
         <div class="kpi-bar"><div class="kpi-bar-fill"></div></div>
       </div>
 
       <div class="kpi-card kpi-card--emerald">
         <div class="kpi-card-top">
           <div class="kpi-icon"><i class="ti ti-layout-list"></i></div>
-          <span class="kpi-badge">Chapitres</span>
+          <span class="kpi-badge">{% translate "Chapitres" %}</span>
         </div>
         <div class="kpi-num">{{ total_chapitres }}</div>
-        <div class="kpi-label">Chapitres rédigés</div>
+        <div class="kpi-label">{% translate "Chapitres rédigés" %}</div>
         <div class="kpi-bar"><div class="kpi-bar-fill"></div></div>
       </div>
 
       <div class="kpi-card kpi-card--blue">
         <div class="kpi-card-top">
           <div class="kpi-icon"><i class="ti ti-building-community"></i></div>
-          <span class="kpi-badge">Ateliers</span>
+          <span class="kpi-badge">{% translate "Ateliers" %}</span>
         </div>
         <div class="kpi-num">{{ mes_ateliers|length }}</div>
-        <div class="kpi-label">Ateliers organisés</div>
+        <div class="kpi-label">{% translate "Ateliers organisés" %}</div>
         <div class="kpi-bar"><div class="kpi-bar-fill"></div></div>
       </div>
 
       <div class="kpi-card kpi-card--amber">
         <div class="kpi-card-top">
           <div class="kpi-icon"><i class="ti ti-truck-delivery"></i></div>
-          <span class="kpi-badge">Logistique</span>
+          <span class="kpi-badge">{% translate "Logistique" %}</span>
         </div>
         <div class="kpi-num">{{ demandes_en_attente }}</div>
-        <div class="kpi-label">Demandes en attente</div>
+        <div class="kpi-label">{% translate "Demandes en attente" %}</div>
         <div class="kpi-bar"><div class="kpi-bar-fill"></div></div>
       </div>
     </div>
@@ -511,20 +511,20 @@
         <!-- Cours Panel -->
         <div class="fmt-panel" style="margin-bottom:1.5rem;">
           <div class="fmt-panel-head">
-            <span class="fmt-panel-title"><i class="ti ti-books"></i> Mes Cours</span>
+            <span class="fmt-panel-title"><i class="ti ti-books"></i> {% translate "Mes Cours" %}</span>
             <div style="display:flex;gap:0.5rem;align-items:center;">
               <button type="button" class="btn-fmt btn-fmt-outline" onclick="document.getElementById('import-zip-input').click()" style="color: #10b981; border-color: #10b981;">
-                <i class="ti ti-upload"></i> Importer (ZIP)
+                <i class="ti ti-upload"></i> {% translate "Importer (ZIP)" %}
               </button>
               <input type="file" id="import-zip-input" multiple accept=".zip" style="display:none" onchange="importCourses(this)">
               <button type="button" class="btn-fmt btn-fmt-outline" id="btn-export-selected" onclick="exportSelectedCourses()" style="display:none; color: #f59e0b; border-color: #f59e0b;">
-                <i class="ti ti-download"></i> Exporter (<span id="export-count">0</span>)
+                <i class="ti ti-download"></i> {% translate "Exporter" %} (<span id="export-count">0</span>)
               </button>
               <a href="{% url 'apprentissage:formateur_notes' %}" class="fmt-link">
-                <i class="ti ti-chart-bar"></i> Notes
+                <i class="ti ti-chart-bar"></i> {% translate "Notes" %}
               </a>
               <a href="{% url 'apprentissage:wizard_start' %}" class="btn-fmt btn-fmt-primary">
-                <i class="ti ti-wand"></i> Nouveau cours
+                <i class="ti ti-wand"></i> {% translate "Nouveau cours" %}
               </a>
             </div>
           </div>
@@ -542,9 +542,9 @@
                   📚
                 {% endif %}
                 {% if cours.actif %}
-                  <span class="cours-cover-badge badge-publie">✓ Publié</span>
+                  <span class="cours-cover-badge badge-publie">✓ {% translate "Publié" %}</span>
                 {% else %}
-                  <span class="cours-cover-badge badge-brouillon">Brouillon</span>
+                  <span class="cours-cover-badge badge-brouillon">{% translate "Brouillon" %}</span>
                 {% endif %}
               </div>
               <div class="cours-body">
@@ -553,13 +553,13 @@
                 {% endif %}
                 <div class="cours-titre">{{ cours.titre }}</div>
                 <div class="cours-meta">
-                  <span><i class="ti ti-layout-list"></i> {{ cours.chapitres.count }} chapitre{{ cours.chapitres.count|pluralize }}</span>
+                  <span><i class="ti ti-layout-list"></i> {% blocktranslate count counter=cours.chapitres.count %}{{ counter }} chapitre{% plural %}{{ counter }} chapitres{% endblocktranslate %}</span>
                   <span><i class="ti ti-calendar"></i> {{ cours.date_creation|date:"d/m/Y" }}</span>
                 </div>
               </div>
               <div class="cours-actions">
                 <a href="{% url 'apprentissage:gerer_cours' cours.id %}" class="btn-sm btn-sm-primary">
-                  <i class="ti ti-settings"></i> Gérer
+                  <i class="ti ti-settings"></i> {% translate "Gérer" %}
                 </a>
                 <a href="{% url 'apprentissage:editer_cours' cours.id %}" class="btn-sm btn-sm-ghost">
                   <i class="ti ti-pencil"></i>
@@ -571,10 +571,10 @@
           {% else %}
           <div class="fmt-empty">
             <div class="fmt-empty-icon">📚</div>
-            <h3>Votre espace est prêt</h3>
-            <p>Vous n'avez pas encore de cours. Créez votre premier module en quelques étapes.</p>
+            <h3>{% translate "Votre espace est prêt" %}</h3>
+            <p>{% translate "Vous n'avez pas encore de cours. Créez votre premier module en quelques étapes." %}</p>
             <a href="{% url 'apprentissage:wizard_start' %}" class="btn-fmt btn-fmt-primary" style="margin-top:0.5rem;">
-              <i class="ti ti-wand"></i> Créer mon premier cours
+              <i class="ti ti-wand"></i> {% translate "Créer mon premier cours" %}
             </a>
           </div>
           {% endif %}
@@ -583,8 +583,8 @@
         <!-- Ateliers Panel -->
         <div class="fmt-panel">
           <div class="fmt-panel-head">
-            <span class="fmt-panel-title"><i class="ti ti-building-community"></i> Mes Ateliers</span>
-            <a href="{% url 'logistics:ateliers' %}" class="fmt-link">Gérer <i class="ti ti-arrow-right"></i></a>
+            <span class="fmt-panel-title"><i class="ti ti-building-community"></i> {% translate "Mes Ateliers" %}</span>
+            <a href="{% url 'logistics:ateliers' %}" class="fmt-link">{% translate "Gérer" %} <i class="ti ti-arrow-right"></i></a>
           </div>
           {% if mes_ateliers %}
           <div class="ateliers-grid">
@@ -610,10 +610,10 @@
           {% else %}
           <div class="fmt-empty" style="padding:2.5rem 1.5rem;">
             <div class="fmt-empty-icon">🏫</div>
-            <h3>Pas encore d'atelier</h3>
-            <p>Organisez des séances pratiques pour vos apprenants.</p>
+            <h3>{% translate "Pas encore d'atelier" %}</h3>
+            <p>{% translate "Organisez des séances pratiques pour vos apprenants." %}</p>
             <a href="{% url 'logistics:ateliers' %}" class="btn-fmt btn-fmt-primary" style="margin-top:0.25rem;">
-              <i class="ti ti-plus"></i> Créer un atelier
+              <i class="ti ti-plus"></i> {% translate "Créer un atelier" %}
             </a>
           </div>
           {% endif %}
@@ -626,42 +626,42 @@
         <!-- Quick Actions -->
         <div class="fmt-panel">
           <div class="fmt-panel-head">
-            <span class="fmt-panel-title"><i class="ti ti-bolt"></i> Actions rapides</span>
+            <span class="fmt-panel-title"><i class="ti ti-bolt"></i> {% translate "Actions rapides" %}</span>
           </div>
           <div class="qa-grid-vertical">
             <a href="{% url 'apprentissage:wizard_start' %}" class="qa-tile-horiz qa-featured">
               <div class="qa-icon-wrap" style="background:rgba(15,118,110,0.1);color:#0f766e;">
                 <i class="ti ti-wand"></i>
               </div>
-              <span class="qa-label">Nouveau cours</span>
+              <span class="qa-label">{% translate "Nouveau cours" %}</span>
               <i class="ti ti-arrow-right qa-arrow"></i>
             </a>
             <a href="{% url 'logistics:ateliers' %}" class="qa-tile-horiz">
               <div class="qa-icon-wrap" style="background:rgba(59,130,246,0.1);color:#3b82f6;">
                 <i class="ti ti-building-community"></i>
               </div>
-              <span class="qa-label">Mes ateliers</span>
+              <span class="qa-label">{% translate "Mes ateliers" %}</span>
               <i class="ti ti-arrow-right qa-arrow"></i>
             </a>
             <a href="{% url 'logistics:demandes' %}" class="qa-tile-horiz">
               <div class="qa-icon-wrap" style="background:rgba(245,158,11,0.1);color:#d97706;">
                 <i class="ti ti-truck-delivery"></i>
               </div>
-              <span class="qa-label">Demande matériel</span>
+              <span class="qa-label">{% translate "Demande matériel" %}</span>
               <i class="ti ti-arrow-right qa-arrow"></i>
             </a>
             <a href="{% url 'apprentissage:formateur_notes' %}" class="qa-tile-horiz">
               <div class="qa-icon-wrap" style="background:rgba(139,92,246,0.1);color:#8b5cf6;">
                 <i class="ti ti-chart-bar"></i>
               </div>
-              <span class="qa-label">Notes & Résultats</span>
+              <span class="qa-label">{% translate "Notes & Résultats" %}</span>
               <i class="ti ti-arrow-right qa-arrow"></i>
             </a>
             <a href="{% url 'apprentissage:formateur_analytics' %}" class="qa-tile-horiz">
               <div class="qa-icon-wrap" style="background:rgba(16,185,129,0.1);color:#10b981;">
                 <i class="ti ti-trending-up"></i>
               </div>
-              <span class="qa-label">Analytics</span>
+              <span class="qa-label">{% translate "Analytics" %}</span>
               <i class="ti ti-arrow-right qa-arrow"></i>
             </a>
           </div>
@@ -670,8 +670,8 @@
         <!-- Demandes -->
         <div class="fmt-panel">
           <div class="fmt-panel-head">
-            <span class="fmt-panel-title"><i class="ti ti-truck-delivery"></i> Mes Demandes</span>
-            <a href="{% url 'logistics:demandes' %}" class="fmt-link">Voir tout <i class="ti ti-arrow-right"></i></a>
+            <span class="fmt-panel-title"><i class="ti ti-truck-delivery"></i> {% translate "Mes Demandes" %}</span>
+            <a href="{% url 'logistics:demandes' %}" class="fmt-link">{% translate "Voir tout" %} <i class="ti ti-arrow-right"></i></a>
           </div>
           {% if mes_demandes %}
             {% for demande in mes_demandes|slice:":4" %}
@@ -692,30 +692,30 @@
                 <div class="demande-sub">{{ demande.date_creation|date:"d M Y" }}</div>
               </div>
               <span class="demande-badge db-{{ demande.statut }}">
-                {% if demande.statut == 'PENDING' %}Attente
-                {% elif demande.statut == 'APPROVED' %}Approuvé
-                {% elif demande.statut == 'REJECTED' %}Rejeté
-                {% else %}Retourné{% endif %}
+                {% if demande.statut == 'PENDING' %}{% translate "Attente" %}
+                {% elif demande.statut == 'APPROVED' %}{% translate "Approuvé" %}
+                {% elif demande.statut == 'REJECTED' %}{% translate "Rejeté" %}
+                {% else %}{% translate "Retourné" %}{% endif %}
               </span>
               {% if demande.statut == 'APPROVED' %}
                 <button hx-get="{% url 'logistics:creer_ticket_formateur' demande.id %}" hx-target="#form-ticket-container" class="btn-fmt btn-fmt-outline" style="padding: 0.35rem 0.6rem; margin-left: 0.5rem; color: #ef4444; border-color: rgba(239,68,68,0.25); border-radius: 8px;">
-                  <i class="ti ti-alert-triangle"></i> Panne
+                  <i class="ti ti-alert-triangle"></i> {% translate "Panne" %}
                 </button>
               {% endif %}
             </div>
             {% endfor %}
             <div style="padding:0.85rem 1.25rem;border-top:1px solid var(--border-light,#f1f5f9);">
               <a href="{% url 'logistics:demandes' %}" class="btn-fmt btn-fmt-outline" style="width:100%;justify-content:center;">
-                <i class="ti ti-plus"></i> Nouvelle demande
+                <i class="ti ti-plus"></i> {% translate "Nouvelle demande" %}
               </a>
             </div>
           {% else %}
           <div class="fmt-empty" style="padding:2rem 1.5rem;">
             <div class="fmt-empty-icon" style="width:52px;height:52px;font-size:1.4rem;">🚚</div>
-            <h3 style="font-size:0.9rem;">Aucune demande</h3>
-            <p style="font-size:0.78rem;">Demandez du matériel pour vos ateliers.</p>
+            <h3 style="font-size:0.9rem;">{% translate "Aucune demande" %}</h3>
+            <p style="font-size:0.78rem;">{% translate "Demandez du matériel pour vos ateliers." %}</p>
             <a href="{% url 'logistics:demandes' %}" class="btn-fmt btn-fmt-primary" style="margin-top:0.25rem;">
-              <i class="ti ti-plus"></i> Faire une demande
+              <i class="ti ti-plus"></i> {% translate "Faire une demande" %}
             </a>
           </div>
           {% endif %}
@@ -763,16 +763,16 @@ function exportSelectedCourses() {
     .then(r => r.json())
     .then(data => {
         if (data.status === 'success') {
-            alert(data.message + "\n\nLes exports ZIP s'exécutent en arrière-plan. (Vérifiez le dossier exports/cours/ de la plateforme)");
+            alert(data.message + "\n\n{% translate "Les exports ZIP s'exécutent en arrière-plan. (Vérifiez le dossier exports/cours/ de la plateforme)" %}");
             checkboxes.forEach(cb => cb.checked = false);
             updateExportCount();
         } else {
-            alert('Erreur: ' + data.message);
+            alert("{% translate "Erreur" %}: " + data.message);
         }
     })
     .catch(err => {
         console.error(err);
-        alert('Erreur lors du lancement de l\'export.');
+        alert("{% translate "Erreur lors du lancement de l'export." %}");
     });
 }
 function importCourses(input) {
@@ -788,7 +788,7 @@ function importCourses(input) {
     // UI Feedback
     const btn = input.previousElementSibling;
     const originalText = btn.innerHTML;
-    btn.innerHTML = '<i class="ti ti-loader ti-spin"></i> Importation...';
+    btn.innerHTML = '<i class="ti ti-loader ti-spin"></i> {% translate "Importation..." %}';
     btn.disabled = true;
     
     fetch('{% url "apprentissage:import_multiple_courses" %}', {
@@ -808,12 +808,12 @@ function importCourses(input) {
             alert(data.message);
             window.location.reload();
         } else {
-            alert('Erreur: ' + data.message);
+            alert("{% translate "Erreur" %}: " + data.message);
         }
     })
     .catch(err => {
         console.error(err);
-        alert('Erreur lors de l\'importation.');
+        alert("{% translate "Erreur lors de l'importation." %}");
         btn.innerHTML = originalText;
         btn.disabled = false;
         input.value = '';

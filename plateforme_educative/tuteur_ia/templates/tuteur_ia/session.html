@@ -1,7 +1,7 @@
 {% extends "base.html" %}
-{% load static %}
+{% load static i18n %}
 
-{% block title %}Tuteur IA — {{ chapitre.titre }}{% endblock %}
+{% block title %}{% blocktranslate with chapitre_titre=chapitre.titre %}Tuteur IA — {{ chapitre_titre }}{% endblocktranslate %}{% endblock %}
 
 {% block content %}
 <script>
@@ -424,27 +424,27 @@
 
         <!-- Chapter Info -->
         <div class="ia-chapter-card">
-            <p class="ia-chapter-eyebrow"><i class="ti ti-sparkles"></i> Session Active</p>
+            <p class="ia-chapter-eyebrow"><i class="ti ti-sparkles"></i> {% translate "Session Active" %}</p>
             <h2 class="ia-chapter-name">{{ chapitre.titre }}</h2>
             <p class="ia-chapter-course">{{ cours.titre }}</p>
         </div>
 
         <!-- Score -->
         <div class="ia-score-card">
-            <p class="ia-score-lbl"><i class="ti ti-trophy" style="color:#f59e0b;"></i> Score de maîtrise</p>
+            <p class="ia-score-lbl"><i class="ti ti-trophy" style="color:#f59e0b;"></i> {% translate "Score de maîtrise" %}</p>
             <div class="ia-score-val" id="score-val">0%</div>
             <div class="ia-progress-track">
                 <div class="ia-progress-fill" id="prog-fill"></div>
             </div>
             <div class="ia-score-sub">
-                <span>Seuil de validation</span>
+                <span>{% translate "Seuil de validation" %}</span>
                 <span style="font-weight:700; color:#0d9488;">75%</span>
             </div>
         </div>
 
         <!-- Progress Dots -->
         <div class="ia-progress-card">
-            <p class="ia-score-lbl"><i class="ti ti-layout-list" style="color:#3b82f6;"></i> Progression</p>
+            <p class="ia-score-lbl"><i class="ti ti-layout-list" style="color:#3b82f6;"></i> {% translate "Progression" %}</p>
             <div class="ia-dots-grid" id="iter-dots">
                 {% for i in "123456789012345" %}
                 <div class="ia-dot" id="dot-{{ forloop.counter }}"></div>
@@ -452,16 +452,16 @@
             </div>
             <span class="ia-status-badge" id="status-badge">
                 <span style="width:6px;height:6px;border-radius:50%;background:#0d9488;"></span>
-                En cours
+                {% translate "En cours" %}
             </span>
             <p class="ia-q-counter">
-                Question <strong id="q-current">0</strong> / <strong id="q-max">—</strong>
+                {% translate "Question" %} <strong id="q-current">0</strong> / <strong id="q-max">—</strong>
             </p>
         </div>
 
         <!-- Back button -->
         <a href="/apprentissage/cours/{{ cours.id }}/" class="ia-back-btn">
-            <i class="ti ti-arrow-left"></i> Retour au cours
+            <i class="ti ti-arrow-left"></i> {% translate "Retour au cours" %}
         </a>
 
     </aside>
@@ -473,10 +473,10 @@
         <div class="ia-chat-header">
             <div class="ia-avatar">🤖</div>
             <div class="ia-chat-hdr-info">
-                <h3>Tuteur IA</h3>
-                <p>Session socratique · {{ chapitre.titre }}</p>
+                <h3>{% translate "Tuteur IA" %}</h3>
+                <p>{% blocktranslate with chapitre_titre=chapitre.titre %}Session socratique · {{ chapitre_titre }}{% endblocktranslate %}</p>
             </div>
-            <span class="ia-q-pill" id="q-badge">Chargement…</span>
+            <span class="ia-q-pill" id="q-badge">{% translate "Chargement…" %}</span>
         </div>
 
         <!-- Messages -->
@@ -495,14 +495,14 @@
                 <textarea
                     class="ia-textarea"
                     id="msg-input"
-                    placeholder="Écris ta réponse… (Entrée pour envoyer, Maj+Entrée = nouvelle ligne)"
+                    placeholder="{% translate 'Écris ta réponse… (Entrée pour envoyer, Maj+Entrée = nouvelle ligne)' %}"
                     rows="2"
                     disabled></textarea>
                 <button class="ia-send-btn" id="send-btn" disabled onclick="envoyer()">
                     <i class="ti ti-send"></i>
                 </button>
             </div>
-            <p class="ia-hint">Entrée pour envoyer · Maj+Entrée pour saut de ligne</p>
+            <p class="ia-hint">{% translate "Entrée pour envoyer · Maj+Entrée pour saut de ligne" %}</p>
         </div>
 
     </div>
@@ -562,7 +562,7 @@ function updateStats(score, iter, maxQ) {
 
     document.getElementById('q-current').textContent = iteration;
     document.getElementById('q-max').textContent     = maxQuestions;
-    document.getElementById('q-badge').textContent   = `Q ${iteration}/${maxQuestions}`;
+    document.getElementById('q-badge').textContent   = `{% translate "Q" %} ${iteration}/${maxQuestions}`;
 
     for (let i=1; i<=15; i++) {
         const dot = document.getElementById(`dot-${i}`);
@@ -594,24 +594,24 @@ function afficherFin(score, mastery) {
         badge.style.background   = 'rgba(16,185,129,0.1)';
         badge.style.color        = '#059669';
         badge.style.borderColor  = 'rgba(16,185,129,0.2)';
-        badge.innerHTML          = `<span style="width:6px;height:6px;border-radius:50%;background:#059669;"></span> ✓ Maîtrisé`;
+        badge.innerHTML          = `<span style="width:6px;height:6px;border-radius:50%;background:#059669;"></span> ✓ {% translate "Maîtrisé" %}`;
 
-        titre.textContent = `🎉 Félicitations ! Score : ${pct}%`;
-        msg.textContent   = 'Tu maîtrises bien ce chapitre ! Teste tes connaissances avec le QCM.';
+        titre.textContent = `🎉 {% translate "Félicitations ! Score :" %} ${pct}%`;
+        msg.textContent   = "{% translate 'Tu maîtrises bien ce chapitre ! Teste tes connaissances avec le QCM.' %}";
         actions.innerHTML = `
-            <a href="${QCM_URL}" class="btn-success">📝 Faire le QCM</a>
-            <a href="${COURS_URL}" class="btn-outline">Retour au cours</a>`;
+            <a href="${QCM_URL}" class="btn-success">📝 {% translate "Faire le QCM" %}</a>
+            <a href="${COURS_URL}" class="btn-outline">{% translate "Retour au cours" %}</a>`;
     } else {
         badge.style.background   = 'rgba(245,158,11,0.1)';
         badge.style.color        = '#d97706';
         badge.style.borderColor  = 'rgba(245,158,11,0.2)';
-        badge.innerHTML          = `<span style="width:6px;height:6px;border-radius:50%;background:#d97706;"></span> ↺ À revoir`;
+        badge.innerHTML          = `<span style="width:6px;height:6px;border-radius:50%;background:#d97706;"></span> ↺ {% translate "À revoir" %}`;
 
-        titre.textContent = `Score : ${pct}% — Continue !`;
-        msg.textContent   = "Tu n'as pas encore atteint 75%. Relis le chapitre et recommence la session.";
+        titre.textContent = `{% translate "Score :" %} ${pct}% — {% translate "Continue !" %}`;
+        msg.textContent   = "{% translate "Tu n'as pas encore atteint 75%. Relis le chapitre et recommence la session." %}";
         actions.innerHTML = `
-            <a href="/apprentissage/cours/${COURS_ID}/" class="btn-danger">📖 Réviser le chapitre</a>
-            <a href="/tuteur/session/${CHAPITRE_ID}/" class="btn-outline">Recommencer</a>`;
+            <a href="/apprentissage/cours/${COURS_ID}/" class="btn-danger">📖 {% translate "Réviser le chapitre" %}</a>
+            <a href="/tuteur/session/${CHAPITRE_ID}/" class="btn-outline">{% translate "Recommencer" %}</a>`;
     }
 }
 
@@ -627,7 +627,7 @@ async function demarrer() {
         const data = await r.json();
         removeLoader('init-loader');
 
-        if (!r.ok) { addMsg(`❌ ${data.error||'Erreur serveur'}`, 'err'); return; }
+        if (!r.ok) { addMsg(`❌ ${data.error||"{% translate 'Erreur serveur' %}"}`, 'err'); return; }
 
         sessionId    = data.session_id;
         maxQuestions = Math.floor(Math.random()*(MAX_QUESTIONS-MIN_QUESTIONS+1))+MIN_QUESTIONS;
@@ -637,7 +637,7 @@ async function demarrer() {
         setInput(true);
     } catch(e) {
         removeLoader('init-loader');
-        addMsg(`❌ Erreur réseau : ${e.message}`, 'err');
+        addMsg(`❌ {% translate "Erreur réseau :" %} ${e.message}`, 'err');
     }
 }
 
@@ -661,7 +661,7 @@ async function envoyer() {
         const data = await r.json();
         removeLoader('typing-indicator');
 
-        if (!r.ok) { addMsg(`❌ ${data.error||'Erreur serveur'}`, 'err'); setInput(true); return; }
+        if (!r.ok) { addMsg(`❌ ${data.error||"{% translate 'Erreur serveur' %}"}`, 'err'); setInput(true); return; }
 
         addMsg(data.message, 'ai');
         updateStats(data.mastery_score, data.iteration, maxQuestions);
@@ -675,7 +675,7 @@ async function envoyer() {
         }
     } catch(e) {
         removeLoader('typing-indicator');
-        addMsg(`❌ Erreur : ${e.message}`, 'err');
+        addMsg(`❌ {% translate "Erreur :" %} ${e.message}`, 'err');
         setInput(true);
     }
 }

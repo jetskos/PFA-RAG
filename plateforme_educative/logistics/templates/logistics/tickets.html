@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
-{% block title %}Tickets — Logistics{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Tickets — Logistics" %}{% endblock %}
 {% block content %}
 <style>
   /* ═══════════════════════════════════════════════════
@@ -121,26 +122,26 @@
   <div class="logi-hero">
     <div class="logi-hero-left">
       <span class="logi-eyebrow"><i class="ti ti-ticket"></i> Logistics · Support</span>
-      <h1 class="logi-page-title">Tickets de maintenance</h1>
-      <p class="logi-page-sub">Suivi des signalements et demandes de maintenance.</p>
+      <h1 class="logi-page-title">{% translate "Tickets de maintenance" %}</h1>
+      <p class="logi-page-sub">{% translate "Suivi des signalements et demandes de maintenance." %}</p>
       <div class="logi-subtabs">
         <a href="{% url 'logistics:inventaire' %}" class="logi-subtab">
-          <i class="ti ti-package"></i> Inventaire
+          <i class="ti ti-package"></i> {% translate "Inventaire" %}
         </a>
         <a href="{% url 'logistics:tickets' %}" class="logi-subtab active">
-          <i class="ti ti-ticket"></i> Tickets
+          <i class="ti ti-ticket"></i> {% translate "Tickets" %}
         </a>
         <a href="{% url 'logistics:ateliers' %}" class="logi-subtab">
-          <i class="ti ti-building-community"></i> Ateliers
+          <i class="ti ti-building-community"></i> {% translate "Ateliers" %}
         </a>
         <a href="{% url 'logistics:demandes' %}" class="logi-subtab">
-          <i class="ti ti-truck-delivery"></i> Demandes
+          <i class="ti ti-truck-delivery"></i> {% translate "Demandes" %}
         </a>
       </div>
     </div>
     <div class="logi-hero-right">
       <a href="{% url 'logistics:nuevo_ticket' %}" class="logi-btn-primary">
-        <i class="ti ti-plus"></i> Nouveau ticket
+        <i class="ti ti-plus"></i> {% translate "Nouveau ticket" %}
       </a>
     </div>
   </div>
@@ -153,7 +154,7 @@
       </div>
       <div>
         <div class="stat-tile-val">{{ tickets|length }}</div>
-        <div class="stat-tile-lbl">Tickets actifs</div>
+        <div class="stat-tile-lbl">{% translate "Tickets actifs" %}</div>
       </div>
     </div>
     <div class="stat-tile">
@@ -162,7 +163,7 @@
       </div>
       <div>
         <div class="stat-tile-val">{{ tickets_en_attente|default:"0" }}</div>
-        <div class="stat-tile-lbl">En attente</div>
+        <div class="stat-tile-lbl">{% translate "En attente" %}</div>
       </div>
     </div>
     <div class="stat-tile">
@@ -171,7 +172,7 @@
       </div>
       <div>
         <div class="stat-tile-val">{{ tickets_en_cours|default:"0" }}</div>
-        <div class="stat-tile-lbl">En traitement</div>
+        <div class="stat-tile-lbl">{% translate "En traitement" %}</div>
       </div>
     </div>
     <div class="stat-tile">
@@ -180,7 +181,7 @@
       </div>
       <div>
         <div class="stat-tile-val">{{ tickets_resolus|default:"0" }}</div>
-        <div class="stat-tile-lbl">Résolus</div>
+        <div class="stat-tile-lbl">{% translate "Résolus" %}</div>
       </div>
     </div>
   </div>
@@ -188,10 +189,10 @@
   <!-- ══ TICKETS PANEL ══ -->
   <div class="logi-panel">
     <div class="logi-panel-head">
-      <h2 class="logi-panel-title"><i class="ti ti-list-details"></i> Tickets actifs</h2>
+      <h2 class="logi-panel-title"><i class="ti ti-list-details"></i> {% translate "Tickets actifs" %}</h2>
       <div class="logi-filter-search">
         <i class="ti ti-search"></i>
-        <input type="text" name="q" placeholder="Rechercher un ticket..."
+        <input type="text" name="q" placeholder="{% translate 'Rechercher un ticket...' %}"
                hx-get="{% url 'logistics:tickets' %}"
                hx-target="#tickets-list"
                hx-trigger="keyup changed delay:300ms">

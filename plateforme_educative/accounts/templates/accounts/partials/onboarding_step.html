@@ -1,3 +1,4 @@
+{% load i18n %}
 <style>
   .ob-step { animation: obSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1); }
   @keyframes obSlideIn {
@@ -173,7 +174,7 @@
   {% endfor %}
 </div>
 
-<div class="ob-counter">ÉTAPE {{ step_num }} / {{ total }}</div>
+<div class="ob-counter">{% blocktranslate %}ÉTAPE {{ step_num }} / {{ total }}{% endblocktranslate %}</div>
 
 <div class="ob-step-body" style="padding: 0 2.5rem 2.5rem;">
 <div class="ob-step">
@@ -183,29 +184,29 @@
   {# ━━━━━━━━━━ FORMATEUR STEP 1 — WELCOME ━━━━━━━━━━ #}
   {% if step.id == 'welcome' %}
   <div class="ob-illu ob-illu-teal">🎓</div>
-  <h2 class="ob-title">Bienvenue sur EduTech&nbsp;!</h2>
-  <p class="ob-sub">Votre espace formateur est prêt. Voici ce que vous pouvez faire sur la plateforme.</p>
+  <h2 class="ob-title">{% translate "Bienvenue sur EduTech&nbsp;!" %}</h2>
+  <p class="ob-sub">{% translate "Votre espace formateur est prêt. Voici ce que vous pouvez faire sur la plateforme." %}</p>
 
   <div class="ob-features">
     <div class="ob-feature">
       <div class="ob-feature-icon" style="background:rgba(15,118,110,0.1);color:#0f766e;">📚</div>
       <div class="ob-feature-text">
-        <h4>Créer & gérer des cours</h4>
-        <p>Publiez des modules avec chapitres, documents et évaluations.</p>
+        <h4>{% translate "Créer & gérer des cours" %}</h4>
+        <p>{% translate "Publiez des modules avec chapitres, documents et évaluations." %}</p>
       </div>
     </div>
     <div class="ob-feature">
       <div class="ob-feature-icon" style="background:rgba(59,130,246,0.1);color:#3b82f6;">🏫</div>
       <div class="ob-feature-text">
-        <h4>Gérer vos ateliers</h4>
-        <p>Planifiez et organisez vos séances de travail pratique.</p>
+        <h4>{% translate "Gérer vos ateliers" %}</h4>
+        <p>{% translate "Planifiez et organisez vos séances de travail pratique." %}</p>
       </div>
     </div>
     <div class="ob-feature">
       <div class="ob-feature-icon" style="background:rgba(245,158,11,0.1);color:#f59e0b;">📦</div>
       <div class="ob-feature-text">
-        <h4>Demander du matériel</h4>
-        <p>Soumettez des demandes d'équipement directement à l'administration.</p>
+        <h4>{% translate "Demander du matériel" %}</h4>
+        <p>{% translate "Soumettez des demandes d'équipement directement à l'administration." %}</p>
       </div>
     </div>
   </div>
@@ -214,7 +215,7 @@
     <form method="post" hx-post="{% url 'accounts:onboarding' %}?step=1"
           hx-target="#onboarding-card" hx-swap="innerHTML">
       {% csrf_token %}
-      <button type="submit" class="ob-btn-primary">Commencer la configuration <span>→</span></button>
+      <button type="submit" class="ob-btn-primary">{% translate "Commencer la configuration" %} <span>→</span></button>
     </form>
   </div>
   {% endif %}
@@ -222,8 +223,8 @@
   {# ━━━━━━━━━━ FORMATEUR STEP 2 — PROFIL ━━━━━━━━━━ #}
   {% if step.id == 'profil' %}
   <div class="ob-illu ob-illu-blue">👤</div>
-  <h2 class="ob-title">Votre profil formateur</h2>
-  <p class="ob-sub">Ces informations seront visibles par vos apprenants.</p>
+  <h2 class="ob-title">{% translate "Votre profil formateur" %}</h2>
+  <p class="ob-sub">{% translate "Ces informations seront visibles par vos apprenants." %}</p>
 
   <form method="post" enctype="multipart/form-data"
         hx-post="{% url 'accounts:onboarding' %}?step=2"
@@ -232,27 +233,27 @@
     <div class="ob-form">
       <div class="ob-row">
         <div class="ob-field">
-          <label>Prénom</label>
+          <label>{% translate "Prénom" %}</label>
           <input type="text" name="first_name" value="{{ user.first_name|default:'' }}" placeholder="Jean">
         </div>
         <div class="ob-field">
-          <label>Nom</label>
+          <label>{% translate "Nom" %}</label>
           <input type="text" name="last_name" value="{{ user.last_name|default:'' }}" placeholder="Dupont">
         </div>
       </div>
       <div class="ob-field">
-        <label>Photo de profil <span style="color:#94a3b8;font-weight:500;">(optionnel)</span></label>
+        <label>{% translate "Photo de profil" %} <span style="color:#94a3b8;font-weight:500;">({% translate "optionnel" %})</span></label>
         <label class="ob-photo-wrap" for="ob-photo-input">
           <div class="ob-photo-avatar" id="ob-photo-preview">
             {% if user.photo %}
-              <img src="{{ user.photo.url }}" alt="Photo">
+              <img src="{{ user.photo.url }}" alt="{% translate 'Photo' %}">
             {% else %}
               {{ user.first_name|default:user.email|first|upper }}
             {% endif %}
           </div>
           <div class="ob-photo-info">
-            <h4>Choisir une photo</h4>
-            <p>JPG, PNG · Max 5 Mo</p>
+            <h4>{% translate "Choisir une photo" %}</h4>
+            <p>JPG, PNG · {% translate "Max 5 Mo" %}</p>
           </div>
         </label>
         <input type="file" id="ob-photo-input" name="photo" accept="image/*"
@@ -260,7 +261,7 @@
       </div>
     </div>
     <div class="ob-actions">
-      <button type="submit" class="ob-btn-primary">Enregistrer & continuer <span>→</span></button>
+      <button type="submit" class="ob-btn-primary">{% translate "Enregistrer & continuer" %} <span>→</span></button>
     </div>
   </form>
   {% endif %}
@@ -268,19 +269,19 @@
   {# ━━━━━━━━━━ FORMATEUR STEP 3 — PREMIER COURS ━━━━━━━━━━ #}
   {% if step.id == 'cours' %}
   <div class="ob-illu ob-illu-amber">📝</div>
-  <h2 class="ob-title">Créez votre premier cours</h2>
-  <p class="ob-sub">Publiez vos connaissances en quelques étapes simples.</p>
+  <h2 class="ob-title">{% translate "Créez votre premier cours" %}</h2>
+  <p class="ob-sub">{% translate "Publiez vos connaissances en quelques étapes simples." %}</p>
 
   <div class="ob-course-preview">
     <div class="ob-course-preview-top">
-      <h4>Structure d'un cours EduTech</h4>
-      <p>Organisez votre contenu en chapitres et modules</p>
+      <h4>{% translate "Structure d'un cours EduTech" %}</h4>
+      <p>{% translate "Organisez votre contenu en chapitres et modules" %}</p>
     </div>
     <div class="ob-course-preview-body">
-      <span class="ob-chip">📄 Chapitres</span>
-      <span class="ob-chip">🎥 Vidéos</span>
-      <span class="ob-chip">📎 Documents</span>
-      <span class="ob-chip">✅ Évaluations</span>
+      <span class="ob-chip">📄 {% translate "Chapitres" %}</span>
+      <span class="ob-chip">🎥 {% translate "Vidéos" %}</span>
+      <span class="ob-chip">📎 {% translate "Documents" %}</span>
+      <span class="ob-chip">✅ {% translate "Évaluations" %}</span>
     </div>
   </div>
 
@@ -289,13 +290,13 @@
       {% csrf_token %}
       <input type="hidden" name="complete_and_redirect" value="{% url 'apprentissage:nouveau_cours' %}">
       <button type="submit" class="ob-btn-primary">
-        ✏️ Créer mon premier cours
+        ✏️ {% translate "Créer mon premier cours" %}
       </button>
     </form>
     <form method="post" hx-post="{% url 'accounts:onboarding' %}?step=3"
           hx-target="#onboarding-card" hx-swap="innerHTML">
       {% csrf_token %}
-      <button type="submit" class="ob-btn-secondary">Passer pour l'instant</button>
+      <button type="submit" class="ob-btn-secondary">{% translate "Passer pour l'instant" %}</button>
     </form>
   </div>
   {% endif %}
@@ -303,29 +304,29 @@
   {# ━━━━━━━━━━ FORMATEUR STEP 4 — LOGISTIQUE ━━━━━━━━━━ #}
   {% if step.id == 'logistique' %}
   <div class="ob-illu ob-illu-green">🏗️</div>
-  <h2 class="ob-title">Découvrez la logistique</h2>
-  <p class="ob-sub">Gérez vos ateliers et commandez le matériel nécessaire à vos formations.</p>
+  <h2 class="ob-title">{% translate "Découvrez la logistique" %}</h2>
+  <p class="ob-sub">{% translate "Gérez vos ateliers et commandez le matériel nécessaire à vos formations." %}</p>
 
   <div class="ob-logi-grid">
     <div class="ob-logi-card">
       <div class="lc-emoji">🏫</div>
-      <h4>Ateliers</h4>
-      <p>Planifiez et gérez vos séances pratiques en salle</p>
+      <h4>{% translate "Ateliers" %}</h4>
+      <p>{% translate "Planifiez et gérez vos séances pratiques en salle" %}</p>
     </div>
     <div class="ob-logi-card">
       <div class="lc-emoji">📦</div>
-      <h4>Matériel</h4>
-      <p>Soumettez des demandes d'équipement à l'admin</p>
+      <h4>{% translate "Matériel" %}</h4>
+      <p>{% translate "Soumettez des demandes d'équipement à l'admin" %}</p>
     </div>
     <div class="ob-logi-card">
       <div class="lc-emoji">🔔</div>
-      <h4>Notifications</h4>
-      <p>Recevez des alertes sur l'état de vos demandes</p>
+      <h4>{% translate "Notifications" %}</h4>
+      <p>{% translate "Recevez des alertes sur l'état de vos demandes" %}</p>
     </div>
     <div class="ob-logi-card">
       <div class="lc-emoji">📊</div>
-      <h4>Suivi</h4>
-      <p>Consultez l'historique complet de vos demandes</p>
+      <h4>{% translate "Suivi" %}</h4>
+      <p>{% translate "Consultez l'historique complet de vos demandes" %}</p>
     </div>
   </div>
 
@@ -334,7 +335,7 @@
           hx-target="body" hx-swap="none"
           hx-on::after-request="handleFinalStep(event)">
       {% csrf_token %}
-      <button type="submit" class="ob-btn-primary">🚀 Accéder à mon tableau de bord</button>
+      <button type="submit" class="ob-btn-primary">🚀 {% translate "Accéder à mon tableau de bord" %}</button>
     </form>
   </div>
   {% endif %}
@@ -344,29 +345,29 @@
   {# ━━━━━━━━━━ ELEVE STEP 1 — WELCOME ━━━━━━━━━━ #}
   {% if step.id == 'welcome' %}
   <div class="ob-illu ob-illu-purple">🎒</div>
-  <h2 class="ob-title">Bienvenue sur EduTech&nbsp;!</h2>
-  <p class="ob-sub">Votre espace d'apprentissage personnalisé vous attend. Découvrez tout ce que la plateforme vous offre.</p>
+  <h2 class="ob-title">{% translate "Bienvenue sur EduTech&nbsp;!" %}</h2>
+  <p class="ob-sub">{% translate "Votre espace d'apprentissage personnalisé vous attend. Découvrez tout ce que la plateforme vous offre." %}</p>
 
   <div class="ob-features">
     <div class="ob-feature">
       <div class="ob-feature-icon" style="background:rgba(124,58,237,0.1);color:#7c3aed;">📚</div>
       <div class="ob-feature-text">
-        <h4>Accéder à vos cours</h4>
-        <p>Consultez vos modules, chapitres et documents pédagogiques.</p>
+        <h4>{% translate "Accéder à vos cours" %}</h4>
+        <p>{% translate "Consultez vos modules, chapitres et documents pédagogiques." %}</p>
       </div>
     </div>
     <div class="ob-feature">
       <div class="ob-feature-icon" style="background:rgba(16,185,129,0.1);color:#10b981;">🤖</div>
       <div class="ob-feature-text">
-        <h4>Tuteur IA personnalisé</h4>
-        <p>Posez vos questions à votre assistant intelligent disponible 24h/24.</p>
+        <h4>{% translate "Tuteur IA personnalisé" %}</h4>
+        <p>{% translate "Posez vos questions à votre assistant intelligent disponible 24h/24." %}</p>
       </div>
     </div>
     <div class="ob-feature">
       <div class="ob-feature-icon" style="background:rgba(59,130,246,0.1);color:#3b82f6;">📅</div>
       <div class="ob-feature-text">
-        <h4>Calendrier & événements</h4>
-        <p>Suivez vos cours, devoirs et examens à venir.</p>
+        <h4>{% translate "Calendrier & événements" %}</h4>
+        <p>{% translate "Suivez vos cours, devoirs et examens à venir." %}</p>
       </div>
     </div>
   </div>
@@ -375,7 +376,7 @@
     <form method="post" hx-post="{% url 'accounts:onboarding' %}?step=1"
           hx-target="#onboarding-card" hx-swap="innerHTML">
       {% csrf_token %}
-      <button type="submit" class="ob-btn-primary">C'est parti ! <span>→</span></button>
+      <button type="submit" class="ob-btn-primary">{% translate "C'est parti !" %} <span>→</span></button>
     </form>
   </div>
   {% endif %}
@@ -383,8 +384,8 @@
   {# ━━━━━━━━━━ ELEVE STEP 2 — PROFIL ━━━━━━━━━━ #}
   {% if step.id == 'profil' %}
   <div class="ob-illu ob-illu-blue">✏️</div>
-  <h2 class="ob-title">Complétez votre profil</h2>
-  <p class="ob-sub">Personnalisez votre espace pour une meilleure expérience d'apprentissage.</p>
+  <h2 class="ob-title">{% translate "Complétez votre profil" %}</h2>
+  <p class="ob-sub">{% translate "Personnalisez votre espace pour une meilleure expérience d'apprentissage." %}</p>
 
   <form method="post" enctype="multipart/form-data"
         hx-post="{% url 'accounts:onboarding' %}?step=2"
@@ -393,27 +394,27 @@
     <div class="ob-form">
       <div class="ob-row">
         <div class="ob-field">
-          <label>Prénom</label>
+          <label>{% translate "Prénom" %}</label>
           <input type="text" name="first_name" value="{{ user.first_name|default:'' }}" placeholder="Marie">
         </div>
         <div class="ob-field">
-          <label>Nom</label>
+          <label>{% translate "Nom" %}</label>
           <input type="text" name="last_name" value="{{ user.last_name|default:'' }}" placeholder="Martin">
         </div>
       </div>
       <div class="ob-field">
-        <label>Photo de profil <span style="color:#94a3b8;font-weight:500;">(optionnel)</span></label>
+        <label>{% translate "Photo de profil" %} <span style="color:#94a3b8;font-weight:500;">({% translate "optionnel" %})</span></label>
         <label class="ob-photo-wrap" for="ob-photo-input">
           <div class="ob-photo-avatar" id="ob-photo-preview">
             {% if user.photo %}
-              <img src="{{ user.photo.url }}" alt="Photo">
+              <img src="{{ user.photo.url }}" alt="{% translate 'Photo' %}">
             {% else %}
               {{ user.first_name|default:user.email|first|upper }}
             {% endif %}
           </div>
           <div class="ob-photo-info">
-            <h4>Choisir une photo</h4>
-            <p>JPG, PNG · Max 5 Mo</p>
+            <h4>{% translate "Choisir une photo" %}</h4>
+            <p>JPG, PNG · {% translate "Max 5 Mo" %}</p>
           </div>
         </label>
         <input type="file" id="ob-photo-input" name="photo" accept="image/*"
@@ -421,7 +422,7 @@
       </div>
     </div>
     <div class="ob-actions">
-      <button type="submit" class="ob-btn-primary">Enregistrer & continuer <span>→</span></button>
+      <button type="submit" class="ob-btn-primary">{% translate "Enregistrer & continuer" %} <span>→</span></button>
     </div>
   </form>
   {% endif %}
@@ -429,29 +430,29 @@
   {# ━━━━━━━━━━ ELEVE STEP 3 — EXPLORER ━━━━━━━━━━ #}
   {% if step.id == 'explorer' %}
   <div class="ob-illu ob-illu-teal">🚀</div>
-  <h2 class="ob-title">Explorez vos cours !</h2>
-  <p class="ob-sub">Vos formateurs ont préparé des contenus riches pour vous accompagner tout au long de votre parcours.</p>
+  <h2 class="ob-title">{% translate "Explorez vos cours !" %}</h2>
+  <p class="ob-sub">{% translate "Vos formateurs ont préparé des contenus riches pour vous accompagner tout au long de votre parcours." %}</p>
 
   <div class="ob-cours-list">
     <div class="ob-cours-item">
       <div class="ob-cours-item-icon" style="background:rgba(15,118,110,0.1);color:#0f766e;">📖</div>
       <div>
-        <h4>Cours & chapitres</h4>
-        <p>Progressez à votre rythme avec des contenus interactifs</p>
+        <h4>{% translate "Cours & chapitres" %}</h4>
+        <p>{% translate "Progressez à votre rythme avec des contenus interactifs" %}</p>
       </div>
     </div>
     <div class="ob-cours-item">
       <div class="ob-cours-item-icon" style="background:rgba(245,158,11,0.1);color:#f59e0b;">✅</div>
       <div>
-        <h4>Évaluations & devoirs</h4>
-        <p>Testez vos connaissances et suivez votre progression</p>
+        <h4>{% translate "Évaluations & devoirs" %}</h4>
+        <p>{% translate "Testez vos connaissances et suivez votre progression" %}</p>
       </div>
     </div>
     <div class="ob-cours-item">
       <div class="ob-cours-item-icon" style="background:rgba(124,58,237,0.1);color:#7c3aed;">🤖</div>
       <div>
-        <h4>Tuteur IA</h4>
-        <p>Obtenez des explications personnalisées en temps réel</p>
+        <h4>{% translate "Tuteur IA" %}</h4>
+        <p>{% translate "Obtenez des explications personnalisées en temps réel" %}</p>
       </div>
     </div>
   </div>
@@ -461,7 +462,7 @@
           hx-target="body" hx-swap="none"
           hx-on::after-request="handleFinalStep(event)">
       {% csrf_token %}
-      <button type="submit" class="ob-btn-primary">🎉 Accéder à la plateforme</button>
+      <button type="submit" class="ob-btn-primary">🎉 {% translate "Accéder à la plateforme" %}</button>
     </form>
   </div>
   {% endif %}

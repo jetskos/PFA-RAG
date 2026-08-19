@@ -1,4 +1,4 @@
-{% load static %}
+{% load static i18n %}
 <!DOCTYPE html>
 <html lang="fr" data-theme="light">
 
@@ -58,57 +58,57 @@
                 {% if user.is_authenticated and user.role == 'ADMIN' %}
                 <a href="{% url 'dashboard_admin' %}"
                     class="{% if current_url == 'dashboard_admin' %}active{% endif %}">
-                    <i class="ti ti-home"></i> <span>Accueil</span>
+                    <i class="ti ti-home"></i> <span>{% trans "Accueil" %}</span>
                 </a>
                 {% else %}
                 <a href="{% url 'accueil' %}" class="{% if current_url == 'accueil' %}active{% endif %}">
-                    <i class="ti ti-home"></i> <span>Accueil</span>
+                    <i class="ti ti-home"></i> <span>{% trans "Accueil" %}</span>
                 </a>
                 {% endif %}
 
                 <a href="{% url 'apprentissage:liste_cours' %}"
                     class="{% if current_url == 'liste_cours' or current_url == 'detail_cours' or current_url == 'detail_chapitre' %}active{% endif %}">
-                    <i class="ti ti-book"></i> <span>Apprentissage</span>
+                    <i class="ti ti-book"></i> <span>{% trans "Apprentissage" %}</span>
                 </a>
 
                 {% if user.is_authenticated and user.is_formateur %}
                 <a href="{% url 'apprentissage:espace_formateur' %}"
                     class="{% if current_url == 'espace_formateur' %}active{% endif %}">
-                    <i class="ti ti-school"></i> <span>Formateur</span>
+                    <i class="ti ti-school"></i> <span>{% trans "Formateur" %}</span>
                 </a>
                 <a href="{% url 'logistics:demandes' %}"
                     class="{% if current_url == 'demandes' or current_url == 'ateliers' %}active{% endif %}">
-                    <i class="ti ti-truck"></i> <span>Logistique</span>
+                    <i class="ti ti-truck"></i> <span>{% trans "Logistique" %}</span>
                 </a>
                 {% endif %}
 
                 {% if user.is_authenticated %}
                 <a href="{% url 'apprentissage:calendrier' %}"
                     class="{% if current_url == 'calendrier' %}active{% endif %}">
-                    <i class="ti ti-calendar"></i> <span>Calendrier</span>
+                    <i class="ti ti-calendar"></i> <span>{% trans "Calendrier" %}</span>
                 </a>
 
                 {% if user.role == 'ADMIN' %}
                 <a href="{% url 'dashboard_admin_structure' %}"
                     class="{% if current_url == 'dashboard_admin_structure' %}active{% endif %}">
-                    <i class="ti ti-dashboard"></i> <span>Administration</span>
+                    <i class="ti ti-dashboard"></i> <span>{% trans "Administration" %}</span>
                 </a>
                 {% endif %}
                 {% endif %}
                 {% if user.is_superuser %}
                 <a href="{% url 'logistics:inventaire' %}"
                     class="{% if current_url == 'inventaire' %}active{% endif %}">
-                    <i class="ti ti-tools"></i> <span>Logistique</span>
+                    <i class="ti ti-tools"></i> <span>{% trans "Logistique" %}</span>
                 </a>
                 {% endif %}
                 {% if user.is_superuser or user.role == 'ADMIN' %}
                 <a href="{% url 'accounts:admin_dashboard' %}"
                     class="{% if current_url == 'admin_dashboard' or current_url == 'user_details' %}active{% endif %}">
-                    <i class="ti ti-users"></i> <span>Utilisateurs</span>
+                    <i class="ti ti-users"></i> <span>{% trans "Utilisateurs" %}</span>
                 </a>
                 <a href="{% url 'accounts:system_settings' %}"
                     class="{% if current_url == 'system_settings' %}active{% endif %}">
-                    <i class="ti ti-settings"></i> <span>Paramètres</span>
+                    <i class="ti ti-settings"></i> <span>{% trans "Paramètres" %}</span>
                 </a>
                 {% endif %}
             </nav>
@@ -189,6 +189,21 @@
                     <i class="ti ti-moon" id="theme-toggle-dark-icon" style="font-size: 18px; display: none;"></i>
                 </button>
 
+                <form action="{% url 'set_language' %}" method="post" style="display:inline-flex; align-items:center; margin-right: 8px;">
+                    {% csrf_token %}
+                    <input name="next" type="hidden" value="{{ request.get_full_path|default:'/' }}">
+                    <select name="language" onchange="this.form.submit()" style="padding: 4px 8px; border-radius: 6px; border: 1px solid var(--border-color, #e2e8f0); background: var(--bg-surface, #fff); color: var(--text-primary, #1e293b); font-size: 14px; cursor: pointer;">
+                        {% get_current_language as LANGUAGE_CODE %}
+                        {% get_available_languages as LANGUAGES %}
+                        {% get_language_info_list for LANGUAGES as languages %}
+                        {% for language in languages %}
+                            <option value="{{ language.code }}"{% if language.code == LANGUAGE_CODE %} selected{% endif %}>
+                                {{ language.name_local|title }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </form>
+
                 {% if user.is_authenticated %}
                 <div class="profile-dropdown-container">
                     <button class="profile-capsule-trigger" id="profile-dropdown-btn" aria-haspopup="true"
@@ -226,7 +241,7 @@
                     <div class="profile-dropdown-menu" id="profile-dropdown-menu">
                         <a href="{% url 'accounts:profile' %}" class="dropdown-item">
                             <i class="ti ti-user-circle"></i>
-                            <span>Paramètres du profil</span>
+                            <span>{% trans "Paramètres du profil" %}</span>
                         </a>
 
                         <div class="dropdown-divider"></div>
@@ -236,17 +251,17 @@
                             {% csrf_token %}
                             <button type="submit" class="dropdown-item logout-btn">
                                 <i class="ti ti-logout"></i>
-                                <span>Déconnexion</span>
+                                <span>{% trans "Déconnexion" %}</span>
                             </button>
                         </form>
                     </div>
                 </div>
                 {% else %}
                 <a href="{% url 'accounts:register' %}" class="btn-ghost">
-                    <i class="ti ti-user-plus"></i> <span>Inscription</span>
+                    <i class="ti ti-user-plus"></i> <span>{% trans "Inscription" %}</span>
                 </a>
                 <a href="{% url 'accounts:login' %}" class="btn-primary">
-                    <i class="ti ti-login"></i> <span>Connexion</span>
+                    <i class="ti ti-login"></i> <span>{% trans "Connexion" %}</span>
                 </a>
                 {% endif %}
             </div>

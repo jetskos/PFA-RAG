@@ -1,14 +1,15 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
-{% block title %}Mon Carnet de Notes{% endblock %}
+{% block title %}{% translate "Mon Carnet de Notes" %}{% endblock %}
 
 {% block content %}
 <section class="page-shell">
     <div class="page-header" style="display: flex; justify-content: space-between; align-items: center;">
         <div>
-            <p class="eyebrow">Évaluations</p>
-            <h1>Mon carnet de notes</h1>
-            <p>Vue d'ensemble de vos scores QCM par chapitre.</p>
+            <p class="eyebrow">{% translate "Évaluations" %}</p>
+            <h1>{% translate "Mon carnet de notes" %}</h1>
+            <p>{% translate "Vue d'ensemble de vos scores QCM par chapitre." %}</p>
         </div>
         <div style="display: flex; gap: 0.75rem; align-items: center;">
             {% if bulletin.moyenne_generale is not None %}
@@ -19,11 +20,11 @@
                     background: {% if bulletin.moyenne_generale >= 80 %}linear-gradient(135deg, #4caf50, #2e7d32){% elif bulletin.moyenne_generale >= 50 %}linear-gradient(135deg, #ff9800, #e65100){% else %}linear-gradient(135deg, #f44336, #b71c1c){% endif %};
                     color: #fff;
                     font-weight: 700;">
-                    Moyenne générale : {{ bulletin.moyenne_generale }}/100
+                    {% blocktranslate with m=bulletin.moyenne_generale %}Moyenne générale : {{ m }}/100{% endblocktranslate %}
                 </span>
             {% endif %}
             <a href="{% url 'apprentissage:exporter_bulletin_csv' %}" class="btn btn-ghost">
-                <i class="ti ti-download"></i> Exporter CSV
+                <i class="ti ti-download"></i> {% translate "Exporter CSV" %}
             </a>
         </div>
     </div>
@@ -33,15 +34,15 @@
         <form method="get" style="display: flex; gap: 1rem; width: 100%; align-items: center;">
             <div style="flex: 1; position: relative;">
                 <i class="ti ti-search" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--texte-secondaire);"></i>
-                <input type="text" name="q" placeholder="Rechercher un cours..." value="{{ search_query }}" style="width: 100%; padding: 0.6rem 1rem 0.6rem 2.5rem; border: 1px solid var(--bordure); border-radius: 8px; background: var(--fond); color: var(--texte);">
+                <input type="text" name="q" placeholder="{% translate 'Rechercher un cours...' %}" value="{{ search_query }}" style="width: 100%; padding: 0.6rem 1rem 0.6rem 2.5rem; border: 1px solid var(--bordure); border-radius: 8px; background: var(--fond); color: var(--texte);">
             </div>
             <select name="statut" style="padding: 0.6rem 1rem; border: 1px solid var(--bordure); border-radius: 8px; background: var(--fond); color: var(--texte);">
-                <option value="tous" {% if statut_filter == 'tous' %}selected{% endif %}>Tous les statuts (Chapitres)</option>
-                <option value="reussi" {% if statut_filter == 'reussi' %}selected{% endif %}>Réussi</option>
-                <option value="echec" {% if statut_filter == 'echec' %}selected{% endif %}>Échoué</option>
-                <option value="non_tente" {% if statut_filter == 'non_tente' %}selected{% endif %}>Non tenté</option>
+                <option value="tous" {% if statut_filter == 'tous' %}selected{% endif %}>{% translate "Tous les statuts (Chapitres)" %}</option>
+                <option value="reussi" {% if statut_filter == 'reussi' %}selected{% endif %}>{% translate "Réussi" %}</option>
+                <option value="echec" {% if statut_filter == 'echec' %}selected{% endif %}>{% translate "Échoué" %}</option>
+                <option value="non_tente" {% if statut_filter == 'non_tente' %}selected{% endif %}>{% translate "Non tenté" %}</option>
             </select>
-            <button type="submit" class="btn btn-primary" style="padding: 0.6rem 1.5rem;">Filtrer</button>
+            <button type="submit" class="btn btn-primary" style="padding: 0.6rem 1.5rem;">{% translate "Filtrer" %}</button>
         </form>
     </div>
 
@@ -55,11 +56,11 @@
                     <span class="badge" style="font-size: 0.78rem;">{{ cours_data.cours.niveau.nom }}</span>
                 </div>
                 <div style="text-align: right;">
-                    <div style="font-size: 0.85rem; color: var(--texte-secondaire);">Progression</div>
+                    <div style="font-size: 0.85rem; color: var(--texte-secondaire);">{% translate "Progression" %}</div>
                     <div style="font-size: 1.3rem; font-weight: 700; color: var(--accent);">{{ cours_data.progression }}%</div>
                     {% if cours_data.moyenne_cours is not None %}
                         <div style="font-size: 0.9rem; margin-top: 0.15rem; color: {% if cours_data.moyenne_cours >= 80 %}#4caf50{% elif cours_data.moyenne_cours >= 50 %}#ff9800{% else %}#f44336{% endif %};">
-                            Moyenne : {{ cours_data.moyenne_cours }}/100
+                            {% blocktranslate with m=cours_data.moyenne_cours %}Moyenne : {{ m }}/100{% endblocktranslate %}
                         </div>
                     {% endif %}
                 </div>
@@ -71,9 +72,9 @@
                     <thead>
                         <tr style="background: var(--surface-alt); font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--texte-secondaire);">
                             <th style="padding: 0.6rem 1.5rem; text-align: left;">#</th>
-                            <th style="padding: 0.6rem 1rem; text-align: left;">Chapitre</th>
-                            <th style="padding: 0.6rem 1rem; text-align: center;">Meilleur score</th>
-                            <th style="padding: 0.6rem 1.5rem; text-align: center;">Statut</th>
+                            <th style="padding: 0.6rem 1rem; text-align: left;">{% translate "Chapitre" %}</th>
+                            <th style="padding: 0.6rem 1rem; text-align: center;">{% translate "Meilleur score" %}</th>
+                            <th style="padding: 0.6rem 1.5rem; text-align: center;">{% translate "Statut" %}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -92,11 +93,11 @@
                             </td>
                             <td style="padding: 0.75rem 1.5rem; text-align: center;">
                                 {% if ch.statut == 'REUSSI' %}
-                                    <span class="badge" style="background: rgba(76,175,80,0.15); color: #4caf50; border: 1px solid #4caf5055;">✓ Réussi</span>
+                                    <span class="badge" style="background: rgba(76,175,80,0.15); color: #4caf50; border: 1px solid #4caf5055;">✓ {% translate "Réussi" %}</span>
                                 {% elif ch.statut == 'ECHOUE' %}
-                                    <span class="badge" style="background: rgba(244,67,54,0.15); color: #f44336; border: 1px solid #f4433655;">✗ Échoué</span>
+                                    <span class="badge" style="background: rgba(244,67,54,0.15); color: #f44336; border: 1px solid #f4433655;">✗ {% translate "Échoué" %}</span>
                                 {% else %}
-                                    <span class="badge" style="background: var(--surface-alt); color: var(--texte-secondaire); border: 1px solid var(--bordure);">Non tenté</span>
+                                    <span class="badge" style="background: var(--surface-alt); color: var(--texte-secondaire); border: 1px solid var(--bordure);">{% translate "Non tenté" %}</span>
                                 {% endif %}
                             </td>
                         </tr>
@@ -109,9 +110,9 @@
     {% else %}
         <div class="carte" style="text-align: center; padding: 4rem 2rem; margin-top: 2rem;">
             <div class="feat-icon" style="margin: 0 auto 1rem; background: var(--surface-alt);"><i class="ti ti-chart-bar"></i></div>
-            <h3>Aucune évaluation pour le moment</h3>
-            <p class="message-empty">Commencez un cours et passez des QCM pour voir vos notes apparaître ici.</p>
-            <a href="{% url 'apprentissage:liste_cours' %}" class="btn-primary" style="display: inline-block; margin-top: 1.5rem;">Voir les cours</a>
+            <h3>{% translate "Aucune évaluation pour le moment" %}</h3>
+            <p class="message-empty">{% translate "Commencez un cours et passez des QCM pour voir vos notes apparaître ici." %}</p>
+            <a href="{% url 'apprentissage:liste_cours' %}" class="btn-primary" style="display: inline-block; margin-top: 1.5rem;">{% translate "Voir les cours" %}</a>
         </div>
     {% endif %}
 </section>

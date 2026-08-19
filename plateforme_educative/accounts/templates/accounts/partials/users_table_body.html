@@ -1,11 +1,12 @@
+{% load i18n %}
 <div id="users-table-container">
     <table class="admin-table" id="usersTable">
         <thead>
             <tr>
-                <th>Utilisateur</th>
-                <th>Rôle Principal</th>
-                <th>Niveau Assigné</th>
-                <th style="text-align:right;">Actions</th>
+                <th>{% translate "Utilisateur" %}</th>
+                <th>{% translate "Rôle Principal" %}</th>
+                <th>{% translate "Niveau Assigné" %}</th>
+                <th style="text-align:right;">{% translate "Actions" %}</th>
             </tr>
         </thead>
         <tbody id="users-tbody">
@@ -31,7 +32,7 @@
                         </div>
                     </td>
                     <td>
-                        <span style="display:inline-block; padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; 
+                        <span style="display:inline-block; padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 600;
                             {% if user.role == 'ADMIN' %}background: #fee2e2; color: #b91c1c;
                             {% elif user.role == 'FORMATEUR' %}background: #fef3c7; color: #b45309;
                             {% else %}background: #e0e7ff; color: #4338ca;{% endif %}">
@@ -43,7 +44,7 @@
                             {% if user.classe %}
                                 <span style="font-weight: 600; color: #475569;"><i class="ti ti-layers-linked"></i> {{ user.classe.niveau.nom|default:user.classe.nom }}</span>
                             {% else %}
-                                <span style="color: #94a3b8; font-size: 0.85rem;"><i>Aucun niveau</i></span>
+                                <span style="color: #94a3b8; font-size: 0.85rem;"><i>{% translate "Aucun niveau" %}</i></span>
                             {% endif %}
                         {% else %}
                             <span style="color: #cbd5e1;">-</span>
@@ -51,14 +52,14 @@
                     </td>
                     <td style="text-align:right;">
                         <div class="action-buttons">
-                            <button type="button" class="action-btn btn-save" onclick="openEditDrawer('{{ user.id }}')" title="Éditer">
+                            <button type="button" class="action-btn btn-save" onclick="openEditDrawer('{{ user.id }}')" title="{% translate 'Éditer' %}">
                                 <i class="ti ti-edit"></i>
                             </button>
-                            <button type="button" class="action-btn btn-view" onclick="fetchUserDetails('{{ user.id }}')" title="Détails complets">
+                            <button type="button" class="action-btn btn-view" onclick="fetchUserDetails('{{ user.id }}')" title="{% translate 'Détails complets' %}">
                                 <i class="ti ti-eye"></i>
                             </button>
                             {% if user.id != request.user.id %}
-                            <button type="button" class="action-btn btn-del" onclick="deleteUser('{{ user.id }}')" title="Supprimer le profil">
+                            <button type="button" class="action-btn btn-del" onclick="deleteUser('{{ user.id }}')" title="{% translate 'Supprimer le profil' %}">
                                 <i class="ti ti-trash"></i>
                             </button>
                             {% endif %}
@@ -69,8 +70,8 @@
                 <tr>
                     <td colspan="4" style="text-align:center; padding: 3rem;">
                         <i class="ti ti-users" style="font-size: 3rem; color: #cbd5e1; margin-bottom: 1rem; display: block;"></i>
-                        <h3 style="color: #475569; margin:0 0 0.5rem 0;">Aucun utilisateur trouvé</h3>
-                        <p style="color: #94a3b8; margin:0;">Modifiez vos filtres de recherche.</p>
+                        <h3 style="color: #475569; margin:0 0 0.5rem 0;">{% translate "Aucun utilisateur trouvé" %}</h3>
+                        <p style="color: #94a3b8; margin:0;">{% translate "Modifiez vos filtres de recherche." %}</p>
                     </td>
                 </tr>
             {% endfor %}
@@ -80,11 +81,11 @@
     {% if users_page.has_other_pages %}
     <div style="display: flex; justify-content: center; gap: 0.5rem; margin-top: 1.5rem;">
         {% if users_page.has_previous %}
-        <button class="btn btn-ghost" hx-get="{% url 'accounts:admin_dashboard' %}?page={{ users_page.previous_page_number }}" hx-target="#users-table-container" hx-include="[name='q'], [name='role']" hx-swap="outerHTML">Précédent</button>
+        <button class="btn btn-ghost" hx-get="{% url 'accounts:admin_dashboard' %}?page={{ users_page.previous_page_number }}" hx-target="#users-table-container" hx-include="[name='q'], [name='role']" hx-swap="outerHTML">{% translate "Précédent" %}</button>
         {% endif %}
-        <span style="padding: 0.5rem 1rem; background: #e2e8f0; border-radius: 8px; font-weight: 600; color: #475569;">Page {{ users_page.number }} sur {{ users_page.paginator.num_pages }}</span>
+        <span style="padding: 0.5rem 1rem; background: #e2e8f0; border-radius: 8px; font-weight: 600; color: #475569;">{% blocktranslate with num=users_page.number total=users_page.paginator.num_pages %}Page {{ num }} sur {{ total }}{% endblocktranslate %}</span>
         {% if users_page.has_next %}
-        <button class="btn btn-ghost" hx-get="{% url 'accounts:admin_dashboard' %}?page={{ users_page.next_page_number }}" hx-target="#users-table-container" hx-include="[name='q'], [name='role']" hx-swap="outerHTML">Suivant</button>
+        <button class="btn btn-ghost" hx-get="{% url 'accounts:admin_dashboard' %}?page={{ users_page.next_page_number }}" hx-target="#users-table-container" hx-include="[name='q'], [name='role']" hx-swap="outerHTML">{% translate "Suivant" %}</button>
         {% endif %}
     </div>
     {% endif %}

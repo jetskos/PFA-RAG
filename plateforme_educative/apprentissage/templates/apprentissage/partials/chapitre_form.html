@@ -1,3 +1,4 @@
+{% load i18n %}
 <form method="post"
       id="chapitre-form"
       enctype="multipart/form-data"
@@ -13,10 +14,10 @@
             <i class="ti ti-bookmark"></i>
         </div>
         <h2 style="margin: 0; font-size: 1.4rem; font-weight: 800; color: var(--text-primary, #0f172a);">
-            {% if form.instance.pk %}Modifier le chapitre{% else %}Ajouter un chapitre{% endif %}
+            {% if form.instance.pk %}{% translate "Modifier le chapitre" %}{% else %}{% translate "Ajouter un chapitre" %}{% endif %}
         </h2>
         <p style="margin: 0.25rem 0 0; font-size: 0.9rem; color: var(--text-muted, #64748b);">
-            Organisez le contenu de votre cours.
+            {% translate "Organisez le contenu de votre cours." %}
         </p>
     </div>
 
@@ -78,7 +79,7 @@
     <!-- Container for Upload Progress -->
     <div id="upload-progress-container" style="display:none; margin-top:1.5rem; background:#f8fafc; padding:1rem; border-radius:12px; border:1px solid #e2e8f0;">
         <p style="margin:0 0 0.5rem 0; font-weight:600; color:#0f172a; display:flex; justify-content:space-between; font-size:0.9rem;">
-            <span><i class="ti ti-cloud-upload"></i> Envoi du fichier...</span> 
+            <span><i class="ti ti-cloud-upload"></i> {% translate "Envoi du fichier..." %}</span>
             <span id="upload-percent" style="color:#0D9488;">0%</span>
         </p>
         <div style="width:100%; height:8px; background:#e2e8f0; border-radius:999px; overflow:hidden;">
@@ -90,13 +91,13 @@
         <button type="button" 
                 onclick="document.getElementById('form-modal').style.display='none'"
                 style="padding: 0.6rem 1.2rem; border-radius: 10px; font-weight: 600; font-size: 0.9rem; background: var(--bg-surface-alt, #f1f5f9); border: 1px solid var(--border-default, #cbd5e1); color: var(--text-secondary, #475569); cursor: pointer; transition: all 0.2s;">
-            Annuler
+            {% translate "Annuler" %}
         </button>
         <button type="submit" id="submit-btn"
                 style="padding: 0.6rem 1.2rem; border-radius: 10px; font-weight: 700; font-size: 0.9rem; background: linear-gradient(135deg, #0D9488, #0F766E); color: white; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(13,148,136,0.25); transition: all 0.2s;"
                 onmouseover="this.style.transform='translateY(-1px)'"
                 onmouseout="this.style.transform='none'">
-            <i class="ti ti-check" style="margin-right: 4px;"></i> {% if form.instance.pk %}Enregistrer{% else %}Créer{% endif %}
+            <i class="ti ti-check" style="margin-right: 4px;"></i> {% if form.instance.pk %}{% translate "Enregistrer" %}{% else %}{% translate "Créer" %}{% endif %}
         </button>
     </div>
 </form>
@@ -116,7 +117,7 @@
                     progressContainer.style.display = 'block';
                     submitBtn.style.opacity = '0.7';
                     submitBtn.style.pointerEvents = 'none';
-                    submitBtn.innerHTML = '<i class="ti ti-loader ti-spin"></i> Envoi...';
+                    submitBtn.innerHTML = '<i class="ti ti-loader ti-spin"></i> {% translate "Envoi..." %}';
                 }
                 
                 var percent = Math.floor((evt.detail.loaded / evt.detail.total) * 100);
@@ -124,7 +125,7 @@
                 percentText.textContent = percent + '%';
                 
                 if (percent === 100) {
-                    percentText.innerHTML = 'Traitement côté serveur <i class="ti ti-loader ti-spin"></i>';
+                    percentText.innerHTML = '{% translate "Traitement côté serveur" %} <i class="ti ti-loader ti-spin"></i>';
                     progressBar.style.background = '#f59e0b';
                 }
             }

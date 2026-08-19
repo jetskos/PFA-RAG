@@ -1,3 +1,4 @@
+{% load i18n %}
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -89,13 +90,13 @@
             <p>{{ message }}</p>
             {% if url %}
                 <div class="btn-wrapper">
-                    <a href="{{ base_url }}{{ url }}" class="btn">Accéder à la plateforme</a>
+                    <a href="{{ base_url }}{{ url }}" class="btn">{% translate "Accéder à la plateforme" %}</a>
                 </div>
             {% endif %}
         </div>
         <div class="footer">
-            <p>Cet e-mail vous a été envoyé automatiquement par la plateforme EduTech.</p>
-            <p>&copy; 2026 EduTech. Tous droits réservés.</p>
+            <p>{% translate "Cet e-mail vous a été envoyé automatiquement par la plateforme EduTech." %}</p>
+            <p>&copy; 2026 EduTech. {% translate "Tous droits réservés." %}</p>
         </div>
     </div>
 </body>

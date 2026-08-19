@@ -1,3 +1,4 @@
+{% load i18n %}
 <form method="post"
       enctype="multipart/form-data"
       hx-post="{{ request.path }}"
@@ -43,10 +44,10 @@
             <i class="ti ti-file-upload"></i>
         </div>
         <h2 style="margin: 0; font-size: 1.4rem; font-weight: 800; color: var(--text-primary, #0f172a);">
-            {% if form.instance.pk %}Modifier le document{% else %}Ajouter un document{% endif %}
+            {% if form.instance.pk %}{% translate "Modifier le document" %}{% else %}{% translate "Ajouter un document" %}{% endif %}
         </h2>
         <p style="margin: 0.25rem 0 0; font-size: 0.9rem; color: var(--text-muted, #64748b);">
-            Associez un PDF, support ou devoir à ce chapitre.
+            {% translate "Associez un PDF, support ou devoir à ce chapitre." %}
         </p>
     </div>
 
@@ -115,35 +116,35 @@
             
             <div style="display: flex; flex-direction: column; align-items: center; gap: 4px; z-index: 2; position: relative;">
                 <div style="width: 26px; height: 26px; border-radius: 50%; background: #10b981; color: white; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700;">✓</div>
-                <span style="font-size: 0.72rem; font-weight: 700; color: #10b981;">1. Envoi PDF</span>
+                <span style="font-size: 0.72rem; font-weight: 700; color: #10b981;">{% translate "1. Envoi PDF" %}</span>
             </div>
             
             <div style="display: flex; flex-direction: column; align-items: center; gap: 4px; z-index: 2; position: relative;">
                 <div style="width: 26px; height: 26px; border-radius: 50%; background: #3b82f6; color: white; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; box-shadow: 0 0 0 4px rgba(59,130,246,0.2);">
                     <i class="ti ti-loader-2 spin"></i>
                 </div>
-                <span style="font-size: 0.72rem; font-weight: 700; color: #2563eb;">2. Indexation IA</span>
+                <span style="font-size: 0.72rem; font-weight: 700; color: #2563eb;">{% translate "2. Indexation IA" %}</span>
             </div>
             
             <div style="display: flex; flex-direction: column; align-items: center; gap: 4px; z-index: 2; position: relative;">
                 <div style="width: 26px; height: 26px; border-radius: 50%; background: #e2e8f0; color: #94a3b8; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700;">3</div>
-                <span style="font-size: 0.72rem; font-weight: 600; color: #94a3b8;">3. RAG Prêt</span>
+                <span style="font-size: 0.72rem; font-weight: 600; color: #94a3b8;">{% translate "3. RAG Prêt" %}</span>
             </div>
         </div>
 
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
             <div style="font-weight: 700; font-size: 0.9rem; color: #1e40af; display: flex; align-items: center; gap: 6px;">
-                <i class="ti ti-database-export" style="font-size: 1.1rem;"></i> Sauvegarde et Indexation en cours...
+                <i class="ti ti-database-export" style="font-size: 1.1rem;"></i> {% translate "Sauvegarde et Indexation en cours..." %}
             </div>
             <span style="font-size: 0.78rem; font-weight: 600; color: #2563eb;">ChromaDB Vector Store</span>
         </div>
-        
+
         <div style="width: 100%; height: 7px; background: rgba(59,130,246,0.15); border-radius: 99px; overflow: hidden; position: relative;">
             <div style="height: 100%; background: linear-gradient(90deg, #3b82f6, #10b981); border-radius: 99px; animation: progress-pulse 1.8s ease-in-out infinite;"></div>
         </div>
-        
+
         <div style="font-size: 0.78rem; color: #64748b; margin-top: 0.5rem; text-align: center;">
-            Extraction du texte PDF & génération des embeddings vectoriels en cours. Veuillez patienter...
+            {% translate "Extraction du texte PDF & génération des embeddings vectoriels en cours. Veuillez patienter..." %}
         </div>
     </div>
 
@@ -151,17 +152,17 @@
         <button type="button" 
                 onclick="document.getElementById('form-modal').style.display='none'"
                 style="padding: 0.6rem 1.2rem; border-radius: 10px; font-weight: 600; font-size: 0.9rem; background: var(--bg-surface-alt, #f1f5f9); border: 1px solid var(--border-default, #cbd5e1); color: var(--text-secondary, #475569); cursor: pointer; transition: all 0.2s;">
-            Annuler
+            {% translate "Annuler" %}
         </button>
-        <button type="submit" 
+        <button type="submit"
                 style="padding: 0.6rem 1.2rem; border-radius: 10px; font-weight: 700; font-size: 0.9rem; background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(59,130,246,0.25); transition: all 0.2s;"
                 onmouseover="this.style.transform='translateY(-1px)'"
                 onmouseout="this.style.transform='none'">
             <span class="submit-btn-text">
-                <i class="ti ti-check" style="margin-right: 4px;"></i> {% if form.instance.pk %}Enregistrer{% else %}Ajouter{% endif %}
+                <i class="ti ti-check" style="margin-right: 4px;"></i> {% if form.instance.pk %}{% translate "Enregistrer" %}{% else %}{% translate "Ajouter" %}{% endif %}
             </span>
             <span class="submit-btn-loading" style="display: none; align-items: center; gap: 6px;">
-                <i class="ti ti-loader-2 spin"></i> Indexation...
+                <i class="ti ti-loader-2 spin"></i> {% translate "Indexation..." %}
             </span>
         </button>
     </div>

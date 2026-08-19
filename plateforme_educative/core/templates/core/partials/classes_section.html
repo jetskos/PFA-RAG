@@ -1,3 +1,4 @@
+{% load i18n %}
 <style>
     /* Full width layout */
     .admin-list-container {
@@ -262,11 +263,11 @@
             <div class="search-filter-group">
                 <div class="control-search">
                     <i class="ti ti-search"></i>
-                    <input type="search" 
-                           name="q" 
-                           placeholder="Rechercher une classe..." 
-                           hx-get="{% url 'dashboard_admin_structure' %}?tab=classes" 
-                           hx-trigger="keyup changed delay:300ms" 
+                    <input type="search"
+                           name="q"
+                           placeholder="{% translate 'Rechercher une classe...' %}"
+                           hx-get="{% url 'dashboard_admin_structure' %}?tab=classes"
+                           hx-trigger="keyup changed delay:300ms"
                            hx-target="#dashboard-structure"
                            hx-include="[name='status']"
                            autocomplete="off">
@@ -277,18 +278,18 @@
                             hx-trigger="change"
                             hx-target="#dashboard-structure"
                             hx-include="[name='q']">
-                        <option value="">Tous les statuts</option>
-                        <option value="actif">Actives uniquement</option>
-                        <option value="inactif">Inactives uniquement</option>
+                        <option value="">{% translate "Tous les statuts" %}</option>
+                        <option value="actif">{% translate "Actives uniquement" %}</option>
+                        <option value="inactif">{% translate "Inactives uniquement" %}</option>
                     </select>
                 </div>
             </div>
 
-            <button class="btn-create" 
-                    hx-get="{% url 'dashboard_admin_create_classe' %}" 
-                    hx-target="#modal-container" 
+            <button class="btn-create"
+                    hx-get="{% url 'dashboard_admin_create_classe' %}"
+                    hx-target="#modal-container"
                     hx-swap="innerHTML">
-                <i class="ti ti-plus"></i> Créer une Classe
+                <i class="ti ti-plus"></i> {% translate "Créer une Classe" %}
             </button>
         </div>
 
@@ -309,24 +310,24 @@
                                 <div class="class-meta-row">
                                     <span><i class="ti ti-calendar" aria-hidden="true"></i> {{ classe.annee_scolaire }}</span>
                                     <span>&bull;</span>
-                                    <span>Niveau: <code style="background: #f1f5f9; padding: 2px 6px; border-radius: 4px; color: #475569;">{{ classe.niveau.code }}</code></span>
+                                    <span>{% translate "Niveau" %}: <code style="background: #f1f5f9; padding: 2px 6px; border-radius: 4px; color: #475569;">{{ classe.niveau.code }}</code></span>
                                 </div>
                             </div>
 
                             <!-- Active status tag -->
                             <div>
                                 <span class="status-indicator-badge {% if classe.actif %}active{% else %}inactive{% endif %}">
-                                    {% if classe.actif %}&bull; ACTIVE{% else %}&bull; ARCHIVÉE{% endif %}
+                                    {% if classe.actif %}&bull; {% translate "ACTIVE" %}{% else %}&bull; {% translate "ARCHIVÉE" %}{% endif %}
                                 </span>
                             </div>
 
                             <!-- Capacity progress bar -->
                             <div class="class-progress-col">
                                 <div class="progress-metrics-label">
-                                    <span>Remplissage</span>
+                                    <span>{% translate "Remplissage" %}</span>
                                     <span>{{ classe.eleves.count }}/{{ classe.capacite }}</span>
                                 </div>
-                                <div class="progress-bar-container" title="{{ classe.eleves.count }} élèves sur une capacité de {{ classe.capacite }}">
+                                <div class="progress-bar-container" title="{% blocktranslate with n=classe.eleves.count cap=classe.capacite %}{{ n }} élèves sur une capacité de {{ cap }}{% endblocktranslate %}">
                                     <div class="progress-bar-fill-bar" style="width: {% if classe.capacite > 0 %}{% widthratio classe.eleves.count classe.capacite 100 %}{% else %}0{% endif %}%;"></div>
                                 </div>
                             </div>
@@ -338,11 +339,11 @@
                                         hx-get="{% url 'dashboard_admin_edit_classe' classe.id %}"
                                         hx-target="#modal-container"
                                         hx-swap="innerHTML">
-                                    <i class="ti ti-edit"></i> Modifier
+                                    <i class="ti ti-edit"></i> {% translate "Modifier" %}
                                 </button>
                                 <a href="{% url 'dashboard_admin_manage_classe_students' classe.id %}"
                                    class="btn-manage">
-                                    <i class="ti ti-users" aria-hidden="true"></i> Étudiants
+                                    <i class="ti ti-users" aria-hidden="true"></i> {% translate "Étudiants" %}
                                 </a>
                             </div>
                         </div>
@@ -351,7 +352,7 @@
             {% else %}
                 <div style="text-align:center; padding: 4rem 2rem; background: #f8fafc; border-radius: 16px; border: 1px dashed #cbd5e1;">
                     <i class="ti ti-users-group" style="font-size: 3rem; color: #94a3b8; margin-bottom: 1rem; display: block;"></i>
-                    <p style="margin:0; color: #475569; font-size: 1.1rem; font-weight: 600;">Aucune classe configurée dans la plateforme.</p>
+                    <p style="margin:0; color: #475569; font-size: 1.1rem; font-weight: 600;">{% translate "Aucune classe configurée dans la plateforme." %}</p>
                 </div>
             {% endif %}
         </div>
@@ -359,11 +360,11 @@
         {% if classes.has_other_pages %}
         <div style="display: flex; justify-content: center; gap: 0.5rem; margin-top: 1.5rem;">
             {% if classes.has_previous %}
-            <button class="btn btn-ghost" hx-get="{% url 'dashboard_admin_structure' %}?tab=classes&page={{ classes.previous_page_number }}" hx-target="#dashboard-structure" hx-include="[name='q'], [name='status']">Précédent</button>
+            <button class="btn btn-ghost" hx-get="{% url 'dashboard_admin_structure' %}?tab=classes&page={{ classes.previous_page_number }}" hx-target="#dashboard-structure" hx-include="[name='q'], [name='status']">{% translate "Précédent" %}</button>
             {% endif %}
-            <span style="padding: 0.5rem 1rem; background: #e2e8f0; border-radius: 8px; font-weight: 600; color: #475569;">Page {{ classes.number }} sur {{ classes.paginator.num_pages }}</span>
+            <span style="padding: 0.5rem 1rem; background: #e2e8f0; border-radius: 8px; font-weight: 600; color: #475569;">{% blocktranslate with num=classes.number total=classes.paginator.num_pages %}Page {{ num }} sur {{ total }}{% endblocktranslate %}</span>
             {% if classes.has_next %}
-            <button class="btn btn-ghost" hx-get="{% url 'dashboard_admin_structure' %}?tab=classes&page={{ classes.next_page_number }}" hx-target="#dashboard-structure" hx-include="[name='q'], [name='status']">Suivant</button>
+            <button class="btn btn-ghost" hx-get="{% url 'dashboard_admin_structure' %}?tab=classes&page={{ classes.next_page_number }}" hx-target="#dashboard-structure" hx-include="[name='q'], [name='status']">{% translate "Suivant" %}</button>
             {% endif %}
         </div>
         {% endif %}

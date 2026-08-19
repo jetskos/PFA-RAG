@@ -1,3 +1,4 @@
+{% load i18n %}
 {% if page_obj.has_other_pages %}
 <style>
 .c-pagination {
@@ -58,7 +59,7 @@
             hx-get="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.etat %}&etat={{ request.GET.etat }}{% endif %}{% if request.GET.statut %}&statut={{ request.GET.statut }}{% endif %}{% if request.GET.niveau_id %}&niveau_id={{ request.GET.niveau_id }}{% endif %}" 
             hx-target="{{ hx_target|default:'#list-container' }}" 
             class="c-page-btn">
-            &laquo; Précédent
+            &laquo; {% translate "Précédent" %}
         </button>
     {% endif %}
 
@@ -80,7 +81,7 @@
             hx-get="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.etat %}&etat={{ request.GET.etat }}{% endif %}{% if request.GET.statut %}&statut={{ request.GET.statut }}{% endif %}{% if request.GET.niveau_id %}&niveau_id={{ request.GET.niveau_id }}{% endif %}" 
             hx-target="{{ hx_target|default:'#list-container' }}" 
             class="c-page-btn">
-            Suivant &raquo;
+            {% translate "Suivant" %} &raquo;
         </button>
     {% endif %}
 </div>

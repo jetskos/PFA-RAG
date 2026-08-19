@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
-{% block title %}Mon profil | Plateforme Éducative{% endblock %}
+{% block title %}{% translate "Mon profil" %} | Plateforme Éducative{% endblock %}
 
 {% block content %}
 
@@ -15,13 +16,13 @@
                 <!-- Interactive Avatar Box -->
                 <div class="avatar-interactive" onclick="document.getElementById('profile-avatar-input').click();">
                     {% if profile_user.photo %}
-                        <img class="avatar-image" src="{{ profile_user.photo.url }}" alt="Photo de profil">
+                        <img class="avatar-image" src="{{ profile_user.photo.url }}" alt="{% translate 'Photo de profil' %}">
                         <div class="avatar-overlay" onclick="event.stopPropagation();">
                             <button type="button" class="avatar-overlay-btn" onclick="document.getElementById('profile-avatar-input').click();">
-                                <i class="ti ti-camera" aria-hidden="true"></i> Modifier
+                                <i class="ti ti-camera" aria-hidden="true"></i> {% translate "Modifier" %}
                             </button>
-                            <button type="button" class="avatar-overlay-btn btn-delete" onclick="if(confirm('Supprimer votre photo actuelle ?')) document.getElementById('profile-avatar-delete-form').submit();">
-                                <i class="ti ti-trash" aria-hidden="true"></i> Supprimer
+                            <button type="button" class="avatar-overlay-btn btn-delete" onclick="if(confirm('{% translate 'Supprimer votre photo actuelle ?' %}')) document.getElementById('profile-avatar-delete-form').submit();">
+                                <i class="ti ti-trash" aria-hidden="true"></i> {% translate "Supprimer" %}
                             </button>
                         </div>
                     {% else %}
@@ -34,7 +35,7 @@
                         </div>
                         <div class="avatar-overlay">
                             <button type="button" class="avatar-overlay-btn">
-                                <i class="ti ti-camera" aria-hidden="true"></i> Ajouter
+                                <i class="ti ti-camera" aria-hidden="true"></i> {% translate "Ajouter" %}
                             </button>
                         </div>
                     {% endif %}
@@ -54,26 +55,26 @@
                 <!-- Mini Details List -->
                 <div class="info-list">
                     <div class="info-item">
-                        <span class="info-label">Statut du compte</span>
+                        <span class="info-label">{% translate "Statut du compte" %}</span>
                         <span class="info-value" style="color: #10b981; display: inline-flex; align-items: center; gap: 4px;">
                             <span style="width:8px; height:8px; border-radius:50%; background:#10b981; display:inline-block;"></span>
-                            {% if profile_user.is_active %}Actif{% else %}En attente{% endif %}
+                            {% if profile_user.is_active %}{% translate "Actif" %}{% else %}{% translate "En attente" %}{% endif %}
                         </span>
                     </div>
                     {% if profile_user.niveau_label %}
                     <div class="info-item">
-                        <span class="info-label">Niveau</span>
+                        <span class="info-label">{% translate "Niveau" %}</span>
                         <span class="info-value">{{ profile_user.niveau_label }}</span>
                     </div>
                     {% endif %}
                     {% if profile_user.classe %}
                     <div class="info-item">
-                        <span class="info-label">Classe</span>
+                        <span class="info-label">{% translate "Classe" %}</span>
                         <span class="info-value">{{ profile_user.classe.nom }}</span>
                     </div>
                     {% endif %}
                     <div class="info-item">
-                        <span class="info-label">Inscrit le</span>
+                        <span class="info-label">{% translate "Inscrit le" %}</span>
                         <span class="info-value">{{ profile_user.date_creation|date:'d/m/Y' }}</span>
                     </div>
                 </div>
@@ -82,7 +83,7 @@
             <!-- Actions and shortcuts panel -->
             <article class="glass-card">
                 <h3 style="font-size: 0.95rem; font-weight: 700; margin: 0 0 1rem 0; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.05em;">
-                    <i class="ti ti-external-link" aria-hidden="true"></i> Accès & Actions
+                    <i class="ti ti-external-link" aria-hidden="true"></i> {% translate "Accès & Actions" %}
                 </h3>
                 <div style="display: flex; flex-direction: column; gap: 0.65rem;">
                     {% for action in role_context.role_actions %}
@@ -91,10 +92,10 @@
                         </a>
                     {% endfor %}
                     <a class="btn-primary" href="{% url 'accounts:profile_edit' %}" style="justify-content: center; width: 100%;">
-                        <i class="ti ti-settings" aria-hidden="true"></i> Paramètres
+                        <i class="ti ti-settings" aria-hidden="true"></i> {% translate "Paramètres" %}
                     </a>
                     <a class="btn-ghost" href="{% url 'accounts:change_password' %}" style="justify-content: center; width: 100%;">
-                        <i class="ti ti-lock" aria-hidden="true"></i> Sécurité & Mot de passe
+                        <i class="ti ti-lock" aria-hidden="true"></i> {% translate "Sécurité & Mot de passe" %}
                     </a>
                 </div>
             </article>
@@ -108,28 +109,28 @@
                     <div class="stat-icon icon-started"><i class="ti ti-book" aria-hidden="true"></i></div>
                     <div class="stat-info">
                         <span class="stat-num">{{ profile_stats.started }}</span>
-                        <span class="stat-title">Commencés</span>
+                        <span class="stat-title">{% translate "Commencés" %}</span>
                     </div>
                 </div>
                 <div class="stat-mini-card">
                     <div class="stat-icon icon-progress"><i class="ti ti-player-play" aria-hidden="true"></i></div>
                     <div class="stat-info">
                         <span class="stat-num">{{ profile_stats.in_progress }}</span>
-                        <span class="stat-title">En cours</span>
+                        <span class="stat-title">{% translate "En cours" %}</span>
                     </div>
                 </div>
                 <div class="stat-mini-card">
                     <div class="stat-icon icon-completed"><i class="ti ti-checkbox" aria-hidden="true"></i></div>
                     <div class="stat-info">
                         <span class="stat-num">{{ profile_stats.completed }}</span>
-                        <span class="stat-title">Terminés</span>
+                        <span class="stat-title">{% translate "Terminés" %}</span>
                     </div>
                 </div>
                 <div class="stat-mini-card">
                     <div class="stat-icon icon-chapters"><i class="ti ti-award" aria-hidden="true"></i></div>
                     <div class="stat-info">
                         <span class="stat-num">{{ profile_stats.chapters_validated }}</span>
-                        <span class="stat-title">Chapitres</span>
+                        <span class="stat-title">{% translate "Chapitres" %}</span>
                     </div>
                 </div>
             </section>
@@ -137,8 +138,8 @@
             <!-- Current progressions -->
             <section class="glass-card">
                 <div class="section-header">
-                    <h2><i class="ti ti-device-laptop" aria-hidden="true"></i> Cours en cours de lecture</h2>
-                    <span class="user-role-badge badge-secondary">{{ active_progressions|length }} en cours</span>
+                    <h2><i class="ti ti-device-laptop" aria-hidden="true"></i> {% translate "Cours en cours de lecture" %}</h2>
+                    <span class="user-role-badge badge-secondary">{% blocktranslate count counter=active_progressions|length %}{{ counter }} en cours{% plural %}{{ counter }} en cours{% endblocktranslate %}</span>
                 </div>
 
                 <div class="progress-grid">
@@ -148,7 +149,7 @@
                                 <div class="course-card-top">
                                     <div class="course-card-info">
                                         <h3>{{ progression.cours.titre }}</h3>
-                                        <p>{{ progression.cours.get_niveau_display|default:"Général" }}</p>
+                                        <p>{% if progression.cours.get_niveau_display %}{{ progression.cours.get_niveau_display }}{% else %}{% translate "Général" %}{% endif %}</p>
                                     </div>
                                     <span class="course-card-pct">{{ progression.pourcentage }}%</span>
                                 </div>
@@ -158,16 +159,16 @@
                                 <div class="course-card-footer">
                                     <span>
                                         <i class="ti ti-list-check" aria-hidden="true"></i>
-                                        {{ progression.chapitres_valides.count }} / {{ progression.cours.chapitres.count }} chapitres
+                                        {% blocktranslate with v=progression.chapitres_valides.count t=progression.cours.chapitres.count %}{{ v }} / {{ t }} chapitres{% endblocktranslate %}
                                     </span>
                                     <span>
                                         <i class="ti ti-calendar-time" aria-hidden="true"></i>
-                                        Dernière visite : {{ progression.date_derniere_consultation|date:'d/m/Y H:i' }}
+                                        {% blocktranslate with d=progression.date_derniere_consultation|date:'d/m/Y H:i' %}Dernière visite : {{ d }}{% endblocktranslate %}
                                     </span>
                                 </div>
                                 <div style="margin-top: 0.25rem;">
                                     <a class="btn-primary" href="{% url 'apprentissage:detail_cours' progression.cours.id %}" style="padding: 6px 16px; font-size: 12px; width: 100%; justify-content: center;">
-                                        Reprendre le cours <i class="ti ti-arrow-right" aria-hidden="true"></i>
+                                        {% translate "Reprendre le cours" %} <i class="ti ti-arrow-right" aria-hidden="true"></i>
                                     </a>
                                 </div>
                             </article>
@@ -175,9 +176,9 @@
                     {% else %}
                         <div class="empty-state">
                             <i class="ti ti-books" aria-hidden="true"></i>
-                            <span>Aucun cours commencé actuellement.</span>
+                            <span>{% translate "Aucun cours commencé actuellement." %}</span>
                             <a class="btn-ghost" href="{% url 'apprentissage:liste_cours' %}" style="margin-top: 0.5rem; font-size: 12px;">
-                                Parcourir le catalogue
+                                {% translate "Parcourir le catalogue" %}
                             </a>
                         </div>
                     {% endif %}
@@ -189,7 +190,7 @@
                 <!-- Visited chapters -->
                 <section class="glass-card">
                     <div class="section-header">
-                        <h2><i class="ti ti-clock" aria-hidden="true"></i> Récemment visités</h2>
+                        <h2><i class="ti ti-clock" aria-hidden="true"></i> {% translate "Récemment visités" %}</h2>
                     </div>
                     <div class="activity-list">
                         {% if recent_visits %}
@@ -201,14 +202,14 @@
                                     </div>
                                     <div class="activity-item-meta">
                                         <span>{{ visit.chapitre.cours.get_niveau_display|default:"" }}</span>
-                                        <span>Le {{ visit.date_visite|date:'d/m/Y H:i' }}</span>
+                                        <span>{% blocktranslate with d=visit.date_visite|date:'d/m/Y H:i' %}Le {{ d }}{% endblocktranslate %}</span>
                                     </div>
                                 </article>
                             {% endfor %}
                         {% else %}
                             <div class="empty-state" style="padding: 1.5rem;">
                                 <i class="ti ti-history" aria-hidden="true"></i>
-                                <span style="font-size: 0.8rem;">Aucune visite récente.</span>
+                                <span style="font-size: 0.8rem;">{% translate "Aucune visite récente." %}</span>
                             </div>
                         {% endif %}
                     </div>
@@ -217,7 +218,7 @@
                 <!-- Completed chapters -->
                 <section class="glass-card">
                     <div class="section-header">
-                        <h2><i class="ti ti-circle-check" aria-hidden="true"></i> Chapitres validés</h2>
+                        <h2><i class="ti ti-circle-check" aria-hidden="true"></i> {% translate "Chapitres validés" %}</h2>
                     </div>
                     <div class="activity-list">
                         {% if recent_completions %}
@@ -228,15 +229,15 @@
                                         <span class="activity-item-course" style="color: #059669; background: rgba(16, 185, 129, 0.1);">{{ completion.chapitre.cours.titre }}</span>
                                     </div>
                                     <div class="activity-item-meta">
-                                        <span style="color:#10b981; font-weight: 600;"><i class="ti ti-checkbox" aria-hidden="true"></i> Succès</span>
-                                        <span>Le {{ completion.date_completion|date:'d/m/Y H:i' }}</span>
+                                        <span style="color:#10b981; font-weight: 600;"><i class="ti ti-checkbox" aria-hidden="true"></i> {% translate "Succès" %}</span>
+                                        <span>{% blocktranslate with d=completion.date_completion|date:'d/m/Y H:i' %}Le {{ d }}{% endblocktranslate %}</span>
                                     </div>
                                 </article>
                             {% endfor %}
                         {% else %}
                             <div class="empty-state" style="padding: 1.5rem;">
                                 <i class="ti ti-circle-check" aria-hidden="true"></i>
-                                <span style="font-size: 0.8rem;">Aucun chapitre validé récemment.</span>
+                                <span style="font-size: 0.8rem;">{% translate "Aucun chapitre validé récemment." %}</span>
                             </div>
                         {% endif %}
                     </div>
@@ -246,8 +247,8 @@
             <!-- Completed courses history -->
             <section class="glass-card">
                 <div class="section-header">
-                    <h2><i class="ti ti-award" aria-hidden="true"></i> Parcours terminés</h2>
-                    <span class="user-role-badge" style="background:#d1fae5; color:#065f46;">{{ completed_progressions|length }} certifiés</span>
+                    <h2><i class="ti ti-award" aria-hidden="true"></i> {% translate "Parcours terminés" %}</h2>
+                    <span class="user-role-badge" style="background:#d1fae5; color:#065f46;">{% blocktranslate count counter=completed_progressions|length %}{{ counter }} certifié{% plural %}{{ counter }} certifiés{% endblocktranslate %}</span>
                 </div>
                 <div class="progress-grid">
                     {% if completed_progressions %}
@@ -256,7 +257,7 @@
                                 <div class="course-card-top">
                                     <div class="course-card-info">
                                         <h3 style="color: #065f46;">{{ progression.cours.titre }}</h3>
-                                        <p>{{ progression.cours.get_niveau_display|default:"Général" }}</p>
+                                        <p>{% if progression.cours.get_niveau_display %}{{ progression.cours.get_niveau_display }}{% else %}{% translate "Général" %}{% endif %}</p>
                                     </div>
                                     <span class="course-card-pct" style="color:#047857; background:#d1fae5;">100%</span>
                                 </div>
@@ -266,10 +267,10 @@
                                 <div class="course-card-footer" style="border-top-color: #d1fae5;">
                                     <span>
                                         <i class="ti ti-star" aria-hidden="true" style="color:var(--accent);"></i>
-                                        Félicitations ! Parcours achevé.
+                                        {% translate "Félicitations ! Parcours achevé." %}
                                     </span>
                                     <span>
-                                        Dernière visite : {{ progression.date_derniere_consultation|date:'d/m/Y' }}
+                                        {% blocktranslate with d=progression.date_derniere_consultation|date:'d/m/Y' %}Dernière visite : {{ d }}{% endblocktranslate %}
                                     </span>
                                 </div>
                             </article>
@@ -277,7 +278,7 @@
                     {% else %}
                         <div class="empty-state">
                             <i class="ti ti-trophy" aria-hidden="true"></i>
-                            <span>Terminez des cours pour voir vos badges de réussite ici !</span>
+                            <span>{% translate "Terminez des cours pour voir vos badges de réussite ici !" %}</span>
                         </div>
                     {% endif %}
                 </div>

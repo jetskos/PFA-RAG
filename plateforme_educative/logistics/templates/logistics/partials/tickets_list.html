@@ -1,3 +1,4 @@
+{% load i18n %}
 {% if tickets.exists %}
     <div style="display: flex; flex-direction: column; gap: 1rem;">
         {% for ticket in tickets %}
@@ -15,11 +16,11 @@
                 
                 {% if ticket.statut == 'OUVERT' %}
                     <span style="font-size: 0.7rem; font-weight: 700; padding: 3px 8px; border-radius: 999px; background: rgba(245,158,11,0.1); color: #d97706; display: inline-flex; align-items: center; gap: 4px;">
-                        <span style="width: 6px; height: 6px; border-radius: 50%; background: currentColor;"></span> En attente
+                        <span style="width: 6px; height: 6px; border-radius: 50%; background: currentColor;"></span> {% translate "En attente" %}
                     </span>
                 {% elif ticket.statut == 'EN_COURS' %}
                     <span style="font-size: 0.7rem; font-weight: 700; padding: 3px 8px; border-radius: 999px; background: rgba(139,92,246,0.1); color: #7c3aed; display: inline-flex; align-items: center; gap: 4px;">
-                        <span style="width: 6px; height: 6px; border-radius: 50%; background: currentColor;"></span> En traitement
+                        <span style="width: 6px; height: 6px; border-radius: 50%; background: currentColor;"></span> {% translate "En traitement" %}
                     </span>
                 {% endif %}
             </div>
@@ -30,11 +31,11 @@
             
             <div style="display: flex; flex-wrap: wrap; gap: 1rem; padding-top: 0.5rem; border-top: 1px solid var(--border);">
                 <div style="font-size: 0.75rem; color: var(--ink-muted); font-weight: 600; display: flex; align-items: center; gap: 0.35rem;">
-                    <i class="ti ti-package" style="font-size: 0.9rem; color: var(--teal);"></i> Équipement: <span style="color: var(--ink);">{{ ticket.equipement.nom|default:ticket.equipement }}</span>
+                    <i class="ti ti-package" style="font-size: 0.9rem; color: var(--teal);"></i> {% translate "Équipement" %}: <span style="color: var(--ink);">{{ ticket.equipement.nom|default:ticket.equipement }}</span>
                 </div>
                 {% if ticket.atelier %}
                 <div style="font-size: 0.75rem; color: var(--ink-muted); font-weight: 600; display: flex; align-items: center; gap: 0.35rem;">
-                    <i class="ti ti-building-community" style="font-size: 0.9rem; color: var(--teal);"></i> Atelier: <span style="color: var(--ink);">{{ ticket.atelier }}</span>
+                    <i class="ti ti-building-community" style="font-size: 0.9rem; color: var(--teal);"></i> {% translate "Atelier" %}: <span style="color: var(--ink);">{{ ticket.atelier }}</span>
                 </div>
                 {% endif %}
                 
@@ -44,7 +45,7 @@
                         {% csrf_token %}
                         <input type="hidden" name="ticket_id" value="{{ ticket.id }}">
                         <button type="submit" style="display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.4rem 0.8rem; background: var(--surface); color: var(--teal); border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: all 0.15s;" onmouseover="this.style.background='var(--teal-glow)'; this.style.borderColor='var(--teal)'" onmouseout="this.style.background='var(--surface)'; this.style.borderColor='var(--border)'">
-                            <i class="ti ti-check"></i> Marquer Résolu
+                            <i class="ti ti-check"></i> {% translate "Marquer Résolu" %}
                         </button>
                     </form>
                     {% endif %}
@@ -60,8 +61,8 @@
             <i class="ti ti-ticket"></i>
         </div>
         <div>
-            <h3 style="font-size: 1rem; font-weight: 700; color: var(--ink); margin: 0 0 0.4rem 0;">Aucun ticket actif</h3>
-            <p style="font-size: 0.85rem; color: var(--ink-muted); margin: 0; max-width: 250px;">Il n'y a actuellement aucun problème signalé sur le matériel.</p>
+            <h3 style="font-size: 1rem; font-weight: 700; color: var(--ink); margin: 0 0 0.4rem 0;">{% translate "Aucun ticket actif" %}</h3>
+            <p style="font-size: 0.85rem; color: var(--ink-muted); margin: 0; max-width: 250px;">{% translate "Il n'y a actuellement aucun problème signalé sur le matériel." %}</p>
         </div>
     </div>
 {% endif %}

@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
-{% load static %}
-{% block title %}Notes des étudiants | EduTech{% endblock %}
+{% load static i18n %}
+{% block title %}{% translate "Notes des étudiants" %} | EduTech{% endblock %}
 
 {% block content %}
 <style>
@@ -252,25 +252,25 @@
     <!-- ═══════════════════ HERO ═══════════════════ -->
     <div class="fn-hero">
         <div class="fn-hero-left">
-            <span class="fn-eyebrow"><i class="ti ti-chart-bar"></i> Suivi pédagogique</span>
-            <h1 class="fn-title">Notes de mes <span>étudiants</span></h1>
-            <p class="fn-subtitle">Scores QCM agrégés, progression par cours et détection des élèves en difficulté.</p>
+            <span class="fn-eyebrow"><i class="ti ti-chart-bar"></i> {% translate "Suivi pédagogique" %}</span>
+            <h1 class="fn-title">{% translate "Notes de mes" %} <span>{% translate "étudiants" %}</span></h1>
+            <p class="fn-subtitle">{% translate "Scores QCM agrégés, progression par cours et détection des élèves en difficulté." %}</p>
         </div>
         <div class="fn-hero-right">
             <a href="{% url 'apprentissage:exporter_notes_classe_csv' %}?classe={{ classe_selectionnee|default:'' }}" class="btn-hero-primary">
-                <i class="ti ti-download"></i> Exporter CSV
+                <i class="ti ti-download"></i> {% translate "Exporter CSV" %}
             </a>
             <a href="{% url 'apprentissage:espace_formateur' %}" class="btn-hero-secondary">
-                <i class="ti ti-arrow-left"></i> Retour
+                <i class="ti ti-arrow-left"></i> {% translate "Retour" %}
             </a>
         </div>
     </div>
 
     <!-- ═══════════════════ FILTER ═══════════════════ -->
     <form method="GET" class="fn-filter-bar">
-        <span class="fn-filter-label"><i class="ti ti-filter"></i> Classe :</span>
+        <span class="fn-filter-label"><i class="ti ti-filter"></i> {% translate "Classe" %} :</span>
         <select name="classe" class="fn-filter-select" onchange="this.form.submit()">
-            <option value="">Toutes les classes</option>
+            <option value="">{% translate "Toutes les classes" %}</option>
             {% for cl in classes %}
                 <option value="{{ cl.id }}" {% if classe_selectionnee == cl.id|stringformat:"s" %}selected{% endif %}>
                     {{ cl.nom }} — {{ cl.niveau.nom }}
@@ -289,9 +289,9 @@
             <div class="classe-section-header">
                 <h2 class="classe-section-title">
                     <i class="ti ti-users"></i>
-                    {% if groupe.grouper %}{{ groupe.grouper }}{% else %}Sans classe{% endif %}
+                    {% if groupe.grouper %}{{ groupe.grouper }}{% else %}{% translate "Sans classe" %}{% endif %}
                 </h2>
-                <span class="classe-pill">{{ groupe.list|length }} élève{{ groupe.list|length|pluralize }}</span>
+                <span class="classe-pill">{% blocktranslate count counter=groupe.list|length %}{{ counter }} élève{% plural %}{{ counter }} élèves{% endblocktranslate %}</span>
             </div>
 
             <!-- Students -->
@@ -308,7 +308,7 @@
                         <div class="student-name">
                             {{ etudiant_data.etudiant.get_full_name }}
                             {% if etudiant_data.en_difficulte %}
-                            <span class="alert-pill"><i class="ti ti-alert-triangle"></i> En difficulté</span>
+                            <span class="alert-pill"><i class="ti ti-alert-triangle"></i> {% translate "En difficulté" %}</span>
                             {% endif %}
                         </div>
                         <div class="student-email">
@@ -318,13 +318,13 @@
 
                     <div class="student-score">
                         <div class="score-block">
-                            <div class="score-label">Moy. Générale</div>
+                            <div class="score-label">{% translate "Moy. Générale" %}</div>
                             {% if etudiant_data.moyenne_generale is not None %}
                                 <span class="score-value {% if etudiant_data.moyenne_generale >= 80 %}green{% elif etudiant_data.moyenne_generale >= 50 %}orange{% else %}red{% endif %}">
                                     {{ etudiant_data.moyenne_generale }}/100
                                 </span>
                             {% else %}
-                                <span class="score-value muted">Pas de note</span>
+                                <span class="score-value muted">{% translate "Pas de note" %}</span>
                             {% endif %}
                         </div>
                         <div class="toggle-chevron" id="chevron-{{ etudiant_data.etudiant.id }}">
@@ -344,19 +344,19 @@
                                 {% for cid, moy in moyenne_classe_par_cours.items %}
                                     {% if cid == cours_data.cours.id|stringformat:"s" and moy is not None %}
                                     <span style="font-size: 0.72rem; font-weight: 600; color: var(--text-muted, #94a3b8); background: var(--bg-surface-alt, #f1f5f9); padding: 2px 8px; border-radius: 6px; border: 1px solid var(--border-light, #e8edf3); margin-left: 4px;">
-                                        Moy. classe : {{ moy }}/100
+                                        {% blocktranslate %}Moy. classe : {{ moy }}/100{% endblocktranslate %}
                                     </span>
                                     {% endif %}
                                 {% endfor %}
                             </div>
                             <div class="cours-detail-stats">
                                 <div class="cours-stat-mini">
-                                    <span>Progression</span>
+                                    <span>{% translate "Progression" %}</span>
                                     <span>{{ cours_data.progression }}%</span>
                                 </div>
                                 {% if cours_data.moyenne_cours is not None %}
                                 <div class="cours-stat-mini">
-                                    <span>Note cours</span>
+                                    <span>{% translate "Note cours" %}</span>
                                     <span style="color: {% if cours_data.moyenne_cours >= 80 %}#10b981{% elif cours_data.moyenne_cours >= 50 %}#f59e0b{% else %}#ef4444{% endif %};">
                                         {{ cours_data.moyenne_cours }}/100
                                     </span>
@@ -368,14 +368,14 @@
                         {% if cours_data.chapitres %}
                         <div>
                             <div style="font-size: 0.72rem; font-weight: 700; color: var(--text-muted, #94a3b8); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.5rem;">
-                                <i class="ti ti-list-check"></i> Chapitres
+                                <i class="ti ti-list-check"></i> {% translate "Chapitres" %}
                             </div>
                             <div class="chapitres-grid">
                                 {% for ch in cours_data.chapitres %}
                                 <span class="ch-chip {% if ch.statut == 'REUSSI' %}success{% elif ch.statut == 'ECHOUE' %}fail{% else %}none{% endif %}"
                                       title="{{ ch.chapitre.titre }}">
                                     <i class="ti ti-{% if ch.statut == 'REUSSI' %}check{% elif ch.statut == 'ECHOUE' %}x{% else %}minus{% endif %}"></i>
-                                    Chap. {{ ch.chapitre.ordre }}
+                                    {% blocktranslate with n=ch.chapitre.ordre %}Chap. {{ n }}{% endblocktranslate %}
                                     <span style="opacity: 0.5;">·</span>
                                     {% if ch.meilleur_score is not None %}{{ ch.meilleur_score }}%{% else %}—{% endif %}
                                 </span>
@@ -390,7 +390,7 @@
                         <button onclick="toggleStudent('{{ etudiant_data.etudiant.id }}')"
                                 style="background: transparent; border: none; font-size: 0.8rem; font-weight: 600; color: var(--text-muted, #64748b); cursor: pointer; display: inline-flex; align-items: center; gap: 5px; padding: 0.3rem 0.75rem; border-radius: 6px; transition: background 0.15s;"
                                 onmouseover="this.style.background='var(--bg-surface-alt, #f1f5f9)'" onmouseout="this.style.background='transparent'">
-                            <i class="ti ti-chevron-up"></i> Réduire
+                            <i class="ti ti-chevron-up"></i> {% translate "Réduire" %}
                         </button>
                     </div>
                 </div>
@@ -402,8 +402,8 @@
     {% else %}
         <div class="fn-empty">
             <i class="ti ti-users"></i>
-            <h3>Aucun étudiant trouvé</h3>
-            <p>Aucun élève ne correspond aux critères sélectionnés ou aucun élève n'a débuté vos cours.</p>
+            <h3>{% translate "Aucun étudiant trouvé" %}</h3>
+            <p>{% translate "Aucun élève ne correspond aux critères sélectionnés ou aucun élève n'a débuté vos cours." %}</p>
         </div>
     {% endif %}
 

@@ -1,3 +1,4 @@
+{% load i18n %}
 {% if documents_par_type %}
     {% for type_label, docs in documents_par_type.items %}
         <div style="margin-bottom: 1rem;">
@@ -14,10 +15,10 @@
                                        style="padding:0.45rem 0.7rem; font-size:0.85rem;"
                                        href="{{ document.fichier_pdf.url }}"
                                        target="_blank"
-                                       rel="noopener">Visualiser</a>
+                                       rel="noopener">{% translate "Visualiser" %}</a>
                                     <a class="btn btn-ghost"
                                        style="padding:0.45rem 0.7rem; font-size:0.85rem;"
-                                       href="{% url 'apprentissage:telecharger_document' document.id %}">Télécharger</a>
+                                       href="{% url 'apprentissage:telecharger_document' document.id %}">{% translate "Télécharger" %}</a>
                                 {% endif %}
                             </div>
                         </div>
@@ -29,7 +30,7 @@
                                         hx-get="{% url 'apprentissage:editer_document' document.id %}"
                                         hx-target="#modal-body"
                                         hx-swap="innerHTML"
-                                        onclick="document.getElementById('form-modal').style.display='flex'">Modifier</button>
+                                        onclick="document.getElementById('form-modal').style.display='flex'">{% translate "Modifier" %}</button>
                             </div>
                         {% endif %}
                     </div>
@@ -37,7 +38,7 @@
             {% endfor %}
         </div>
     {% empty %}
-        <p class="message-empty">Aucun document pour ce chapitre.</p>
+        <p class="message-empty">{% translate "Aucun document pour ce chapitre." %}</p>
     {% endfor %}
 {% else %}
     {% for document in documents %}
@@ -52,10 +53,10 @@
                                        style="padding:0.45rem 0.7rem; font-size:0.85rem;"
                                        href="{{ document.fichier_pdf.url }}"
                                        target="_blank"
-                                       rel="noopener">Visualiser</a>
+                                       rel="noopener">{% translate "Visualiser" %}</a>
                                     <a class="btn btn-ghost"
                                        style="padding:0.45rem 0.7rem; font-size:0.85rem;"
-                                       href="{% url 'apprentissage:telecharger_document' document.id %}">Télécharger</a>
+                                       href="{% url 'apprentissage:telecharger_document' document.id %}">{% translate "Télécharger" %}</a>
                                 {% endif %}
                             </div>
                 </div>
@@ -67,12 +68,12 @@
                                 hx-get="{% url 'apprentissage:editer_document' document.id %}"
                                 hx-target="#modal-body"
                                 hx-swap="innerHTML"
-                                onclick="document.getElementById('form-modal').style.display='flex'">Modifier</button>
+                                onclick="document.getElementById('form-modal').style.display='flex'">{% translate "Modifier" %}</button>
                     </div>
                 {% endif %}
             </div>
         </div>
     {% empty %}
-        <p class="message-empty">Aucun document pour ce chapitre.</p>
+        <p class="message-empty">{% translate "Aucun document pour ce chapitre." %}</p>
     {% endfor %}
 {% endif %}

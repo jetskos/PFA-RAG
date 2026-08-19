@@ -1,25 +1,26 @@
+{% load i18n %}
 <div class="modal-backdrop-premium" onclick="closeModal()">
     <div class="modal-card-premium glassmorphism" onclick="event.stopPropagation()">
         <div class="modal-header-premium">
             <div>
                 <h2 class="modal-title-premium">
                     {% if is_update %}
-                        Modifier l'équipement
+                        {% translate "Modifier l'équipement" %}
                     {% else %}
-                        Ajouter au Catalogue
+                        {% translate "Ajouter au Catalogue" %}
                     {% endif %}
                 </h2>
                 <p class="modal-subtitle-premium">
                     {% if is_update %}
                         {{ equipement.nom }}
                     {% else %}
-                        Saisissez les détails du nouvel équipement.
+                        {% translate "Saisissez les détails du nouvel équipement." %}
                     {% endif %}
                 </p>
             </div>
             <button onclick="closeModal()" class="close-btn-premium"><i class="ti ti-x"></i></button>
         </div>
-        
+
         <form method="post"
               hx-post="{% if is_update %}{% url 'dashboard_admin_edit_equipement' equipement.id %}{% else %}{% url 'dashboard_admin_create_equipement' %}{% endif %}"
               {% if is_update %}
@@ -29,69 +30,69 @@
               {% endif %}
               class="modal-form-premium">
             {% csrf_token %}
-            
+
             <div class="form-row-premium">
                 <div class="form-group-premium" style="flex: 2;">
                     <label for="{{ equipement_form.nom.id_for_label }}">
-                        <i class="ti ti-box"></i> Nom de l'équipement
+                        <i class="ti ti-box"></i> {% translate "Nom de l'équipement" %}
                     </label>
                     {{ equipement_form.nom }}
                     {% if equipement_form.nom.errors %}<span class="error-text-premium"><i class="ti ti-alert-circle"></i> {{ equipement_form.nom.errors.0 }}</span>{% endif %}
                 </div>
-                
+
                 <div class="form-group-premium" style="flex: 1;">
                     <label for="{{ equipement_form.reference.id_for_label }}">
-                        <i class="ti ti-barcode"></i> Référence
+                        <i class="ti ti-barcode"></i> {% translate "Référence" %}
                     </label>
                     {{ equipement_form.reference }}
                     {% if equipement_form.reference.errors %}<span class="error-text-premium"><i class="ti ti-alert-circle"></i> {{ equipement_form.reference.errors.0 }}</span>{% endif %}
                 </div>
             </div>
-            
+
             <div class="form-row-premium">
                 <div class="form-group-premium" style="flex: 1;">
                     <label for="{{ equipement_form.stock_total.id_for_label }}">
-                        <i class="ti ti-packages"></i> Stock total
+                        <i class="ti ti-packages"></i> {% translate "Stock total" %}
                     </label>
                     {{ equipement_form.stock_total }}
                     {% if equipement_form.stock_total.errors %}<span class="error-text-premium"><i class="ti ti-alert-circle"></i> {{ equipement_form.stock_total.errors.0 }}</span>{% endif %}
                 </div>
-                
+
                 <div class="form-group-premium" style="flex: 1;">
                     <label for="{{ equipement_form.stock_disponible.id_for_label }}">
-                        <i class="ti ti-check"></i> Stock dispo
+                        <i class="ti ti-check"></i> {% translate "Stock dispo" %}
                     </label>
                     {{ equipement_form.stock_disponible }}
                     {% if equipement_form.stock_disponible.errors %}<span class="error-text-premium"><i class="ti ti-alert-circle"></i> {{ equipement_form.stock_disponible.errors.0 }}</span>{% endif %}
                 </div>
-                
+
                 <div class="form-group-premium" style="flex: 1;">
                     <label for="{{ equipement_form.seuil_alerte.id_for_label }}">
-                        <i class="ti ti-bell-ringing"></i> Seuil d'alerte
+                        <i class="ti ti-bell-ringing"></i> {% translate "Seuil d'alerte" %}
                     </label>
                     {{ equipement_form.seuil_alerte }}
                     {% if equipement_form.seuil_alerte.errors %}<span class="error-text-premium"><i class="ti ti-alert-circle"></i> {{ equipement_form.seuil_alerte.errors.0 }}</span>{% endif %}
                 </div>
             </div>
-            
+
             <div class="form-group-premium">
                 <label for="{{ equipement_form.note.id_for_label }}">
-                    <i class="ti ti-notes"></i> Note (Optionnelle)
+                    <i class="ti ti-notes"></i> {% translate "Note (Optionnelle)" %}
                 </label>
                 {{ equipement_form.note }}
                 {% if equipement_form.note.errors %}<span class="error-text-premium"><i class="ti ti-alert-circle"></i> {{ equipement_form.note.errors.0 }}</span>{% endif %}
             </div>
-            
+
             {% if equipement_form.non_field_errors %}
                 <div class="alert-premium error-alert">
                     <i class="ti ti-alert-triangle"></i> {{ equipement_form.non_field_errors.0 }}
                 </div>
             {% endif %}
-            
+
             <div class="modal-footer-premium">
-                <button type="button" class="btn-cancel-premium" onclick="closeModal()">Annuler</button>
+                <button type="button" class="btn-cancel-premium" onclick="closeModal()">{% translate "Annuler" %}</button>
                 <button type="submit" class="btn-submit-premium">
-                    {% if is_update %}Mettre à jour <i class="ti ti-device-floppy"></i>{% else %}Ajouter <i class="ti ti-plus"></i>{% endif %}
+                    {% if is_update %}{% translate "Mettre à jour" %} <i class="ti ti-device-floppy"></i>{% else %}{% translate "Ajouter" %} <i class="ti ti-plus"></i>{% endif %}
                 </button>
             </div>
         </form>

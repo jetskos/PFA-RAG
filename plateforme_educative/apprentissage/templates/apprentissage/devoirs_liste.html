@@ -1,34 +1,35 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
-{% block title %}Mes Devoirs{% endblock %}
+{% block title %}{% translate "Mes Devoirs" %}{% endblock %}
 
 {% block content %}
 <section class="page-shell">
 
     <!-- ── En-tête ── -->
     <div class="page-header">
-        <p class="eyebrow">Apprentissage</p>
-        <h1>Mes devoirs</h1>
-        <p style="color: var(--texte-secondaire);">Consultez et déposez vos travaux, organisés par cours.</p>
+        <p class="eyebrow">{% translate "Apprentissage" %}</p>
+        <h1>{% translate "Mes devoirs" %}</h1>
+        <p style="color: var(--texte-secondaire);">{% translate "Consultez et déposez vos travaux, organisés par cours." %}</p>
     </div>
 
     <!-- ── Stats rapides ── -->
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-top: 2rem;">
         <div class="carte" style="padding: 1rem; text-align: center; border-top: 3px solid #ff9800;">
             <div style="font-size: 1.6rem; font-weight: 700; color: #ff9800;">{{ stats.a_rendre }}</div>
-            <div style="font-size: 0.78rem; color: var(--texte-secondaire); text-transform: uppercase; letter-spacing: .05em;">À rendre</div>
+            <div style="font-size: 0.78rem; color: var(--texte-secondaire); text-transform: uppercase; letter-spacing: .05em;">{% translate "À rendre" %}</div>
         </div>
         <div class="carte" style="padding: 1rem; text-align: center; border-top: 3px solid #2196f3;">
             <div style="font-size: 1.6rem; font-weight: 700; color: #2196f3;">{{ stats.soumis }}</div>
-            <div style="font-size: 0.78rem; color: var(--texte-secondaire); text-transform: uppercase; letter-spacing: .05em;">Soumis</div>
+            <div style="font-size: 0.78rem; color: var(--texte-secondaire); text-transform: uppercase; letter-spacing: .05em;">{% translate "Soumis" %}</div>
         </div>
         <div class="carte" style="padding: 1rem; text-align: center; border-top: 3px solid #10b981;">
             <div style="font-size: 1.6rem; font-weight: 700; color: #10b981;">{{ stats.corrige }}</div>
-            <div style="font-size: 0.78rem; color: var(--texte-secondaire); text-transform: uppercase; letter-spacing: .05em;">Corrigés</div>
+            <div style="font-size: 0.78rem; color: var(--texte-secondaire); text-transform: uppercase; letter-spacing: .05em;">{% translate "Corrigés" %}</div>
         </div>
         <div class="carte" style="padding: 1rem; text-align: center; border-top: 3px solid #ef4444;">
             <div style="font-size: 1.6rem; font-weight: 700; color: #ef4444;">{{ stats.depasse }}</div>
-            <div style="font-size: 0.78rem; color: var(--texte-secondaire); text-transform: uppercase; letter-spacing: .05em;">Délai dépassé</div>
+            <div style="font-size: 0.78rem; color: var(--texte-secondaire); text-transform: uppercase; letter-spacing: .05em;">{% translate "Délai dépassé" %}</div>
         </div>
     </div>
 
@@ -45,7 +46,7 @@
                   font-size:.85rem; font-weight:600; border-radius:.5rem .5rem 0 0; text-decoration:none;
                   margin-bottom:-2px; border: 2px solid transparent; border-bottom: none;
                   {% if filtre_statut == 'tous' %}background:var(--primary);color:#fff;border-color:var(--primary);{% else %}color:var(--texte-secondaire);{% endif %}">
-            <i class="ti ti-list-check"></i> Tous
+            <i class="ti ti-list-check"></i> {% translate "Tous" %}
             <span style="font-size:.72rem; padding:.1rem .45rem; border-radius:9999px;
                 {% if filtre_statut == 'tous' %}background:rgba(255,255,255,.25);color:#fff;{% else %}background:var(--surface-alt);color:var(--texte-secondaire);{% endif %}">
                 {{ stats.tous }}
@@ -58,7 +59,7 @@
                   font-size:.85rem; font-weight:600; border-radius:.5rem .5rem 0 0; text-decoration:none;
                   margin-bottom:-2px; border: 2px solid transparent; border-bottom: none;
                   {% if filtre_statut == 'a_rendre' %}background:#ff9800;color:#fff;border-color:#ff9800;{% else %}color:#ff9800;{% endif %}">
-            <i class="ti ti-clock"></i> À rendre
+            <i class="ti ti-clock"></i> {% translate "À rendre" %}
             <span style="font-size:.72rem; padding:.1rem .45rem; border-radius:9999px;
                 {% if filtre_statut == 'a_rendre' %}background:rgba(255,255,255,.25);color:#fff;{% else %}background:rgba(255,152,0,.15);color:#ff9800;{% endif %}">
                 {{ stats.a_rendre }}
@@ -71,7 +72,7 @@
                   font-size:.85rem; font-weight:600; border-radius:.5rem .5rem 0 0; text-decoration:none;
                   margin-bottom:-2px; border: 2px solid transparent; border-bottom: none;
                   {% if filtre_statut == 'soumis' %}background:#2196f3;color:#fff;border-color:#2196f3;{% else %}color:#2196f3;{% endif %}">
-            <i class="ti ti-upload"></i> Soumis
+            <i class="ti ti-upload"></i> {% translate "Soumis" %}
             <span style="font-size:.72rem; padding:.1rem .45rem; border-radius:9999px;
                 {% if filtre_statut == 'soumis' %}background:rgba(255,255,255,.25);color:#fff;{% else %}background:rgba(33,150,243,.15);color:#2196f3;{% endif %}">
                 {{ stats.soumis }}
@@ -84,7 +85,7 @@
                   font-size:.85rem; font-weight:600; border-radius:.5rem .5rem 0 0; text-decoration:none;
                   margin-bottom:-2px; border: 2px solid transparent; border-bottom: none;
                   {% if filtre_statut == 'corrige' %}background:#10b981;color:#fff;border-color:#10b981;{% else %}color:#10b981;{% endif %}">
-            <i class="ti ti-check"></i> Corrigés
+            <i class="ti ti-check"></i> {% translate "Corrigés" %}
             <span style="font-size:.72rem; padding:.1rem .45rem; border-radius:9999px;
                 {% if filtre_statut == 'corrige' %}background:rgba(255,255,255,.25);color:#fff;{% else %}background:rgba(16,185,129,.15);color:#10b981;{% endif %}">
                 {{ stats.corrige }}
@@ -97,7 +98,7 @@
                   font-size:.85rem; font-weight:600; border-radius:.5rem .5rem 0 0; text-decoration:none;
                   margin-bottom:-2px; border: 2px solid transparent; border-bottom: none;
                   {% if filtre_statut == 'depasse' %}background:#ef4444;color:#fff;border-color:#ef4444;{% else %}color:#ef4444;{% endif %}">
-            <i class="ti ti-alert-triangle"></i> Délai dépassé
+            <i class="ti ti-alert-triangle"></i> {% translate "Délai dépassé" %}
             <span style="font-size:.72rem; padding:.1rem .45rem; border-radius:9999px;
                 {% if filtre_statut == 'depasse' %}background:rgba(255,255,255,.25);color:#fff;{% else %}background:rgba(239,68,68,.15);color:#ef4444;{% endif %}">
                 {{ stats.depasse }}
@@ -126,13 +127,13 @@
                     <div>
                         <h2 style="margin: 0; font-size: 1.05rem; font-weight: 700;">{{ cours.titre }}</h2>
                         <span style="font-size: 0.78rem; color: var(--texte-secondaire);">
-                            <i class="ti ti-clipboard-list"></i> {{ items|length }} devoir{{ items|length|pluralize }}
+                            <i class="ti ti-clipboard-list"></i> {% blocktranslate count counter=items|length %}{{ counter }} devoir{% plural %}{{ counter }} devoirs{% endblocktranslate %}
                         </span>
                     </div>
                     <div style="flex: 1; height: 1px; background: var(--bordure); margin-left: 0.5rem;"></div>
                     <a href="{% url 'apprentissage:detail_cours' cours_id=cours.pk %}"
                        class="btn btn-ghost" style="font-size: 0.78rem; padding: 0.3rem 0.75rem; flex-shrink: 0;">
-                        <i class="ti ti-external-link"></i> Voir le cours
+                        <i class="ti ti-external-link"></i> {% translate "Voir le cours" %}
                     </a>
                 </div>
 
@@ -163,11 +164,11 @@
                                 <i class="ti ti-rosette-discount-check"></i>
                                 {{ app.text }} — {{ soumission.note }}/{{ devoir.note_max }}
                             {% elif statut == 'soumis' %}
-                                <i class="ti ti-upload"></i> Soumis — en attente de correction
+                                <i class="ti ti-upload"></i> {% translate "Soumis — en attente de correction" %}
                             {% elif statut == 'depasse' %}
-                                <i class="ti ti-alert-triangle"></i> Délai dépassé
+                                <i class="ti ti-alert-triangle"></i> {% translate "Délai dépassé" %}
                             {% else %}
-                                <i class="ti ti-clock"></i> À rendre
+                                <i class="ti ti-clock"></i> {% translate "À rendre" %}
                             {% endif %}
                         </div>
 
@@ -209,13 +210,13 @@
                                    class="btn {% if statut == 'a_rendre' %}btn-primary{% else %}btn-ghost{% endif %}"
                                    style="font-size:.78rem; padding:.3rem .85rem;">
                                     {% if statut == 'corrige' %}
-                                        <i class="ti ti-eye"></i> Voir
+                                        <i class="ti ti-eye"></i> {% translate "Voir" %}
                                     {% elif statut == 'soumis' %}
-                                        <i class="ti ti-eye"></i> Voir
+                                        <i class="ti ti-eye"></i> {% translate "Voir" %}
                                     {% elif statut == 'depasse' %}
-                                        <i class="ti ti-file-off"></i> Voir
+                                        <i class="ti ti-file-off"></i> {% translate "Voir" %}
                                     {% else %}
-                                        <i class="ti ti-upload"></i> Déposer
+                                        <i class="ti ti-upload"></i> {% translate "Déposer" %}
                                     {% endif %}
                                 </a>
                             </div>
@@ -241,14 +242,14 @@
                     {% endif %}
                 </div>
                 {% if filtre_statut == 'tous' %}
-                    <h3>Aucun devoir pour le moment</h3>
-                    <p style="color:var(--texte-secondaire);">Vos formateurs n'ont pas encore publié de devoirs pour vos cours actuels.</p>
+                    <h3>{% translate "Aucun devoir pour le moment" %}</h3>
+                    <p style="color:var(--texte-secondaire);">{% translate "Vos formateurs n'ont pas encore publié de devoirs pour vos cours actuels." %}</p>
                 {% else %}
-                    <h3>Aucun devoir dans cette catégorie</h3>
+                    <h3>{% translate "Aucun devoir dans cette catégorie" %}</h3>
                     <p style="color:var(--texte-secondaire);">
-                        Vous n'avez aucun devoir avec ce statut pour le moment.
+                        {% translate "Vous n'avez aucun devoir avec ce statut pour le moment." %}
                         <br><br>
-                        <a href="?statut=tous" class="btn btn-ghost" style="color:var(--primary);">Voir tous mes devoirs assignés</a>
+                        <a href="?statut=tous" class="btn btn-ghost" style="color:var(--primary);">{% translate "Voir tous mes devoirs assignés" %}</a>
                     </p>
                 {% endif %}
             </div>

@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
-{% block title %}Demandes Logistiques — Logistics{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Demandes Logistiques — Logistics" %}{% endblock %}
 {% block content %}
 <style>
   /* ═══════════════════════════════════════════════════
@@ -209,36 +210,36 @@
   <div class="logi-hero">
     <div class="logi-hero-left">
       <span class="logi-eyebrow"><i class="ti ti-truck-delivery"></i> Logistics</span>
-      <h1 class="logi-page-title">Demandes Logistiques</h1>
-      <p class="logi-page-sub">Gérez vos demandes de matériel pour les ateliers.</p>
+      <h1 class="logi-page-title">{% translate "Demandes Logistiques" %}</h1>
+      <p class="logi-page-sub">{% translate "Gérez vos demandes de matériel pour les ateliers." %}</p>
       <div class="logi-subtabs">
         {% if user.is_staff or user.role == 'ADMIN' %}
         <a href="{% url 'logistics:inventaire' %}" class="logi-subtab">
-          <i class="ti ti-package"></i> Inventaire
+          <i class="ti ti-package"></i> {% translate "Inventaire" %}
         </a>
         <a href="{% url 'logistics:tickets' %}" class="logi-subtab">
-          <i class="ti ti-ticket"></i> Tickets
+          <i class="ti ti-ticket"></i> {% translate "Tickets" %}
         </a>
         {% endif %}
         <a href="{% url 'logistics:ateliers' %}" class="logi-subtab">
-          <i class="ti ti-building-community"></i> Ateliers
+          <i class="ti ti-building-community"></i> {% translate "Ateliers" %}
         </a>
         <a href="{% url 'logistics:demandes' %}" class="logi-subtab active">
-          <i class="ti ti-truck-delivery"></i> Demandes
+          <i class="ti ti-truck-delivery"></i> {% translate "Demandes" %}
         </a>
       </div>
     </div>
     <div class="logi-hero-right">
 
-      <a href="{% url 'logistics:exporter_demandes' %}" class="logi-btn-ghost" title="Exporter en Excel">
-        <i class="ti ti-download"></i> Exporter
+      <a href="{% url 'logistics:exporter_demandes' %}" class="logi-btn-ghost" title="{% translate 'Exporter en Excel' %}">
+        <i class="ti ti-download"></i> {% translate "Exporter" %}
       </a>
       {% if user.is_staff or user.is_formateur %}
       <button class="logi-btn-primary" type="button"
         hx-get="{% url 'logistics:ajouter_demande' %}"
         hx-target="#form-demande-container"
         hx-swap="innerHTML">
-        <i class="ti ti-plus"></i> Nouvelle demande
+        <i class="ti ti-plus"></i> {% translate "Nouvelle demande" %}
       </button>
       {% endif %}
     </div>
@@ -249,33 +250,33 @@
     <div class="stat-tile">
       <div class="stat-tile-top">
         <div class="stat-tile-icon" style="background:rgba(13,148,136,0.1);color:#0D9488;"><i class="ti ti-truck-delivery"></i></div>
-        <span class="stat-tile-trend" style="background:rgba(13,148,136,0.08);color:#0D9488;">Total</span>
+        <span class="stat-tile-trend" style="background:rgba(13,148,136,0.08);color:#0D9488;">{% translate "Total" %}</span>
       </div>
-      <div><div class="stat-tile-val">{{ demandes_total }}</div><div class="stat-tile-lbl">Demandes soumises</div></div>
+      <div><div class="stat-tile-val">{{ demandes_total }}</div><div class="stat-tile-lbl">{% translate "Demandes soumises" %}</div></div>
       <div class="stat-tile-bar"><div class="stat-tile-bar-fill" style="width:100%;background:#0D9488;"></div></div>
     </div>
     <div class="stat-tile">
       <div class="stat-tile-top">
         <div class="stat-tile-icon" style="background:rgba(245,158,11,0.1);color:#f59e0b;"><i class="ti ti-clock-pause"></i></div>
-        <span class="stat-tile-trend" style="background:rgba(245,158,11,0.1);color:#f59e0b;">À traiter</span>
+        <span class="stat-tile-trend" style="background:rgba(245,158,11,0.1);color:#f59e0b;">{% translate "À traiter" %}</span>
       </div>
-      <div><div class="stat-tile-val">{{ demandes_en_attente }}</div><div class="stat-tile-lbl">En attente</div></div>
+      <div><div class="stat-tile-val">{{ demandes_en_attente }}</div><div class="stat-tile-lbl">{% translate "En attente" %}</div></div>
       <div class="stat-tile-bar"><div class="stat-tile-bar-fill" style="width:50%;background:#f59e0b;"></div></div>
     </div>
     <div class="stat-tile">
       <div class="stat-tile-top">
         <div class="stat-tile-icon" style="background:rgba(16,185,129,0.1);color:#10b981;"><i class="ti ti-check"></i></div>
-        <span class="stat-tile-trend" style="background:rgba(16,185,129,0.1);color:#10b981;">Approuvées</span>
+        <span class="stat-tile-trend" style="background:rgba(16,185,129,0.1);color:#10b981;">{% translate "Approuvées" %}</span>
       </div>
-      <div><div class="stat-tile-val">{{ demandes_approuvees }}</div><div class="stat-tile-lbl">Validées</div></div>
+      <div><div class="stat-tile-val">{{ demandes_approuvees }}</div><div class="stat-tile-lbl">{% translate "Validées" %}</div></div>
       <div class="stat-tile-bar"><div class="stat-tile-bar-fill" style="width:40%;background:#10b981;"></div></div>
     </div>
     <div class="stat-tile">
       <div class="stat-tile-top">
         <div class="stat-tile-icon" style="background:rgba(239,68,68,0.1);color:#ef4444;"><i class="ti ti-ban"></i></div>
-        <span class="stat-tile-trend" style="background:rgba(239,68,68,0.08);color:#dc2626;">Refusées</span>
+        <span class="stat-tile-trend" style="background:rgba(239,68,68,0.08);color:#dc2626;">{% translate "Refusées" %}</span>
       </div>
-      <div><div class="stat-tile-val">{{ demandes_rejetees }}</div><div class="stat-tile-lbl">Rejetées</div></div>
+      <div><div class="stat-tile-val">{{ demandes_rejetees }}</div><div class="stat-tile-lbl">{% translate "Rejetées" %}</div></div>
       <div class="stat-tile-bar"><div class="stat-tile-bar-fill" style="width:10%;background:#ef4444;"></div></div>
     </div>
   </div>
@@ -283,7 +284,7 @@
   <!-- ══ DEMANDES PANEL ══ -->
   <div class="logi-panel">
     <div class="logi-panel-head">
-      <span class="logi-panel-title"><i class="ti ti-list-details"></i> Historique des demandes</span>
+      <span class="logi-panel-title"><i class="ti ti-list-details"></i> {% translate "Historique des demandes" %}</span>
     </div>
 
     <!-- Filters -->
@@ -291,24 +292,24 @@
       <div style="display:flex; gap:0.35rem; flex-wrap:wrap;">
       <button class="logi-fpill is-active" hx-get="{% url 'logistics:demandes' %}" hx-target="#demandes-list"
         onclick="document.querySelectorAll('.logi-fpill').forEach(b=>b.classList.remove('is-active')); this.classList.add('is-active');">
-        <div class="pill-dot"></div> Tout
+        <div class="pill-dot"></div> {% translate "Tout" %}
       </button>
       <button class="logi-fpill" hx-get="{% url 'logistics:demandes' %}?statut=PENDING" hx-target="#demandes-list"
         onclick="document.querySelectorAll('.logi-fpill').forEach(b=>b.classList.remove('is-active')); this.classList.add('is-active');">
-        <div class="pill-dot" style="color:#f59e0b;"></div> En attente
+        <div class="pill-dot" style="color:#f59e0b;"></div> {% translate "En attente" %}
       </button>
       <button class="logi-fpill" hx-get="{% url 'logistics:demandes' %}?statut=APPROVED" hx-target="#demandes-list"
         onclick="document.querySelectorAll('.logi-fpill').forEach(b=>b.classList.remove('is-active')); this.classList.add('is-active');">
-        <div class="pill-dot" style="color:#10b981;"></div> Approuvées
+        <div class="pill-dot" style="color:#10b981;"></div> {% translate "Approuvées" %}
       </button>
       <button class="logi-fpill" hx-get="{% url 'logistics:demandes' %}?statut=RETURNED" hx-target="#demandes-list"
         onclick="document.querySelectorAll('.logi-fpill').forEach(b=>b.classList.remove('is-active')); this.classList.add('is-active');">
-        <div class="pill-dot" style="color:#3b82f6;"></div> Retournées
+        <div class="pill-dot" style="color:#3b82f6;"></div> {% translate "Retournées" %}
       </button>
       </div>
       <div class="logi-filter-search">
         <i class="ti ti-search"></i>
-        <input type="text" name="q" placeholder="Rechercher une demande..."
+        <input type="text" name="q" placeholder="{% translate 'Rechercher une demande...' %}"
                hx-get="{% url 'logistics:demandes' %}"
                hx-target="#demandes-list"
                hx-trigger="keyup changed delay:300ms">

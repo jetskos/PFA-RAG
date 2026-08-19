@@ -1,4 +1,4 @@
-{% load apprentissage_extras %}
+{% load apprentissage_extras i18n %}
 
 <style>
 /* Highlight active chapter in sidebar */
@@ -804,7 +804,7 @@
         <!-- Breadcrumb & Nav -->
         <div class="chapitre-header-bar">
             <div class="content-breadcrumb">
-                <a href="{% url 'apprentissage:liste_cours' %}" hx-get="{% url 'apprentissage:liste_cours' %}" hx-target="#zone-principale" hx-select="#zone-principale" hx-swap="outerHTML" hx-push-url="true">Cours</a>
+                <a href="{% url 'apprentissage:liste_cours' %}" hx-get="{% url 'apprentissage:liste_cours' %}" hx-target="#zone-principale" hx-select="#zone-principale" hx-swap="outerHTML" hx-push-url="true">{% translate "Cours" %}</a>
                 <span>/</span>
                 <a href="{% url 'apprentissage:detail_cours' cours.id %}" hx-get="{% url 'apprentissage:detail_cours' cours.id %}" hx-target="#zone-principale" hx-select="#zone-principale" hx-swap="outerHTML" hx-push-url="true">{{ cours.titre }}</a>
                 <span>/</span>
@@ -818,38 +818,38 @@
                        hx-target="#contenu-cours" 
                        hx-swap="innerHTML" 
                        hx-push-url="true"
-                       class="nav-arrow-btn" 
-                       title="Chapitre précédent">
-                        <i class="ti ti-arrow-left"></i> Précédent
+                       class="nav-arrow-btn"
+                       title="{% translate 'Chapitre précédent' %}">
+                        <i class="ti ti-arrow-left"></i> {% translate "Précédent" %}
                     </a>
                 {% else %}
-                    <span class="nav-arrow-btn disabled"><i class="ti ti-arrow-left"></i> Précédent</span>
+                    <span class="nav-arrow-btn disabled"><i class="ti ti-arrow-left"></i> {% translate "Précédent" %}</span>
                 {% endif %}
-                
+
                 {% if chapitre_suivant %}
-                    <a href="{% url 'apprentissage:detail_chapitre' cours.id chapitre_suivant.id %}" 
-                       hx-get="{% url 'apprentissage:detail_chapitre' cours.id chapitre_suivant.id %}" 
-                       hx-target="#contenu-cours" 
-                       hx-swap="innerHTML" 
+                    <a href="{% url 'apprentissage:detail_chapitre' cours.id chapitre_suivant.id %}"
+                       hx-get="{% url 'apprentissage:detail_chapitre' cours.id chapitre_suivant.id %}"
+                       hx-target="#contenu-cours"
+                       hx-swap="innerHTML"
                        hx-push-url="true"
-                       class="nav-arrow-btn" 
-                       title="Chapitre suivant">
-                        Suivant <i class="ti ti-arrow-right"></i>
+                       class="nav-arrow-btn"
+                       title="{% translate 'Chapitre suivant' %}">
+                        {% translate "Suivant" %} <i class="ti ti-arrow-right"></i>
                     </a>
                 {% else %}
-                    <span class="nav-arrow-btn disabled">Suivant <i class="ti ti-arrow-right"></i></span>
+                    <span class="nav-arrow-btn disabled">{% translate "Suivant" %} <i class="ti ti-arrow-right"></i></span>
                 {% endif %}
             </div>
         </div>
 
         <div>
-            <p class="eyebrow">Chapitre {{ chapitre.ordre }}</p>
+            <p class="eyebrow">{% blocktranslate with n=chapitre.ordre %}Chapitre {{ n }}{% endblocktranslate %}</p>
             <h2 style="font-size: 2rem; font-weight: 800; margin-top: 0.25rem;">{{ chapitre.titre }}</h2>
         </div>
 
         <!-- Video Player -->
         <div class="video-container-wrapper">
-            <h3><i class="ti ti-brand-youtube" style="color: var(--accent-danger);"></i> Vidéo Pédagogique</h3>
+            <h3><i class="ti ti-brand-youtube" style="color: var(--accent-danger);"></i> {% translate "Vidéo Pédagogique" %}</h3>
             {% if is_offline_video and chapitre.video_fichier %}
                 {% if chapitre.is_hls_ready and chapitre.video_hls_url %}
                     <video id="hls-video-{{ chapitre.id }}" class="video-player-direct" controls></video>
@@ -868,23 +868,23 @@
                         })();
                     </script>
                     <div class="video-source-info">
-                        <i class="ti ti-bolt"></i> Mode hors-ligne — Streaming Rapide HLS (Optimisé)
+                        <i class="ti ti-bolt"></i> {% translate "Mode hors-ligne — Streaming Rapide HLS (Optimisé)" %}
                     </div>
                 {% else %}
                     <video class="video-player-direct" controls>
                         <source src="{{ chapitre.video_fichier.url }}" type="video/mp4">
-                        Votre navigateur ne supporte pas la lecture de vidéos.
+                        {% translate "Votre navigateur ne supporte pas la lecture de vidéos." %}
                     </video>
                     <div class="video-source-info">
-                        <i class="ti ti-wifi-off"></i> Mode hors-ligne — Vidéo locale
-                        <span style="margin-left:auto; color:var(--accent-warning);"><i class="ti ti-loader"></i> Optimisation HLS en arrière-plan...</span>
+                        <i class="ti ti-wifi-off"></i> {% translate "Mode hors-ligne — Vidéo locale" %}
+                        <span style="margin-left:auto; color:var(--accent-warning);"><i class="ti ti-loader"></i> {% translate "Optimisation HLS en arrière-plan..." %}</span>
                     </div>
                 {% endif %}
             {% elif chapitre.url_video %}
                 {% if is_direct_video %}
                     <video class="video-player-direct" controls>
                         <source src="{{ chapitre.url_video }}" type="video/mp4">
-                        Votre navigateur ne supporte pas la lecture de vidéos.
+                        {% translate "Votre navigateur ne supporte pas la lecture de vidéos." %}
                     </video>
                 {% elif is_youtube %}
                     <div class="video-frame">
@@ -900,17 +900,17 @@
                     </div>
                 {% endif %}
                 <div class="video-source-info">
-                    <i class="ti ti-link"></i> Source : <a href="{{ chapitre.url_video }}" target="_blank" rel="noopener">{{ chapitre.url_video }}</a>
+                    <i class="ti ti-link"></i> {% translate "Source" %} : <a href="{{ chapitre.url_video }}" target="_blank" rel="noopener">{{ chapitre.url_video }}</a>
                 </div>
             {% elif is_unavailable_offline %}
                 <div class="video-placeholder">
                     <i class="ti ti-wifi-off" style="font-size: 2.5rem;"></i>
-                    <p>Vidéo indisponible hors-ligne — connectez-vous à internet, ou demandez à votre formateur d'ajouter une version locale.</p>
+                    <p>{% translate "Vidéo indisponible hors-ligne — connectez-vous à internet, ou demandez à votre formateur d'ajouter une version locale." %}</p>
                 </div>
             {% else %}
                 <div class="video-placeholder">
                     <i class="ti ti-video-off" style="font-size: 2.5rem;"></i>
-                    <p>Aucune vidéo disponible pour ce chapitre.</p>
+                    <p>{% translate "Aucune vidéo disponible pour ce chapitre." %}</p>
                 </div>
             {% endif %}
         </div>
@@ -924,7 +924,7 @@
         <!-- Documents -->
         {% if documents_par_type %}
             <div class="docs-stack">
-                <h3 style="font-size: 1.25rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 1rem;"><i class="ti ti-files"></i> Documents pédagogiques</h3>
+                <h3 style="font-size: 1.25rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 1rem;"><i class="ti ti-files"></i> {% translate "Documents pédagogiques" %}</h3>
                 {% for type_label, docs in documents_par_type.items %}
                     <section class="doc-group">
                         <h4 class="doc-group__title">{{ type_label }}</h4>
@@ -933,17 +933,17 @@
                                 <article class="doc-preview" id="document-{{ doc.id }}">
                                     <div class="doc-preview-head">
                                         <div>
-                                            <p class="eyebrow">Document</p>
+                                            <p class="eyebrow">{% translate "Document" %}</p>
                                             <h5 style="margin-top: 0.25rem; font-weight: 700;">{{ doc.titre }}</h5>
                                         </div>
                                         <div style="display: flex; gap: 0.5rem;">
                                             {% if doc.fichier_pdf %}
                                                 <a class="btn btn-ghost" href="{{ doc.fichier_pdf.url }}" target="_blank" rel="noopener">
-                                                    <i class="ti ti-external-link"></i> Visualiser
+                                                    <i class="ti ti-external-link"></i> {% translate "Visualiser" %}
                                                 </a>
                                             {% endif %}
                                             <a class="btn btn-outline" href="{% url 'apprentissage:telecharger_document' doc.id %}">
-                                                <i class="ti ti-download"></i> Télécharger
+                                                <i class="ti ti-download"></i> {% translate "Télécharger" %}
                                             </a>
                                         </div>
                                     </div>
@@ -958,7 +958,7 @@
                                         </div>
                                     {% else %}
                                         <div class="doc-fallback">
-                                            <p><i class="ti ti-alert-circle"></i> Le fichier PDF n'est pas disponible pour ce document.</p>
+                                            <p><i class="ti ti-alert-circle"></i> {% translate "Le fichier PDF n'est pas disponible pour ce document." %}</p>
                                         </div>
                                     {% endif %}
                                 </article>
@@ -971,53 +971,53 @@
 
         <!-- Section Evaluer mes connaissances -->
         <section class="eval-section">
-            <h3><i class="ti ti-award" style="color: var(--accent-warning);"></i> Évaluer mes connaissances</h3>
-            <p class="eval-intro-text">Testez votre compréhension de ce chapitre avec les outils IA interactifs.</p>
+            <h3><i class="ti ti-award" style="color: var(--accent-warning);"></i> {% translate "Évaluer mes connaissances" %}</h3>
+            <p class="eval-intro-text">{% translate "Testez votre compréhension de ce chapitre avec les outils IA interactifs." %}</p>
             <div class="eval-buttons-grid">
                 <div class="eval-option">
                     <a href="{% url 'tuteur_ia:demarrer_qcm' chapitre.id %}" class="btn btn-success btn-full" style="padding: 0.75rem;">
-                        <i class="ti ti-checkbox"></i> Passer le QCM
+                        <i class="ti ti-checkbox"></i> {% translate "Passer le QCM" %}
                     </a>
                     <p class="eval-desc">
-                        Un questionnaire interactif auto-corrigé généré en temps réel par l'IA à partir du contenu des PDF du chapitre. Requis pour valider le chapitre (score minimal : 80%).
+                        {% translate "Un questionnaire interactif auto-corrigé généré en temps réel par l'IA à partir du contenu des PDF du chapitre. Requis pour valider le chapitre (score minimal : 80%)." %}
                     </p>
                 </div>
                 <div class="eval-option">
                     <a href="{% url 'tuteur_ia:demarrer_session' chapitre.id %}" class="btn btn-primary btn-full" style="padding: 0.75rem;">
-                        <i class="ti ti-messages"></i> Study Buddy — mode socratique
+                        <i class="ti ti-messages"></i> Study Buddy — {% translate "mode socratique" %}
                     </a>
                     <p class="eval-desc">
-                        Une discussion interactive où l'IA vous pose des questions et vous guide étape par étape. Atteindre 100% de maîtrise valide également le chapitre !
+                        {% translate "Une discussion interactive où l'IA vous pose des questions et vous guide étape par étape. Atteindre 100% de maîtrise valide également le chapitre !" %}
                     </p>
                 </div>
         </section>
 
         <!-- Section Validation du Chapitre -->
         <section class="eval-section" id="validation-section" style="margin-top: 1.5rem;">
-            <h3><i class="ti ti-circle-check" style="color: var(--primary);"></i> Validation du chapitre</h3>
-            <p class="eval-intro-text" style="margin-bottom: 1.25rem;">Validez ce chapitre pour mettre à jour votre progression dans le cours.</p>
+            <h3><i class="ti ti-circle-check" style="color: var(--primary);"></i> {% translate "Validation du chapitre" %}</h3>
+            <p class="eval-intro-text" style="margin-bottom: 1.25rem;">{% translate "Validez ce chapitre pour mettre à jour votre progression dans le cours." %}</p>
             
             <div id="validation-button-container">
                 {% if is_complete %}
                     <div style="display: flex; flex-direction: column; gap: 0.5rem;">
                         <button class="btn" disabled style="background:var(--accent-emerald); color:#fff; cursor: not-allowed; border:none; opacity: 0.9; display:inline-flex; align-items:center; gap:4px; justify-content:center;">
-                            <i class="ti ti-circle-check"></i> ✓ Chapitre terminé
+                            <i class="ti ti-circle-check"></i> ✓ {% translate "Chapitre terminé" %}
                         </button>
                         {% if chapitre_suivant %}
                             <div style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.75rem;">
                                 <a href="{% url 'apprentissage:detail_chapitre' cours.id chapitre_suivant.id %}" hx-get="{% url 'apprentissage:detail_chapitre' cours.id chapitre_suivant.id %}" hx-target="#contenu-cours" hx-swap="innerHTML" hx-push-url="true" class="btn btn-primary" style="padding: 0.65rem 1.25rem; font-size: 0.9rem; border-radius: 8px; font-weight: 600; text-decoration:none; display:inline-flex; align-items:center; gap:4px;">
-                                    Passer au chapitre suivant <i class="ti ti-arrow-right"></i>
+                                    {% translate "Passer au chapitre suivant" %} <i class="ti ti-arrow-right"></i>
                                 </a>
                             </div>
                         {% endif %}
                     </div>
                 {% else %}
-                    <button class="btn btn-primary" 
-                            hx-post="{% url 'apprentissage:valider_chapitre' chapitre.id %}" 
-                            hx-target="#validation-button-container" 
-                            hx-swap="innerHTML" 
+                    <button class="btn btn-primary"
+                            hx-post="{% url 'apprentissage:valider_chapitre' chapitre.id %}"
+                            hx-target="#validation-button-container"
+                            hx-swap="innerHTML"
                             style="padding: 0.75rem 1.5rem; font-size: 0.95rem; border-radius: 8px; font-weight: 600; display:inline-flex; align-items:center; gap:4px;">
-                        <i class="ti ti-circle-check"></i> Marquer comme terminé
+                        <i class="ti ti-circle-check"></i> {% translate "Marquer comme terminé" %}
                     </button>
                 {% endif %}
             </div>
@@ -1033,15 +1033,15 @@
             <div class="chat-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
                 <div class="chat-title-wrapper">
                     <span class="status-indicator-dot"></span>
-                    <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--text-primary); margin: 0;">Tuteur Assistant</h4>
+                    <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--text-primary); margin: 0;">{% translate "Tuteur Assistant" %}</h4>
                 </div>
                 <div style="display: flex; align-items: center; gap: 0.5rem;">
-                    <button type="button" id="btn-minimize-chat" class="btn-ghost" style="padding: 4px; border: none; background: transparent; cursor: pointer; color: var(--text-secondary); display: inline-flex; align-items: center; justify-content: center; border-radius: 4px; width: 28px; height: 28px;" title="Réduire le chat"
+                    <button type="button" id="btn-minimize-chat" class="btn-ghost" style="padding: 4px; border: none; background: transparent; cursor: pointer; color: var(--text-secondary); display: inline-flex; align-items: center; justify-content: center; border-radius: 4px; width: 28px; height: 28px;" title="{% translate 'Réduire le chat' %}"
                             onmouseover="this.style.background='var(--bg-surface-alt)';"
                             onmouseout="this.style.background='transparent';">
                         <i class="ti ti-minus" style="font-size: 1.1rem;"></i>
                     </button>
-                    <div class="chat-menu-placeholder" title="Options de session (Placeholder)">
+                    <div class="chat-menu-placeholder" title="{% translate 'Options de session (Placeholder)' %}">
                         <i class="ti ti-dots-vertical"></i>
                     </div>
                 </div>
@@ -1056,7 +1056,7 @@
                             {% if msg.role == 'assistant' and msg.sources %}
                                 <div class="msg-sources">
                                     <details>
-                                        <summary><i class="ti ti-book"></i> Sources utilisées</summary>
+                                        <summary><i class="ti ti-book"></i> {% translate "Sources utilisées" %}</summary>
                                         <div class="sources-content">{{ msg.sources }}</div>
                                     </details>
                                 </div>
@@ -1067,7 +1067,7 @@
                     <!-- Message d'accueil par défaut -->
                     <div class="chat-msg msg-assistant">
                         <div class="msg-content">
-                            Bonjour ! Je suis connecté au contexte du chapitre <strong>{{ chapitre.titre }}</strong>. Que souhaitez-vous approfondir ?
+                            {% blocktranslate with titre=chapitre.titre %}Bonjour ! Je suis connecté au contexte du chapitre <strong>{{ titre }}</strong>. Que souhaitez-vous approfondir ?{% endblocktranslate %}
                         </div>
                     </div>
                 {% endif %}
@@ -1080,7 +1080,7 @@
                             <span></span>
                             <span></span>
                         </div>
-                        <span class="typing-text">L'assistant réfléchit...</span>
+                        <span class="typing-text">{% translate "L'assistant réfléchit..." %}</span>
                     </div>
                 </div>
             </div>
@@ -1088,29 +1088,29 @@
             <!-- Actions rapides -->
             <div class="chat-action-chips">
                 <button type="button" class="chat-chip" id="chip-resume">
-                    <i class="ti ti-notes"></i> Résumer le chapitre
+                    <i class="ti ti-notes"></i> {% translate "Résumer le chapitre" %}
                 </button>
                 <a href="{% url 'tuteur_ia:demarrer_qcm' chapitre.id %}" class="chat-chip">
-                    <i class="ti ti-award"></i> Générer un QCM
+                    <i class="ti ti-award"></i> {% translate "Générer un QCM" %}
                 </a>
                 <button type="button" class="chat-chip" id="chip-expliquer">
-                    <i class="ti ti-help-circle"></i> Expliquer un point
+                    <i class="ti ti-help-circle"></i> {% translate "Expliquer un point" %}
                 </button>
             </div>
 
             <!-- Barre de saisie -->
             <form id="chat-input-form" class="chat-input-bar">
-                <input type="text" id="chat-user-input" placeholder="Posez une question..." required autocomplete="off" />
-                <button type="submit" class="btn-chat-send" title="Envoyer la question">
+                <input type="text" id="chat-user-input" placeholder="{% translate 'Posez une question...' %}" required autocomplete="off" />
+                <button type="submit" class="btn-chat-send" title="{% translate 'Envoyer la question' %}">
                     <i class="ti ti-send"></i>
                 </button>
             </form>
-            
+
         </div>
     </div>
 
     <!-- Floating Action Button (FAB) pour rouvrir le Tuteur Assistant -->
-    <button id="chat-fab-toggle" class="chat-fab" title="Ouvrir le Tuteur Assistant">
+    <button id="chat-fab-toggle" class="chat-fab" title="{% translate 'Ouvrir le Tuteur Assistant' %}">
         <i class="ti ti-messages"></i>
         <span class="status-indicator-dot" style="position: absolute; top: 12px; right: 12px; width: 10px; height: 10px; border: 2px solid var(--bg-surface, #ffffff);"></span>
     </button>
@@ -1273,7 +1273,7 @@
 
         if (!sessionId || sessionId === "None") {
             typingIndicator.style.display = "none";
-            showErrorMessage("Erreur : session d'assistant indisponible.");
+            showErrorMessage("{% translate "Erreur : session d'assistant indisponible." %}");
             return;
         }
 
@@ -1289,7 +1289,7 @@
         })
         .then(response => {
             if (!response.ok) {
-                throw new Error("Erreur de communication avec le serveur.");
+                throw new Error("{% translate 'Erreur de communication avec le serveur.' %}");
             }
             return response.json();
         })
@@ -1318,7 +1318,7 @@
                 
                 sourcesDiv.innerHTML = `
                     <details>
-                        <summary><i class="ti ti-book"></i> Sources utilisées</summary>
+                        <summary><i class="ti ti-book"></i> {% translate "Sources utilisées" %}</summary>
                         <div class="sources-content">${escapedSources}</div>
                     </details>
                 `;
@@ -1336,7 +1336,7 @@
         })
         .catch(err => {
             typingIndicator.style.display = "none";
-            showErrorMessage(err.message || "Une erreur réseau est survenue.");
+            showErrorMessage(err.message || "{% translate 'Une erreur réseau est survenue.' %}");
             console.error(err);
         });
     }
@@ -1350,7 +1350,7 @@
         const content = document.createElement("div");
         content.className = "msg-content";
         content.style.color = "var(--accent-danger)";
-        content.innerHTML = `<strong>Erreur :</strong> ${escapeHTML(errorMsg)}`;
+        content.innerHTML = `<strong>{% translate "Erreur" %} :</strong> ${escapeHTML(errorMsg)}`;
         
         errorDiv.appendChild(content);
         messagesArea.insertBefore(errorDiv, typingIndicator);
@@ -1379,13 +1379,13 @@
     // Chips clicks
     if (chipResume) {
         chipResume.addEventListener("click", function() {
-            submitQuestion("Résume-moi ce chapitre de façon claire");
+            submitQuestion("{% translate 'Résume-moi ce chapitre de façon claire' %}");
         });
     }
 
     if (chipExpliquer) {
         chipExpliquer.addEventListener("click", function() {
-            input.value = "Explique-moi le concept de : ";
+            input.value = "{% translate 'Explique-moi le concept de : ' %}";
             input.focus();
         });
     }

@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
-{% block title %}{% if form.instance.pk %}Modifier le cours{% else %}Nouveau cours{% endif %} | Plateforme Éducative{% endblock %}
+{% block title %}{% if form.instance.pk %}{% translate "Modifier le cours" %}{% else %}{% translate "Nouveau cours" %}{% endif %} | Plateforme Éducative{% endblock %}
 
 {% block content %}
 <style>
@@ -269,18 +270,18 @@
 <section class="page-shell">
     <div class="cf-hero">
         <div class="cf-hero-left">
-            <span class="cf-eyebrow"><i class="ti ti-book"></i> Apprentissage</span>
+            <span class="cf-eyebrow"><i class="ti ti-book"></i> {% translate "Apprentissage" %}</span>
             {% if form.instance.pk %}
-                <h1 class="cf-title">Modifier le <span>cours</span></h1>
-                <p class="cf-subtitle">Mettez à jour les détails de votre cours ci-dessous.</p>
+                <h1 class="cf-title">{% blocktranslate %}Modifier le <span>cours</span>{% endblocktranslate %}</h1>
+                <p class="cf-subtitle">{% translate "Mettez à jour les détails de votre cours ci-dessous." %}</p>
             {% else %}
-                <h1 class="cf-title">Nouveau <span>cours</span></h1>
-                <p class="cf-subtitle">Créez un nouveau cours interactif pour votre espace formateur.</p>
+                <h1 class="cf-title">{% blocktranslate %}Nouveau <span>cours</span>{% endblocktranslate %}</h1>
+                <p class="cf-subtitle">{% translate "Créez un nouveau cours interactif pour votre espace formateur." %}</p>
             {% endif %}
         </div>
         <div class="cf-hero-right">
             <a href="{% if return_url %}{{ return_url }}{% else %}{% url 'apprentissage:espace_formateur' %}{% endif %}" class="btn-hero-secondary">
-                <i class="ti ti-arrow-left"></i> Retour
+                <i class="ti ti-arrow-left"></i> {% translate "Retour" %}
             </a>
         </div>
     </div>
@@ -319,16 +320,16 @@
                             <!-- Custom premium file upload zone -->
                             <div class="file-upload-zone" onclick="document.getElementById('{{ field.id_for_label }}').click()">
                                 {% if form.instance.image_couverture %}
-                                    <img id="image-preview" src="{{ form.instance.image_couverture.url }}" alt="Image de couverture" class="image-preview-existing">
+                                    <img id="image-preview" src="{{ form.instance.image_couverture.url }}" alt="{% translate 'Image de couverture' %}" class="image-preview-existing">
                                 {% else %}
                                     <i id="upload-icon" class="ti ti-photo" style="font-size: 2rem; color: var(--primary);"></i>
                                 {% endif %}
                                 <div class="upload-text" id="upload-text-container">
-                                    <span class="upload-title">{% if form.instance.image_couverture %}Changer l'image de couverture{% else %}Choisir une image de couverture{% endif %}</span>
-                                    <span class="upload-subtitle">Formats acceptés : PNG, JPG, WEBP (max 5 Mo)</span>
+                                    <span class="upload-title">{% if form.instance.image_couverture %}{% translate "Changer l'image de couverture" %}{% else %}{% translate "Choisir une image de couverture" %}{% endif %}</span>
+                                    <span class="upload-subtitle">{% translate "Formats acceptés : PNG, JPG, WEBP (max 5 Mo)" %}</span>
                                 </div>
                                 <span id="file-name-preview" class="file-name-badge" style="display: {% if form.instance.image_couverture %}inline-block{% else %}none{% endif %};">
-                                    {% if form.instance.image_couverture %}{{ form.instance.image_couverture.name }}{% else %}Aucun fichier{% endif %}
+                                    {% if form.instance.image_couverture %}{{ form.instance.image_couverture.name }}{% else %}{% translate "Aucun fichier" %}{% endif %}
                                 </span>
                             </div>
                             <div style="display: none;">
@@ -350,9 +351,9 @@
 
             <div class="form-actions">
                 <button type="submit" class="btn btn-submit">
-                    <i class="ti ti-device-floppy"></i> Enregistrer
+                    <i class="ti ti-device-floppy"></i> {% translate "Enregistrer" %}
                 </button>
-                <a href="{% if return_url %}{{ return_url }}{% else %}{% url 'apprentissage:espace_formateur' %}{% endif %}" class="btn btn-cancel">Annuler</a>
+                <a href="{% if return_url %}{{ return_url }}{% else %}{% url 'apprentissage:espace_formateur' %}{% endif %}" class="btn btn-cancel">{% translate "Annuler" %}</a>
             </div>
         </form>
     </div>

@@ -1,15 +1,16 @@
-<nav class="profile-nav" aria-label="Navigation du profil">
+{% load i18n %}
+<nav class="profile-nav" aria-label="{% translate 'Navigation du profil' %}">
     <a href="{% url 'accounts:profile' %}"
        class="profile-nav__tab {% if profile_tab == 'apercu' %}is-active{% endif %}">
-        <i class="ti ti-user-circle" aria-hidden="true"></i> Aperçu du profil
+        <i class="ti ti-user-circle" aria-hidden="true"></i> {% translate "Aperçu du profil" %}
     </a>
     <a href="{% url 'accounts:profile_edit' %}"
        class="profile-nav__tab {% if profile_tab == 'edition' %}is-active{% endif %}">
-        <i class="ti ti-settings" aria-hidden="true"></i> Paramètres
+        <i class="ti ti-settings" aria-hidden="true"></i> {% translate "Paramètres" %}
     </a>
     <a href="{% url 'accounts:change_password' %}"
        class="profile-nav__tab {% if profile_tab == 'securite' %}is-active{% endif %}">
-        <i class="ti ti-lock" aria-hidden="true"></i> Sécurité
+        <i class="ti ti-lock" aria-hidden="true"></i> {% translate "Sécurité" %}
     </a>
 </nav>
 

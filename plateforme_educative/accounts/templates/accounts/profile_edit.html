@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
-{% block title %}Modifier mon profil | Plateforme Éducative{% endblock %}
+{% block title %}{% translate "Modifier mon profil" %} | Plateforme Éducative{% endblock %}
 
 {% block content %}
 <style>
@@ -215,10 +216,10 @@
     {% include 'accounts/partials/profile_nav.html' with profile_tab='edition' %}
 
     <div class="edit-card">
-        <span class="section-meta-title">Configuration</span>
-        <h1>Modifier mes informations</h1>
+        <span class="section-meta-title">{% translate "Configuration" %}</span>
+        <h1>{% translate "Modifier mes informations" %}</h1>
         <p class="edit-card-desc">
-            Mettez à jour vos identifiants ou importez une nouvelle photo de profil pour personnaliser votre espace.
+            {% translate "Mettez à jour vos identifiants ou importez une nouvelle photo de profil pour personnaliser votre espace." %}
         </p>
 
         <form method="post" class="edit-form" enctype="multipart/form-data">
@@ -232,12 +233,12 @@
 
             <!-- Interactive upload zone -->
             <div class="form-group" id="photo-group">
-                <label>Photo de profil</label>
-                
+                <label>{% translate "Photo de profil" %}</label>
+
                 <div class="avatar-upload-zone" onclick="document.getElementById('id_photo').click();">
                     <div id="avatarPreviewContainer" class="avatar-preview-wrapper">
                         {% if profile_user.photo %}
-                            <img id="avatarPreviewImg" class="avatar-preview-img" src="{{ profile_user.photo.url }}" alt="Aperçu">
+                            <img id="avatarPreviewImg" class="avatar-preview-img" src="{{ profile_user.photo.url }}" alt="{% translate 'Aperçu' %}">
                         {% else %}
                             <span id="avatarPreviewInitials">
                                 {% if profile_user.first_name %}
@@ -251,9 +252,9 @@
                     
                     <div class="upload-info">
                         <span class="upload-btn-fake">
-                            <i class="ti ti-camera" aria-hidden="true"></i> Choisir une image
+                            <i class="ti ti-camera" aria-hidden="true"></i> {% translate "Choisir une image" %}
                         </span>
-                        <span class="upload-details">Fichiers autorisés : JPG ou PNG. Format carré recommandé.</span>
+                        <span class="upload-details">{% translate "Fichiers autorisés : JPG ou PNG. Format carré recommandé." %}</span>
                         <span id="photoFilenameText" class="filename-label" style="display:none;"></span>
                     </div>
 
@@ -274,7 +275,7 @@
                     <div style="margin-top: 0.25rem;">
                         <label class="delete-toggle-container">
                             {{ form.supprimer_photo }}
-                            <span><i class="ti ti-trash"></i> Supprimer la photo de profil actuelle</span>
+                            <span><i class="ti ti-trash"></i> {% translate "Supprimer la photo de profil actuelle" %}</span>
                         </label>
                     </div>
                 {% endif %}
@@ -283,7 +284,7 @@
             <!-- First and Last Name field group -->
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                 <div class="form-group">
-                    <label for="id_first_name">Prénom</label>
+                    <label for="id_first_name">{% translate "Prénom" %}</label>
                     {{ form.first_name }}
                     {% if form.first_name.errors %}
                         <span class="field-errors">
@@ -292,7 +293,7 @@
                     {% endif %}
                 </div>
                 <div class="form-group">
-                    <label for="id_last_name">Nom</label>
+                    <label for="id_last_name">{% translate "Nom" %}</label>
                     {{ form.last_name }}
                     {% if form.last_name.errors %}
                         <span class="field-errors">
@@ -303,7 +304,7 @@
             </div>
             <!-- Email field group -->
             <div class="form-group">
-                <label for="id_email">Adresse email</label>
+                <label for="id_email">{% translate "Adresse email" %}</label>
                 {{ form.email }}
                 {% if form.email.errors %}
                     <span class="field-errors">
@@ -315,10 +316,10 @@
             <!-- Button panel -->
             <div class="actions-panel">
                 <button class="btn-primary" type="submit">
-                    Enregistrer les modifications
+                    {% translate "Enregistrer les modifications" %}
                 </button>
                 <a class="btn-ghost" href="{% url 'accounts:profile' %}">
-                    Annuler
+                    {% translate "Annuler" %}
                 </a>
             </div>
         </form>
@@ -354,7 +355,7 @@
                 const img = document.createElement('img');
                 img.id = 'avatarPreviewImg';
                 img.className = 'avatar-preview-img';
-                img.alt = 'Aperçu de la nouvelle image';
+                img.alt = "{% translate 'Aperçu de la nouvelle image' %}";
                 img.src = event.target.result;
                 previewContainer.appendChild(img);
             };

@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
-{% load static %}
-{% block title %}Espace Formateur | EduTech{% endblock %}
+{% load static i18n %}
+{% block title %}{% translate "Espace Formateur" %} | EduTech{% endblock %}
 
 {% block content %}
 <style>
@@ -594,26 +594,26 @@
     <div class="formateur-hero">
         <div class="hero-left">
             <span class="hero-eyebrow">
-                <i class="ti ti-school"></i> Espace Formateur
+                <i class="ti ti-school"></i> {% translate "Espace Formateur" %}
             </span>
             <h1 class="hero-title">
-                Bienvenue, <span>{{ request.user.get_full_name|default:request.user.email }}</span>
+                {% blocktranslate with nom=request.user.get_full_name|default:request.user.email %}Bienvenue, <span>{{ nom }}</span>{% endblocktranslate %}
             </h1>
-            <p class="hero-subtitle">Gérez vos cours, suivez vos devoirs et pilotez l'apprentissage de vos étudiants.</p>
+            <p class="hero-subtitle">{% translate "Gérez vos cours, suivez vos devoirs et pilotez l'apprentissage de vos étudiants." %}</p>
 
             <div class="hero-stats-row">
                 <div class="hero-stat-pill">
                     <i class="ti ti-books"></i>
-                    <span><strong>{{ mes_cours|length }}</strong> cours</span>
+                    <span><strong>{{ mes_cours|length }}</strong> {% blocktranslate count counter=mes_cours|length %}cours{% plural %}cours{% endblocktranslate %}</span>
                 </div>
                 <div class="hero-stat-pill">
                     <i class="ti ti-clipboard-list"></i>
-                    <span><strong>{{ devoirs|length }}</strong> devoirs</span>
+                    <span><strong>{{ devoirs|length }}</strong> {% blocktranslate count counter=devoirs|length %}devoir{% plural %}devoirs{% endblocktranslate %}</span>
                 </div>
                 {% with urgent_count=devoirs|length %}
                 <div class="hero-stat-pill">
                     <i class="ti ti-users"></i>
-                    <span>Mes étudiants</span>
+                    <span>{% translate "Mes étudiants" %}</span>
                 </div>
                 {% endwith %}
             </div>
@@ -621,10 +621,10 @@
 
         <div class="hero-right">
             <a href="{% url 'apprentissage:nouveau_cours' %}" class="btn-hero-primary">
-                <i class="ti ti-plus"></i> Créer un cours
+                <i class="ti ti-plus"></i> {% translate "Créer un cours" %}
             </a>
             <a href="{% url 'apprentissage:formateur_notes' %}" class="btn-hero-secondary">
-                <i class="ti ti-chart-bar"></i> Notes des étudiants
+                <i class="ti ti-chart-bar"></i> {% translate "Notes des étudiants" %}
             </a>
         </div>
     </div>
@@ -634,16 +634,16 @@
     <div class="tabs-nav">
         <button class="tab-item active" onclick="switchFormTab('tab-cours', this)" id="btn-tab-cours">
             <i class="ti ti-books"></i>
-            Mes Cours
+            {% translate "Mes Cours" %}
             <span class="tab-badge">{{ mes_cours|length }}</span>
         </button>
         <button class="tab-item {% for d in devoirs %}{% if d.soumissions_a_noter > 0 %}has-alert{% endif %}{% endfor %}" onclick="switchFormTab('tab-devoirs', this)" id="btn-tab-devoirs">
             <i class="ti ti-clipboard-list"></i>
-            Devoirs
+            {% translate "Devoirs" %}
             <span class="tab-badge">{{ devoirs|length }}</span>
         <button class="tab-item" onclick="switchFormTab('tab-exports', this)" id="btn-tab-exports">
             <i class="ti ti-history"></i>
-            Historique des Exports
+            {% translate "Historique des Exports" %}
         </button>
     </div>
     {% endwith %}
@@ -653,12 +653,12 @@
         <!-- TOOLBAR EXPORT/IMPORT -->
         <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-bottom:1.5rem;">
             <button type="button" onclick="document.getElementById('import-zip-input').click()" style="display:inline-flex; align-items:center; gap:8px; padding:0.6rem 1.2rem; border-radius:10px; font-weight:600; font-size:0.9rem; cursor:pointer; transition:all 0.2s; color: #334155; background: #f8fafc; border: 1px solid #cbd5e1; box-shadow: 0 1px 2px rgba(0,0,0,0.05);" onmouseover="this.style.background='#f1f5f9'; this.style.borderColor='#94a3b8';" onmouseout="this.style.background='#f8fafc'; this.style.borderColor='#cbd5e1';">
-                <i class="ti ti-upload" style="color:#0D9488; font-size:1.1rem;"></i> Importer (ZIP)
+                <i class="ti ti-upload" style="color:#0D9488; font-size:1.1rem;"></i> {% translate "Importer (ZIP)" %}
             </button>
             <input type="file" id="import-zip-input" multiple accept=".zip" style="display:none" onchange="importCourses(this)">
-            
+
             <button type="button" id="btn-export-selected" onclick="exportSelectedCourses()" style="display:inline-flex; align-items:center; gap:8px; padding:0.6rem 1.2rem; border-radius:10px; font-weight:600; font-size:0.9rem; cursor:pointer; transition:all 0.2s; color: #334155; background: #f8fafc; border: 1px solid #cbd5e1; box-shadow: 0 1px 2px rgba(0,0,0,0.05);" onmouseover="this.style.background='#f1f5f9'; this.style.borderColor='#94a3b8';" onmouseout="this.style.background='#f8fafc'; this.style.borderColor='#cbd5e1';">
-                <i class="ti ti-download" style="color:#0D9488; font-size:1.1rem;"></i> Exporter (<span id="export-count">0</span> sélectionné)
+                <i class="ti ti-download" style="color:#0D9488; font-size:1.1rem;"></i> {% translate "Exporter" %} (<span id="export-count">0</span> {% translate "sélectionné" %})
             </button>
         </div>
 
@@ -678,7 +678,7 @@
                         <span class="fc-badge-niveau">{{ cours.niveau.nom }}</span>
                         <span class="fc-badge-statut {% if cours.actif %}published{% else %}draft{% endif %}">
                             <i class="ti {% if cours.actif %}ti-eye{% else %}ti-eye-off{% endif %}"></i>
-                            {% if cours.actif %}Publié{% else %}Brouillon{% endif %}
+                            {% if cours.actif %}{% translate "Publié" %}{% else %}{% translate "Brouillon" %}{% endif %}
                         </span>
                     </div>
                 </div>
@@ -689,7 +689,7 @@
                     <div class="fc-info-row">
                         <div class="fc-info-item">
                             <i class="ti ti-layout-list"></i>
-                            {{ cours.chapitres.count }} chapitre{{ cours.chapitres.count|pluralize }}
+                            {% blocktranslate count counter=cours.chapitres.count %}{{ counter }} chapitre{% plural %}{{ counter }} chapitres{% endblocktranslate %}
                         </div>
                         <div class="fc-info-item">
                             <i class="ti ti-calendar"></i>
@@ -706,15 +706,15 @@
                 <!-- Footer -->
                 <div class="fc-footer">
                     <a href="{% url 'apprentissage:gerer_cours' cours.pk %}" class="fc-btn-manage">
-                        <i class="ti ti-layout-grid"></i> Gérer le contenu
+                        <i class="ti ti-layout-grid"></i> {% translate "Gérer le contenu" %}
                     </a>
-                    <a href="{% url 'apprentissage:editer_cours' cours.pk %}" class="fc-btn-icon" title="Modifier">
+                    <a href="{% url 'apprentissage:editer_cours' cours.pk %}" class="fc-btn-icon" title="{% translate 'Modifier' %}">
                         <i class="ti ti-pencil"></i>
                     </a>
                     <form method="post" action="{% url 'apprentissage:supprimer_cours' cours.pk %}" style="display:inline; margin:0;"
-                          onsubmit="return confirm('⚠️ Supprimer définitivement le cours « {{ cours.titre }} » ?\n\nCette action est irréversible.');">
+                          onsubmit="return confirm('{% blocktranslate with titre=cours.titre %}⚠️ Supprimer définitivement le cours « {{ titre }} » ?\n\nCette action est irréversible.{% endblocktranslate %}');">
                         {% csrf_token %}
-                        <button type="submit" class="fc-btn-icon danger" title="Supprimer">
+                        <button type="submit" class="fc-btn-icon danger" title="{% translate 'Supprimer' %}">
                             <i class="ti ti-trash"></i>
                         </button>
                     </form>
@@ -723,10 +723,10 @@
             {% empty %}
             <div class="ef-empty">
                 <div class="ef-empty-icon"><i class="ti ti-school"></i></div>
-                <h3>Aucun cours pour le moment</h3>
-                <p>Commencez par créer votre premier cours et partagez votre savoir avec vos étudiants.</p>
+                <h3>{% translate "Aucun cours pour le moment" %}</h3>
+                <p>{% translate "Commencez par créer votre premier cours et partagez votre savoir avec vos étudiants." %}</p>
                 <a href="{% url 'apprentissage:nouveau_cours' %}" class="btn-hero-primary" style="margin-top: 0.5rem;">
-                    <i class="ti ti-plus"></i> Créer mon premier cours
+                    <i class="ti ti-plus"></i> {% translate "Créer mon premier cours" %}
                 </a>
             </div>
             {% endfor %}
@@ -766,19 +766,19 @@
                 <!-- Stats -->
                 <div class="devoir-stat">
                     <span class="devoir-stat-num">{{ devoir.total_soumissions }}</span>
-                    <span class="devoir-stat-label">Reçues</span>
+                    <span class="devoir-stat-label">{% translate "Reçues" %}</span>
                 </div>
                 <div style="width: 1px; height: 32px; background: var(--border-light, #e8edf3);"></div>
                 <div class="devoir-stat">
                     {% if devoir.soumissions_a_noter > 0 %}
-                        <span class="badge-to-grade"><i class="ti ti-alert-triangle"></i> {{ devoir.soumissions_a_noter }} à noter</span>
+                        <span class="badge-to-grade"><i class="ti ti-alert-triangle"></i> {% blocktranslate count counter=devoir.soumissions_a_noter %}{{ counter }} à noter{% plural %}{{ counter }} à noter{% endblocktranslate %}</span>
                     {% else %}
-                        <span class="badge-ok"><i class="ti ti-check"></i> À jour</span>
+                        <span class="badge-ok"><i class="ti ti-check"></i> {% translate "À jour" %}</span>
                     {% endif %}
                 </div>
 
                 <a href="{% url 'apprentissage:devoir_detail' devoir_id=devoir.pk %}" class="devoir-action">
-                    <i class="ti ti-eye"></i> Voir les copies
+                    <i class="ti ti-eye"></i> {% translate "Voir les copies" %}
                 </a>
             </div>
             {% endfor %}
@@ -788,8 +788,8 @@
             <div class="ef-empty-icon" style="background: rgba(245,158,11,0.1); color: #f59e0b;">
                 <i class="ti ti-clipboard-list"></i>
             </div>
-            <h3>Aucun devoir créé</h3>
-            <p>Pour assigner des devoirs, rendez-vous dans la gestion de l'un de vos cours puis ouvrez un chapitre.</p>
+            <h3>{% translate "Aucun devoir créé" %}</h3>
+            <p>{% translate "Pour assigner des devoirs, rendez-vous dans la gestion de l'un de vos cours puis ouvrez un chapitre." %}</p>
         </div>
         {% endif %}
     </div>
@@ -805,18 +805,18 @@
                 </div>
 
                 <div class="devoir-info">
-                    <div class="devoir-title">Export: {{ job.cours.titre }}</div>
+                    <div class="devoir-title">{% blocktranslate with titre=job.cours.titre %}Export: {{ titre }}{% endblocktranslate %}</div>
                     <div class="devoir-meta">
                         <div class="devoir-meta-item">
                             <i class="ti ti-calendar"></i>
-                            Lancé le {{ job.date_creation|date:"d/m/Y H:i" }}
+                            {% blocktranslate with d=job.date_creation|date:"d/m/Y H:i" %}Lancé le {{ d }}{% endblocktranslate %}
                         </div>
                         <div class="devoir-meta-item">
-                            Statut: {{ job.get_status_display }}
+                            {% translate "Statut" %}: {{ job.get_status_display }}
                         </div>
                         {% if job.erreur %}
                         <div class="devoir-meta-item" style="color: #ef4444;">
-                            Erreur: {{ job.erreur }}
+                            {% translate "Erreur" %}: {{ job.erreur }}
                         </div>
                         {% endif %}
                     </div>
@@ -826,11 +826,11 @@
                 <div class="devoir-stats">
                     {% if job.status == 'SUCCESS' and job.fichier_zip %}
                         <a href="{{ job.fichier_zip.url }}" download class="devoir-action" style="background: linear-gradient(135deg, #10b981, #059669);">
-                            <i class="ti ti-download"></i> Télécharger le ZIP
+                            <i class="ti ti-download"></i> {% translate "Télécharger le ZIP" %}
                         </a>
                     {% elif job.status == 'PENDING' %}
                         <button class="devoir-action" style="background: rgba(245,158,11,0.1); color: #f59e0b; border: 1px solid #f59e0b;" disabled>
-                            <i class="ti ti-loader ti-spin"></i> En cours...
+                            <i class="ti ti-loader ti-spin"></i> {% translate "En cours..." %}
                         </button>
                     {% endif %}
                 </div>
@@ -840,8 +840,8 @@
         {% else %}
         <div class="ef-empty">
             <div class="ef-empty-icon"><i class="ti ti-history"></i></div>
-            <h3>Aucun export en cours</h3>
-            <p>Sélectionnez des cours dans l'onglet "Mes Cours" et cliquez sur "Exporter" pour générer des fichiers ZIP.</p>
+            <h3>{% translate "Aucun export en cours" %}</h3>
+            <p>{% blocktranslate %}Sélectionnez des cours dans l'onglet "Mes Cours" et cliquez sur "Exporter" pour générer des fichiers ZIP.{% endblocktranslate %}</p>
         </div>
         {% endif %}
     </div>
@@ -853,33 +853,33 @@
     <div style="background:var(--bg-surface, #fff); width:90%; max-width:650px; border-radius:24px; padding:2.5rem; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); position:relative; overflow:hidden;">
         <!-- Header -->
         <h3 style="margin-top:0; margin-bottom:1.5rem; color:#0f172a; font-size:1.5rem; display:flex; align-items:center; gap:0.5rem;">
-            <i class="ti ti-cloud-upload" style="color:#0D9488;"></i> Importer un Cours
+            <i class="ti ti-cloud-upload" style="color:#0D9488;"></i> {% translate "Importer un Cours" %}
         </h3>
-        
+
         <!-- Stepper -->
         <div class="import-stepper" style="display:flex; justify-content:space-between; margin-bottom: 2rem; position:relative;">
             <div style="position:absolute; top:14px; left:16%; right:16%; height:2px; background:#e2e8f0; z-index:1;"></div>
-            
+
             <div id="step-1" style="position:relative; z-index:2; text-align:center; flex:1;">
                 <div id="step-1-icon" style="width:30px; height:30px; border-radius:50%; background:#10b981; color:white; margin:0 auto; display:flex; align-items:center; justify-content:center; font-size:1rem; border:4px solid #fff; box-shadow:0 0 0 1px #10b981;"><i class="ti ti-check"></i></div>
-                <div id="step-1-text" style="font-size:0.8rem; font-weight:700; color:#0f172a; margin-top:0.5rem;">Analyse locale</div>
+                <div id="step-1-text" style="font-size:0.8rem; font-weight:700; color:#0f172a; margin-top:0.5rem;">{% translate "Analyse locale" %}</div>
             </div>
-            
+
             <div id="step-2" style="position:relative; z-index:2; text-align:center; flex:1;">
                 <div id="step-2-icon" style="width:30px; height:30px; border-radius:50%; background:#f8fafc; color:#94a3b8; margin:0 auto; display:flex; align-items:center; justify-content:center; font-size:0.9rem; font-weight:700; border:4px solid #fff; box-shadow:0 0 0 1px #cbd5e1;">2</div>
-                <div id="step-2-text" style="font-size:0.8rem; font-weight:600; color:#94a3b8; margin-top:0.5rem;">Transfert</div>
+                <div id="step-2-text" style="font-size:0.8rem; font-weight:600; color:#94a3b8; margin-top:0.5rem;">{% translate "Transfert" %}</div>
             </div>
 
             <div id="step-3" style="position:relative; z-index:2; text-align:center; flex:1;">
                 <div id="step-3-icon" style="width:30px; height:30px; border-radius:50%; background:#f8fafc; color:#94a3b8; margin:0 auto; display:flex; align-items:center; justify-content:center; font-size:0.9rem; font-weight:700; border:4px solid #fff; box-shadow:0 0 0 1px #cbd5e1;">3</div>
-                <div id="step-3-text" style="font-size:0.8rem; font-weight:600; color:#94a3b8; margin-top:0.5rem;">Création Base de données</div>
+                <div id="step-3-text" style="font-size:0.8rem; font-weight:600; color:#94a3b8; margin-top:0.5rem;">{% translate "Création Base de données" %}</div>
             </div>
         </div>
-        
+
         <!-- Loading State -->
         <div id="preview-loading" style="text-align:center; padding:2rem 0; color:#64748b;">
             <i class="ti ti-loader ti-spin" style="font-size:2.5rem; color:#0D9488; margin-bottom:1rem; display:block;"></i>
-            <p style="margin:0; font-weight:500;">Lecture de l'archive ZIP en cours...</p>
+            <p style="margin:0; font-weight:500;">{% translate "Lecture de l'archive ZIP en cours..." %}</p>
         </div>
 
         <!-- Preview Tree -->
@@ -889,7 +889,7 @@
         <!-- Progress Animation (Hidden by default) -->
         <div id="upload-progress-container" style="display:none; margin-top:1rem;">
             <p id="upload-status-text" style="margin:0 0 0.5rem 0; font-weight:600; color:#0f172a; display:flex; justify-content:space-between;">
-                <span><i class="ti ti-cloud-upload"></i> Envoi vers le serveur...</span> <span id="upload-percent" style="color:#10b981;">0%</span>
+                <span><i class="ti ti-cloud-upload"></i> {% translate "Envoi vers le serveur..." %}</span> <span id="upload-percent" style="color:#10b981;">0%</span>
             </p>
             <div style="width:100%; height:8px; background:#e2e8f0; border-radius:999px; overflow:hidden;">
                 <div id="upload-progress-bar" style="width:0%; height:100%; background:linear-gradient(90deg, #10b981, #34d399); transition:width 0.2s ease;"></div>
@@ -899,9 +899,9 @@
 
         <!-- Actions -->
         <div id="preview-actions" style="display:flex; justify-content:flex-end; gap:1rem; margin-top:2rem;">
-            <button type="button" id="btn-cancel-import" class="btn-hero-secondary" onclick="closePreviewModal()" style="color:#64748b; border-color:#cbd5e1; background:transparent;">Annuler</button>
+            <button type="button" id="btn-cancel-import" class="btn-hero-secondary" onclick="closePreviewModal()" style="color:#64748b; border-color:#cbd5e1; background:transparent;">{% translate "Annuler" %}</button>
             <button type="button" id="btn-confirm-import" class="btn-hero-primary" style="background:linear-gradient(135deg, #10b981, #059669);">
-                <i class="ti ti-check"></i> Confirmer l'Importation
+                <i class="ti ti-check"></i> {% translate "Confirmer l'Importation" %}
             </button>
         </div>
     </div>
@@ -912,26 +912,26 @@
     <div style="background:var(--bg-surface, #fff); width:90%; max-width:650px; border-radius:24px; padding:2.5rem; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); position:relative; overflow:hidden;">
         <!-- Header -->
         <h3 style="margin-top:0; margin-bottom:1.5rem; color:#0f172a; font-size:1.5rem; display:flex; align-items:center; gap:0.5rem;">
-            <i class="ti ti-cloud-download" style="color:#f59e0b;"></i> Exporter des Cours
+            <i class="ti ti-cloud-download" style="color:#f59e0b;"></i> {% translate "Exporter des Cours" %}
         </h3>
-        
+
         <!-- Stepper -->
         <div class="export-stepper" style="display:flex; justify-content:space-between; margin-bottom: 2rem; position:relative;">
             <div style="position:absolute; top:14px; left:16%; right:16%; height:2px; background:#e2e8f0; z-index:1;"></div>
-            
+
             <div id="estep-1" style="position:relative; z-index:2; text-align:center; flex:1;">
                 <div id="estep-1-icon" style="width:30px; height:30px; border-radius:50%; background:#f59e0b; color:white; margin:0 auto; display:flex; align-items:center; justify-content:center; font-size:1rem; border:4px solid #fff; box-shadow:0 0 0 1px #f59e0b;"><i class="ti ti-check"></i></div>
-                <div id="estep-1-text" style="font-size:0.8rem; font-weight:700; color:#0f172a; margin-top:0.5rem;">Préparation</div>
+                <div id="estep-1-text" style="font-size:0.8rem; font-weight:700; color:#0f172a; margin-top:0.5rem;">{% translate "Préparation" %}</div>
             </div>
-            
+
             <div id="estep-2" style="position:relative; z-index:2; text-align:center; flex:1;">
                 <div id="estep-2-icon" style="width:30px; height:30px; border-radius:50%; background:#f8fafc; color:#94a3b8; margin:0 auto; display:flex; align-items:center; justify-content:center; font-size:0.9rem; font-weight:700; border:4px solid #fff; box-shadow:0 0 0 1px #cbd5e1;">2</div>
-                <div id="estep-2-text" style="font-size:0.8rem; font-weight:600; color:#94a3b8; margin-top:0.5rem;">Génération ZIP</div>
+                <div id="estep-2-text" style="font-size:0.8rem; font-weight:600; color:#94a3b8; margin-top:0.5rem;">{% translate "Génération ZIP" %}</div>
             </div>
 
             <div id="estep-3" style="position:relative; z-index:2; text-align:center; flex:1;">
                 <div id="estep-3-icon" style="width:30px; height:30px; border-radius:50%; background:#f8fafc; color:#94a3b8; margin:0 auto; display:flex; align-items:center; justify-content:center; font-size:0.9rem; font-weight:700; border:4px solid #fff; box-shadow:0 0 0 1px #cbd5e1;">3</div>
-                <div id="estep-3-text" style="font-size:0.8rem; font-weight:600; color:#94a3b8; margin-top:0.5rem;">Terminé</div>
+                <div id="estep-3-text" style="font-size:0.8rem; font-weight:600; color:#94a3b8; margin-top:0.5rem;">{% translate "Terminé" %}</div>
             </div>
         </div>
 
@@ -942,14 +942,14 @@
         <!-- Progress Animation (Hidden by default) -->
         <div id="export-progress-container" style="display:none; text-align:center; padding:1rem 0;">
             <i class="ti ti-loader ti-spin" style="font-size:2.5rem; color:#f59e0b; margin-bottom:1rem; display:block;"></i>
-            <p id="export-status-text" style="margin:0; font-weight:500; color:#64748b;">Compression de vos cours en arrière-plan...</p>
+            <p id="export-status-text" style="margin:0; font-weight:500; color:#64748b;">{% translate "Compression de vos cours en arrière-plan..." %}</p>
         </div>
 
         <!-- Actions -->
         <div id="export-preview-actions" style="display:flex; justify-content:flex-end; gap:1rem; margin-top:1rem;">
-            <button type="button" id="btn-cancel-export" class="btn-hero-secondary" onclick="closeExportPreviewModal()" style="color:#64748b; border-color:#cbd5e1; background:transparent;">Annuler</button>
+            <button type="button" id="btn-cancel-export" class="btn-hero-secondary" onclick="closeExportPreviewModal()" style="color:#64748b; border-color:#cbd5e1; background:transparent;">{% translate "Annuler" %}</button>
             <button type="button" id="btn-confirm-export" class="btn-hero-primary" style="background:linear-gradient(135deg, #f59e0b, #d97706);">
-                <i class="ti ti-download"></i> Lancer l'Exportation
+                <i class="ti ti-download"></i> {% translate "Lancer l'Exportation" %}
             </button>
         </div>
     </div>
@@ -1002,7 +1002,7 @@
         
         const cancelBtn = document.getElementById('btn-cancel-export');
         if (cancelBtn) {
-            cancelBtn.innerHTML = 'Annuler';
+            cancelBtn.innerHTML = "{% translate 'Annuler' %}";
             cancelBtn.style.color = '#64748b';
             cancelBtn.style.borderColor = '#cbd5e1';
             cancelBtn.style.background = 'transparent';
@@ -1018,7 +1018,7 @@
     function exportSelectedCourses() {
         const checkboxes = document.querySelectorAll('.course-export-checkbox:checked');
         if (checkboxes.length === 0) {
-            showToast("Veuillez sélectionner au moins un cours à exporter en cochant la case sur son image.", "info");
+            showToast("{% translate "Veuillez sélectionner au moins un cours à exporter en cochant la case sur son image." %}", "info");
             return;
         }
 
@@ -1029,7 +1029,7 @@
         setEStepState(3, 'pending');
 
         const content = document.getElementById('export-preview-content');
-        let html = `<div style="font-weight:700; color:#334155; margin-bottom:1rem;">Vous avez sélectionné ${checkboxes.length} cours à exporter :</div>`;
+        let html = `<div style="font-weight:700; color:#334155; margin-bottom:1rem;">{% translate "Vous avez sélectionné" %} ${checkboxes.length} {% translate "cours à exporter :" %}</div>`;
         checkboxes.forEach(cb => {
             const courseCard = cb.closest('.fc-card');
             const title = courseCard.querySelector('.fc-title').innerText;
@@ -1051,13 +1051,13 @@
             this.style.display = 'none'; // hide confirm button
             
             const cancelBtn = document.getElementById('btn-cancel-export');
-            cancelBtn.innerHTML = '<i class="ti ti-eye-off"></i> Masquer (Continuer en arrière-plan)';
+            cancelBtn.innerHTML = "<i class=\"ti ti-eye-off\"></i> {% translate 'Masquer (Continuer en arrière-plan)' %}";
             cancelBtn.style.color = '#3b82f6';
             cancelBtn.style.borderColor = '#bfdbfe';
             cancelBtn.style.background = '#eff6ff';
             cancelBtn.onclick = function() {
                 closeExportPreviewModal();
-                showToast('L\'exportation continue en arrière-plan.', 'info');
+                showToast("{% translate "L'exportation continue en arrière-plan." %}", 'info');
                 setTimeout(() => { window.location.href = window.location.pathname + '#tab-exports'; window.location.reload(); }, 1000);
             };
 
@@ -1078,13 +1078,13 @@
                     const jobs = data.jobs; // [{id, cours_titre}]
                     pollExportStatus(jobs, checkboxes);
                 } else {
-                    showToast('Erreur: ' + data.message, 'error');
+                    showToast("{% translate 'Erreur' %}: " + data.message, 'error');
                     closeExportPreviewModal();
                 }
             })
             .catch(err => {
                 console.error(err);
-                showToast('Erreur lors du lancement de l\'export.', 'error');
+                showToast("{% translate "Erreur lors du lancement de l'export." %}", 'error');
                 closeExportPreviewModal();
             });
         };
@@ -1119,17 +1119,17 @@
             });
 
             Promise.all(currentPromises).then(() => {
-                document.getElementById('export-status-text').innerText = `Génération des archives ZIP en cours... (${completedJobs}/${jobs.length})`;
+                document.getElementById('export-status-text').innerText = `{% translate "Génération des archives ZIP en cours..." %} (${completedJobs}/${jobs.length})`;
                 if (allDone) {
                     clearInterval(exportPollingInterval);
                     setEStepState(2, 'completed');
                     setEStepState(3, 'completed');
-                    document.getElementById('export-status-text').innerHTML = `<span style="color:#10b981;"><i class="ti ti-check"></i> Exportation terminée avec succès !</span>`;
-                    
+                    document.getElementById('export-status-text').innerHTML = `<span style="color:#10b981;"><i class="ti ti-check"></i> {% translate "Exportation terminée avec succès !" %}</span>`;
+
                     checkboxes.forEach(cb => cb.checked = false);
                     updateExportCount();
-                    
-                    showToast('Les archives ZIP sont prêtes ! Téléchargement en cours...', 'success');
+
+                    showToast("{% translate 'Les archives ZIP sont prêtes ! Téléchargement en cours...' %}", 'success');
                     
                     jobs.forEach(job => {
                         if (job.url) {
@@ -1160,7 +1160,7 @@
         
         const cancelBtn = document.getElementById('btn-cancel-import');
         if (cancelBtn) {
-            cancelBtn.innerHTML = 'Annuler';
+            cancelBtn.innerHTML = "{% translate 'Annuler' %}";
             cancelBtn.style.color = '#64748b';
             cancelBtn.style.borderColor = '#cbd5e1';
             cancelBtn.style.background = 'transparent';
@@ -1169,10 +1169,10 @@
     }
 
     function formatBytes(bytes, decimals = 2) {
-        if (!+bytes) return '0 Octets';
+        if (!+bytes) return "0 {% translate 'Octets' %}";
         const k = 1024;
         const dm = decimals < 0 ? 0 : decimals;
-        const sizes = ['Octets', 'Ko', 'Mo', 'Go', 'To', 'Po'];
+        const sizes = ["{% translate 'Octets' %}", 'Ko', 'Mo', 'Go', 'To', 'Po'];
         const i = Math.floor(Math.log(bytes) / Math.log(k));
         return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
     }
@@ -1228,14 +1228,14 @@
         const reader = new FileReader();
         reader.onload = function(e) {
             if (typeof JSZip === 'undefined') {
-                content.innerHTML = '<span style="color:#ef4444;">❌ Erreur : JSZip n\'est pas chargé.</span>';
+                content.innerHTML = "<span style=\"color:#ef4444;\">❌ {% translate "Erreur : JSZip n'est pas chargé." %}</span>";
                 loading.style.display = 'none';
                 content.style.display = 'block';
                 return;
             }
             JSZip.loadAsync(e.target.result).then(function(zip) {
                 if (!zip.file("course_metadata.json")) {
-                    content.innerHTML = '<span style="color:#ef4444;">❌ Erreur : Archive invalide (course_metadata.json introuvable).</span>';
+                    content.innerHTML = '<span style="color:#ef4444;">❌ {% translate "Erreur : Archive invalide (course_metadata.json introuvable)." %}</span>';
                     loading.style.display = 'none';
                     content.style.display = 'block';
                     return;
@@ -1293,13 +1293,13 @@
                         
                         setStepState(1, 'completed');
                     } catch (err) {
-                        content.innerHTML = '<span style="color:#ef4444;">❌ Erreur : Impossible de lire les métadonnées.</span>';
+                        content.innerHTML = '<span style="color:#ef4444;">❌ {% translate "Erreur : Impossible de lire les métadonnées." %}</span>';
                         loading.style.display = 'none';
                         content.style.display = 'block';
                     }
                 });
             }).catch(function(err) {
-                content.innerHTML = '<span style="color:#ef4444;">❌ Erreur : Impossible d\'ouvrir l\'archive ZIP.</span>';
+                content.innerHTML = "<span style=\"color:#ef4444;\">❌ {% translate "Erreur : Impossible d'ouvrir l'archive ZIP." %}</span>";
                 loading.style.display = 'none';
                 content.style.display = 'block';
             });
@@ -1319,7 +1319,7 @@
         cancelBtn.style.background = '#eff6ff';
         cancelBtn.onclick = function() {
             closePreviewModal();
-            showToast('L\'importation continue en arrière-plan. Vous pouvez suivre l\'historique.', 'info');
+            showToast("{% translate "L'importation continue en arrière-plan. Vous pouvez suivre l'historique." %}", 'info');
             setTimeout(() => { window.location.href = window.location.pathname + '#tab-exports'; window.location.reload(); }, 3000);
         };
         
@@ -1344,7 +1344,7 @@
                 document.getElementById('upload-details').textContent = `${formatBytes(e.loaded)} / ${formatBytes(e.total)}`;
 
                 if (percent === 100) {
-                    document.getElementById('upload-status-text').innerHTML = '<span><i class="ti ti-server"></i> Traitement de la base de données...</span> <span style="color:#0D9488;">100%</span>';
+                    document.getElementById('upload-status-text').innerHTML = '<span><i class="ti ti-server"></i> {% translate "Traitement de la base de données..." %}</span> <span style="color:#0D9488;">100%</span>';
                     document.getElementById('upload-progress-bar').style.background = '#0D9488';
                     
                     setStepState(2, 'completed');
@@ -1358,24 +1358,24 @@
                 try {
                     const response = JSON.parse(xhr.responseText);
                     if (response.status === 'success') {
-                        document.getElementById('upload-status-text').innerHTML = '<span><i class="ti ti-server"></i> Sauvegarde et Indexation en cours...</span>';
+                        document.getElementById('upload-status-text').innerHTML = '<span><i class="ti ti-server"></i> {% translate "Sauvegarde et Indexation en cours..." %}</span>';
                         pollImportStatus(response.job_id);
                     } else {
-                        showToast('Erreur: ' + response.message, 'error');
+                        showToast("{% translate 'Erreur' %}: " + response.message, 'error');
                         closePreviewModal();
                     }
                 } catch(e) {
-                    showToast('Erreur fatale. Le serveur ne répond pas correctement.', 'error');
+                    showToast("{% translate 'Erreur fatale. Le serveur ne répond pas correctement.' %}", 'error');
                     closePreviewModal();
                 }
             } else {
-                showToast('Erreur HTTP ' + xhr.status, 'error');
+                showToast("{% translate 'Erreur HTTP' %} " + xhr.status, 'error');
                 closePreviewModal();
             }
         };
 
         xhr.onerror = function() {
-            alert('Erreur réseau. Connexion interrompue.');
+            alert("{% translate 'Erreur réseau. Connexion interrompue.' %}");
             closePreviewModal();
         };
 
@@ -1395,24 +1395,24 @@
                 const progressBar = document.getElementById('upload-progress-bar');
                 
                 if (data.status === 'EXTRACTION') {
-                    statusText.innerHTML = '<span><i class="ti ti-archive"></i> Extraction des fichiers...</span>';
+                    statusText.innerHTML = '<span><i class="ti ti-archive"></i> {% translate "Extraction des fichiers..." %}</span>';
                     progressBar.style.width = '30%';
                 } else if (data.status === 'SAUVEGARDE_BDD') {
-                    statusText.innerHTML = '<span><i class="ti ti-database"></i> Sauvegarde en base de données...</span>';
+                    statusText.innerHTML = '<span><i class="ti ti-database"></i> {% translate "Sauvegarde en base de données..." %}</span>';
                     progressBar.style.width = '60%';
                 } else if (data.status === 'INDEXATION_IA') {
-                    statusText.innerHTML = '<span><i class="ti ti-brain"></i> Indexation pour l\'IA en cours (cela peut prendre du temps)...</span> <span style="color:#f59e0b;"><i class="ti ti-loader ti-spin"></i></span>';
+                    statusText.innerHTML = "<span><i class=\"ti ti-brain\"></i> {% translate "Indexation pour l'IA en cours (cela peut prendre du temps)..." %}</span> <span style=\"color:#f59e0b;\"><i class=\"ti ti-loader ti-spin\"></i></span>";
                     progressBar.style.width = '85%';
                     progressBar.style.background = '#f59e0b';
                 } else if (data.status === 'TERMINE') {
                     clearInterval(importPollingInterval);
-                    statusText.innerHTML = '<span><i class="ti ti-check"></i> Cours importé et indexé avec succès !</span>';
+                    statusText.innerHTML = '<span><i class="ti ti-check"></i> {% translate "Cours importé et indexé avec succès !" %}</span>';
                     progressBar.style.width = '100%';
                     progressBar.style.background = '#10b981';
-                    
+
                     setStepState(3, 'completed');
-                    showToast('Importation terminée ! Redirection...', 'success');
-                    
+                    showToast("{% translate 'Importation terminée ! Redirection...' %}", 'success');
+
                     setTimeout(() => {
                         closePreviewModal();
                         window.location.href = window.location.pathname + '#tab-cours';
@@ -1420,7 +1420,7 @@
                     }, 2500);
                 } else if (data.status === 'FAILED') {
                     clearInterval(importPollingInterval);
-                    showToast('Erreur lors de l\'importation: ' + (data.erreur || 'Erreur inconnue'), 'error');
+                    showToast("{% translate "Erreur lors de l'importation" %}: " + (data.erreur || "{% translate 'Erreur inconnue' %}"), 'error');
                     closePreviewModal();
                 }
             })

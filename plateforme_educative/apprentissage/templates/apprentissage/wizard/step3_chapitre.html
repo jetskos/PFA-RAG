@@ -1,30 +1,31 @@
+{% load i18n %}
 <div id="current-step-data" data-step="3"></div>
 
 <div style="text-align: center; margin-bottom: 24px;">
-    <h2 style="font-size: 1.5rem; margin-bottom: 8px;">Premier Chapitre</h2>
-    <p style="color: var(--ink-faint, #6b7280);">Définissez le premier module de votre cours <strong>{{ cours.titre }}</strong>.</p>
+    <h2 style="font-size: 1.5rem; margin-bottom: 8px;">{% translate "Premier Chapitre" %}</h2>
+    <p style="color: var(--ink-faint, #6b7280);">{% blocktranslate with titre=cours.titre %}Définissez le premier module de votre cours <strong>{{ titre }}</strong>.{% endblocktranslate %}</p>
 </div>
 
 <form hx-post="{% url 'apprentissage:wizard_step3' %}" hx-target="#wizard-content" hx-swap="innerHTML">
     {% csrf_token %}
     <input type="hidden" name="cours_id" value="{{ cours.id }}">
-    
+
     <div class="wiz-form-group">
-        <label class="wiz-label">Titre du chapitre *</label>
-        <input type="text" name="titre" class="wiz-input" placeholder="Ex: Chapitre 1 : Les bases" required>
+        <label class="wiz-label">{% translate "Titre du chapitre *" %}</label>
+        <input type="text" name="titre" class="wiz-input" placeholder="{% translate 'Ex: Chapitre 1 : Les bases' %}" required>
     </div>
 
     <div class="wiz-form-group">
-        <label class="wiz-label">Résumé / Objectifs</label>
-        <textarea name="description" class="wiz-input" rows="3" placeholder="Qu'allez-vous aborder dans ce chapitre ?"></textarea>
+        <label class="wiz-label">{% translate "Résumé / Objectifs" %}</label>
+        <textarea name="description" class="wiz-input" rows="3" placeholder="{% translate "Qu'allez-vous aborder dans ce chapitre ?" %}"></textarea>
     </div>
 
     <button type="submit" class="wiz-btn">
-        Étape suivante : Documents <i class="bi bi-arrow-right" style="margin-left: 8px;"></i>
+        {% translate "Étape suivante : Documents" %} <i class="bi bi-arrow-right" style="margin-left: 8px;"></i>
     </button>
-    
+
     <div class="wiz-loading">
         <div class="loader-spinner"></div>
-        <span>Création du chapitre...</span>
+        <span>{% translate "Création du chapitre..." %}</span>
     </div>
 </form>

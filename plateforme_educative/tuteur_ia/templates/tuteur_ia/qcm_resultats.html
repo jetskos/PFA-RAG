@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load static i18n %}
 
-{% block title %}Résultats du QCM — {{ chapitre.titre }}{% endblock %}
+{% block title %}{% blocktranslate with chapitre_titre=chapitre.titre %}Résultats du QCM — {{ chapitre_titre }}{% endblocktranslate %}{% endblock %}
 
 {% block content %}
 <section class="page-shell">
@@ -10,8 +10,8 @@
             <a href="{% url 'apprentissage:detail_cours' cours.pk %}" style="color: var(--accent);">{{ cours.titre }}</a>
             › <a href="{% url 'apprentissage:detail_cours' cours.pk %}#chapitre-{{ chapitre.pk }}" style="color: var(--accent);">{{ chapitre.titre }}</a>
         </p>
-        <h1>Résultats du QCM</h1>
-        <p class="muted">Tentative n°{{ session.tentative }} · Réalisé le {{ session.date_creation|date:"d/m/Y à H:i" }}</p>
+        <h1>{% translate "Résultats du QCM" %}</h1>
+        <p class="muted">{% blocktranslate with n=session.tentative d=session.date_creation|date:"d/m/Y à H:i" %}Tentative n°{{ n }} · Réalisé le {{ d }}{% endblocktranslate %}</p>
     </div>
 
     <!-- Panel de score principal -->
@@ -24,18 +24,18 @@
         </div>
         <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">
             {% if peut_avancer %}
-                Excellent travail !
+                {% translate "Excellent travail !" %}
             {% elif score >= 50 %}
-                Pas mal ! Encore un petit effort.
+                {% translate "Pas mal ! Encore un petit effort." %}
             {% else %}
-                Continue d'apprendre !
+                {% translate "Continue d'apprendre !" %}
             {% endif %}
         </h2>
         <p style="color: var(--texte-secondaire); max-width: 60ch; margin: 0 auto 2rem; line-height: 1.6;">
             {% if peut_avancer %}
-                Tu as validé ce chapitre avec succès ! Tu maîtrises les notions clés présentées dans le document.
+                {% translate "Tu as validé ce chapitre avec succès ! Tu maîtrises les notions clés présentées dans le document." %}
             {% else %}
-                Le seuil de réussite est de <strong>80/100</strong>. Prends le temps de relire le document du chapitre et tente à nouveau le QCM.
+                {% blocktranslate %}Le seuil de réussite est de <strong>80/100</strong>. Prends le temps de relire le document du chapitre et tente à nouveau le QCM.{% endblocktranslate %}
             {% endif %}
         </p>
 
@@ -43,21 +43,21 @@
         <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
             {% if peut_avancer and prochain_chapitre %}
                 <a href="{% url 'apprentissage:detail_cours' cours.pk %}#chapitre-{{ prochain_chapitre.pk }}" class="btn-primary" style="text-decoration: none;">
-                    Chapitre suivant: {{ prochain_chapitre.titre }} →
+                    {% blocktranslate with titre=prochain_chapitre.titre %}Chapitre suivant: {{ titre }} →{% endblocktranslate %}
                 </a>
             {% endif %}
             <a href="{% url 'tuteur_ia:demarrer_qcm' chapitre.pk %}" class="btn" style="text-decoration: none;">
-                🔄 Refaire le QCM
+                🔄 {% translate "Refaire le QCM" %}
             </a>
             <a href="{% url 'apprentissage:detail_cours' cours.pk %}" class="btn btn-ghost" style="text-decoration: none;">
-                Retour au cours
+                {% translate "Retour au cours" %}
             </a>
         </div>
     </div>
 
     <!-- Détails des réponses -->
     <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
-        📊 Correction détaillée
+        📊 {% translate "Correction détaillée" %}
     </h2>
 
     <div style="display: flex; flex-direction: column; gap: 1.5rem;">
@@ -67,15 +67,15 @@
             <!-- Badge Correct / Incorrect -->
             <div style="position: absolute; top: 1.5rem; right: 1.5rem; font-size: 0.85rem; font-weight: 700; display: flex; align-items: center; gap: 0.25rem; color: {% if d.est_correcte %}#4caf50{% else %}#f44336{% endif %};">
                 {% if d.est_correcte %}
-                    <i class="ti ti-circle-check"></i> Correct
+                    <i class="ti ti-circle-check"></i> {% translate "Correct" %}
                 {% else %}
-                    <i class="ti ti-circle-x"></i> Incorrect
+                    <i class="ti ti-circle-x"></i> {% translate "Incorrect" %}
                 {% endif %}
             </div>
 
             <!-- Question -->
             <div style="font-weight: 600; font-size: 1.05rem; margin-bottom: 1.25rem; padding-right: 7rem; line-height: 1.4;">
-                <span style="color: var(--texte-secondaire); font-weight: 500; margin-right: 0.5rem;">Q{{ d.numero }}.</span> {{ d.question }}
+                <span style="color: var(--texte-secondaire); font-weight: 500; margin-right: 0.5rem;">{% blocktranslate with num=d.numero %}Q{{ num }}.{% endblocktranslate %}</span> {{ d.question }}
             </div>
 
             <!-- Options -->
@@ -115,7 +115,7 @@
             <div style="padding: 0.75rem 1rem; background: var(--surface-alt); border-radius: var(--radius-md); font-size: 0.88rem; color: var(--texte-secondaire); display: flex; gap: 0.5rem; align-items: start; border: 1px solid var(--bordure);">
                 <span style="font-size: 1.1rem; line-height: 1;">💡</span>
                 <div style="line-height: 1.5;">
-                    <strong>Explication :</strong> {{ d.explication }}
+                    <strong>{% translate "Explication :" %}</strong> {{ d.explication }}
                 </div>
             </div>
             {% endif %}

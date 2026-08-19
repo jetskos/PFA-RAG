@@ -1,9 +1,10 @@
+{% load i18n %}
 <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Votre demande a été traitée — EduTech</title>
+  <title>{% translate "Votre demande a été traitée" %} — EduTech</title>
 </head>
 <body style="margin:0;padding:0;background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif;">
 
@@ -58,13 +59,13 @@
                     <!-- Title -->
                     <h1 style="margin:0;font-size:26px;font-weight:900;color:#ffffff;
                                text-align:center;letter-spacing:-0.03em;line-height:1.2;">
-                      {% if statut == 'APPROVED' %}Demande approuvée !
-                      {% elif statut == 'REJECTED' %}Demande rejetée
-                      {% else %}Équipement retourné{% endif %}
+                      {% if statut == 'APPROVED' %}{% translate "Demande approuvée !" %}
+                      {% elif statut == 'REJECTED' %}{% translate "Demande rejetée" %}
+                      {% else %}{% translate "Équipement retourné" %}{% endif %}
                     </h1>
                     <p style="margin:10px 0 0;font-size:14px;color:rgba(255,255,255,0.7);
                               text-align:center;font-weight:500;">
-                      Notification automatique · EduTech Logistics
+                      {% translate "Notification automatique · EduTech Logistics" %}
                     </p>
                   </td>
                 </tr>
@@ -80,7 +81,7 @@
                           padding:14px 24px;text-align:center;">
                 <span style="font-size:13px;font-weight:800;color:#065f46;
                              text-transform:uppercase;letter-spacing:0.08em;">
-                  ✅ &nbsp;APPROUVÉE — Matériel disponible
+                  ✅ &nbsp;{% translate "APPROUVÉE — Matériel disponible" %}
                 </span>
               </div>
               {% elif statut == 'REJECTED' %}
@@ -88,7 +89,7 @@
                           padding:14px 24px;text-align:center;">
                 <span style="font-size:13px;font-weight:800;color:#991b1b;
                              text-transform:uppercase;letter-spacing:0.08em;">
-                  ❌ &nbsp;REJETÉE — Demande non accordée
+                  ❌ &nbsp;{% translate "REJETÉE — Demande non accordée" %}
                 </span>
               </div>
               {% else %}
@@ -96,7 +97,7 @@
                           padding:14px 24px;text-align:center;">
                 <span style="font-size:13px;font-weight:800;color:#1e3a8a;
                              text-transform:uppercase;letter-spacing:0.08em;">
-                  🔄 &nbsp;RETOURNÉ — Équipement récupéré
+                  🔄 &nbsp;{% translate "RETOURNÉ — Équipement récupéré" %}
                 </span>
               </div>
               {% endif %}
@@ -109,11 +110,10 @@
 
               <!-- Greeting -->
               <p style="margin:0 0 24px;font-size:16px;color:#0f172a;font-weight:700;">
-                Bonjour {{ formateur_nom }}&nbsp;👋
+                {% blocktranslate %}Bonjour {{ formateur_nom }}&nbsp;👋{% endblocktranslate %}
               </p>
               <p style="margin:0 0 28px;font-size:15px;color:#475569;line-height:1.6;">
-                Votre demande de matériel a été traitée par l'administration.
-                Voici le détail de la décision&nbsp;:
+                {% translate "Votre demande de matériel a été traitée par l'administration. Voici le détail de la décision&nbsp;:" %}
               </p>
 
               <!-- Demande card -->
@@ -124,7 +124,7 @@
                   <td style="background:#0f766e;padding:14px 20px;">
                     <span style="font-size:11px;font-weight:800;color:#ccfbf1;
                                  text-transform:uppercase;letter-spacing:0.1em;">
-                      📦 Détail de la demande
+                      📦 {% translate "Détail de la demande" %}
                     </span>
                   </td>
                 </tr>
@@ -135,7 +135,7 @@
                         <td width="50%" style="padding-bottom:16px;vertical-align:top;">
                           <div style="font-size:11px;font-weight:700;color:#94a3b8;
                                       text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">
-                            Équipement
+                            {% translate "Équipement" %}
                           </div>
                           <div style="font-size:15px;font-weight:800;color:#0f172a;">
                             {{ equipement_nom }}
@@ -144,10 +144,10 @@
                         <td width="50%" style="padding-bottom:16px;vertical-align:top;">
                           <div style="font-size:11px;font-weight:700;color:#94a3b8;
                                       text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">
-                            Quantité
+                            {% translate "Quantité" %}
                           </div>
                           <div style="font-size:15px;font-weight:800;color:#0f172a;">
-                            {{ quantite }} unité{{ quantite|pluralize }}
+                            {% blocktranslate count counter=quantite %}{{ counter }} unité{% plural %}{{ counter }} unités{% endblocktranslate %}
                           </div>
                         </td>
                       </tr>
@@ -155,34 +155,34 @@
                         <td width="50%" style="vertical-align:top;">
                           <div style="font-size:11px;font-weight:700;color:#94a3b8;
                                       text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">
-                            Atelier cible
+                            {% translate "Atelier cible" %}
                           </div>
                           <div style="font-size:14px;font-weight:600;color:#334155;">
-                            {{ atelier_nom|default:"Non spécifié" }}
+                            {% if atelier_nom %}{{ atelier_nom }}{% else %}{% translate "Non spécifié" %}{% endif %}
                           </div>
                         </td>
                         <td width="50%" style="vertical-align:top;">
                           <div style="font-size:11px;font-weight:700;color:#94a3b8;
                                       text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">
-                            Décision
+                            {% translate "Décision" %}
                           </div>
                           {% if statut == 'APPROVED' %}
                           <div style="display:inline-block;background:#dcfce7;color:#065f46;
                                       font-size:12px;font-weight:800;padding:4px 12px;
                                       border-radius:999px;border:1px solid #bbf7d0;">
-                            ✅ Approuvée
+                            ✅ {% translate "Approuvée" %}
                           </div>
                           {% elif statut == 'REJECTED' %}
                           <div style="display:inline-block;background:#fee2e2;color:#991b1b;
                                       font-size:12px;font-weight:800;padding:4px 12px;
                                       border-radius:999px;border:1px solid #fecaca;">
-                            ❌ Rejetée
+                            ❌ {% translate "Rejetée" %}
                           </div>
                           {% else %}
                           <div style="display:inline-block;background:#dbeafe;color:#1e3a8a;
                                       font-size:12px;font-weight:800;padding:4px 12px;
                                       border-radius:999px;border:1px solid #bfdbfe;">
-                            🔄 Retourné
+                            🔄 {% translate "Retourné" %}
                           </div>
                           {% endif %}
                         </td>
@@ -200,9 +200,9 @@
                 <tr>
                   <td style="padding:18px 20px;">
                     <p style="margin:0;font-size:14px;color:#14532d;font-weight:600;line-height:1.6;">
-                      🎉 <strong>Félicitations !</strong> Votre demande a été approuvée.
-                      Vous pouvez récupérer {{ quantite }}x <strong>{{ equipement_nom }}</strong>
-                      auprès du service logistique.
+                      🎉 {% blocktranslate with qte=quantite nom=equipement_nom %}<strong>Félicitations !</strong> Votre demande a été approuvée.
+                      Vous pouvez récupérer {{ qte }}x <strong>{{ nom }}</strong>
+                      auprès du service logistique.{% endblocktranslate %}
                     </p>
                   </td>
                 </tr>
@@ -214,9 +214,7 @@
                 <tr>
                   <td style="padding:18px 20px;">
                     <p style="margin:0;font-size:14px;color:#7f1d1d;font-weight:600;line-height:1.6;">
-                      Nous sommes désolés, votre demande n'a pas pu être accordée.
-                      Vous pouvez contacter l'administration ou soumettre une nouvelle demande
-                      via la plateforme.
+                      {% translate "Nous sommes désolés, votre demande n'a pas pu être accordée. Vous pouvez contacter l'administration ou soumettre une nouvelle demande via la plateforme." %}
                     </p>
                   </td>
                 </tr>
@@ -230,7 +228,7 @@
                           color:#ffffff;text-decoration:none;font-size:14px;font-weight:800;
                           padding:14px 32px;border-radius:12px;
                           box-shadow:0 4px 12px rgba(13,148,136,0.3);">
-                  📋 Voir mes demandes
+                  📋 {% translate "Voir mes demandes" %}
                 </a>
               </div>
 
@@ -242,10 +240,10 @@
             <td style="background:#f8fafc;border-top:1px solid #e2e8f0;
                        padding:24px 40px;border-radius:0 0 20px 20px;">
               <p style="margin:0 0 6px;font-size:12px;color:#94a3b8;text-align:center;">
-                Cet email a été envoyé automatiquement par la plateforme <strong style="color:#0f766e;">EduTech</strong>.
+                {% blocktranslate %}Cet email a été envoyé automatiquement par la plateforme <strong style="color:#0f766e;">EduTech</strong>.{% endblocktranslate %}
               </p>
               <p style="margin:0;font-size:11px;color:#cbd5e1;text-align:center;">
-                Ne pas répondre à cet email · {{ date_envoi }}
+                {% translate "Ne pas répondre à cet email" %} · {{ date_envoi }}
               </p>
             </td>
           </tr>

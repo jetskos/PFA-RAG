@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
-{% block title %}Mon tableau de bord étudiant{% endblock %}
+{% block title %}{% trans "Mon tableau de bord étudiant" %}{% endblock %}
 
 {% block content %}
 <style>
@@ -746,13 +747,13 @@
     <!-- HERO -->
     <div class="db-hero">
         <div class="db-hero-text">
-            <p class="eyebrow">Espace Élève</p>
-            <h1>Bienvenue, {{ request.user.first_name|default:request.user.get_username }}</h1>
-            <p>Aperçu de votre progression académique et de vos cours.</p>
+            <p class="eyebrow">{% translate "Espace Élève" %}</p>
+            <h1>{% blocktranslate with prenom=request.user.first_name|default:request.user.get_username %}Bienvenue, {{ prenom }}{% endblocktranslate %}</h1>
+            <p>{% translate "Aperçu de votre progression académique et de vos cours." %}</p>
         </div>
         <div class="db-hero-badge">
             <div class="dot"></div>
-            <span>Inscrit Actif</span>
+            <span>{% translate "Inscrit Actif" %}</span>
         </div>
     </div>
 
@@ -763,8 +764,8 @@
                 <i class="ti ti-books"></i>
             </div>
             <div class="qa-info">
-                <h3>Mes cours</h3>
-                <p>Parcourir les modules</p>
+                <h3>{% translate "Mes cours" %}</h3>
+                <p>{% translate "Parcourir les modules" %}</p>
             </div>
         </a>
         <a href="{% url 'apprentissage:mes_notes' %}" class="qa-card" style="--accent:#0369a1;">
@@ -772,8 +773,8 @@
                 <i class="ti ti-report-analytics"></i>
             </div>
             <div class="qa-info">
-                <h3>Carnet de notes</h3>
-                <p>Résultats et QCM</p>
+                <h3>{% translate "Carnet de notes" %}</h3>
+                <p>{% translate "Résultats et QCM" %}</p>
             </div>
         </a>
         <a href="{% url 'apprentissage:devoirs_liste' %}" class="qa-card" style="--accent:#f59e0b;">
@@ -781,8 +782,8 @@
                 <i class="ti ti-file-pencil"></i>
             </div>
             <div class="qa-info">
-                <h3>Mes devoirs</h3>
-                <p>Travaux à rendre</p>
+                <h3>{% translate "Mes devoirs" %}</h3>
+                <p>{% translate "Travaux à rendre" %}</p>
             </div>
         </a>
         <a href="{% url 'apprentissage:calendrier' %}" class="qa-card" style="--accent:#6366f1;">
@@ -790,8 +791,8 @@
                 <i class="ti ti-calendar-event"></i>
             </div>
             <div class="qa-info">
-                <h3>Calendrier</h3>
-                <p>Échéances et planning</p>
+                <h3>{% translate "Calendrier" %}</h3>
+                <p>{% translate "Échéances et planning" %}</p>
             </div>
         </a>
     </div>
@@ -804,17 +805,15 @@
 
             <!-- Left: identity + overall progress -->
             <div class="prog-hero-left">
-                <p class="prog-hero-eyebrow">Progression académique</p>
+                <p class="prog-hero-eyebrow">{% translate "Progression académique" %}</p>
                 <h2 class="prog-hero-name">{{ request.user.first_name|default:request.user.get_username }}</h2>
                 <div class="prog-hero-meta">
-                    <span class="chip"><i class="ti ti-school"></i> {% if classe %}{{ classe.nom }}{% else %}Classe non
-                        assignée{% endif %}</span>
-                    <span class="chip"><i class="ti ti-certificate"></i> {% if niveau %}{{ niveau.nom }}{% else %}Niveau
-                        non assigné{% endif %}</span>
-                    <span class="chip"><i class="ti ti-circle-check"></i> Inscrit Actif</span>
+                    <span class="chip"><i class="ti ti-school"></i> {% if classe %}{{ classe.nom }}{% else %}{% translate "Classe non assignée" %}{% endif %}</span>
+                    <span class="chip"><i class="ti ti-certificate"></i> {% if niveau %}{{ niveau.nom }}{% else %}{% translate "Niveau non assigné" %}{% endif %}</span>
+                    <span class="chip"><i class="ti ti-circle-check"></i> {% translate "Inscrit Actif" %}</span>
                 </div>
                 <div class="prog-overall-label">
-                    <span>Progression globale</span>
+                    <span>{% translate "Progression globale" %}</span>
                     <span class="prog-pct" id="overall-pct">—%</span>
                 </div>
                 <div class="prog-overall-track">
@@ -835,7 +834,7 @@
             </div>
             <div class="stat-body">
                 <div class="stat-val">{{ mes_cours|length }}</div>
-                <div class="stat-lbl">Cours en cours</div>
+                <div class="stat-lbl">{% translate "Cours en cours" %}</div>
             </div>
         </div>
         <div class="stat-card">
@@ -844,7 +843,7 @@
             </div>
             <div class="stat-body">
                 <div class="stat-val">{% if classe %}{{ classe.nom }}{% else %}—{% endif %}</div>
-                <div class="stat-lbl">Ma classe</div>
+                <div class="stat-lbl">{% translate "Ma classe" %}</div>
             </div>
         </div>
         <div class="stat-card">
@@ -853,7 +852,7 @@
             </div>
             <div class="stat-body">
                 <div class="stat-val">{% if niveau %}{{ niveau.nom }}{% else %}—{% endif %}</div>
-                <div class="stat-lbl">Niveau d'études</div>
+                <div class="stat-lbl">{% translate "Niveau d'études" %}</div>
             </div>
         </div>
     </div>
@@ -863,26 +862,26 @@
         <!-- Profile Panel -->
         <div class="panel">
             <div class="panel-title">
-                <i class="ti ti-user-circle"></i> Mon profil scolaire
+                <i class="ti ti-user-circle"></i> {% translate "Mon profil scolaire" %}
             </div>
             <div class="profile-row">
-                <span class="label">Classe</span>
-                <span class="value">{% if classe %}{{ classe.nom }}{% else %}Non assignée{% endif %}</span>
+                <span class="label">{% translate "Classe" %}</span>
+                <span class="value">{% if classe %}{{ classe.nom }}{% else %}{% translate "Non assignée" %}{% endif %}</span>
             </div>
             <div class="profile-row">
-                <span class="label">Niveau d'études</span>
-                <span class="value">{% if niveau %}{{ niveau.nom }}{% else %}Non assigné{% endif %}</span>
+                <span class="label">{% translate "Niveau d'études" %}</span>
+                <span class="value">{% if niveau %}{{ niveau.nom }}{% else %}{% translate "Non assigné" %}{% endif %}</span>
             </div>
             <div class="profile-row">
-                <span class="label">Statut académique</span>
-                <span class="badge-active">Inscrit Actif</span>
+                <span class="label">{% translate "Statut académique" %}</span>
+                <span class="badge-active">{% translate "Inscrit Actif" %}</span>
             </div>
         </div>
 
         <!-- Radar Panel -->
         <div class="radar-panel">
             <div class="panel-title">
-                <i class="ti ti-chart-radar"></i> Bilan de progression par matière
+                <i class="ti ti-chart-radar"></i> {% translate "Bilan de progression par matière" %}
             </div>
             <div class="radar-canvas-wrap">
                 <canvas id="skillsRadarChart"></canvas>
@@ -894,7 +893,7 @@
     <div>
         <div class="section-header">
             <div class="section-title">
-                <i class="ti ti-books"></i> Mes cours en cours
+                <i class="ti ti-books"></i> {% translate "Mes cours en cours" %}
             </div>
         </div>
 
@@ -910,14 +909,14 @@
                     <i class="ti ti-book-2"></i>
                 </div>
                 {% endif %}
-                
+
                 <div class="course-info">
                     <div class="course-top-dark">
-                        <span class="tag-en-cours">En cours</span>
+                        <span class="tag-en-cours">{% translate "En cours" %}</span>
                     </div>
                     <h3>{{ cours.titre }}</h3>
-                    <p><i class="ti ti-file-text"></i> {{ cours.chapitres_count }} chapitres</p>
-                    
+                    <p><i class="ti ti-file-text"></i> {% blocktranslate count counter=cours.chapitres_count %}{{ counter }} chapitre{% plural %}{{ counter }} chapitres{% endblocktranslate %}</p>
+
                     <div class="progress-track-dark">
                         <div class="progress-fill-dark" style="width: {{ cours.progression_percent }}%;"></div>
                         <span class="progress-text-dark">{{ cours.progression_percent }}%</span>
@@ -938,8 +937,8 @@
         {% else %}
         <div class="empty-state">
             <div class="empty-icon"><i class="ti ti-books-off"></i></div>
-            <h3>Aucun cours assigné</h3>
-            <p>Vous n'avez pas encore de cours assignés pour votre niveau actuel.</p>
+            <h3>{% translate "Aucun cours assigné" %}</h3>
+            <p>{% translate "Vous n'avez pas encore de cours assignés pour votre niveau actuel." %}</p>
         </div>
         {% endif %}
     </div>

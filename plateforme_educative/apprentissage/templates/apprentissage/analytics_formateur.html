@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
-{% load static %}
-{% block title %}Analytics Formateur | EduTech{% endblock %}
+{% load static i18n %}
+{% block title %}{% translate "Analytics Formateur" %} | EduTech{% endblock %}
 
 {% block content %}
 <style>
@@ -242,16 +242,16 @@
     <!-- ═══════════════════ HERO ═══════════════════ -->
     <div class="analytics-hero">
         <div class="ah-left">
-            <span class="ah-eyebrow"><i class="ti ti-chart-dots"></i> Analytics</span>
-            <h1 class="ah-title">Tableau de bord <span>Formateur</span></h1>
-            <p class="ah-subtitle">Vue d'ensemble de la progression et des performances de vos élèves.</p>
+            <span class="ah-eyebrow"><i class="ti ti-chart-dots"></i> {% translate "Analytics" %}</span>
+            <h1 class="ah-title">{% translate "Tableau de bord" %} <span>{% translate "Formateur" %}</span></h1>
+            <p class="ah-subtitle">{% translate "Vue d'ensemble de la progression et des performances de vos élèves." %}</p>
         </div>
         <div class="ah-right">
             <a href="{% url 'apprentissage:espace_formateur' %}" class="btn-ah-secondary">
-                <i class="ti ti-arrow-left"></i> Espace Formateur
+                <i class="ti ti-arrow-left"></i> {% translate "Espace Formateur" %}
             </a>
             <a href="{% url 'apprentissage:formateur_notes' %}" class="btn-ah-secondary">
-                <i class="ti ti-users"></i> Notes détaillées
+                <i class="ti ti-users"></i> {% translate "Notes détaillées" %}
             </a>
         </div>
     </div>
@@ -262,28 +262,28 @@
             <div class="kpi-icon teal"><i class="ti ti-books"></i></div>
             <div>
                 <div class="kpi-num">{{ stats.total_cours }}</div>
-                <div class="kpi-label">Cours créés</div>
+                <div class="kpi-label">{% translate "Cours créés" %}</div>
             </div>
         </div>
         <div class="kpi-card blue">
             <div class="kpi-icon blue"><i class="ti ti-school"></i></div>
             <div>
                 <div class="kpi-num">{{ stats.total_inscrits }}</div>
-                <div class="kpi-label">Élèves uniques</div>
+                <div class="kpi-label">{% translate "Élèves uniques" %}</div>
             </div>
         </div>
         <div class="kpi-card amber">
             <div class="kpi-icon amber"><i class="ti ti-trophy"></i></div>
             <div>
                 <div class="kpi-num">{{ stats.score_qcm_moyen_global }}%</div>
-                <div class="kpi-label">Moyenne QCM Globale</div>
+                <div class="kpi-label">{% translate "Moyenne QCM Globale" %}</div>
             </div>
         </div>
         <div class="kpi-card red">
             <div class="kpi-icon red"><i class="ti ti-alert-triangle"></i></div>
             <div>
                 <div class="kpi-num">{{ diff_students|length }}</div>
-                <div class="kpi-label">En difficulté</div>
+                <div class="kpi-label">{% translate "En difficulté" %}</div>
             </div>
         </div>
     </div>
@@ -292,7 +292,7 @@
     <div class="charts-row">
         <div class="chart-card">
             <h3 class="chart-card-title">
-                <i class="ti ti-chart-bar"></i> Complétion moyenne par cours (%)
+                <i class="ti ti-chart-bar"></i> {% translate "Complétion moyenne par cours (%)" %}
             </h3>
             <div style="position: relative; height: 260px;">
                 <canvas id="completionChart"></canvas>
@@ -300,7 +300,7 @@
         </div>
         <div class="chart-card">
             <h3 class="chart-card-title">
-                <i class="ti ti-chart-pie"></i> Répartition globale des progressions
+                <i class="ti ti-chart-pie"></i> {% translate "Répartition globale des progressions" %}
             </h3>
             <div style="position: relative; height: 260px;">
                 <canvas id="repartitionChart"></canvas>
@@ -314,15 +314,15 @@
         <!-- Details table -->
         <div class="data-card">
             <div class="data-card-header">
-                <i class="ti ti-table"></i> Détails de vos cours
+                <i class="ti ti-table"></i> {% translate "Détails de vos cours" %}
             </div>
             <table class="data-table">
                 <thead>
                     <tr>
-                        <th>Cours</th>
-                        <th>Inscrits</th>
-                        <th>Complétion</th>
-                        <th>Moy. QCM</th>
+                        <th>{% translate "Cours" %}</th>
+                        <th>{% translate "Inscrits" %}</th>
+                        <th>{% translate "Complétion" %}</th>
+                        <th>{% translate "Moy. QCM" %}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -347,7 +347,7 @@
                     {% empty %}
                     <tr>
                         <td colspan="4" style="padding: 2.5rem; text-align: center; color: var(--text-muted, #94a3b8);">
-                            Aucun cours créé pour le moment.
+                            {% translate "Aucun cours créé pour le moment." %}
                         </td>
                     </tr>
                     {% endfor %}
@@ -358,7 +358,7 @@
         <!-- Alert students -->
         <div class="alert-card">
             <div class="alert-card-header">
-                <i class="ti ti-alert-circle"></i> Élèves en difficulté
+                <i class="ti ti-alert-circle"></i> {% translate "Élèves en difficulté" %}
             </div>
             <div style="max-height: 420px; overflow-y: auto;">
                 {% for item in diff_students %}
@@ -368,7 +368,7 @@
                         <div class="alert-name">{{ item.get_full_name }}</div>
                         <div class="alert-cours"><i class="ti ti-book"></i> {{ item.cours_titre }}</div>
                         <div class="alert-stats">
-                            <span style="color: #0D9488;">{{ item.progression }}% complet</span>
+                            <span style="color: #0D9488;">{% blocktranslate with p=item.progression %}{{ p }}% complet{% endblocktranslate %}</span>
                             <span style="color: #ef4444;">QCM: {% if item.moyenne_qcm %}{{ item.moyenne_qcm }}%{% else %}N/A{% endif %}</span>
                         </div>
                         <span class="alert-reason"><i class="ti ti-alert-triangle"></i> {{ item.raison }}</span>
@@ -377,8 +377,8 @@
                 {% empty %}
                 <div class="all-ok">
                     <i class="ti ti-circle-check"></i>
-                    <strong style="color: #10b981;">Excellent !</strong>
-                    <p style="margin: 0; font-size: 0.85rem;">Aucun élève sous le seuil d'alerte.</p>
+                    <strong style="color: #10b981;">{% translate "Excellent !" %}</strong>
+                    <p style="margin: 0; font-size: 0.85rem;">{% translate "Aucun élève sous le seuil d'alerte." %}</p>
                 </div>
                 {% endfor %}
             </div>
@@ -408,7 +408,7 @@
         data: {
             labels: coursLabels,
             datasets: [{
-                label: 'Complétion (%)',
+                label: '{% translate "Complétion (%)" %}',
                 data: completionData,
                 backgroundColor: 'rgba(13,148,136,0.7)',
                 borderColor: 'rgba(13,148,136,1)',
