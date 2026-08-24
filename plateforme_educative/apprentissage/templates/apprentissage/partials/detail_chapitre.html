@@ -1,4 +1,5 @@
 {% load apprentissage_extras %}
+{% load static %}
 
 <style>
 /* Highlight active chapter in sidebar */
@@ -848,11 +849,16 @@
         </div>
 
         <!-- Video Player -->
-        <div class="video-container-wrapper">
-            <h3><i class="ti ti-brand-youtube" style="color: var(--accent-danger);"></i> Vidéo Pédagogique</h3>
+        <div class="video-container-wrapper" id="video-wrapper-{{ chapitre.id }}">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <h3><i class="ti ti-brand-youtube" style="color: var(--accent-danger);"></i> Vidéo Pédagogique</h3>
+                <button type="button" class="btn btn-outline btn-sm" onclick="toggleVideoFullscreen(this)" style="padding: 0.35rem 0.75rem;">
+                    <i class="ti ti-maximize"></i> Plein Écran
+                </button>
+            </div>
             {% if is_offline_video and chapitre.video_fichier %}
                 {% if chapitre.is_hls_ready and chapitre.video_hls_url %}
-                    <video id="hls-video-{{ chapitre.id }}" class="video-player-direct" controls></video>
+                    <video id="hls-video-{{ chapitre.id }}" class="video-player-direct" controls playsinline style="width: 100%; max-height: 500px; background: #000; border-radius: var(--radius-md);"></video>
                     <script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
                     <script>
                         (function() {
@@ -867,22 +873,22 @@
                             }
                         })();
                     </script>
-                    <div class="video-source-info">
+                    <div class="video-source-info" style="margin-top: 0.5rem;">
                         <i class="ti ti-bolt"></i> Mode hors-ligne — Streaming Rapide HLS (Optimisé)
                     </div>
                 {% else %}
-                    <video class="video-player-direct" controls>
+                    <video class="video-player-direct" controls playsinline style="width: 100%; max-height: 500px; background: #000; border-radius: var(--radius-md);">
                         <source src="{{ chapitre.video_fichier.url }}" type="video/mp4">
                         Votre navigateur ne supporte pas la lecture de vidéos.
                     </video>
-                    <div class="video-source-info">
+                    <div class="video-source-info" style="margin-top: 0.5rem;">
                         <i class="ti ti-wifi-off"></i> Mode hors-ligne — Vidéo locale
                         <span style="margin-left:auto; color:var(--accent-warning);"><i class="ti ti-loader"></i> Optimisation HLS en arrière-plan...</span>
                     </div>
                 {% endif %}
             {% elif chapitre.url_video %}
                 {% if is_direct_video %}
-                    <video class="video-player-direct" controls>
+                    <video class="video-player-direct" controls playsinline style="width: 100%; max-height: 500px; background: #000; border-radius: var(--radius-md);">
                         <source src="{{ chapitre.url_video }}" type="video/mp4">
                         Votre navigateur ne supporte pas la lecture de vidéos.
                     </video>
@@ -953,8 +959,28 @@
                                     {% endif %}
 
                                     {% if doc.fichier_pdf %}
-                                        <div class="doc-embed-shell">
-                                            <iframe src="{{ doc.fichier_pdf.url }}" width="100%" height="500px" style="border: none;"></iframe>
+                                        <!-- DESKTOP VIEWER (NATIVE IFRAME INJECTED VIA JS) -->
+                                        <div class="desktop-pdf-viewer" data-src="{{ doc.fichier_pdf.url }}" style="margin-top: 1rem;"></div>
+
+                                        <!-- MOBILE VIEWER (CUSTOM PDF.JS) -->
+                                        <div class="pdf-js-viewer mobile-pdf-viewer" data-pdf-url="{{ doc.fichier_pdf.url }}" id="pdf-viewer-{{ doc.id }}" style="display: none; margin-top: 1rem; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; background: #f8fafc; box-sizing: border-box; width: 100%; max-width: 100%;">
+                                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0.75rem; background: #fff; border-bottom: 1px solid #e5e7eb;">
+                                                <div style="display: flex; gap: 0.4rem;">
+                                                    <button type="button" class="btn btn-outline pdf-prev" style="padding: 0.3rem 0.5rem; font-size: 0.8rem;"><i class="ti ti-chevron-left"></i></button>
+                                                    <button type="button" class="btn btn-outline pdf-next" style="padding: 0.3rem 0.5rem; font-size: 0.8rem;"><i class="ti ti-chevron-right"></i></button>
+                                                </div>
+                                                <span style="font-size: 0.8rem; color: #6b7280; font-weight: 500;">Page <span class="pdf-page-num">1</span> / <span class="pdf-page-count">?</span></span>
+                                                <div style="display: flex; gap: 0.25rem;">
+                                                    <button type="button" class="btn btn-ghost pdf-zoom-out" style="padding: 0.3rem 0.4rem;"><i class="ti ti-zoom-out"></i></button>
+                                                    <button type="button" class="btn btn-ghost pdf-zoom-in" style="padding: 0.3rem 0.4rem;"><i class="ti ti-zoom-in"></i></button>
+                                                </div>
+                                            </div>
+                                            <div class="pdf-canvas-container" style="width: 100%; box-sizing: border-box; overflow: hidden; text-align: center; position: relative; background: #f1f5f9; padding: 8px;">
+                                                <canvas class="pdf-canvas" style="display: block; width: 100%; height: auto;"></canvas>
+                                                <div class="pdf-loading-overlay" style="position: absolute; top:0; left:0; right:0; bottom:0; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,0.8); z-index: 10;">
+                                                    <div style="width: 2rem; height: 2rem; border: 3px solid #e5e7eb; border-top: 3px solid #0d9488; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                                                </div>
+                                            </div>
                                         </div>
                                     {% else %}
                                         <div class="doc-fallback">
@@ -1119,6 +1145,16 @@
 
 <!-- ── JAVASCRIPT CONTROLLER ── -->
 <script>
+// Video Fullscreen
+window.toggleVideoFullscreen = function(el) {
+    if (!el) return;
+    if (!document.fullscreenElement) {
+        (el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen || function(){}).call(el);
+    } else {
+        (document.exitFullscreen || document.webkitExitFullscreen || document.msExitFullscreen || function(){}).call(document);
+    }
+};
+
 (function() {
     const messagesArea = document.getElementById("chat-messages-area");
     const form = document.getElementById("chat-input-form");
@@ -1397,6 +1433,137 @@
             link.classList.add('active');
         }
     });
+
+    // Video Fullscreen Function
+    window.toggleVideoFullscreen = function(btn) {
+        var container = btn.closest('.video-container-wrapper');
+        if (!container) return;
+        var video = container.querySelector('video, iframe');
+        if (!video) return;
+        
+        if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement && !document.msFullscreenElement) {
+            if (video.requestFullscreen) { video.requestFullscreen(); }
+            else if (video.webkitRequestFullscreen) { video.webkitRequestFullscreen(); }
+            else if (video.mozRequestFullScreen) { video.mozRequestFullScreen(); }
+            else if (video.msRequestFullscreen) { video.msRequestFullscreen(); }
+            // Fallback for iOS Safari which only supports fullscreen on the video element itself
+            else if (video.webkitEnterFullscreen) { video.webkitEnterFullscreen(); }
+        } else {
+            if (document.exitFullscreen) { document.exitFullscreen(); }
+            else if (document.webkitExitFullscreen) { document.webkitExitFullscreen(); }
+            else if (document.mozCancelFullScreen) { document.mozCancelFullScreen(); }
+            else if (document.msExitFullscreen) { document.msExitFullscreen(); }
+        }
+    };
+
+    // PDF.js & Viewer Initialization
+    var isMobile = window.innerWidth <= 768;
+
+    // Desktop: inject iframes
+    document.querySelectorAll('.desktop-pdf-viewer').forEach(function(container) {
+        if (!isMobile) {
+            container.style.display = 'block';
+            if (!container.querySelector('iframe')) {
+                var src = container.getAttribute('data-src');
+                container.innerHTML = '<iframe src="' + src + '" width="100%" height="600px" style="border: 1px solid #e5e7eb; border-radius: 8px;" allowfullscreen></iframe>';
+            }
+        } else {
+            container.style.display = 'none';
+        }
+    });
+
+    // Mobile: load PDF.js and render
+    if (isMobile) {
+        var viewers = document.querySelectorAll('.pdf-js-viewer');
+        if (viewers.length === 0) return;
+
+        function startPDFViewers() {
+            var pdfjsLib = window['pdfjs-dist/build/pdf'];
+            if (!pdfjsLib) { console.error('PDF.js not loaded'); return; }
+            pdfjsLib.GlobalWorkerOptions.workerSrc = "{% static 'core/js/pdf/pdf.worker.min.js' %}";
+
+            viewers.forEach(function(viewer) {
+                viewer.style.display = 'block';
+                var url = viewer.getAttribute('data-pdf-url');
+                if (!url) return;
+                url = url + (url.indexOf('?') >= 0 ? '&' : '?') + 'view=1&t=' + Date.now();
+
+                var pdfDoc = null;
+                var pageNum = 1;
+                var pageRendering = false;
+                var pageNumPending = null;
+                var canvas = viewer.querySelector('.pdf-canvas');
+                var ctx = canvas.getContext('2d');
+                var container = viewer.querySelector('.pdf-canvas-container');
+                var overlay = viewer.querySelector('.pdf-loading-overlay');
+
+                function renderPage(num) {
+                    pageRendering = true;
+                    pdfDoc.getPage(num).then(function(page) {
+                        // Render at 2x for crispness, CSS width:100% handles display size
+                        var viewport = page.getViewport({ scale: 2.0 });
+                        canvas.width = viewport.width;
+                        canvas.height = viewport.height;
+                        // IMPORTANT: Do NOT set canvas.style.width or canvas.style.height
+                        // The inline style="width:100%; height:auto" handles fitting
+
+                        page.render({ canvasContext: ctx, viewport: viewport }).promise.then(function() {
+                            pageRendering = false;
+                            if (overlay) overlay.style.display = 'none';
+                            if (pageNumPending !== null) {
+                                renderPage(pageNumPending);
+                                pageNumPending = null;
+                            }
+                        });
+                    });
+                    viewer.querySelector('.pdf-page-num').textContent = num;
+                }
+
+                function queueRenderPage(num) {
+                    if (pageRendering) { pageNumPending = num; } else { renderPage(num); }
+                }
+
+                viewer.querySelector('.pdf-prev').addEventListener('click', function() {
+                    if (pageNum <= 1) return; pageNum--; queueRenderPage(pageNum);
+                });
+                viewer.querySelector('.pdf-next').addEventListener('click', function() {
+                    if (!pdfDoc || pageNum >= pdfDoc.numPages) return; pageNum++; queueRenderPage(pageNum);
+                });
+                viewer.querySelector('.pdf-zoom-in').addEventListener('click', function() {
+                    // Zoom: scale the container's scroll
+                    container.style.overflow = 'auto';
+                    var currentW = canvas.getBoundingClientRect().width;
+                    canvas.style.width = (currentW * 1.25) + 'px';
+                    canvas.style.height = 'auto';
+                });
+                viewer.querySelector('.pdf-zoom-out').addEventListener('click', function() {
+                    // Reset to fit
+                    canvas.style.width = '100%';
+                    canvas.style.height = 'auto';
+                    container.style.overflow = 'hidden';
+                });
+
+                pdfjsLib.getDocument(url).promise.then(function(doc) {
+                    pdfDoc = doc;
+                    viewer.querySelector('.pdf-page-count').textContent = doc.numPages;
+                    renderPage(pageNum);
+                }).catch(function(err) {
+                    console.error("PDF load error:", err);
+                    if (overlay) overlay.innerHTML = '<p style="color:red; padding:1rem;">Erreur de chargement du PDF.</p>';
+                });
+            });
+        }
+
+        // Load pdf.js script
+        if (window['pdfjs-dist/build/pdf']) {
+            startPDFViewers();
+        } else {
+            var s = document.createElement('script');
+            s.src = "{% static 'core/js/pdf/pdf.min.js' %}";
+            s.onload = startPDFViewers;
+            document.head.appendChild(s);
+        }
+    }
 
 })();
 </script>

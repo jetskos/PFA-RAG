@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>{% block title %}Plateforme Éducative IoT & IA{% endblock %}</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -52,7 +52,7 @@
             {% with current_url=request.resolver_match.url_name %}
             <nav class="main-nav" id="main-nav">
                 <!-- Close button inside the offcanvas for mobile -->
-                <button class="mobile-only" onclick="toggleMobileMenu()" style="position:absolute; top:1rem; right:1rem; background:transparent; border:none; font-size:1.5rem; color:var(--text-primary); cursor:pointer;">
+                <button class="mobile-only" onclick="toggleMobileMenu()" style="position:absolute; top:max(1rem, env(safe-area-inset-top, 1rem)); right:1rem; background:transparent; border:none; font-size:1.5rem; color:var(--text-primary); cursor:pointer;">
                     <i class="ti ti-x"></i>
                 </button>
                 {% if user.is_authenticated and user.role == 'ADMIN' %}
@@ -401,6 +401,74 @@
     </script>
 
     <div id="modal-container"></div>
+
+    <!-- Mobile Bottom Navigation Bar -->
+    {% with current_url=request.resolver_match.url_name %}
+    <nav class="mobile-bottom-nav" id="mobile-bottom-nav" style="display: none;">
+        {% if user.is_authenticated and user.role == 'ADMIN' %}
+            <a href="{% url 'dashboard_admin' %}" class="bottom-nav-item {% if current_url == 'dashboard_admin' %}active{% endif %}">
+                <i class="ti ti-home"></i>
+                <span>Accueil</span>
+            </a>
+            
+            <a href="{% url 'dashboard_admin_structure' %}" class="bottom-nav-item {% if current_url == 'dashboard_admin_structure' %}active{% endif %}">
+                <i class="ti ti-building-arch"></i>
+                <span>Structure</span>
+            </a>
+
+            <a href="{% url 'accounts:admin_dashboard' %}" class="bottom-nav-item {% if current_url == 'admin_dashboard' %}active{% endif %}">
+                <i class="ti ti-users"></i>
+                <span>Utilisateurs</span>
+            </a>
+
+            <a href="{% url 'accounts:system_settings' %}" class="bottom-nav-item {% if current_url == 'system_settings' %}active{% endif %}">
+                <i class="ti ti-settings"></i>
+                <span>Paramètres</span>
+            </a>
+            
+            <!-- Trigger for advanced menu (the old off-canvas) -->
+            <button class="bottom-nav-item" onclick="toggleMobileMenu()">
+                <i class="ti ti-menu-2"></i>
+                <span>Menu</span>
+            </button>
+
+        {% else %}
+            <!-- FOR STUDENTS/TEACHERS -->
+            <a href="{% url 'accueil' %}" class="bottom-nav-item {% if current_url == 'accueil' %}active{% endif %}">
+                <i class="ti ti-home"></i>
+                <span>Accueil</span>
+            </a>
+            
+            <a href="{% url 'apprentissage:liste_cours' %}" class="bottom-nav-item {% if current_url == 'liste_cours' or current_url == 'detail_cours' or current_url == 'detail_chapitre' %}active{% endif %}">
+                <i class="ti ti-book"></i>
+                <span>Cours</span>
+            </a>
+
+            {% if user.is_authenticated %}
+                <a href="{% url 'apprentissage:calendrier' %}" class="bottom-nav-item {% if current_url == 'calendrier' %}active{% endif %}">
+                    <i class="ti ti-calendar"></i>
+                    <span>Agenda</span>
+                </a>
+                
+                <a href="{% url 'accounts:profile' %}" class="bottom-nav-item {% if current_url == 'profile' %}active{% endif %}">
+                    <i class="ti ti-user"></i>
+                    <span>Profil</span>
+                </a>
+            {% else %}
+                <a href="{% url 'accounts:login' %}" class="bottom-nav-item {% if current_url == 'login' %}active{% endif %}">
+                    <i class="ti ti-login"></i>
+                    <span>Connexion</span>
+                </a>
+            {% endif %}
+
+            <!-- Trigger for advanced menu (the old off-canvas) -->
+            <button class="bottom-nav-item" onclick="toggleMobileMenu()">
+                <i class="ti ti-menu-2"></i>
+                <span>Menu</span>
+            </button>
+        {% endif %}
+    </nav>
+    {% endwith %}
 
 </body>
 

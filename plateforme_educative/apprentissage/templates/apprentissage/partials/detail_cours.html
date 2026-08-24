@@ -56,6 +56,26 @@
         </nav>
     </aside>
 
+    <!-- Mobile Sommaire Toggle -->
+    <div class="mobile-only" style="padding: 1rem 1.5rem 0 1.5rem;">
+        <button id="mobile-sommaire-btn" class="btn btn-primary" style="width: 100%; justify-content: center; background: var(--primary); color: white; border-radius: 8px; font-weight: 700; box-shadow: 0 4px 6px rgba(13,148,136,0.2);">
+            <i class="ti ti-list-details"></i> Afficher le sommaire du cours
+        </button>
+    </div>
+
+    <script>
+        document.getElementById('mobile-sommaire-btn')?.addEventListener('click', function() {
+            const sidebar = document.querySelector('.apprentissage-sidebar');
+            if (sidebar.classList.contains('mobile-show')) {
+                sidebar.classList.remove('mobile-show');
+                this.innerHTML = '<i class="ti ti-list-details"></i> Afficher le sommaire du cours';
+            } else {
+                sidebar.classList.add('mobile-show');
+                this.innerHTML = '<i class="ti ti-x"></i> Masquer le sommaire';
+            }
+        });
+    </script>
+
     <main class="apprentissage-contenu" id="contenu-cours">
         {% with chapitres_data.0 as chapitre_initial %}
             {% if chapitre_initial %}
