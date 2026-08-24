@@ -95,11 +95,28 @@ def get_llm(temperature: float = 0.7, model_name: str = None, max_tokens: int = 
 
     groq_key   = os.getenv("GROQ_API_KEY", "") or getattr(django_settings, "GROQ_API_KEY", "")
     openai_key = os.getenv("OPENAI_API_KEY", "") or getattr(django_settings, "OPENAI_API_KEY", "")
+    
+    force_offline = False
+    force_provider = 'AUTO'
+    try:
+        from accounts.models import ConfigurationSysteme
+        config = ConfigurationSysteme.objects.first()
+        if config:
+            force_offline = config.mode_hors_ligne
+            force_provider = getattr(config, 'llm_provider', 'AUTO')
+    except Exception:
+        pass
 
-    online = (groq_key or openai_key) and _has_internet()
+    online = (groq_key or openai_key) and _has_internet() and not force_offline
 
     # Déterminer le fournisseur et le modèle
-    if groq_key and online:
+    if force_provider == 'OLLAMA' or (force_offline):
+        provider = "ollama"
+        model = OLLAMA_MODEL
+    elif force_provider == 'GROQ' and groq_key and online:
+        provider = "groq"
+        model = model_name if model_name else GROQ_MODEL
+    elif groq_key and online:
         provider = "groq"
         model = model_name if model_name else GROQ_MODEL
     elif openai_key and online:
