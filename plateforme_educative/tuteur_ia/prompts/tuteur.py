@@ -36,8 +36,7 @@ Phase 5 — Communication de la solution :
 
 Adapte la phase à l'avancement de l'élève : début de session → phase 2, milieu → phase 3-4, fin → phase 5.
 
-FORMAT DE RÉPONSE : Écris directement ton message sans aucun préfixe comme "Réaction :", "Réponse :", "Message :". Just the message text."""
-
+FORMAT DE RÉPONSE : Écris directement ton message sans aucun préfixe comme "Réaction :", "Réponse :", "Message :". Just the message text. Ne recopie JAMAIS mot pour mot ton message précédent ni le message de l'élève."""
 
 TUTOR_USER_PROMPT_TEMPLATE = """Chapitre : {current_concept}
 Niveau : {student_niveau}

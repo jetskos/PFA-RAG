@@ -17,18 +17,29 @@ import time
 logger = logging.getLogger(__name__)
 
 # Modèle Groq à jour (avril 2025+)
-GROQ_MODEL   = "llama-3.3-70b-versatile"
+GROQ_MODEL   = "openai/gpt-oss-20b"
 OPENAI_MODEL = "gpt-4o-mini"
-LLAMACPP_MODEL     = os.getenv("LLAMACPP_MODEL", "qwen2.5:1.5b-instruct")
-# Llama-server est déjà lancé sur le port 8181 de la station
-LLAMACPP_BASE_URL  = os.getenv("LLAMACPP_BASE_URL", "http://172.17.0.1:8181/v1")
-
-# Plafonne la longueur de génération (au lieu de laisser le modèle tourner sans
+OLLAMA_MODEL     = os.getenv("OLLAMA_MODEL", os.getenv("LOCAL_LLM_MODEL", "qwen2.5:1.5b-instruct"))
+OLLAMA_BASE_URL  = os.getenv("OLLAMA_BASE_URL", os.getenv("LOCAL_LLM_URL", "http://localhost:11434"))
+# Garde le modèle chargé en RAM en continu : évite les 10-20s de rechargement
+# qu'Ollama impose par défaut après 5 min d'inactivité entre deux messages.
+OLLAMA_KEEP_ALIVE = os.getenv("OLLAMA_KEEP_ALIVE", "30m")
+# Plafonne la longueur de génération (au lieu de laisser Ollama tourner sans
 # limite jusqu'à la fenêtre de contexte). 1024 tokens laisse assez de marge
 # pour le cas le plus long — les 8 questions QCM en JSON (views_qcm.py,
 # ~900 tokens) — tout en bornant un tuteur/évaluateur qui partirait en boucle.
-LLAMACPP_NUM_PREDICT = int(os.getenv("LLAMACPP_NUM_PREDICT", "512"))
-
+OLLAMA_NUM_PREDICT = int(os.getenv("OLLAMA_NUM_PREDICT", "512"))
+# Fenêtre de contexte : RAG + prompt système + historique sous 2048 tokens sur CPU.
+OLLAMA_NUM_CTX = int(os.getenv("OLLAMA_NUM_CTX", "2048"))
+# Laisse Ollama auto-détecter GPU/CPU par défaut (ne pas fixer num_gpu).
+# Testé sur machine de dev : forcer le CPU (num_gpu=0) s'est avéré NETTEMENT
+# plus lent et instable (17-32s/appel) que l'auto-détection GPU (1,5-1,9s
+# stable) — contre-intuitif, mais mesuré. Sur un serveur cible sans GPU
+# (ex. Intel N100/RPi4 du cahier des charges), ça n'a aucun effet puisqu'il
+# n'y a pas de GPU à détecter. Positionner OLLAMA_NUM_GPU=0 explicitement
+# pour forcer le CPU si un test sur le matériel cible réel montre l'inverse.
+_ollama_num_gpu_env = os.getenv("OLLAMA_NUM_GPU")
+OLLAMA_NUM_GPU = int(_ollama_num_gpu_env) if _ollama_num_gpu_env is not None else None
 
 
 # Cache global des instances LLM
@@ -81,41 +92,26 @@ def get_llm(temperature: float = 0.7, model_name: str = None, max_tokens: int = 
     """
     global _llm_cache
     from django.conf import settings as django_settings
-    from accounts.models import ConfigurationSysteme
-    
-    config = ConfigurationSysteme.get_config()
 
     groq_key   = os.getenv("GROQ_API_KEY", "") or getattr(django_settings, "GROQ_API_KEY", "")
     openai_key = os.getenv("OPENAI_API_KEY", "") or getattr(django_settings, "OPENAI_API_KEY", "")
 
-    # Forcer la connexion sur False si mode_hors_ligne est activé manuellement
-    online = False if config.mode_hors_ligne else ((groq_key or openai_key) and _has_internet())
+    online = (groq_key or openai_key) and _has_internet()
 
-    # Déterminer le fournisseur et le modèle selon la configuration
-    if config.llm_provider == 'OLLAMA' or not online:
-        provider = "llamacpp"
-        model = LLAMACPP_MODEL
-        if config.llm_provider == 'OLLAMA':
-            logger.info("Llama.cpp forcé par la Configuration Système (remplace Ollama).")
-        elif not online:
-            logger.warning("Pas de connexion internet (ou mode hors-ligne activé) — repli sur Llama.cpp local (%s).", model)
-    elif config.llm_provider == 'GROQ' and groq_key:
+    # Déterminer le fournisseur et le modèle
+    if groq_key and online:
         provider = "groq"
         model = model_name if model_name else GROQ_MODEL
-    elif config.llm_provider == 'OPENAI' and openai_key:
+    elif openai_key and online:
         provider = "openai"
         model = model_name if model_name else OPENAI_MODEL
     else:
-        # AUTO (ou provider choisi indisponible faute de clé)
-        if groq_key:
-            provider = "groq"
-            model = model_name if model_name else GROQ_MODEL
-        elif openai_key:
-            provider = "openai"
-            model = model_name if model_name else OPENAI_MODEL
+        provider = "ollama"
+        model = OLLAMA_MODEL
+        if not (groq_key or openai_key):
+            logger.info("Aucune clé Groq/OpenAI configurée — utilisation d'Ollama (%s).", model)
         else:
-            provider = "llamacpp"
-            model = LLAMACPP_MODEL
+            logger.warning("Pas de connexion internet détectée — repli sur Ollama local (%s).", model)
 
     # Clé de cache unique pour ce modèle, cette température et ce plafond de tokens
     cache_key = (provider, model, temperature, max_tokens)
@@ -146,15 +142,20 @@ def get_llm(temperature: float = 0.7, model_name: str = None, max_tokens: int = 
             max_tokens=max_tokens,
         )
     else:
-        # Mode LLAMACPP (utilise l'API compatible OpenAI de llama-server)
         from langchain_openai import ChatOpenAI
+        
+        # S'assurer que l'URL se termine par /v1 pour la compatibilité OpenAI (Ollama et llama-server)
+        base_url = OLLAMA_BASE_URL
+        if not base_url.endswith("/v1"):
+            base_url = base_url.rstrip("/") + "/v1"
+            
         llm = ChatOpenAI(
             model=model,
             temperature=temperature,
-            api_key="sk-no-key-required", # Llama.cpp ne requiert pas de clé
-            base_url=LLAMACPP_BASE_URL,
+            api_key="sk-no-key-required", # Ni Ollama ni llama-server ne requièrent de clé
+            base_url=base_url,
             max_retries=1,
-            max_tokens=max_tokens if max_tokens is not None else LLAMACPP_NUM_PREDICT,
+            max_tokens=max_tokens if max_tokens is not None else OLLAMA_NUM_PREDICT,
         )
 
     _llm_cache[cache_key] = llm

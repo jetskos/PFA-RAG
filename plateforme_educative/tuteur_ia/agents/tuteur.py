@@ -41,6 +41,16 @@ def _try_rag_enrichment(concept: str, chapitre_id: str) -> str:
         return ""
 
 
+def _strip_repeated_prefix(content: str, previous_ai_message: str) -> str:
+    """Retire le préfixe si l'IA répète exactement son dernier message."""
+    if not previous_ai_message or not content:
+        return content
+    prev = previous_ai_message.strip()
+    curr = content.strip()
+    if curr.startswith(prev) and len(curr) > len(prev):
+        return curr[len(prev):].strip()
+    return content
+
 def tuteur_node(state: StudyBuddyState) -> dict[str, Any]:
     """
     Nœud Tuteur : pose une question socratique pour guider l'étudiant.
@@ -49,7 +59,7 @@ def tuteur_node(state: StudyBuddyState) -> dict[str, Any]:
     # max_tokens court : la consigne (TUTOR_SYSTEM_PROMPT) demande 2 phrases +
     # 1 question max — un plafond bas évite qu'un petit modèle local ne parte
     # en digression (voir diagnostiqueur_node pour le détail du problème observé).
-    llm = get_llm(temperature=0.7, model_name="llama-3.1-8b-instant", max_tokens=250)
+    llm = get_llm(temperature=0.7, max_tokens=250)
 
     rag_content = state.get("rag_context")
     if not rag_content:
@@ -62,11 +72,14 @@ def tuteur_node(state: StudyBuddyState) -> dict[str, Any]:
 
 
     recent_messages = ""
+    last_ai_message = ""
     if state.get("messages"):
         for msg in state["messages"][-4:]:
             role = "Étudiant" if getattr(msg, "type", "") == "human" else "Tuteur"
             content = getattr(msg, "content", str(msg))
             recent_messages += f"{role}: {content}\n"
+            if role == "Tuteur":
+                last_ai_message = content
 
     user_prompt = TUTOR_USER_PROMPT_TEMPLATE.format(
         etudiant_email=state.get("etudiant_id", "unknown"),
@@ -85,6 +98,8 @@ def tuteur_node(state: StudyBuddyState) -> dict[str, Any]:
     t0 = time.perf_counter()
     response = llm.invoke(messages)
     logger.info(f"[TIMING] tuteur LLM invoke: {time.perf_counter() - t0:.2f}s")
+    
+    response.content = _strip_repeated_prefix(response.content, last_ai_message)
 
     return {
         "messages": [response],

@@ -65,13 +65,20 @@ def generer_qcm_task(self, chapitre_id: str, etudiant_id: str, n_questions: int 
                 f"(pool: {len(questions_pool)})"
             )
         else:
-            questions = _generer_questions_ia(chapitre, n_questions=n_questions)
+            questions, reason = _generer_questions_ia(chapitre, n_questions=n_questions)
             if not questions:
-                return {
-                    'error': 'Aucun document PDF indexé pour ce chapitre.',
-                    'detail': "Le formateur doit d'abord uploader un PDF.",
-                    'no_pdf': True,
-                }
+                if reason == 'no_content':
+                    return {
+                        'error': 'Aucun document PDF indexé pour ce chapitre.',
+                        'detail': "Le formateur doit d'abord uploader un PDF.",
+                        'no_pdf': True,
+                    }
+                else:
+                    return {
+                        'error': "La génération du QCM par l'IA a échoué. Réessayez dans quelques instants.",
+                        'detail': "Le contenu du chapitre est bien indexé, mais l'IA n'a pas réussi à produire les questions cette fois-ci.",
+                        'no_pdf': False,
+                    }
 
             # Enrichir le cache sans doublons
             existing_texts = {q['question'].strip().lower() for q in questions_pool}

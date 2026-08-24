@@ -59,7 +59,7 @@ def diagnostiqueur_node(state: StudyBuddyState) -> dict[str, Any]:
     # courtes) — sans plafond bas, un petit modèle local peut partir en
     # digression et recopier de gros extraits du RAG (observé en test : 17s
     # pour un diagnostic au lieu de ~2s une fois plafonné).
-    llm = get_llm(temperature=0.3, model_name="llama-3.1-8b-instant", max_tokens=150)
+    llm = get_llm(temperature=0.3, max_tokens=150)
 
     user_prompt = DIAGNOSTIC_USER_PROMPT_TEMPLATE.format(
         etudiant_email=state.get("etudiant_id", "unknown"),

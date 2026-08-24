@@ -20,7 +20,7 @@ def evaluateur_node(state: StudyBuddyState) -> dict[str, Any]:
     """
     previous_score = state.get("mastery_score", 0.0)
     # max_tokens court : sortie attendue = un seul petit objet JSON d'évaluation.
-    llm = get_llm(temperature=0.2, model_name="llama-3.1-8b-instant", max_tokens=300)
+    llm = get_llm(temperature=0.2, max_tokens=300)
 
     student_response = ""
     last_question = ""

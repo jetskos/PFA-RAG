@@ -90,7 +90,7 @@ def _get_pdf_content_for_qcm(chapitre) -> str:
     return ""
 
 
-def _generer_questions_ia(chapitre, n_questions: int = 8) -> list[dict]:
+def _generer_questions_ia(chapitre, n_questions: int = 8) -> tuple[list[dict], str]:
     """
     Génère n questions QCM depuis le contenu ChromaDB du chapitre.
     Utilise le modèle Groq rapide llama-3.1-8b-instant avec un prompt court
@@ -104,10 +104,10 @@ def _generer_questions_ia(chapitre, n_questions: int = 8) -> list[dict]:
 
     if not contenu or contenu.startswith('['):
         logger.warning(f"Contenu PDF vide ou non indexé pour le chapitre {chapitre.id}")
-        return []
+        return [], 'no_content'
 
     # Modèle rapide + timeout de 25 secondes pour éviter tout blocage infini
-    llm = get_llm(temperature=0.4, model_name="llama-3.1-8b-instant")
+    llm = get_llm(temperature=0.4)
 
     # Activer le format JSON si supporté par langchain_groq
     if hasattr(llm, 'bind'):
@@ -153,12 +153,13 @@ def _generer_questions_ia(chapitre, n_questions: int = 8) -> list[dict]:
                     q.get('reponse_correcte') and q.get('explication'))
             ]
             logger.info(f"[QCM IA] {len(valid)} questions valides générées.")
-            return valid[:n_questions]
+            if valid:
+                return valid[:n_questions], ''
 
     except Exception as e:
         logger.error(f"Erreur génération QCM IA : {e}", exc_info=True)
 
-    return []
+    return [], 'generation_failed'
 
 
 def _ajouter_lettres(questions: list[dict]) -> list[dict]:
@@ -227,13 +228,20 @@ def generer_qcm_api(request, chapitre_id):
         logger.info(f"QCM chargé depuis le cache pour le chapitre {chapitre_id} (pool: {len(questions_pool)})")
     else:
         # Appeler le LLM pour générer de nouvelles questions
-        questions = _generer_questions_ia(chapitre, n_questions=n_questions)
+        questions, reason = _generer_questions_ia(chapitre, n_questions=n_questions)
         if not questions:
-            return JsonResponse({
-                'error': 'Aucun document PDF indexé pour ce chapitre.',
-                'detail': "Le formateur doit d'abord uploader un PDF dans ce chapitre pour que le QCM puisse être généré automatiquement.",
-                'no_pdf': True,
-            }, status=404)
+            if reason == 'no_content':
+                return JsonResponse({
+                    'error': 'Aucun document PDF indexé pour ce chapitre.',
+                    'detail': "Le formateur doit d'abord uploader un PDF dans ce chapitre pour que le QCM puisse être généré automatiquement.",
+                    'no_pdf': True,
+                }, status=404)
+            else:
+                return JsonResponse({
+                    'error': "La génération du QCM par l'IA a échoué. Réessayez dans quelques instants.",
+                    'detail': "Le contenu du chapitre est bien indexé, mais l'IA n'a pas réussi à produire les questions cette fois-ci.",
+                    'no_pdf': False,
+                }, status=500)
 
         # Enricheur de cache : Ajouter les nouvelles questions sans doublons
         existing_texts = {q['question'].strip().lower() for q in questions_pool}

@@ -396,7 +396,7 @@ def poser_question(request, session_id):
 
         # ── LLM rapide : llama-3.1-8b-instant (le plus rapide sur Groq) ──
         from tuteur_ia.agents.llm_factory import get_llm
-        llm = get_llm(temperature=0.0, model_name="llama-3.1-8b-instant")
+        llm = get_llm(temperature=0.0)
         response = llm.invoke(messages_to_send)
         reponse_content = response.content
 
