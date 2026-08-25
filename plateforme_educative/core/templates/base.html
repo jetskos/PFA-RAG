@@ -192,16 +192,15 @@
                 <form action="{% url 'set_language' %}" method="post" style="display:inline-flex; align-items:center; margin-right: 8px;">
                     {% csrf_token %}
                     <input name="next" type="hidden" value="{{ request.get_full_path|default:'/' }}">
-                    <select name="language" onchange="this.form.submit()" style="padding: 4px 8px; border-radius: 6px; border: 1px solid var(--border-color, #e2e8f0); background: var(--bg-surface, #fff); color: var(--text-primary, #1e293b); font-size: 14px; cursor: pointer;">
-                        {% get_current_language as LANGUAGE_CODE %}
-                        {% get_available_languages as LANGUAGES %}
-                        {% get_language_info_list for LANGUAGES as languages %}
-                        {% for language in languages %}
-                            <option value="{{ language.code }}"{% if language.code == LANGUAGE_CODE %} selected{% endif %}>
-                                {{ language.name_local|title }}
-                            </option>
-                        {% endfor %}
-                    </select>
+                    {% get_current_language as LANGUAGE_CODE %}
+                    <div style="display:flex; align-items:center; background: var(--bg-surface, #fff); border: 1px solid var(--border-color, #e2e8f0); border-radius: 20px; padding: 2px;">
+                        <button type="submit" name="language" value="fr" style="background: {% if LANGUAGE_CODE == 'fr' or LANGUAGE_CODE == 'fr-fr' %}var(--primary, #0D9488){% else %}transparent{% endif %}; color: {% if LANGUAGE_CODE == 'fr' or LANGUAGE_CODE == 'fr-fr' %}white{% else %}var(--text-secondary, #64748b){% endif %}; border: none; border-radius: 18px; padding: 4px 10px; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s ease;">
+                            FR
+                        </button>
+                        <button type="submit" name="language" value="en" style="background: {% if LANGUAGE_CODE == 'en' or LANGUAGE_CODE == 'en-us' %}var(--primary, #0D9488){% else %}transparent{% endif %}; color: {% if LANGUAGE_CODE == 'en' or LANGUAGE_CODE == 'en-us' %}white{% else %}var(--text-secondary, #64748b){% endif %}; border: none; border-radius: 18px; padding: 4px 10px; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s ease;">
+                            EN
+                        </button>
+                    </div>
                 </form>
 
                 {% if user.is_authenticated %}

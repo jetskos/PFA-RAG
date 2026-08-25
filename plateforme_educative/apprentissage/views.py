@@ -1530,3 +1530,4 @@ def import_multiple_courses_view(request):
         return JsonResponse({'status': 'success', 'job_id': str(import_job.id), 'message': f"{len(saved_files)} fichier(s) en cours d'importation."})
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+ 

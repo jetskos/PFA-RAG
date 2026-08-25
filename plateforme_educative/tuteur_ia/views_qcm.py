@@ -109,13 +109,6 @@ def _generer_questions_ia(chapitre, n_questions: int = 8) -> tuple[list[dict], s
     # Modèle rapide + timeout de 25 secondes pour éviter tout blocage infini
     llm = get_llm(temperature=0.4)
 
-    # Activer le format JSON si supporté par langchain_groq
-    if hasattr(llm, 'bind'):
-        try:
-            llm = llm.bind(response_format={"type": "json_object"})
-        except Exception as e:
-            logger.warning(f"Impossible d'activer le response_format JSON : {e}")
-
     # Prompt système court (≈80 tokens au lieu de ≈250) pour réduire la latence
     system_prompt = (
         f"Tu crées exactement {n_questions} questions QCM en JSON basées STRICTEMENT "
