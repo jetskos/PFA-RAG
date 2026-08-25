@@ -1,3 +1,4 @@
+{% load i18n %}
 <style>
     /* Full width layout */
     .admin-list-container {
@@ -220,11 +221,11 @@
             <div class="search-filter-group">
                 <div class="control-search">
                     <i class="ti ti-search"></i>
-                    <input type="search" 
-                           name="q" 
-                           placeholder="Rechercher un niveau..." 
-                           hx-get="{% url 'dashboard_admin_structure' %}?tab=niveaux" 
-                           hx-trigger="keyup changed delay:300ms" 
+                    <input type="search"
+                           name="q"
+                           placeholder="{% translate 'Rechercher un niveau...' %}"
+                           hx-get="{% url 'dashboard_admin_structure' %}?tab=niveaux"
+                           hx-trigger="keyup changed delay:300ms"
                            hx-target="#dashboard-structure"
                            hx-include="[name='status']"
                            autocomplete="off">
@@ -235,18 +236,18 @@
                             hx-trigger="change"
                             hx-target="#dashboard-structure"
                             hx-include="[name='q']">
-                        <option value="">Tous les statuts</option>
-                        <option value="actif">Actifs uniquement</option>
-                        <option value="inactif">Inactifs uniquement</option>
+                        <option value="">{% translate "Tous les statuts" %}</option>
+                        <option value="actif">{% translate "Actifs uniquement" %}</option>
+                        <option value="inactif">{% translate "Inactifs uniquement" %}</option>
                     </select>
                 </div>
             </div>
 
-            <button class="btn-create" 
-                    hx-get="{% url 'dashboard_admin_create_niveau' %}" 
-                    hx-target="#modal-container" 
+            <button class="btn-create"
+                    hx-get="{% url 'dashboard_admin_create_niveau' %}"
+                    hx-target="#modal-container"
                     hx-swap="innerHTML">
-                <i class="ti ti-plus"></i> Créer un Niveau
+                <i class="ti ti-plus"></i> {% translate "Créer un Niveau" %}
             </button>
         </div>
 
@@ -265,22 +266,22 @@
                             <div class="level-details-col">
                                 <h4 class="level-title-text">{{ niveau.nom }}</h4>
                                 <div class="level-meta-row">
-                                    <span><i class="ti ti-sort-ascending" aria-hidden="true"></i> Ordre: {{ niveau.ordre }}</span>
+                                    <span><i class="ti ti-sort-ascending" aria-hidden="true"></i> {% translate "Ordre" %}: {{ niveau.ordre }}</span>
                                     <span>&bull;</span>
-                                    <span>Code unique: <code style="background: #f1f5f9; padding: 2px 6px; border-radius: 4px; color: #475569;">{{ niveau.code }}</code></span>
+                                    <span>{% translate "Code unique" %}: <code style="background: #f1f5f9; padding: 2px 6px; border-radius: 4px; color: #475569;">{{ niveau.code }}</code></span>
                                 </div>
                             </div>
 
                             <!-- Classes counter badge -->
                             <div class="classes-count-col">
                                 <i class="ti ti-users-group" aria-hidden="true" style="color: #94a3b8;"></i>
-                                <span>{{ niveau.classes.count }} classe{{ niveau.classes.count|pluralize }}</span>
+                                <span>{% blocktranslate count counter=niveau.classes.count %}{{ counter }} classe{% plural %}{{ counter }} classes{% endblocktranslate %}</span>
                             </div>
 
                             <!-- Active status tag -->
                             <div>
                                 <span class="status-indicator-badge {% if niveau.actif %}active{% else %}inactive{% endif %}">
-                                    {% if niveau.actif %}&bull; ACTIF{% else %}&bull; ARCHIVÉ{% endif %}
+                                    {% if niveau.actif %}&bull; {% translate "ACTIF" %}{% else %}&bull; {% translate "ARCHIVÉ" %}{% endif %}
                                 </span>
                             </div>
 
@@ -291,7 +292,7 @@
                                         hx-get="{% url 'dashboard_admin_edit_niveau' niveau.id %}"
                                         hx-target="#modal-container"
                                         hx-swap="innerHTML">
-                                    <i class="ti ti-edit"></i> Modifier
+                                    <i class="ti ti-edit"></i> {% translate "Modifier" %}
                                 </button>
                             </div>
                         </div>
@@ -300,7 +301,7 @@
             {% else %}
                 <div style="text-align:center; padding: 4rem 2rem; background: #f8fafc; border-radius: 16px; border: 1px dashed #cbd5e1;">
                     <i class="ti ti-layers-linked" style="font-size: 3rem; color: #94a3b8; margin-bottom: 1rem; display: block;"></i>
-                    <p style="margin:0; color: #475569; font-size: 1.1rem; font-weight: 600;">Aucun niveau configuré dans la plateforme.</p>
+                    <p style="margin:0; color: #475569; font-size: 1.1rem; font-weight: 600;">{% translate "Aucun niveau configuré dans la plateforme." %}</p>
                 </div>
             {% endif %}
         </div>
@@ -308,11 +309,11 @@
         {% if niveaux.has_other_pages %}
         <div style="display: flex; justify-content: center; gap: 0.5rem; margin-top: 1.5rem;">
             {% if niveaux.has_previous %}
-            <button class="btn btn-ghost" hx-get="{% url 'dashboard_admin_structure' %}?tab=niveaux&page={{ niveaux.previous_page_number }}" hx-target="#dashboard-structure" hx-include="[name='q'], [name='status']">Précédent</button>
+            <button class="btn btn-ghost" hx-get="{% url 'dashboard_admin_structure' %}?tab=niveaux&page={{ niveaux.previous_page_number }}" hx-target="#dashboard-structure" hx-include="[name='q'], [name='status']">{% translate "Précédent" %}</button>
             {% endif %}
-            <span style="padding: 0.5rem 1rem; background: #e2e8f0; border-radius: 8px; font-weight: 600; color: #475569;">Page {{ niveaux.number }} sur {{ niveaux.paginator.num_pages }}</span>
+            <span style="padding: 0.5rem 1rem; background: #e2e8f0; border-radius: 8px; font-weight: 600; color: #475569;">{% blocktranslate with num=niveaux.number total=niveaux.paginator.num_pages %}Page {{ num }} sur {{ total }}{% endblocktranslate %}</span>
             {% if niveaux.has_next %}
-            <button class="btn btn-ghost" hx-get="{% url 'dashboard_admin_structure' %}?tab=niveaux&page={{ niveaux.next_page_number }}" hx-target="#dashboard-structure" hx-include="[name='q'], [name='status']">Suivant</button>
+            <button class="btn btn-ghost" hx-get="{% url 'dashboard_admin_structure' %}?tab=niveaux&page={{ niveaux.next_page_number }}" hx-target="#dashboard-structure" hx-include="[name='q'], [name='status']">{% translate "Suivant" %}</button>
             {% endif %}
         </div>
         {% endif %}

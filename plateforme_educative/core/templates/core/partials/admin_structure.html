@@ -1,3 +1,4 @@
+{% load i18n %}
 <style>
   /* ═══════════════════════════════════════════════════
      ADMIN STRUCTURE TABS — Premium redesign
@@ -100,21 +101,21 @@
     <button hx-get="{% url 'dashboard_admin_structure' %}?tab=niveaux"
             hx-target="#dashboard-structure" hx-swap="innerHTML"
             class="tab-pill {% if active_tab == 'niveaux' %}is-active{% endif %}">
-      <i class="ti ti-layers-linked"></i> Niveaux
+      <i class="ti ti-layers-linked"></i> {% translate "Niveaux" %}
       <span class="tab-badge">{{ niveaux|length|default:"0" }}</span>
     </button>
 
     <button hx-get="{% url 'dashboard_admin_structure' %}?tab=classes"
             hx-target="#dashboard-structure" hx-swap="innerHTML"
             class="tab-pill {% if active_tab == 'classes' %}is-active{% endif %}">
-      <i class="ti ti-users-group"></i> Classes
+      <i class="ti ti-users-group"></i> {% translate "Classes" %}
       <span class="tab-badge">{{ classes|length|default:"0" }}</span>
     </button>
 
     <button hx-get="{% url 'dashboard_admin_structure' %}?tab=students"
             hx-target="#dashboard-structure" hx-swap="innerHTML"
             class="tab-pill {% if active_tab == 'students' %}is-active{% endif %}">
-      <i class="ti ti-user-plus"></i> Étudiants en attente
+      <i class="ti ti-user-plus"></i> {% translate "Étudiants en attente" %}
       {% if pending_students|length > 0 %}
         <span class="tab-badge badge-alert">{{ pending_students|length }}</span>
       {% else %}

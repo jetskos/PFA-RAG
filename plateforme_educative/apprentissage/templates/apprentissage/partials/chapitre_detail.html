@@ -1,6 +1,7 @@
+{% load i18n %}
 <div class="carte">
     <div class="page-header" style="margin-bottom: 1rem;">
-        <p class="eyebrow">Chapitre</p>
+        <p class="eyebrow">{% translate "Chapitre" %}</p>
         <h2>{{ chapitre.titre }}</h2>
         {% if chapitre.description %}
             <p>{{ chapitre.description }}</p>
@@ -13,10 +14,10 @@
                 hx-get="{% url 'apprentissage:ajouter_document' chapitre.id %}"
                 hx-target="#modal-body"
                 onclick="document.getElementById('form-modal').style.display='flex'">
-            <i class="ti ti-file-plus"></i> Ajouter un PDF
+            <i class="ti ti-file-plus"></i> {% translate "Ajouter un PDF" %}
         </button>
         <a href="{% url 'apprentissage:devoir_creer' chapitre_id=chapitre.id %}" class="btn">
-            <i class="ti ti-clipboard-plus"></i> Créer un devoir
+            <i class="ti ti-clipboard-plus"></i> {% translate "Créer un devoir" %}
         </a>
     </div>
 
@@ -29,7 +30,7 @@
     {% if devoirs %}
     <div style="margin-top: 1.5rem; border-top: 1px solid var(--bordure); padding-top: 1rem;">
         <h3 style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--texte-secondaire); margin-bottom: 0.75rem;">
-            <i class="ti ti-clipboard-list"></i> Devoirs ({{ devoirs|length }})
+            <i class="ti ti-clipboard-list"></i> {% blocktranslate count counter=devoirs|length %}Devoir ({{ counter }}){% plural %}Devoirs ({{ counter }}){% endblocktranslate %}
         </h3>
         <div style="display: flex; flex-direction: column; gap: 0.5rem;">
             {% for devoir in devoirs %}
@@ -41,15 +42,15 @@
                     </span>
                 </div>
                 <div style="display: flex; gap: 0.4rem;">
-                    <a href="{% url 'apprentissage:devoir_detail' devoir_id=devoir.pk %}" class="btn btn-ghost" style="font-size: 0.8rem; padding: 0.3rem 0.6rem;" title="Voir les soumissions">
+                    <a href="{% url 'apprentissage:devoir_detail' devoir_id=devoir.pk %}" class="btn btn-ghost" style="font-size: 0.8rem; padding: 0.3rem 0.6rem;" title="{% translate 'Voir les soumissions' %}">
                         <i class="ti ti-eye"></i>
                     </a>
-                    <a href="{% url 'apprentissage:devoir_editer' devoir_id=devoir.pk %}" class="btn btn-ghost" style="font-size: 0.8rem; padding: 0.3rem 0.6rem;" title="Modifier">
+                    <a href="{% url 'apprentissage:devoir_editer' devoir_id=devoir.pk %}" class="btn btn-ghost" style="font-size: 0.8rem; padding: 0.3rem 0.6rem;" title="{% translate 'Modifier' %}">
                         <i class="ti ti-pencil"></i>
                     </a>
-                    <form method="post" action="{% url 'apprentissage:devoir_supprimer' devoir_id=devoir.pk %}" style="display:inline;" onsubmit="return confirm('Supprimer ce devoir ?')">
+                    <form method="post" action="{% url 'apprentissage:devoir_supprimer' devoir_id=devoir.pk %}" style="display:inline;" onsubmit="return confirm('{% translate 'Supprimer ce devoir ?' %}')">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-ghost" style="font-size: 0.8rem; padding: 0.3rem 0.6rem; color: #f44336;" title="Supprimer">
+                        <button type="submit" class="btn btn-ghost" style="font-size: 0.8rem; padding: 0.3rem 0.6rem; color: #f44336;" title="{% translate 'Supprimer' %}">
                             <i class="ti ti-trash"></i>
                         </button>
                     </form>

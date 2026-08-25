@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
-{% block title %}Gérer le chapitre | EduTech{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Gérer le chapitre" %} | EduTech{% endblock %}
 
 {% block content %}
 <style>
@@ -10,7 +11,7 @@
 <div class="page-shell" style="max-width: 1000px; margin: 0 auto; padding-top: 2rem;">
     <!-- Breadcrumb -->
     <div style="font-size: 0.85rem; color: var(--text-muted, #64748b); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
-        <a href="{% url 'apprentissage:espace_formateur' %}" style="color: inherit; text-decoration: none; font-weight: 500;">Espace Formateur</a>
+        <a href="{% url 'apprentissage:espace_formateur' %}" style="color: inherit; text-decoration: none; font-weight: 500;">{% translate "Espace Formateur" %}</a>
         <i class="ti ti-chevron-right" style="font-size: 0.75rem;"></i>
         <a href="{% url 'apprentissage:gerer_cours' chapitre.cours.id %}" style="color: inherit; text-decoration: none; font-weight: 500;">{{ chapitre.cours.titre }}</a>
         <i class="ti ti-chevron-right" style="font-size: 0.75rem;"></i>

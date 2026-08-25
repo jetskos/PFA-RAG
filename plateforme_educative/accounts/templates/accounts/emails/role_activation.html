@@ -1,9 +1,10 @@
+{% load i18n %}
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Votre compte est activé</title>
+    <title>{% translate "Votre compte est activé" %}</title>
     <style>
         /* Import Inter Font */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
@@ -148,48 +149,48 @@
         <div class="email-container">
             <!-- Header -->
             <div class="email-header">
-                <h1>Félicitations !</h1>
-                <p>Votre compte a été activé avec succès.</p>
+                <h1>{% translate "Félicitations !" %}</h1>
+                <p>{% translate "Votre compte a été activé avec succès." %}</p>
             </div>
 
             <!-- Body -->
             <div class="email-body">
-                <h2 class="greeting">Bonjour {{ destinataire.get_short_name }},</h2>
-                
+                <h2 class="greeting">{% blocktranslate with nom=destinataire.get_short_name %}Bonjour {{ nom }},{% endblocktranslate %}</h2>
+
                 <div class="message-content">
-                    <p>Nous avons le plaisir de vous informer que votre compte sur la plateforme <strong>EduTech</strong> est désormais actif et que vos droits d'accès ont été mis à jour.</p>
-                    
-                    <p>Votre rôle officiel sur la plateforme est : <br/>
+                    <p>{% blocktranslate %}Nous avons le plaisir de vous informer que votre compte sur la plateforme <strong>EduTech</strong> est désormais actif et que vos droits d'accès ont été mis à jour.{% endblocktranslate %}</p>
+
+                    <p>{% translate "Votre rôle officiel sur la plateforme est :" %} <br/>
                         {% if destinataire.role == 'ADMIN' %}
-                            <span class="role-badge role-badge-admin">Administrateur</span>
+                            <span class="role-badge role-badge-admin">{% translate "Administrateur" %}</span>
                         {% else %}
-                            <span class="role-badge">Formateur</span>
+                            <span class="role-badge">{% translate "Formateur" %}</span>
                         {% endif %}
                     </p>
-                    
-                    <p>En tant que membre de l'équipe, vous avez accès à des fonctionnalités avancées vous permettant de piloter l'apprentissage et de contribuer au succès de nos apprenants.</p>
+
+                    <p>{% translate "En tant que membre de l'équipe, vous avez accès à des fonctionnalités avancées vous permettant de piloter l'apprentissage et de contribuer au succès de nos apprenants." %}</p>
                 </div>
 
                 <div class="action-button-container">
-                    <a href="{{ login_url }}" class="action-button">Accéder à mon espace</a>
+                    <a href="{{ login_url }}" class="action-button">{% translate "Accéder à mon espace" %}</a>
                 </div>
-                
+
                 <div class="message-content" style="margin-bottom: 0;">
-                    <p>Si vous avez des questions ou si vous avez besoin d'assistance pour démarrer, notre support technique reste à votre entière disposition.</p>
-                    <p>Bienvenue à bord !<br/><strong>L'équipe EduTech</strong></p>
+                    <p>{% translate "Si vous avez des questions ou si vous avez besoin d'assistance pour démarrer, notre support technique reste à votre entière disposition." %}</p>
+                    <p>{% translate "Bienvenue à bord !" %}<br/><strong>{% translate "L'équipe EduTech" %}</strong></p>
                 </div>
             </div>
 
             <!-- Footer -->
             <div class="email-footer">
                 <div class="footer-logo">EduTech IoT & IA</div>
-                <p>La plateforme éducative de l'avenir.</p>
+                <p>{% translate "La plateforme éducative de l'avenir." %}</p>
                 <div class="footer-links">
-                    <a href="{{ base_url }}">Accueil</a> | 
-                    <a href="{{ base_url }}/contact">Support</a>
+                    <a href="{{ base_url }}">{% translate "Accueil" %}</a> |
+                    <a href="{{ base_url }}/contact">{% translate "Support" %}</a>
                 </div>
                 <p style="margin-top: 24px; font-size: 11px; opacity: 0.7;">
-                    Cet e-mail est généré automatiquement. Merci de ne pas y répondre.
+                    {% translate "Cet e-mail est généré automatiquement. Merci de ne pas y répondre." %}
                 </p>
             </div>
         </div>

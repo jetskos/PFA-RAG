@@ -1,10 +1,14 @@
 {% extends 'base.html' %}
-{% block title %}Calendrier scolaire{% endblock %}
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+{% block title %}{% translate "Calendrier scolaire" %}{% endblock %}
 
 {% block content %}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css">
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+{% if LANGUAGE_CODE != 'en' %}
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/locales/fr.global.min.js"></script>
+{% endif %}
 
 <style>
 /* ══ Layout ══════════════════════════════════════════ */
@@ -418,14 +422,14 @@
     <!-- ══ HERO BANNER ══ -->
     <div class="cal-hero">
         <div class="cal-hero-left">
-            <div class="cal-eyebrow"><i class="ti ti-calendar-event"></i> PLANNING</div>
-            <h1 class="cal-page-title">Calendrier Scolaire</h1>
-            <p class="cal-page-sub">Visualisez et gérez les devoirs, examens et sessions planifiés.</p>
+            <div class="cal-eyebrow"><i class="ti ti-calendar-event"></i> {% translate "PLANNING" %}</div>
+            <h1 class="cal-page-title">{% translate "Calendrier Scolaire" %}</h1>
+            <p class="cal-page-sub">{% translate "Visualisez et gérez les devoirs, examens et sessions planifiés." %}</p>
         </div>
         <div class="cal-hero-right">
             {% if can_manage %}
             <a href="{% url 'apprentissage:creer_evenement' %}" class="cal-btn-primary">
-                <i class="ti ti-plus" style="font-size: 15px;"></i> Nouvel événement
+                <i class="ti ti-plus" style="font-size: 15px;"></i> {% translate "Nouvel événement" %}
             </a>
             {% endif %}
         </div>
@@ -446,29 +450,29 @@
             <div class="stat-grid">
                 <div class="stat-card red">
                     <div class="stat-num" id="cnt-devoirs">–</div>
-                    <div class="stat-label">Devoirs</div>
+                    <div class="stat-label">{% translate "Devoirs" %}</div>
                 </div>
                 <div class="stat-card blue">
                     <div class="stat-num" id="cnt-sessions">–</div>
-                    <div class="stat-label">Sessions</div>
+                    <div class="stat-label">{% translate "Sessions" %}</div>
                 </div>
                 <div class="stat-card amber">
                     <div class="stat-num" id="cnt-examens">–</div>
-                    <div class="stat-label">Examens</div>
+                    <div class="stat-label">{% translate "Examens" %}</div>
                 </div>
                 <div class="stat-card teal">
                     <div class="stat-num" id="cnt-autres">–</div>
-                    <div class="stat-label">Autres</div>
+                    <div class="stat-label">{% translate "Autres" %}</div>
                 </div>
             </div>
 
             <!-- Legend -->
             <div class="legend-card">
-                <h4>Légende</h4>
-                <div class="legend-row"><span class="ldot" style="background:#ef4444;"></span> Devoir / Échéance</div>
-                <div class="legend-row"><span class="ldot" style="background:#3b82f6;"></span> Session de cours</div>
-                <div class="legend-row"><span class="ldot" style="background:#f59e0b;"></span> Examen</div>
-                <div class="legend-row"><span class="ldot" style="background:#10b981;"></span> Autre événement</div>
+                <h4>{% translate "Légende" %}</h4>
+                <div class="legend-row"><span class="ldot" style="background:#ef4444;"></span> {% translate "Devoir / Échéance" %}</div>
+                <div class="legend-row"><span class="ldot" style="background:#3b82f6;"></span> {% translate "Session de cours" %}</div>
+                <div class="legend-row"><span class="ldot" style="background:#f59e0b;"></span> {% translate "Examen" %}</div>
+                <div class="legend-row"><span class="ldot" style="background:#10b981;"></span> {% translate "Autre événement" %}</div>
             </div>
 
             <!-- Selected date detail -->
@@ -481,7 +485,7 @@
                     </div>
                 </div>
                 <div id="detail-events">
-                    <div class="detail-empty">Cliquez sur un jour pour voir les événements.</div>
+                    <div class="detail-empty">{% translate "Cliquez sur un jour pour voir les événements." %}</div>
                 </div>
             </div>
 
@@ -500,10 +504,10 @@
             <p id="modal-desc"></p>
             <div id="modal-chips" class="mchips"></div>
             <div id="modal-footer" class="mfooter" style="display:none;">
-                <a id="modal-edit" href="#" class="mbtn mbtn-edit"><i class="ti ti-edit"></i> Modifier</a>
-                <form id="modal-del" method="POST" style="margin:0;" onsubmit="return confirm('Supprimer cet événement ?');">
+                <a id="modal-edit" href="#" class="mbtn mbtn-edit"><i class="ti ti-edit"></i> {% translate "Modifier" %}</a>
+                <form id="modal-del" method="POST" style="margin:0;" onsubmit="return confirm('{% translate 'Supprimer cet événement ?' %}');">
                     {% csrf_token %}
-                    <button type="submit" class="mbtn mbtn-del"><i class="ti ti-trash"></i> Supprimer</button>
+                    <button type="submit" class="mbtn mbtn-del"><i class="ti ti-trash"></i> {% translate "Supprimer" %}</button>
                 </form>
             </div>
         </div>
@@ -518,8 +522,9 @@ const COLOR_MAP = {
     'EXAMEN':          '#f59e0b',
     'AUTRE':           '#10b981',
 };
-const FR_DAYS = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
-const FR_MONTHS = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+const FR_DAYS = ['{% translate "Dimanche" %}','{% translate "Lundi" %}','{% translate "Mardi" %}','{% translate "Mercredi" %}','{% translate "Jeudi" %}','{% translate "Vendredi" %}','{% translate "Samedi" %}'];
+const FR_MONTHS = ['{% translate "Janvier" %}','{% translate "Février" %}','{% translate "Mars" %}','{% translate "Avril" %}','{% translate "Mai" %}','{% translate "Juin" %}','{% translate "Juillet" %}','{% translate "Août" %}','{% translate "Septembre" %}','{% translate "Octobre" %}','{% translate "Novembre" %}','{% translate "Décembre" %}'];
+const CAL_LOCALE = '{{ LANGUAGE_CODE }}';
 
 let cal;
 let allEvents = [];
@@ -527,7 +532,7 @@ let selectedDate = null;
 
 document.addEventListener('DOMContentLoaded', () => {
     cal = new FullCalendar.Calendar(document.getElementById('calendar'), {
-        locale: 'fr',
+        locale: CAL_LOCALE,
         firstDay: 1,
         initialView: 'dayGridMonth',
         headerToolbar: {
@@ -535,7 +540,7 @@ document.addEventListener('DOMContentLoaded', () => {
             center: 'title',
             right: 'dayGridMonth,listMonth'
         },
-        buttonText: { today: "Aujourd'hui", month: 'Mois', list: 'Liste' },
+        buttonText: { today: "{% translate "Aujourd'hui" %}", month: '{% translate "Mois" %}', list: '{% translate "Liste" %}' },
         height: 'auto',
         dayMaxEvents: 3,
         moreLinkText: n => `+${n}`,
@@ -621,16 +626,16 @@ function renderDetail(date) {
 
     const container = document.getElementById('detail-events');
     if (!dayEvts.length) {
-        container.innerHTML = '<div class="detail-empty">Aucun événement ce jour.</div>';
+        container.innerHTML = '<div class="detail-empty">{% translate "Aucun événement ce jour." %}</div>';
         return;
     }
     container.innerHTML = dayEvts.map(ev => {
         const color = ev.backgroundColor || '#10b981';
         const p = ev.extendedProps;
-        const time = ev.start ? ev.start.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}) : '';
+        const time = ev.start ? ev.start.toLocaleTimeString('{{ LANGUAGE_CODE }}',{hour:'2-digit',minute:'2-digit'}) : '';
         return `
         <div class="detail-evt" style="border-left-color:${color};">
-            <div class="detail-evt-type" style="color:${color};">${p.type||'Événement'}</div>
+            <div class="detail-evt-type" style="color:${color};">${p.type||'{% translate "Événement" %}'}</div>
             <div class="detail-evt-title">${ev.title}</div>
             <div class="detail-evt-meta">
                 ${time ? `<span><i class="ti ti-clock" style="font-size:11px;"></i> ${time}</span>` : ''}
@@ -647,7 +652,7 @@ function openModal(event) {
 
     document.getElementById('modal-stripe').style.background = color;
     const pill = document.getElementById('modal-pill');
-    pill.textContent = p.type || 'Événement';
+    pill.textContent = p.type || '{% translate "Événement" %}';
     pill.style.background = color + '18';
     pill.style.color = color;
 
@@ -660,10 +665,10 @@ function openModal(event) {
     chips.innerHTML = '';
     const start = event.start;
     if (start) {
-        chips.innerHTML += `<span class="mchip"><i class="ti ti-calendar" style="color:${color}"></i>${start.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</span>`;
+        chips.innerHTML += `<span class="mchip"><i class="ti ti-calendar" style="color:${color}"></i>${start.toLocaleDateString('{{ LANGUAGE_CODE }}',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</span>`;
         if (start.getHours() || start.getMinutes()) {
-            const t = start.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
-            const e = event.end ? event.end.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}) : null;
+            const t = start.toLocaleTimeString('{{ LANGUAGE_CODE }}',{hour:'2-digit',minute:'2-digit'});
+            const e = event.end ? event.end.toLocaleTimeString('{{ LANGUAGE_CODE }}',{hour:'2-digit',minute:'2-digit'}) : null;
             chips.innerHTML += `<span class="mchip"><i class="ti ti-clock" style="color:${color}"></i>${t}${e?' → '+e:''}</span>`;
         }
     }

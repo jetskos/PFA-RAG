@@ -1,3 +1,4 @@
+{% load i18n %}
 <section id="pending-demandes-section">
     <style>
         .requests-header {
@@ -158,13 +159,13 @@
 
     <div class="requests-header">
         <div>
-            <h2 style="margin:0; font-size:1.5rem; font-weight:800; color:#0f172a;">Demandes en attente</h2>
-            <p style="margin:0.25rem 0 0; color:#64748b;">Validez les besoins en matériel des formateurs pour leurs ateliers.</p>
+            <h2 style="margin:0; font-size:1.5rem; font-weight:800; color:#0f172a;">{% translate "Demandes en attente" %}</h2>
+            <p style="margin:0.25rem 0 0; color:#64748b;">{% translate "Validez les besoins en matériel des formateurs pour leurs ateliers." %}</p>
         </div>
-        
+
         <div class="control-search">
             <i class="ti ti-search"></i>
-            <input type="search" name="q" placeholder="Rechercher équipement, formateur..." 
+            <input type="search" name="q" placeholder="{% translate 'Rechercher équipement, formateur...' %}"
                    hx-get="{% url 'dashboard_admin_structure' %}?tab=logistics" 
                    hx-trigger="keyup changed delay:300ms" 
                    hx-target="#dashboard-structure"
@@ -182,7 +183,7 @@
                         </div>
                         <div>
                             <div style="font-weight:700; color:#1e293b; font-size:0.95rem;">{{ demande.formateur.get_full_name|default:demande.formateur.email }}</div>
-                            <div style="font-size:0.75rem; color:#64748b;">Il y a {{ demande.date_creation|timesince }}</div>
+                            <div style="font-size:0.75rem; color:#64748b;">{% blocktranslate with t=demande.date_creation|timesince %}Il y a {{ t }}{% endblocktranslate %}</div>
                         </div>
                     </div>
                     
@@ -190,39 +191,39 @@
                         <h3 class="req-item-title">{{ demande.equipement.nom }}</h3>
                         <div style="display:flex; justify-content:space-between; align-items:center;">
                             <span class="req-qty {% if demande.quantite >= 5 %}qty-high{% endif %}">
-                                <i class="ti ti-box"></i> {{ demande.quantite }} unité{{ demande.quantite|pluralize }}
+                                <i class="ti ti-box"></i> {% blocktranslate count counter=demande.quantite %}{{ counter }} unité{% plural %}{{ counter }} unités{% endblocktranslate %}
                             </span>
                             <span style="font-size:0.8rem; font-weight:600; color:{% if demande.quantite > demande.equipement.stock_disponible %}#ef4444{% else %}#10b981{% endif %};">
-                                Dispo: {{ demande.equipement.stock_disponible }}
+                                {% translate "Dispo" %}: {{ demande.equipement.stock_disponible }}
                             </span>
                         </div>
-                        
+
                         <div class="req-target">
-                            <i class="ti ti-building-community"></i> 
+                            <i class="ti ti-building-community"></i>
                             {% if demande.atelier_cible %}
                                 {{ demande.atelier_cible.titre }}
                             {% else %}
-                                <i>Atelier non spécifié</i>
+                                <i>{% translate "Atelier non spécifié" %}</i>
                             {% endif %}
                         </div>
                     </div>
-                    
+
                     <div class="req-actions">
                         <form hx-post="{% url 'dashboard_admin_process_demande' demande.id %}" hx-target="#dashboard-structure" style="display:contents;">
                             {% csrf_token %}
                             <input type="hidden" name="action" value="reject">
                             <button type="submit" class="req-btn req-btn-reject" onclick="document.getElementById('req-card-{{ demande.id }}').classList.add('htmx-swapping')">
-                                <i class="ti ti-x"></i> Rejeter
+                                <i class="ti ti-x"></i> {% translate "Rejeter" %}
                             </button>
                         </form>
-                        
+
                         <form hx-post="{% url 'dashboard_admin_process_demande' demande.id %}" hx-target="#dashboard-structure" style="display:contents;">
                             {% csrf_token %}
                             <input type="hidden" name="action" value="approve">
-                            <button type="submit" class="req-btn req-btn-approve" 
+                            <button type="submit" class="req-btn req-btn-approve"
                                     onclick="document.getElementById('req-card-{{ demande.id }}').classList.add('htmx-swapping')"
-                                    {% if demande.quantite > demande.equipement.stock_disponible %}disabled title="Stock insuffisant"{% endif %}>
-                                <i class="ti ti-check"></i> Approuver
+                                    {% if demande.quantite > demande.equipement.stock_disponible %}disabled title="{% translate 'Stock insuffisant' %}"{% endif %}>
+                                <i class="ti ti-check"></i> {% translate "Approuver" %}
                             </button>
                         </form>
                     </div>
@@ -233,11 +234,11 @@
         {% if pending_demandes.has_other_pages %}
         <div style="display: flex; justify-content: center; gap: 0.5rem; margin-top: 1.5rem;">
             {% if pending_demandes.has_previous %}
-            <button class="btn btn-ghost" hx-get="{% url 'dashboard_admin_structure' %}?tab=logistics&page={{ pending_demandes.previous_page_number }}" hx-target="#dashboard-structure" hx-include="[name='q'], [name='status']">Précédent</button>
+            <button class="btn btn-ghost" hx-get="{% url 'dashboard_admin_structure' %}?tab=logistics&page={{ pending_demandes.previous_page_number }}" hx-target="#dashboard-structure" hx-include="[name='q'], [name='status']">{% translate "Précédent" %}</button>
             {% endif %}
-            <span style="padding: 0.5rem 1rem; background: #e2e8f0; border-radius: 8px; font-weight: 600; color: #475569;">Page {{ pending_demandes.number }} sur {{ pending_demandes.paginator.num_pages }}</span>
+            <span style="padding: 0.5rem 1rem; background: #e2e8f0; border-radius: 8px; font-weight: 600; color: #475569;">{% blocktranslate with num=pending_demandes.number total=pending_demandes.paginator.num_pages %}Page {{ num }} sur {{ total }}{% endblocktranslate %}</span>
             {% if pending_demandes.has_next %}
-            <button class="btn btn-ghost" hx-get="{% url 'dashboard_admin_structure' %}?tab=logistics&page={{ pending_demandes.next_page_number }}" hx-target="#dashboard-structure" hx-include="[name='q'], [name='status']">Suivant</button>
+            <button class="btn btn-ghost" hx-get="{% url 'dashboard_admin_structure' %}?tab=logistics&page={{ pending_demandes.next_page_number }}" hx-target="#dashboard-structure" hx-include="[name='q'], [name='status']">{% translate "Suivant" %}</button>
             {% endif %}
         </div>
         {% endif %}
@@ -246,8 +247,8 @@
             <div style="width: 80px; height: 80px; background: #f1f5f9; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem auto;">
                 <i class="ti ti-check" style="font-size: 2.5rem; color: #10b981;"></i>
             </div>
-            <h3 style="font-size: 1.25rem; font-weight: 700; color: #1e293b; margin: 0 0 0.5rem 0;">Tout est à jour !</h3>
-            <p style="color: #64748b; margin: 0; max-width: 400px; margin: 0 auto;">Il n'y a aucune demande logistique en attente. Vous pouvez souffler.</p>
+            <h3 style="font-size: 1.25rem; font-weight: 700; color: #1e293b; margin: 0 0 0.5rem 0;">{% translate "Tout est à jour !" %}</h3>
+            <p style="color: #64748b; margin: 0; max-width: 400px; margin: 0 auto;">{% translate "Il n'y a aucune demande logistique en attente. Vous pouvez souffler." %}</p>
         </div>
     {% endif %}
 </section>

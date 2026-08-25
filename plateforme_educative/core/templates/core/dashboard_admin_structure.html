@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
-{% block title %}Gestion de la Structure | EduTech Admin{% endblock %}
+{% block title %}{% translate "Gestion de la Structure" %} | EduTech Admin{% endblock %}
 
 {% block content %}
 <style>
@@ -74,13 +75,13 @@
   <!-- ══ HERO BANNER ══ -->
   <div class="adm-hero">
     <div class="adm-hero-left">
-      <span class="adm-eyebrow"><i class="ti ti-shield-lock"></i> Administration</span>
-      <h1 class="adm-hero-title">Gestion de la Structure</h1>
-      <p class="adm-hero-sub">Gérez les niveaux, classes, inscriptions et matériel de la plateforme.</p>
+      <span class="adm-eyebrow"><i class="ti ti-shield-lock"></i> {% translate "Administration" %}</span>
+      <h1 class="adm-hero-title">{% translate "Gestion de la Structure" %}</h1>
+      <p class="adm-hero-sub">{% translate "Gérez les niveaux, classes, inscriptions et matériel de la plateforme." %}</p>
     </div>
     <div class="adm-hero-right">
       <a href="{% url 'accounts:admin_dashboard' %}" class="adm-btn-primary">
-        <i class="ti ti-users"></i> Utilisateurs
+        <i class="ti ti-users"></i> {% translate "Utilisateurs" %}
       </a>
     </div>
   </div>

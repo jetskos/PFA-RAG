@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
-{% block title %}{{ action }} un devoir{% endblock %}
+{% block title %}{% blocktranslate %}{{ action }} un devoir{% endblocktranslate %}{% endblock %}
 
 {% block content %}
 <section class="page-shell">
@@ -10,7 +11,7 @@
                 {{ chapitre.cours.titre }} › {{ chapitre.titre }}
             </a>
         </p>
-        <h1>{{ action }} un devoir</h1>
+        <h1>{% blocktranslate %}{{ action }} un devoir{% endblocktranslate %}</h1>
     </div>
 
     <div class="carte" style="max-width: 680px; margin-top: 2rem;">
@@ -34,14 +35,14 @@
             </div>
 
             <div class="form-group">
-                <label class="form-label">{{ form.fichier_consigne.label }} <span style="color: var(--texte-secondaire); font-size: 0.8rem;">(facultatif · PDF, DOC, image · max 10 Mo)</span></label>
+                <label class="form-label">{{ form.fichier_consigne.label }} <span style="color: var(--texte-secondaire); font-size: 0.8rem;">({% translate "facultatif · PDF, DOC, image · max 10 Mo" %})</span></label>
                 {{ form.fichier_consigne }}
                 {% if form.fichier_consigne.errors %}<div class="form-error">{{ form.fichier_consigne.errors }}</div>{% endif %}
             </div>
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                 <div class="form-group">
-                    <label class="form-label">{{ form.date_limite.label }} <span style="color: var(--texte-secondaire); font-size: 0.8rem;">(facultatif)</span></label>
+                    <label class="form-label">{{ form.date_limite.label }} <span style="color: var(--texte-secondaire); font-size: 0.8rem;">({% translate "facultatif" %})</span></label>
                     {{ form.date_limite }}
                     {% if form.date_limite.errors %}<div class="form-error">{{ form.date_limite.errors }}</div>{% endif %}
                 </div>
@@ -54,11 +55,11 @@
 
             <div class="form-group" style="display: flex; align-items: center; gap: 0.5rem;">
                 {{ form.actif }}
-                <label style="margin: 0; cursor: pointer;">Devoir visible par les élèves</label>
+                <label style="margin: 0; cursor: pointer;">{% translate "Devoir visible par les élèves" %}</label>
             </div>
 
             <div style="display: flex; gap: 0.75rem; justify-content: flex-end; border-top: 1px solid var(--bordure); padding-top: 1.25rem;">
-                <a href="{% url 'apprentissage:gerer_chapitre' chapitre_id=chapitre.pk %}" class="btn btn-ghost">Annuler</a>
+                <a href="{% url 'apprentissage:gerer_chapitre' chapitre_id=chapitre.pk %}" class="btn btn-ghost">{% translate "Annuler" %}</a>
                 <button type="submit" class="btn-primary">
                     <i class="ti ti-device-floppy"></i> {{ action }}
                 </button>

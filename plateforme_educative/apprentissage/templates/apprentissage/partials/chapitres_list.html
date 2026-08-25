@@ -1,37 +1,38 @@
+{% load i18n %}
 {% if chapitres %}
     {% for chapitre in chapitres %}
         <details class="builder-accordion">
             <summary class="builder-summary">
                 <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
                     <i class="ti ti-chevron-down" style="color: var(--brand);"></i>
-                    <span style="font-size: 1.1rem; color: var(--brand);">Chapitre {{ chapitre.ordre }} : {{ chapitre.titre }}</span>
+                    <span style="font-size: 1.1rem; color: var(--brand);">{% blocktranslate with n=chapitre.ordre t=chapitre.titre %}Chapitre {{ n }} : {{ t }}{% endblocktranslate %}</span>
                     <div style="display: flex; gap: 8px; margin-left: 10px;">
                         <span style="background: #e2e8f0; color: #475569; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; gap: 4px;">
-                            📄 {{ chapitre.documents.count }} PDF{{ chapitre.documents.count|pluralize }}
+                            📄 {% blocktranslate count counter=chapitre.documents.count %}{{ counter }} PDF{% plural %}{{ counter }} PDF{% endblocktranslate %}
                         </span>
                         <span style="background: #e2e8f0; color: #475569; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; gap: 4px;">
-                            📝 {{ chapitre.devoirs.count }} Devoir{{ chapitre.devoirs.count|pluralize }}
+                            📝 {% blocktranslate count counter=chapitre.devoirs.count %}{{ counter }} Devoir{% plural %}{{ counter }} Devoirs{% endblocktranslate %}
                         </span>
                     </div>
                 </div>
-                
+
                 <div class="actions" style="margin: 0; gap: 0.5rem;">
                     <a class="btn btn-ghost" style="padding: 6px 12px; font-size: 0.85rem;"
                        href="{% url 'apprentissage:detail_chapitre' chapitre.cours.id chapitre.id %}">
-                        Voir
+                        {% translate "Voir" %}
                     </a>
                     <button class="btn btn-ghost" style="padding: 6px 12px; font-size: 0.85rem;"
                             hx-get="{% url 'apprentissage:editer_chapitre' chapitre.id %}"
                             hx-target="#modal-body"
                             onclick="document.getElementById('form-modal').style.display='flex'; event.preventDefault();">
-                        Modifier
+                        {% translate "Modifier" %}
                     </button>
                     <button class="btn btn-ghost" style="padding: 6px 12px; font-size: 0.85rem; color: #9b1c1c;"
                             hx-post="{% url 'apprentissage:supprimer_chapitre' chapitre.id %}"
                             hx-target="#chapitres-container"
-                            hx-confirm="Confirmer la suppression de ce chapitre et de TOUS ses documents ?"
+                            hx-confirm="{% translate 'Confirmer la suppression de ce chapitre et de TOUS ses documents ?' %}"
                             onclick="event.preventDefault();">
-                        Supprimer
+                        {% translate "Supprimer" %}
                     </button>
                 </div>
             </summary>
@@ -43,16 +44,16 @@
 
                 <div style="background: var(--surface-alt); padding: 1.5rem; border-radius: 8px; border: 1px dashed var(--bordure);">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                        <h4 style="margin: 0; color: var(--texte);">Documents du chapitre</h4>
+                        <h4 style="margin: 0; color: var(--texte);">{% translate "Documents du chapitre" %}</h4>
                         <div style="display: flex; gap: 0.5rem;">
                             <button class="btn" style="padding: 6px 12px; font-size: 0.85rem;"
                                     hx-get="{% url 'apprentissage:ajouter_document' chapitre.id %}"
                                     hx-target="#modal-body"
                                     onclick="document.getElementById('form-modal').style.display='flex'">
-                                <i class="ti ti-file-upload"></i> Ajouter un PDF
+                                <i class="ti ti-file-upload"></i> {% translate "Ajouter un PDF" %}
                             </button>
                             <a href="{% url 'apprentissage:devoir_creer' chapitre_id=chapitre.id %}" class="btn" style="padding: 6px 12px; font-size: 0.85rem;">
-                                <i class="ti ti-clipboard-plus"></i> Créer un devoir
+                                <i class="ti ti-clipboard-plus"></i> {% translate "Créer un devoir" %}
                             </a>
                         </div>
                     </div>
@@ -65,7 +66,7 @@
                     {% with devoirs=chapitre.devoirs.all %}
                     {% if devoirs %}
                     <div style="margin-top: 1.5rem; border-top: 1px dashed var(--bordure); padding-top: 1rem;">
-                        <h4 style="margin: 0 0 1rem 0; color: var(--texte);">Devoirs du chapitre</h4>
+                        <h4 style="margin: 0 0 1rem 0; color: var(--texte);">{% translate "Devoirs du chapitre" %}</h4>
                         <div style="display: flex; flex-direction: column; gap: 0.5rem;">
                             {% for devoir in devoirs %}
                             <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.6rem 0.75rem; background: var(--surface); border-radius: 0.5rem; border: 1px solid var(--bordure);">
@@ -76,15 +77,15 @@
                                     </span>
                                 </div>
                                 <div style="display: flex; gap: 0.4rem;">
-                                    <a href="{% url 'apprentissage:devoir_detail' devoir_id=devoir.pk %}" class="btn btn-ghost" style="font-size: 0.8rem; padding: 0.3rem 0.6rem;" title="Voir les soumissions">
+                                    <a href="{% url 'apprentissage:devoir_detail' devoir_id=devoir.pk %}" class="btn btn-ghost" style="font-size: 0.8rem; padding: 0.3rem 0.6rem;" title="{% translate 'Voir les soumissions' %}">
                                         <i class="ti ti-eye"></i>
                                     </a>
-                                    <a href="{% url 'apprentissage:devoir_editer' devoir_id=devoir.pk %}" class="btn btn-ghost" style="font-size: 0.8rem; padding: 0.3rem 0.6rem;" title="Modifier">
+                                    <a href="{% url 'apprentissage:devoir_editer' devoir_id=devoir.pk %}" class="btn btn-ghost" style="font-size: 0.8rem; padding: 0.3rem 0.6rem;" title="{% translate 'Modifier' %}">
                                         <i class="ti ti-pencil"></i>
                                     </a>
-                                    <form method="post" action="{% url 'apprentissage:devoir_supprimer' devoir_id=devoir.pk %}" style="display:inline;" onsubmit="return confirm('Supprimer ce devoir ?')">
+                                    <form method="post" action="{% url 'apprentissage:devoir_supprimer' devoir_id=devoir.pk %}" style="display:inline;" onsubmit="return confirm('{% translate 'Supprimer ce devoir ?' %}')">
                                         {% csrf_token %}
-                                        <button type="submit" class="btn btn-ghost" style="font-size: 0.8rem; padding: 0.3rem 0.6rem; color: #ef4444;" title="Supprimer">
+                                        <button type="submit" class="btn btn-ghost" style="font-size: 0.8rem; padding: 0.3rem 0.6rem; color: #ef4444;" title="{% translate 'Supprimer' %}">
                                             <i class="ti ti-trash"></i>
                                         </button>
                                     </form>
@@ -102,6 +103,6 @@
 {% else %}
     <div class="carte" style="text-align: center; padding: 3rem;">
         <i class="ti ti-books" style="font-size: 40px; color: var(--border-md); margin-bottom: 1rem; display: block;"></i>
-        <p class="message-empty">Ce cours est vide. Commencez par ajouter un chapitre.</p>
+        <p class="message-empty">{% translate "Ce cours est vide. Commencez par ajouter un chapitre." %}</p>
     </div>
 {% endif %}

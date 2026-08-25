@@ -1,33 +1,34 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
-{% block title %}Élèves - {{ classe.nom }}{% endblock %}
+{% block title %}{% blocktranslate with nom=classe.nom %}Élèves - {{ nom }}{% endblocktranslate %}{% endblock %}
 
 {% block content %}
 <section class="page-shell">
     <div class="page-header" style="display:flex; justify-content:space-between; align-items:center;">
         <div>
-            <p class="eyebrow">Gestion de Classe</p>
-            <h1>Élèves : {{ classe.nom }}</h1>
-            <p>Niveau : {{ classe.niveau.nom }} | Année : {{ classe.annee_scolaire }}</p>
+            <p class="eyebrow">{% translate "Gestion de Classe" %}</p>
+            <h1>{% blocktranslate with nom=classe.nom %}Élèves : {{ nom }}{% endblocktranslate %}</h1>
+            <p>{% blocktranslate with niveau=classe.niveau.nom annee=classe.annee_scolaire %}Niveau : {{ niveau }} | Année : {{ annee }}{% endblocktranslate %}</p>
         </div>
         <div>
             <a href="{% url 'dashboard_admin_export_classe_students' classe.id %}" class="btn btn-primary" style="margin-right: 0.5rem;">
-                <i class="ti ti-file-export"></i> Exporter (Excel)
+                <i class="ti ti-file-export"></i> {% translate "Exporter (Excel)" %}
             </a>
-            <a href="{% url 'dashboard_admin' %}?tab=classes" class="btn btn-ghost"><i class="ti ti-arrow-left"></i> Retour aux classes</a>
+            <a href="{% url 'dashboard_admin' %}?tab=classes" class="btn btn-ghost"><i class="ti ti-arrow-left"></i> {% translate "Retour aux classes" %}</a>
         </div>
     </div>
 
     <div style="display:grid; grid-template-columns: 1fr 320px; gap:1.5rem; align-items:start;">
         <div class="carte">
-            <h2 style="margin-top:0;">Liste des élèves ({{ eleves.count }})</h2>
+            <h2 style="margin-top:0;">{% blocktranslate with n=eleves.count %}Liste des élèves ({{ n }}){% endblocktranslate %}</h2>
             {% if eleves %}
                 <table style="width:100%; border-collapse: collapse;">
                     <thead>
                         <tr>
-                            <th style="text-align:left; padding:8px; border-bottom:1px solid var(--border);">Email</th>
-                            <th style="padding:8px; border-bottom:1px solid var(--border);">Statut</th>
-                            <th style="text-align:right; padding:8px; border-bottom:1px solid var(--border);">Actions</th>
+                            <th style="text-align:left; padding:8px; border-bottom:1px solid var(--border);">{% translate "Email" %}</th>
+                            <th style="padding:8px; border-bottom:1px solid var(--border);">{% translate "Statut" %}</th>
+                            <th style="text-align:right; padding:8px; border-bottom:1px solid var(--border);">{% translate "Actions" %}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -46,14 +47,14 @@
                             </td>
                             <td style="padding:12px 8px; border-bottom:1px solid var(--border); text-align:right;">
                                 <div style="display:flex; gap:0.5rem; justify-content:flex-end;">
-                                    <button type="button" class="btn btn-ghost" style="color: #f59e0b; padding:6px 12px;" onclick="forcePasswordReset('{{ eleve.id }}', '{% url 'dashboard_admin_force_password_reset' eleve.id %}')" title="Réinitialiser le mot de passe (Hors-ligne)"><i class="ti ti-key"></i></button>
+                                    <button type="button" class="btn btn-ghost" style="color: #f59e0b; padding:6px 12px;" onclick="forcePasswordReset('{{ eleve.id }}', '{% url 'dashboard_admin_force_password_reset' eleve.id %}')" title="{% translate 'Réinitialiser le mot de passe (Hors-ligne)' %}"><i class="ti ti-key"></i></button>
                                     <form method="post" action="{% url 'dashboard_admin_remove_student_page' classe.id eleve.id %}">
                                         {% csrf_token %}
-                                        <button type="submit" class="btn btn-ghost" style="color: #ef4444; padding:6px 12px;" onclick="return confirm('Retirer cet élève de la classe ?')">Retirer</button>
+                                        <button type="submit" class="btn btn-ghost" style="color: #ef4444; padding:6px 12px;" onclick="return confirm('{% translate 'Retirer cet élève de la classe ?' %}')">{% translate "Retirer" %}</button>
                                     </form>
                                     <form method="post" action="{% url 'dashboard_admin_delete_student_page' classe.id eleve.id %}">
                                         {% csrf_token %}
-                                        <button type="submit" class="btn btn-ghost" style="color: #ef4444; padding:6px 12px;" onclick="return confirm('Supprimer DEFINITIVEMENT cet utilisateur ?')"><i class="ti ti-trash"></i></button>
+                                        <button type="submit" class="btn btn-ghost" style="color: #ef4444; padding:6px 12px;" onclick="return confirm('{% translate 'Supprimer DEFINITIVEMENT cet utilisateur ?' %}')"><i class="ti ti-trash"></i></button>
                                     </form>
                                 </div>
                             </td>
@@ -62,45 +63,45 @@
                     </tbody>
                 </table>
             {% else %}
-                <p class="message-empty">Aucun élève dans cette classe.</p>
+                <p class="message-empty">{% translate "Aucun élève dans cette classe." %}</p>
             {% endif %}
         </div>
 
         <div style="display:grid; gap:1.5rem;">
             <div class="carte">
-                <h3 style="margin-top:0;">Créer un nouvel élève</h3>
+                <h3 style="margin-top:0;">{% translate "Créer un nouvel élève" %}</h3>
                 <form method="post" action="{% url 'dashboard_admin_add_student_page' classe.id %}" style="display:grid; gap:0.8rem;">
                     {% csrf_token %}
                     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.8rem;">
                         <label>
-                            Prénom
-                            <input type="text" name="first_name" placeholder="Prénom" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px; margin-top:4px;">
+                            {% translate "Prénom" %}
+                            <input type="text" name="first_name" placeholder="{% translate 'Prénom' %}" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px; margin-top:4px;">
                         </label>
                         <label>
-                            Nom
-                            <input type="text" name="last_name" placeholder="Nom" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px; margin-top:4px;">
+                            {% translate "Nom" %}
+                            <input type="text" name="last_name" placeholder="{% translate 'Nom' %}" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px; margin-top:4px;">
                         </label>
                     </div>
                     <label>
-                        Email
+                        {% translate "Email" %}
                         <input type="email" name="email" required placeholder="eleve@exemple.com" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px; margin-top:4px;">
                     </label>
                     <label>
-                        Mot de passe
+                        {% translate "Mot de passe" %}
                         <input type="password" name="password" required placeholder="********" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px; margin-top:4px;">
                     </label>
-                    <button type="submit" class="btn btn-primary" style="justify-content:center;">Créer et Ajouter</button>
+                    <button type="submit" class="btn btn-primary" style="justify-content:center;">{% translate "Créer et Ajouter" %}</button>
                 </form>
             </div>
 
             <div class="carte">
-                <h3 style="margin-top:0;">Assigner un élève existant</h3>
+                <h3 style="margin-top:0;">{% translate "Assigner un élève existant" %}</h3>
                 <form method="post" action="{% url 'dashboard_admin_assign_student_page' classe.id %}" style="display:grid; gap:0.8rem;">
                     {% csrf_token %}
                     <label>
-                        Élèves sans classe / En attente
+                        {% translate "Élèves sans classe / En attente" %}
                         <select name="student_id" required style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px; margin-top:4px;">
-                            <option value="">Sélectionner un élève...</option>
+                            <option value="">{% translate "Sélectionner un élève..." %}</option>
                             {% for p_student in pending_students %}
                                 <option value="{{ p_student.id }}">
                                     {% if p_student.first_name and p_student.last_name %}
@@ -112,7 +113,7 @@
                             {% endfor %}
                         </select>
                     </label>
-                    <button type="submit" class="btn" style="justify-content:center;">Assigner</button>
+                    <button type="submit" class="btn" style="justify-content:center;">{% translate "Assigner" %}</button>
                 </form>
             </div>
         </div>
@@ -121,10 +122,10 @@
 
 <script>
 function forcePasswordReset(userId, url) {
-    if (!confirm('Voulez-vous vraiment générer un nouveau mot de passe aléatoire pour cet utilisateur ?')) {
+    if (!confirm("{% translate 'Voulez-vous vraiment générer un nouveau mot de passe aléatoire pour cet utilisateur ?' %}")) {
         return;
     }
-    
+
     // Get the CSRF token from the first form on the page
     const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
@@ -138,14 +139,14 @@ function forcePasswordReset(userId, url) {
     .then(response => response.json())
     .then(data => {
         if (data.status === 'success') {
-            alert(data.message + '\n\nIMPORTANT: Veuillez communiquer ce mot de passe à l\'utilisateur. Il devra obligatoirement le changer lors de sa première connexion (Valable 10 heures).');
+            alert(data.message + "\n\n{% translate "IMPORTANT: Veuillez communiquer ce mot de passe à l'utilisateur. Il devra obligatoirement le changer lors de sa première connexion (Valable 10 heures)." %}");
         } else {
-            alert('Erreur: ' + (data.error || 'Une erreur est survenue.'));
+            alert("{% translate "Erreur" %}: " + (data.error || "{% translate "Une erreur est survenue." %}"));
         }
     })
     .catch(err => {
         console.error(err);
-        alert('Erreur lors de la requête.');
+        alert("{% translate "Erreur lors de la requête." %}");
     });
 }
 </script>

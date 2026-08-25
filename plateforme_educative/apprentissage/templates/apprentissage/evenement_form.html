@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
 {% block title %}{{ titre_page }}{% endblock %}
 
@@ -209,10 +210,10 @@
     
     <div class="form-hero">
         <a href="{% url 'apprentissage:calendrier' %}" class="form-eyebrow">
-            <i class="ti ti-arrow-left"></i> Retour au calendrier
+            <i class="ti ti-arrow-left"></i> {% translate "Retour au calendrier" %}
         </a>
         <h1 class="form-hero-title">{{ titre_page }}</h1>
-        <p class="form-hero-sub">Planifiez vos événements, cours et sessions d'apprentissage.</p>
+        <p class="form-hero-sub">{% translate "Planifiez vos événements, cours et sessions d'apprentissage." %}</p>
     </div>
 
     <div class="unified-form-card">
@@ -227,7 +228,7 @@
                 </div>
             {% endif %}
 
-            <div class="unified-form-section-title"><i class="ti ti-clipboard-text"></i> Informations générales</div>
+            <div class="unified-form-section-title"><i class="ti ti-clipboard-text"></i> {% translate "Informations générales" %}</div>
 
             <div class="unified-form-group">
                 <label for="{{ form.titre.id_for_label }}" class="unified-form-label">
@@ -268,7 +269,7 @@
                 {% endfor %}
             </div>
 
-            <div class="unified-form-section-title"><i class="ti ti-calendar-time"></i> Planification</div>
+            <div class="unified-form-section-title"><i class="ti ti-calendar-time"></i> {% translate "Planification" %}</div>
 
             <div class="form-row">
                 <div class="unified-form-group">
@@ -292,7 +293,7 @@
                 </div>
             </div>
 
-            <div class="unified-form-section-title"><i class="ti ti-school"></i> Association pédagogique</div>
+            <div class="unified-form-section-title"><i class="ti ti-school"></i> {% translate "Association pédagogique" %}</div>
 
             <div class="form-row">
                 <div class="unified-form-group">
@@ -324,10 +325,10 @@
 
             <div class="unified-form-actions">
                 <a href="{% url 'apprentissage:calendrier' %}" class="btn-unified-ghost">
-                    <i class="ti ti-x"></i> Annuler
+                    <i class="ti ti-x"></i> {% translate "Annuler" %}
                 </a>
                 <button type="submit" class="btn-unified-submit">
-                    <i class="ti ti-check"></i> Enregistrer l'événement
+                    <i class="ti ti-check"></i> {% translate "Enregistrer l'événement" %}
                 </button>
             </div>
         </form>

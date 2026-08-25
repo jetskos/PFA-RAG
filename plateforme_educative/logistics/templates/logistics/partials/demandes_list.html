@@ -1,3 +1,4 @@
+{% load i18n %}
 {% if page_obj.object_list %}
 <div class="logi-eq-list">
     {% for demande in page_obj %}
@@ -29,7 +30,7 @@
                             {{ demande.equipement.nom }}
                             <span style="color: var(--teal); font-weight: 900;">× {{ demande.quantite }}</span>
                         </h3>
-                        <span class="eq-item-salle"><i class="ti ti-map-pin"></i> {{ demande.atelier_cible.titre|default:"Atelier non spécifié" }}</span>
+                        <span class="eq-item-salle"><i class="ti ti-map-pin"></i> {% if demande.atelier_cible.titre %}{{ demande.atelier_cible.titre }}{% else %}{% translate "Atelier non spécifié" %}{% endif %}</span>
                     </div>
                 </div>
 
@@ -39,35 +40,35 @@
                         {% elif demande.statut == 'APPROVED' %}badge-APPROVED
                         {% elif demande.statut == 'REJECTED' %}badge-REJECTED
                         {% else %}badge-RETURNED{% endif %}">
-                        {% if demande.statut == 'PENDING' %}En attente
-                        {% elif demande.statut == 'APPROVED' %}Approuvée
-                        {% elif demande.statut == 'REJECTED' %}Rejetée
-                        {% else %}Retournée{% endif %}
+                        {% if demande.statut == 'PENDING' %}{% translate "En attente" %}
+                        {% elif demande.statut == 'APPROVED' %}{% translate "Approuvée" %}
+                        {% elif demande.statut == 'REJECTED' %}{% translate "Rejetée" %}
+                        {% else %}{% translate "Retournée" %}{% endif %}
                     </span>
 
                     <div class="eq-item-actions">
                         {% if demande.statut == 'PENDING' %}
                             {% if user.is_staff or user == demande.formateur %}
-                            <button type="button" class="eq-action-btn" title="Modifier"
+                            <button type="button" class="eq-action-btn" title="{% translate 'Modifier' %}"
                                     hx-get="{% url 'logistics:editer_demande' demande.pk %}"
                                     hx-target="#form-demande-container" hx-swap="innerHTML">
                                 <i class="ti ti-edit"></i>
                             </button>
-                            <button type="button" class="eq-action-btn btn-danger" title="Supprimer"
+                            <button type="button" class="eq-action-btn btn-danger" title="{% translate 'Supprimer' %}"
                                     hx-post="{% url 'logistics:supprimer_demande' demande.pk %}"
-                                    hx-confirm="Annuler cette demande ?"
+                                    hx-confirm="{% translate 'Annuler cette demande ?' %}"
                                     hx-target="#demandes-list">
                                 <i class="ti ti-trash"></i>
                             </button>
                             {% endif %}
                             {% if user.is_staff %}
-                            <button type="button" class="eq-action-btn btn-success" title="Approuver"
+                            <button type="button" class="eq-action-btn btn-success" title="{% translate 'Approuver' %}"
                                     hx-post="{% url 'logistics:changer_statut_demande' demande.pk %}"
                                     hx-vals='{"statut": "APPROVED"}'
                                     hx-target="#demandes-list">
                                 <i class="ti ti-check"></i>
                             </button>
-                            <button type="button" class="eq-action-btn btn-danger" title="Rejeter"
+                            <button type="button" class="eq-action-btn btn-danger" title="{% translate 'Rejeter' %}"
                                     hx-post="{% url 'logistics:changer_statut_demande' demande.pk %}"
                                     hx-vals='{"statut": "REJECTED"}'
                                     hx-target="#demandes-list">
@@ -76,7 +77,7 @@
                             {% endif %}
                         {% endif %}
                         {% if demande.statut == 'APPROVED' and user.is_staff %}
-                        <button type="button" class="eq-action-btn btn-info" title="Marquer comme retourné"
+                        <button type="button" class="eq-action-btn btn-info" title="{% translate 'Marquer comme retourné' %}"
                                 hx-post="{% url 'logistics:changer_statut_demande' demande.pk %}"
                                 hx-vals='{"statut": "RETURNED"}'
                                 hx-target="#demandes-list">
@@ -84,7 +85,7 @@
                         </button>
                         {% endif %}
                         {% if demande.statut == 'APPROVED' and not user.is_staff and user == demande.formateur %}
-                        <button type="button" class="eq-action-btn btn-danger" title="Signaler une panne"
+                        <button type="button" class="eq-action-btn btn-danger" title="{% translate 'Signaler une panne' %}"
                                 hx-get="{% url 'logistics:creer_ticket_formateur' demande.pk %}"
                                 hx-target="#form-demande-container" hx-swap="innerHTML">
                             <i class="ti ti-alert-triangle"></i>
@@ -97,11 +98,11 @@
             <!-- Meta Grid -->
             <div class="eq-meta-grid">
                 <div class="eq-meta-item">
-                    <span class="eq-meta-lbl"><i class="ti ti-user"></i> Formateur</span>
+                    <span class="eq-meta-lbl"><i class="ti ti-user"></i> {% translate "Formateur" %}</span>
                     <span class="eq-meta-val">{{ demande.formateur.get_full_name|default:demande.formateur.email }}</span>
                 </div>
                 <div class="eq-meta-item">
-                    <span class="eq-meta-lbl"><i class="ti ti-calendar"></i> Date de demande</span>
+                    <span class="eq-meta-lbl"><i class="ti ti-calendar"></i> {% translate "Date de demande" %}</span>
                     <span class="eq-meta-val">{{ demande.date_creation|date:"d M Y, H:i" }}</span>
                 </div>
             </div>
@@ -115,7 +116,7 @@
 {% else %}
 <div class="eq-empty-state">
     <div class="eq-empty-icon"><i class="ti ti-truck-delivery"></i></div>
-    <h3>Aucune demande trouvée</h3>
-    <p>Soumettez votre première demande de matériel en cliquant sur <strong>"Nouvelle demande"</strong>.</p>
+    <h3>{% translate "Aucune demande trouvée" %}</h3>
+    <p>{% blocktranslate %}Soumettez votre première demande de matériel en cliquant sur <strong>"Nouvelle demande"</strong>.{% endblocktranslate %}</p>
 </div>
 {% endif %}

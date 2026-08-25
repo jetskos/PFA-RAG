@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
 
-{% block title %}Administration Pédagogique{% endblock %}
+{% block title %}{% translate "Administration Pédagogique" %}{% endblock %}
 
 {% block content %}
 <style>    /* ═══════════════════════════════════════════════════
@@ -319,9 +321,9 @@
     <!-- ══ HERO BANNER ══ -->
     <div class="admin-hero">
         <div class="admin-hero-left">
-            <span class="admin-eyebrow"><i class="ti ti-shield-lock"></i> Administration</span>
-            <h1 class="admin-hero-title">Gestion des utilisateurs</h1>
-            <p class="admin-hero-sub">Gérez l'accès, les rôles et les profils de votre plateforme.</p>
+            <span class="admin-eyebrow"><i class="ti ti-shield-lock"></i> {% translate "Administration" %}</span>
+            <h1 class="admin-hero-title">{% translate "Gestion des utilisateurs" %}</h1>
+            <p class="admin-hero-sub">{% translate "Gérez l'accès, les rôles et les profils de votre plateforme." %}</p>
         </div>
         <div class="admin-hero-right">
             <!-- Emptied to move buttons down -->
@@ -334,32 +336,32 @@
     <!-- Create User Drawer -->
     <div id="create-drawer" class="create-drawer">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
-            <h3 style="margin: 0; font-size: 1.1rem; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 6px;"><i class="ti ti-user-circle" style="color: #0D9488;"></i> Création de profil</h3>
+            <h3 style="margin: 0; font-size: 1.1rem; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 6px;"><i class="ti ti-user-circle" style="color: #0D9488;"></i> {% translate "Création de profil" %}</h3>
             <button type="button" class="btn btn-ghost" onclick="toggleDrawer()" style="padding: 4px; border-radius: 6px; color: var(--text-muted);"><i class="ti ti-x"></i></button>
         </div>
         <div class="drawer-grid">
-            <label>Prénom <input id="create-first_name" type="text" placeholder="Ex: Jean"></label>
-            <label>Nom <input id="create-last_name" type="text" placeholder="Ex: Dupont"></label>
-            <label>Email <input id="create-email" type="email" placeholder="jean.dupont@email.com" required></label>
-            <label>Mot de passe <input id="create-password" type="password" placeholder="********" required></label>
-            <label>Rôle
+            <label>{% translate "Prénom" %} <input id="create-first_name" type="text" placeholder="{% translate 'Ex: Jean' %}"></label>
+            <label>{% translate "Nom" %} <input id="create-last_name" type="text" placeholder="{% translate 'Ex: Dupont' %}"></label>
+            <label>{% translate "Email" %} <input id="create-email" type="email" placeholder="jean.dupont@email.com" required></label>
+            <label>{% translate "Mot de passe" %} <input id="create-password" type="password" placeholder="********" required></label>
+            <label>{% translate "Rôle" %}
                 <select id="create-role">
                     {% for val, label in role_choices %}
                         <option value="{{ val }}">{{ label }}</option>
                     {% endfor %}
                 </select>
             </label>
-            <label>Niveau (Optionnel)
+            <label>{% translate "Niveau (Optionnel)" %}
                 <select id="create-niveau">
-                    <option value="">-- Aucun --</option>
+                    <option value="">-- {% translate "Aucun" %} --</option>
                     {% for val, label in niveau_choices %}
                         <option value="{{ val }}">{{ label }}</option>
                     {% endfor %}
                 </select>
             </label>
-            
+
             <button id="create-user" class="admin-btn-primary" style="height: 38px; border-radius: 8px;">
-                <i class="ti ti-check"></i> Confirmer
+                <i class="ti ti-check"></i> {% translate "Confirmer" %}
             </button>
         </div>
     </div>
@@ -371,9 +373,9 @@
                 <i class="ti ti-users"></i>
             </div>
             <div class="admin-stat-content">
-                <p class="admin-stat-title">Utilisateurs</p>
+                <p class="admin-stat-title">{% translate "Utilisateurs" %}</p>
                 <p class="admin-stat-value">{{ total_users|default:"0" }}</p>
-                <p class="admin-stat-desc">Comptes enregistrés</p>
+                <p class="admin-stat-desc">{% translate "Comptes enregistrés" %}</p>
             </div>
         </div>
         <div class="admin-stat-card stat-student">
@@ -381,9 +383,9 @@
                 <i class="ti ti-school"></i>
             </div>
             <div class="admin-stat-content">
-                <p class="admin-stat-title">Élèves</p>
+                <p class="admin-stat-title">{% translate "Élèves" %}</p>
                 <p class="admin-stat-value">{{ student_count|default:"0" }}</p>
-                <p class="admin-stat-desc">Profils étudiants</p>
+                <p class="admin-stat-desc">{% translate "Profils étudiants" %}</p>
             </div>
         </div>
         <div class="admin-stat-card stat-formateur">
@@ -391,9 +393,9 @@
                 <i class="ti ti-user-check"></i>
             </div>
             <div class="admin-stat-content">
-                <p class="admin-stat-title">Formateurs</p>
+                <p class="admin-stat-title">{% translate "Formateurs" %}</p>
                 <p class="admin-stat-value">{{ formateur_count|default:"0" }}</p>
-                <p class="admin-stat-desc">Enseignants & tuteurs</p>
+                <p class="admin-stat-desc">{% translate "Enseignants & tuteurs" %}</p>
             </div>
         </div>
         <div class="admin-stat-card stat-admin">
@@ -401,9 +403,9 @@
                 <i class="ti ti-shield-lock"></i>
             </div>
             <div class="admin-stat-content">
-                <p class="admin-stat-title">Administrateurs</p>
+                <p class="admin-stat-title">{% translate "Administrateurs" %}</p>
                 <p class="admin-stat-value">{{ admin_count|default:"0" }}</p>
-                <p class="admin-stat-desc">Accès supervision</p>
+                <p class="admin-stat-desc">{% translate "Accès supervision" %}</p>
             </div>
         </div>
     </div>
@@ -412,14 +414,14 @@
     <div class="admin-controls">
         <div class="admin-controls-left">
             <div class="search-bar">
-                <input type="text" id="searchInput" placeholder="Rechercher par nom, email..." oninput="filterTable()">
+                <input type="text" id="searchInput" placeholder="{% translate 'Rechercher par nom, email...' %}" oninput="filterTable()">
                 <i class="ti ti-search search-icon"></i>
             </div>
             <div class="filter-group">
                 <div class="admin-filter-group" id="rolePillGroup">
                     <button type="button" class="admin-filter-btn active" data-role="ALL" onclick="setRoleFilter('ALL', this)">
                         <i class="ti ti-users"></i>
-                        <span>Tous les rôles</span>
+                        <span>{% translate "Tous les rôles" %}</span>
                     </button>
                     {% for val, label in role_choices %}
                         <button type="button" class="admin-filter-btn" data-role="{{ val }}" onclick="setRoleFilter('{{ val }}', this)">
@@ -442,19 +444,19 @@
         <div class="admin-controls-right">
             <div class="custom-dropdown" id="exportDropdown">
                 <button class="btn-export-select" onclick="toggleExportMenu()">
-                    <span>Exporter Excel...</span>
+                    <span>{% translate "Exporter Excel..." %}</span>
                     <i class="ti ti-download"></i>
                 </button>
                 <div class="custom-dropdown-menu" id="exportMenu">
-                    <div class="dropdown-item" onclick="handleExport('ALL')">Tous les utilisateurs</div>
-                    <div class="dropdown-item" onclick="handleExport('VISIBLE')">Vue filtrée actuelle</div>
-                    <div class="dropdown-item" onclick="handleExport('ELEVE')">Élèves</div>
-                    <div class="dropdown-item" onclick="handleExport('FORMATEUR')">Formateurs</div>
-                    <div class="dropdown-item" onclick="handleExport('ADMIN')">Administrateurs</div>
+                    <div class="dropdown-item" onclick="handleExport('ALL')">{% translate "Tous les utilisateurs" %}</div>
+                    <div class="dropdown-item" onclick="handleExport('VISIBLE')">{% translate "Vue filtrée actuelle" %}</div>
+                    <div class="dropdown-item" onclick="handleExport('ELEVE')">{% translate "Élèves" %}</div>
+                    <div class="dropdown-item" onclick="handleExport('FORMATEUR')">{% translate "Formateurs" %}</div>
+                    <div class="dropdown-item" onclick="handleExport('ADMIN')">{% translate "Administrateurs" %}</div>
                 </div>
             </div>
             <button class="admin-btn-primary" onclick="toggleDrawer()">
-                <i class="ti ti-user-plus" style="font-size: 15px;"></i> Nouvel utilisateur
+                <i class="ti ti-user-plus" style="font-size: 15px;"></i> {% translate "Nouvel utilisateur" %}
             </button>
         </div>
     </div>
@@ -464,11 +466,11 @@
         <table class="admin-table" id="usersTable">
             <thead>
                 <tr>
-                    <th>Utilisateur</th>
-                    <th>Rôle Principal</th>
-                    
-                    <th>Niveau Assigné</th>
-                    <th style="text-align:right;">Actions</th>
+                    <th>{% translate "Utilisateur" %}</th>
+                    <th>{% translate "Rôle Principal" %}</th>
+
+                    <th>{% translate "Niveau Assigné" %}</th>
+                    <th style="text-align:right;">{% translate "Actions" %}</th>
                 </tr>
             </thead>
                       {% for user in users %}
@@ -510,16 +512,16 @@
                     </td>
                     <td>
                         <div class="action-buttons">
-                            <button class="action-btn btn-save modify-user" title="Sauvegarder les modifications">
+                            <button class="action-btn btn-save modify-user" title="{% translate 'Sauvegarder les modifications' %}">
                                 <i class="ti ti-device-floppy"></i>
                             </button>
-                            <button class="action-btn btn-view details-user" title="Voir les détails">
+                            <button class="action-btn btn-view details-user" title="{% translate 'Voir les détails' %}">
                                 <i class="ti ti-eye"></i>
                             </button>
-                            <button class="action-btn btn-reset reset-pwd-user" title="Générer un mot de passe temporaire" style="color: #f59e0b;" onclick="resetPassword('{{ user.id }}', '{{ user.get_full_name|escapejs }}')">
+                            <button class="action-btn btn-reset reset-pwd-user" title="{% translate 'Générer un mot de passe temporaire' %}" style="color: #f59e0b;" onclick="resetPassword('{{ user.id }}', '{{ user.get_full_name|escapejs }}')">
                                 <i class="ti ti-key"></i>
                             </button>
-                            <button class="action-btn btn-del delete-user" title="Supprimer l'utilisateur">
+                            <button class="action-btn btn-del delete-user" title="{% translate "Supprimer l'utilisateur" %}">
                                 <i class="ti ti-trash"></i>
                             </button>
                         </div>
@@ -528,10 +530,10 @@
                 {% endfor %}
             </tbody>
         </table>
-        
+
         <div id="noResults" style="display:none; padding: 3rem; text-align: center; color: var(--text-muted);">
             <i class="ti ti-ghost" style="font-size: 3rem; margin-bottom: 1rem; display: block;"></i>
-            <p>Aucun utilisateur ne correspond à votre recherche.</p>
+            <p>{% translate "Aucun utilisateur ne correspond à votre recherche." %}</p>
         </div>
     </div>
 
@@ -540,13 +542,13 @@
     {% if page_obj.has_other_pages %}
     <div class="admin-pagination">
         {% if page_obj.has_previous %}
-            <a href="?page={{ page_obj.previous_page_number }}" class="admin-page-btn">&laquo; Précédent</a>
+            <a href="?page={{ page_obj.previous_page_number }}" class="admin-page-btn">&laquo; {% translate "Précédent" %}</a>
         {% endif %}
         <span style="display: flex; align-items: center; font-weight: 600; color: var(--text-primary); margin: 0 10px;">
-            Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+            {% blocktranslate with current=page_obj.number total=page_obj.paginator.num_pages %}Page {{ current }} / {{ total }}{% endblocktranslate %}
         </span>
         {% if page_obj.has_next %}
-            <a href="?page={{ page_obj.next_page_number }}" class="admin-page-btn">Suivant &raquo;</a>
+            <a href="?page={{ page_obj.next_page_number }}" class="admin-page-btn">{% translate "Suivant" %} &raquo;</a>
         {% endif %}
     </div>
     {% endif %}
@@ -628,7 +630,7 @@ function buildUserRow(user) {
     roleOptions += '<option value="{{ val }}"' + (user.role === '{{ val }}' ? ' selected' : '') + '>{{ label }}</option>';
     {% endfor %}
 
-    var niveauOptions = '<option value="">-- Aucun --</option>';
+    var niveauOptions = '<option value="">-- {% translate "Aucun" %} --</option>';
     {% for val, label in niveau_choices %}
     niveauOptions += '<option value="{{ val }}"' + (user.niveau === '{{ val }}' ? ' selected' : '') + '>{{ label }}</option>';
     {% endfor %}
@@ -657,9 +659,9 @@ function buildUserRow(user) {
         '<td><select name="niveau" class="inline-select">' + niveauOptions + '</select></td>' +
         '<td>' +
             '<div class="action-buttons">' +
-                '<button class="action-btn btn-save modify-user" title="Sauvegarder les modifications"><i class="ti ti-device-floppy"></i></button>' +
-                '<button class="action-btn btn-view details-user" title="Voir les détails"><i class="ti ti-eye"></i></button>' +
-                '<button class="action-btn btn-del delete-user" title="Supprimer l\'utilisateur"><i class="ti ti-trash"></i></button>' +
+                '<button class="action-btn btn-save modify-user" title="{% translate 'Sauvegarder les modifications' %}"><i class="ti ti-device-floppy"></i></button>' +
+                '<button class="action-btn btn-view details-user" title="{% translate 'Voir les détails' %}"><i class="ti ti-eye"></i></button>' +
+                "<button class=\"action-btn btn-del delete-user\" title=\"{% translate "Supprimer l'utilisateur" %}\"><i class=\"ti ti-trash\"></i></button>" +
             '</div>' +
         '</td>' +
         '</tr>';
@@ -675,7 +677,7 @@ document.getElementById('create-user').addEventListener('click', function(){
     
 
     if (!email || !password) {
-        alert("Email et mot de passe sont obligatoires.");
+        alert("{% translate "Email et mot de passe sont obligatoires." %}");
         return;
     }
 
@@ -712,11 +714,11 @@ document.getElementById('create-user').addEventListener('click', function(){
             toggleDrawer(); // Hide drawer on success
             filterTable(); // Re-apply filters
         } else {
-            alert('Erreur: ' + (json.message || 'Echec'));
+            alert("{% translate "Erreur" %}: " + (json.message || "{% translate "Échec" %}"));
         }
-    }).catch(function(err){ 
+    }).catch(function(err){
         btn.innerHTML = originalHtml;
-        console.error(err); alert('Erreur réseau'); 
+        console.error(err); alert("{% translate "Erreur réseau" %}");
     });
 });
 
@@ -765,12 +767,12 @@ document.addEventListener('click', function(e){
                 }, 1500);
             } else {
                 icon.className = "ti ti-device-floppy";
-                alert('Erreur: ' + (json.message || 'Echec'));
+                alert("{% translate "Erreur" %}: " + (json.message || "{% translate "Échec" %}"));
             }
-        }).catch(function(err){ 
+        }).catch(function(err){
             icon.style.animation = "none";
             icon.className = "ti ti-device-floppy";
-            console.error(err); alert('Erreur réseau'); 
+            console.error(err); alert("{% translate "Erreur réseau" %}");
         });
         return;
     }
@@ -778,7 +780,7 @@ document.addEventListener('click', function(e){
     // Suppression
     var delBtn = e.target.closest('.delete-user');
     if (delBtn) {
-        if (!confirm('Supprimer définitivement cet utilisateur ?')) return;
+        if (!confirm("{% translate "Supprimer définitivement cet utilisateur ?" %}")) return;
         var row = delBtn.closest('tr');
         var userId = row.dataset.userId;
         var data = new FormData();
@@ -794,9 +796,9 @@ document.addEventListener('click', function(e){
                 row.remove();
                 filterTable();
             } else {
-                alert('Erreur: ' + (json.message || 'Echec'));
+                alert("{% translate "Erreur" %}: " + (json.message || "{% translate "Échec" %}"));
             }
-        }).catch(function(err){ console.error(err); alert('Erreur réseau'); });
+        }).catch(function(err){ console.error(err); alert("{% translate "Erreur réseau" %}"); });
         return;
     }
 
@@ -814,7 +816,7 @@ document.addEventListener('click', function(e){
             return r.json();
         }).then(function(json){
             if (json.status !== 'success') {
-                alert('Erreur: ' + (json.message || 'Echec'));
+                alert("{% translate "Erreur" %}: " + (json.message || "{% translate "Échec" %}"));
                 return;
             }
             var u = json.user;
@@ -869,7 +871,7 @@ document.addEventListener('click', function(e){
 
             box.innerHTML =
                 '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; border-bottom: 1px solid var(--border-light); padding-bottom: 1rem;">' +
-                    '<h3 style="margin:0; font-size:1.25rem; font-weight: 800; color:var(--text-primary); display:flex; align-items:center; gap:8px;"><i class="ti ti-id-badge" style="color:' + roleColor + '; font-size: 1.5rem;"></i> Fiche Utilisateur : ' + u.email + '</h3>' +
+                    '<h3 style="margin:0; font-size:1.25rem; font-weight: 800; color:var(--text-primary); display:flex; align-items:center; gap:8px;"><i class="ti ti-id-badge" style="color:' + roleColor + '; font-size: 1.5rem;"></i> {% translate "Fiche Utilisateur" %} : ' + u.email + '</h3>' +
                     '<button onclick="document.getElementById(\'details-box\').style.display=\'none\'" class="btn btn-ghost" style="padding: 6px; border-radius:50%; width:32px; height:32px; display:flex; align-items:center; justify-content:center;"><i class="ti ti-x" style="font-size:1.15rem;"></i></button>' +
                 '</div>' +
                 '<div class="details-container">' +
@@ -884,58 +886,58 @@ document.addEventListener('click', function(e){
                     '<!-- Right: Fields grid -->' +
                     '<div class="details-info-grid">' +
                         '<div class="info-field-card">' +
-                            '<span class="field-label"><i class="ti ti-user"></i> Prénom</span>' +
-                            '<span class="field-value">' + (u.first_name || '<em style="color:var(--text-muted); font-weight:normal;">Non renseigné</em>') + '</span>' +
+                            '<span class="field-label"><i class="ti ti-user"></i> {% translate "Prénom" %}</span>' +
+                            '<span class="field-value">' + (u.first_name || '<em style="color:var(--text-muted); font-weight:normal;">{% translate "Non renseigné" %}</em>') + '</span>' +
                         '</div>' +
                         '<div class="info-field-card">' +
-                            '<span class="field-label"><i class="ti ti-user"></i> Nom</span>' +
-                            '<span class="field-value">' + (u.last_name || '<em style="color:var(--text-muted); font-weight:normal;">Non renseigné</em>') + '</span>' +
+                            '<span class="field-label"><i class="ti ti-user"></i> {% translate "Nom" %}</span>' +
+                            '<span class="field-value">' + (u.last_name || '<em style="color:var(--text-muted); font-weight:normal;">{% translate "Non renseigné" %}</em>') + '</span>' +
                         '</div>' +
                         '<div class="info-field-card">' +
-                            '<span class="field-label"><i class="ti ti-mail"></i> Adresse Email</span>' +
+                            '<span class="field-label"><i class="ti ti-mail"></i> {% translate "Adresse Email" %}</span>' +
                             '<span class="field-value">' + u.email + '</span>' +
                         '</div>' +
                         '<div class="info-field-card">' +
-                            '<span class="field-label"><i class="ti ti-shield"></i> Rôle</span>' +
+                            '<span class="field-label"><i class="ti ti-shield"></i> {% translate "Rôle" %}</span>' +
                             '<span class="field-value">' + u.role + '</span>' +
                         '</div>' +
                         '<div class="info-field-card">' +
-                            '<span class="field-label"><i class="ti ti-school"></i> Niveau d\'études</span>' +
-                            '<span class="field-value">' + (u.niveau || 'Aucun') + '</span>' +
+                            "<span class=\"field-label\"><i class=\"ti ti-school\"></i> {% translate "Niveau d'études" %}</span>" +
+                            '<span class="field-value">' + (u.niveau || '{% translate "Aucun" %}') + '</span>' +
                         '</div>' +
                         '<div class="info-field-card">' +
-                            '<span class="field-label"><i class="ti ti-users"></i> Classe</span>' +
-                            '<span class="field-value">' + (u.classe || 'Aucune') + '</span>' +
+                            '<span class="field-label"><i class="ti ti-users"></i> {% translate "Classe" %}</span>' +
+                            '<span class="field-value">' + (u.classe || '{% translate "Aucune" %}') + '</span>' +
                         '</div>' +
                         '<div class="info-field-card">' +
-                            '<span class="field-label"><i class="ti ti-circle-check"></i> Statut du Compte</span>' +
+                            '<span class="field-label"><i class="ti ti-circle-check"></i> {% translate "Statut du Compte" %}</span>' +
                             '<span class="field-value" style="display:flex; align-items:center;"><span class="status-dot ' + statusDot + '"></span>' + u.statut_compte + '</span>' +
                         '</div>' +
                         '<div class="info-field-card">' +
-                            '<span class="field-label"><i class="ti ti-presentation"></i> Formateur Actif</span>' +
-                            '<span class="field-value">' + (u.is_formateur ? '<span style="color:#10b981; display:flex; align-items:center; gap:4px;"><i class="ti ti-check"></i> Oui</span>' : '<span style="color:var(--text-muted); display:flex; align-items:center; gap:4px;"><i class="ti ti-x"></i> Non</span>') + '</span>' +
+                            '<span class="field-label"><i class="ti ti-presentation"></i> {% translate "Formateur Actif" %}</span>' +
+                            '<span class="field-value">' + (u.is_formateur ? '<span style="color:#10b981; display:flex; align-items:center; gap:4px;"><i class="ti ti-check"></i> {% translate "Oui" %}</span>' : '<span style="color:var(--text-muted); display:flex; align-items:center; gap:4px;"><i class="ti ti-x"></i> {% translate "Non" %}</span>') + '</span>' +
                         '</div>' +
                         '<div class="info-field-card">' +
-                            '<span class="field-label"><i class="ti ti-calendar"></i> Date d\'inscription</span>' +
+                            "<span class=\"field-label\"><i class=\"ti ti-calendar\"></i> {% translate "Date d'inscription" %}</span>" +
                             '<span class="field-value">' + u.date_creation + '</span>' +
                         '</div>' +
                         '<div class="info-field-card">' +
-                            '<span class="field-label"><i class="ti ti-clock"></i> Dernière connexion</span>' +
+                            '<span class="field-label"><i class="ti ti-clock"></i> {% translate "Dernière connexion" %}</span>' +
                             '<span class="field-value">' + u.last_login + '</span>' +
                         '</div>' +
                     '</div>' +
                 '</div>';
             window.scrollTo({ top: 0, behavior: 'smooth' });
-        }).catch(function(err){ console.error(err); alert('Erreur details: ' + err.message); });
+        }).catch(function(err){ console.error(err); alert("{% translate "Erreur détails" %}: " + err.message); });
     }
 });
 
 // Reset Password Logic
 function resetPassword(userId, userName) {
-    if (confirm("Êtes-vous sûr de vouloir générer un mot de passe temporaire pour " + userName + " ?")) {
+    if (confirm("{% translate "Êtes-vous sûr de vouloir générer un mot de passe temporaire pour" %} " + userName + " ?")) {
         const formData = new FormData();
         formData.append('user_id', userId);
-        
+
         fetch("{% url 'accounts:reset_user_password_ajax' %}", {
             method: 'POST',
             headers: {
@@ -946,14 +948,14 @@ function resetPassword(userId, userName) {
         .then(response => response.json())
         .then(data => {
             if(data.status === 'success') {
-                alert("Nouveau mot de passe pour " + data.user_email + " :\n\n" + data.temp_password + "\n\nVeuillez le communiquer à l'utilisateur.");
+                alert("{% translate "Nouveau mot de passe pour" %} " + data.user_email + " :\n\n" + data.temp_password + "\n\n{% translate "Veuillez le communiquer à l'utilisateur." %}");
             } else {
-                alert("Erreur: " + data.message);
+                alert("{% translate "Erreur" %}: " + data.message);
             }
         })
         .catch(error => {
             console.error('Erreur:', error);
-            alert("Une erreur est survenue.");
+            alert("{% translate "Une erreur est survenue." %}");
         });
     }
 }
@@ -990,23 +992,23 @@ function exportCSV(roleFilter) {
             nom:        (nameEl  ? nameEl.textContent.trim()  : ''),
             email:      (emailEl ? emailEl.textContent.trim() : ''),
             role:       roleText,
-            formateur:  (role === 'FORMATEUR' ? 'Oui' : 'Non'),
+            formateur:  (role === 'FORMATEUR' ? "{% translate 'Oui' %}" : "{% translate 'Non' %}"),
             niveau:     (niveauEl ? (niveauEl.options[niveauEl.selectedIndex]?.text || '—') : '—'),
         });
     });
 
-    if (!data.length) { alert('Aucun utilisateur à exporter.'); return; }
+    if (!data.length) { alert("{% translate "Aucun utilisateur à exporter." %}"); return; }
 
-    const roleNames  = { ALL:'Tous les utilisateurs', ELEVE:'Élèves', FORMATEUR:'Formateurs', ADMIN:'Administrateurs', VISIBLE:'Vue filtrée' };
-    const today = new Date().toLocaleDateString('fr-FR');
+    const roleNames  = { ALL:"{% translate 'Tous les utilisateurs' %}", ELEVE:"{% translate 'Élèves' %}", FORMATEUR:"{% translate 'Formateurs' %}", ADMIN:"{% translate 'Administrateurs' %}", VISIBLE:"{% translate 'Vue filtrée' %}" };
+    const today = new Date().toLocaleDateString('{{ LANGUAGE_CODE }}');
 
     const wb = XLSX.utils.book_new();
     const wsData = [];
 
-    wsData.push([`Export — ${roleNames[roleFilter] || roleFilter}`, '', '', '', '']);
-    wsData.push([`Généré le ${today}`, '', '', '', '']);
+    wsData.push([`{% translate "Export" %} — ${roleNames[roleFilter] || roleFilter}`, '', '', '', '']);
+    wsData.push([`{% translate "Généré le" %} ${today}`, '', '', '', '']);
     wsData.push(['', '', '', '', '']);
-    wsData.push(['Nom complet', 'Adresse email', 'Rôle', 'Formateur actif', 'Niveau assigné']);
+    wsData.push(["{% translate 'Nom complet' %}", "{% translate 'Adresse email' %}", "{% translate 'Rôle' %}", "{% translate 'Formateur actif' %}", "{% translate 'Niveau assigné' %}"]);
     data.forEach(u => wsData.push([u.nom, u.email, u.role, u.formateur, u.niveau]));
 
     const ws = XLSX.utils.aoa_to_sheet(wsData);
@@ -1036,7 +1038,7 @@ function exportCSV(roleFilter) {
         ['A','B','C','D','E'].forEach(col => {
             const ref = col + rowNum;
             if (ws[ref]) {
-                if (col === 'D') { ws[ref].s = ws[ref].v === 'Oui' ? badgeOui : badgeNon; }
+                if (col === 'D') { ws[ref].s = ws[ref].v === "{% translate 'Oui' %}" ? badgeOui : badgeNon; }
                 else { ws[ref].s = JSON.parse(JSON.stringify(base)); }
             }
         });
@@ -1044,7 +1046,7 @@ function exportCSV(roleFilter) {
 
     ws['!rows'] = [{ hpt: 32 }, { hpt: 18 }, { hpt: 8 }, { hpt: 26 }, ...data.map(() => ({ hpt: 20 }))];
 
-    XLSX.utils.book_append_sheet(wb, ws, roleNames[roleFilter] || 'Export');
+    XLSX.utils.book_append_sheet(wb, ws, roleNames[roleFilter] || "{% translate 'Export' %}");
     XLSX.writeFile(wb, `EduTech_${roleFilter}_${today.replace(/\//g,'-')}.xlsx`);
 }
 </script>

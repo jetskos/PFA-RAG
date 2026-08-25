@@ -44,7 +44,13 @@ from .views import (
     admin_force_password_reset_view,
 )
 
+from django.conf.urls.i18n import i18n_patterns
+
 urlpatterns = [
+    path('i18n/', include('django.conf.urls.i18n')),
+]
+
+urlpatterns += i18n_patterns(
     path('', home_view, name='accueil'),
     path('dashboard/', dashboard_router, name='dashboard'),
     path('dashboard/admin/', admin_dashboard_view, name='dashboard_admin'),
@@ -61,8 +67,7 @@ urlpatterns = [
     path('dashboard/admin/classes/<uuid:classe_id>/eleves/export/', export_classe_students_excel_view, name='dashboard_admin_export_classe_students'),
     path('dashboard/admin/users/<uuid:user_id>/force-reset-password/', admin_force_password_reset_view, name='dashboard_admin_force_password_reset'),
     path('dashboard/admin/pending/activer/', activate_pending_student_view, name='dashboard_admin_activate_pending_student'),
-        path('dashboard/admin/demandes/<int:demande_id>/process/',
-            admin_process_demande_view, name='dashboard_admin_process_demande'),
+    path('dashboard/admin/demandes/<int:demande_id>/process/', admin_process_demande_view, name='dashboard_admin_process_demande'),
     path('dashboard/admin/equipements/creer/', admin_equipement_create_view, name='dashboard_admin_create_equipement'),
     path('dashboard/admin/equipements/<int:equipement_id>/editer/', admin_equipement_update_view, name='dashboard_admin_edit_equipement'),
     path('dashboard/admin/equipements/<int:equipement_id>/toggle/', admin_equipement_toggle_active_view, name='dashboard_admin_toggle_equipement'),
@@ -74,7 +79,7 @@ urlpatterns = [
     path('apprentissage/', include('apprentissage.urls')),
     path('logistics/', include('logistics.urls', namespace='logistics')),
     path('tuteur/', include('tuteur_ia.urls', namespace='tuteur_ia')),
-]
+)
 
 from django.urls import re_path
 from django.views.static import serve

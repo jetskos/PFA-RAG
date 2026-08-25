@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
-{% block title %}Nouveau Ticket — Logistics{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Nouveau Ticket — Logistics" %}{% endblock %}
 {% block content %}
 <style>
   /* ═══════════════════════════════════════════════════
@@ -176,12 +177,12 @@
   <div class="logi-hero">
     <div class="logi-hero-left">
       <span class="logi-eyebrow"><i class="ti ti-ticket"></i> Logistics · Support</span>
-      <h1 class="logi-page-title">Nouveau ticket</h1>
-      <p class="logi-page-sub">Signalez un problème ou une demande de maintenance.</p>
+      <h1 class="logi-page-title">{% translate "Nouveau ticket" %}</h1>
+      <p class="logi-page-sub">{% translate "Signalez un problème ou une demande de maintenance." %}</p>
     </div>
     <div class="logi-hero-right">
       <a href="{% url 'logistics:tickets' %}" class="logi-btn-ghost">
-        <i class="ti ti-arrow-left"></i> Retour aux tickets
+        <i class="ti ti-arrow-left"></i> {% translate "Retour aux tickets" %}
       </a>
     </div>
   </div>
@@ -189,7 +190,7 @@
   <!-- ══ FORM CARD ══ -->
   <div class="logi-form-card">
     <div class="logi-form-card-header">
-      <h2><i class="ti ti-file-description"></i> Informations du ticket</h2>
+      <h2><i class="ti ti-file-description"></i> {% translate "Informations du ticket" %}</h2>
     </div>
 
     <form method="post">
@@ -206,7 +207,7 @@
         <!-- Titre -->
         <div class="logi-field">
           <label class="logi-label" for="{{ form.titre.id_for_label }}">
-            <i class="ti ti-heading"></i> Titre du ticket
+            <i class="ti ti-heading"></i> {% translate "Titre du ticket" %}
           </label>
           {{ form.titre }}
           {% if form.titre.errors %}<p class="logi-error">{{ form.titre.errors.0 }}</p>{% endif %}
@@ -215,7 +216,7 @@
         <!-- Description -->
         <div class="logi-field">
           <label class="logi-label" for="{{ form.description.id_for_label }}">
-            <i class="ti ti-align-left"></i> Description
+            <i class="ti ti-align-left"></i> {% translate "Description" %}
           </label>
           {{ form.description }}
           {% if form.description.errors %}<p class="logi-error">{{ form.description.errors.0 }}</p>{% endif %}
@@ -225,14 +226,14 @@
         <div class="logi-row-2">
           <div class="logi-field">
             <label class="logi-label" for="{{ form.equipement.id_for_label }}">
-              <i class="ti ti-package"></i> Équipement concerné
+              <i class="ti ti-package"></i> {% translate "Équipement concerné" %}
             </label>
             {{ form.equipement }}
             {% if form.equipement.errors %}<p class="logi-error">{{ form.equipement.errors.0 }}</p>{% endif %}
           </div>
           <div class="logi-field">
             <label class="logi-label" for="{{ form.atelier.id_for_label }}">
-              <i class="ti ti-building-community"></i> Atelier cible
+              <i class="ti ti-building-community"></i> {% translate "Atelier cible" %}
             </label>
             {{ form.atelier }}
             {% if form.atelier.errors %}<p class="logi-error">{{ form.atelier.errors.0 }}</p>{% endif %}
@@ -243,10 +244,10 @@
 
       <div class="logi-form-footer">
         <button type="submit" class="btn-submit">
-          <i class="ti ti-send"></i> Soumettre le ticket
+          <i class="ti ti-send"></i> {% translate "Soumettre le ticket" %}
         </button>
         <a href="{% url 'logistics:tickets' %}" class="btn-cancel">
-          <i class="ti ti-x"></i> Annuler
+          <i class="ti ti-x"></i> {% translate "Annuler" %}
         </a>
       </div>
     </form>
@@ -259,11 +260,11 @@
   document.addEventListener("DOMContentLoaded", function() {
     const atelierSelect = document.getElementById("{{ form.atelier.id_for_label }}");
     if (atelierSelect) {
-      new TomSelect(atelierSelect, { create: false, placeholder: "Rechercher un atelier...", maxOptions: 50 });
+      new TomSelect(atelierSelect, { create: false, placeholder: "{% translate 'Rechercher un atelier...' %}", maxOptions: 50 });
     }
     const equipementSelect = document.getElementById("{{ form.equipement.id_for_label }}");
     if (equipementSelect) {
-      new TomSelect(equipementSelect, { create: false, placeholder: "Rechercher un équipement...", maxOptions: 50 });
+      new TomSelect(equipementSelect, { create: false, placeholder: "{% translate 'Rechercher un équipement...' %}", maxOptions: 50 });
     }
   });
 </script>

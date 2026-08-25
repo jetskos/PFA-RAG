@@ -1,15 +1,16 @@
+{% load i18n %}
 <section id="kanban-section">
 
   <!-- SECTION HEADER -->
   <div class="as-section-header">
     <div>
-      <h2 class="as-section-title">Assignation Kanban</h2>
-      <p class="as-section-sub">Glissez-déposez les étudiants en attente vers la classe de votre choix pour les assigner et activer leur compte.</p>
+      <h2 class="as-section-title">{% translate "Assignation Kanban" %}</h2>
+      <p class="as-section-sub">{% translate "Glissez-déposez les étudiants en attente vers la classe de votre choix pour les assigner et activer leur compte." %}</p>
     </div>
     <div style="display:flex; gap:0.5rem; align-items:center; flex-shrink:0;">
       <span class="as-badge pending" style="font-size:0.75rem;">
         <i class="ti ti-user-clock" style="font-size:0.85rem;"></i>
-        {{ pending_students_all.count }} en attente
+        {% blocktranslate count counter=pending_students_all.count %}{{ counter }} en attente{% plural %}{{ counter }} en attente{% endblocktranslate %}
       </span>
     </div>
   </div>
@@ -20,8 +21,8 @@
     <div class="as-kanban-col" data-classe-id="">
       <div class="as-kanban-header pending">
         <div>
-          <p class="as-kanban-title">En attente</p>
-          <p class="as-kanban-sub">Glisser vers une classe →</p>
+          <p class="as-kanban-title">{% translate "En attente" %}</p>
+          <p class="as-kanban-sub">{% translate "Glisser vers une classe →" %}</p>
         </div>
         <span class="as-kanban-count alert-count" id="badge-pending">{{ pending_students_all.count }}</span>
       </div>
@@ -36,7 +37,7 @@
         {% empty %}
         <div style="text-align:center; padding:2rem 1rem; color: var(--as-subtle); font-size:0.82rem;">
           <i class="ti ti-circle-check" style="font-size:1.5rem; display:block; margin-bottom:0.5rem; color: var(--as-green);"></i>
-          Aucun étudiant en attente
+          {% translate "Aucun étudiant en attente" %}
         </div>
         {% endfor %}
       </div>
@@ -62,7 +63,7 @@
         </div>
         {% empty %}
         <div style="text-align:center; padding:1.5rem 0.5rem; color: var(--as-subtle); font-size:0.78rem; border: 2px dashed var(--as-border); border-radius: 8px; margin:0.25rem;">
-          Déposez ici
+          {% translate "Déposez ici" %}
         </div>
         {% endfor %}
       </div>
@@ -70,11 +71,11 @@
     {% empty %}
     <div class="as-empty-state" style="flex: 1; min-width: 300px;">
       <i class="ti ti-building-community"></i>
-      <p>Aucune classe active. Créez d'abord des classes.</p>
+      <p>{% translate "Aucune classe active. Créez d'abord des classes." %}</p>
       <button class="as-btn as-btn-primary"
               hx-get="{% url 'dashboard_admin_create_classe' %}"
               hx-target="#modal-container" hx-swap="innerHTML">
-        <i class="ti ti-plus"></i> Créer une Classe
+        <i class="ti ti-plus"></i> {% translate "Créer une Classe" %}
       </button>
     </div>
     {% endfor %}
@@ -152,7 +153,7 @@
             } else {
               // Revert
               fromCol.appendChild(item);
-              alert("Erreur lors de l'assignation. Veuillez réessayer.");
+              alert("{% translate "Erreur lors de l'assignation. Veuillez réessayer." %}");
             }
           }).catch(() => {
             fromCol.appendChild(item);

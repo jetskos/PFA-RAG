@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
 {% block title %}
-{% if active_tab == 'command_center' %}Centre de Commandement{% else %}Gestion de la Structure{% endif %} | EduTech
+{% if active_tab == 'command_center' %}{% translate "Centre de Commandement" %}{% else %}{% translate "Gestion de la Structure" %}{% endif %} | EduTech
 Admin
 {% endblock %}
 
@@ -525,7 +526,7 @@ Admin
 
     <!-- 1. Hero Section -->
     <header class="cmd-header">
-        <h1 class="cmd-title">Centre de Commandement</h1>
+        <h1 class="cmd-title">{% translate "Centre de Commandement" %}</h1>
     </header>
 
     <!-- 2. KPI Grid -->
@@ -534,50 +535,49 @@ Admin
             {% if stats.en_attente > 0 %}
             <div class="kpi-alert-dot"></div>
             {% endif %}
-            <span class="kpi-title"><i class="ti ti-user-plus"></i> Inscriptions en attente</span>
+            <span class="kpi-title"><i class="ti ti-user-plus"></i> {% translate "Inscriptions en attente" %}</span>
             <span class="kpi-value">{{ stats.en_attente }}</span>
-            <span class="kpi-subtitle">Validation requise immédiatement</span>
+            <span class="kpi-subtitle">{% translate "Validation requise immédiatement" %}</span>
         </a>
 
         <a href="{% url 'accounts:admin_dashboard' %}" class="glass-kpi">
-            <span class="kpi-title"><i class="ti ti-users"></i> Formateurs Actifs</span>
+            <span class="kpi-title"><i class="ti ti-users"></i> {% translate "Formateurs Actifs" %}</span>
             <span class="kpi-value">{{ stats.formateurs_actifs }}</span>
-            <span class="kpi-subtitle">Sur la plateforme</span>
+            <span class="kpi-subtitle">{% translate "Sur la plateforme" %}</span>
         </a>
 
         <a href="{% url 'logistics:tickets' %}" class="glass-kpi">
-            <span class="kpi-title"><i class="ti ti-tool"></i> Tickets Logistique</span>
+            <span class="kpi-title"><i class="ti ti-tool"></i> {% translate "Tickets Logistique" %}</span>
             <span class="kpi-value">{{ stats.tickets_gmao }}</span>
             <span class="kpi-subtitle"
                 style="{% if stats.tickets_gmao > 0 %}color: #ef4444; font-weight: 600;{% else %}color: #10b981;{% endif %}">
-                {% if stats.tickets_gmao > 0 %}Urgents (GMAO){% else %}Tout est fonctionnel{% endif %}
+                {% if stats.tickets_gmao > 0 %}{% translate "Urgents (GMAO)" %}{% else %}{% translate "Tout est fonctionnel" %}{% endif %}
             </span>
         </a>
 
         <a href="{% url 'apprentissage:liste_cours' %}" class="glass-kpi">
-            <span class="kpi-title"><i class="ti ti-books"></i> Cours Publiés</span>
+            <span class="kpi-title"><i class="ti ti-books"></i> {% translate "Cours Publiés" %}</span>
             <span class="kpi-value">{{ stats.cours_publies }}</span>
-            <span class="kpi-subtitle" style="color: #10b981; font-weight: 600;">Dans {{ stats.niveaux_actifs }} niveaux
-                actifs</span>
+            <span class="kpi-subtitle" style="color: #10b981; font-weight: 600;">{% blocktranslate with n=stats.niveaux_actifs %}Dans {{ n }} niveaux actifs{% endblocktranslate %}</span>
         </a>
     </section>
 
     <!-- 3. Charts Grid -->
     <section class="charts-grid">
         <div class="glass-chart-card">
-            <h3 class="chart-title"><i class="ti ti-chart-pie"></i> Démographie Utilisateurs</h3>
+            <h3 class="chart-title"><i class="ti ti-chart-pie"></i> {% translate "Démographie Utilisateurs" %}</h3>
             <div class="chart-container">
                 <canvas id="usersChart"></canvas>
             </div>
         </div>
         <div class="glass-chart-card">
-            <h3 class="chart-title"><i class="ti ti-activity-heartbeat"></i> Inscriptions (7J)</h3>
+            <h3 class="chart-title"><i class="ti ti-activity-heartbeat"></i> {% translate "Inscriptions (7J)" %}</h3>
             <div class="chart-container">
                 <canvas id="inscriptionsChart"></canvas>
             </div>
         </div>
         <div class="glass-chart-card">
-            <h3 class="chart-title"><i class="ti ti-tool"></i> État des Tickets GMAO</h3>
+            <h3 class="chart-title"><i class="ti ti-tool"></i> {% translate "État des Tickets GMAO" %}</h3>
             <div class="chart-container">
                 <canvas id="ticketsChart"></canvas>
             </div>
@@ -588,7 +588,7 @@ Admin
     <div class="cmd-grid">
         <!-- 4. Live Activity Feed (Left Column) -->
         <section class="cmd-panel">
-            <h2 class="panel-header"><i class="ti ti-activity" style="color: #3b82f6;"></i> Flux d'Activité Système</h2>
+            <h2 class="panel-header"><i class="ti ti-activity" style="color: #3b82f6;"></i> {% translate "Flux d'Activité Système" %}</h2>
 
             <div class="timeline">
                 {% if timeline %}
@@ -606,9 +606,9 @@ Admin
                 <div class="timeline-item">
                     <div class="timeline-dot dot-purple"></div>
                     <div class="timeline-content">
-                        <div class="timeline-time">Maintenant</div>
-                        <div class="timeline-title">Système initialisé</div>
-                        <div class="timeline-desc">Aucune activité récente détectée sur la plateforme.</div>
+                        <div class="timeline-time">{% translate "Maintenant" %}</div>
+                        <div class="timeline-title">{% translate "Système initialisé" %}</div>
+                        <div class="timeline-desc">{% translate "Aucune activité récente détectée sur la plateforme." %}</div>
                     </div>
                 </div>
                 {% endif %}
@@ -617,13 +617,13 @@ Admin
 
         <!-- 5. Quick Actions Panel (Right Column) -->
         <aside class="cmd-panel" style="align-self: start;">
-            <h2 class="panel-header"><i class="ti ti-bolt" style="color: #f59e0b;"></i> Actions Rapides</h2>
+            <h2 class="panel-header"><i class="ti ti-bolt" style="color: #f59e0b;"></i> {% translate "Actions Rapides" %}</h2>
 
             <div class="action-list">
                 <a href="{% url 'dashboard_admin_structure' %}?tab=students" class="action-btn">
                     <div class="action-icon" style="color: #ef4444; background: rgba(239,68,68,0.1);"><i
                             class="ti ti-user-check" style="font-size: 1.25rem;"></i></div>
-                    <span>Valider les inscriptions</span>
+                    <span>{% translate "Valider les inscriptions" %}</span>
                     <i class="ti ti-chevron-right action-chevron"
                         style="margin-left:auto; transition: transform 0.2s ease, color 0.2s ease; color: var(--text-muted, #64748b);"></i>
                 </a>
@@ -631,7 +631,7 @@ Admin
                 <a href="{% url 'accounts:admin_dashboard' %}" class="action-btn">
                     <div class="action-icon" style="color: #3b82f6; background: rgba(59,130,246,0.1);"><i
                             class="ti ti-users-group" style="font-size: 1.25rem;"></i></div>
-                    <span>Gérer les formateurs</span>
+                    <span>{% translate "Gérer les formateurs" %}</span>
                     <i class="ti ti-chevron-right action-chevron"
                         style="margin-left:auto; transition: transform 0.2s ease, color 0.2s ease; color: var(--text-muted, #64748b);"></i>
                 </a>
@@ -639,7 +639,7 @@ Admin
                 <a href="{% url 'logistics:inventaire' %}" class="action-btn">
                     <div class="action-icon" style="color: #f59e0b; background: rgba(245,158,11,0.1);"><i
                             class="ti ti-packages" style="font-size: 1.25rem;"></i></div>
-                    <span>Gérer le matériel</span>
+                    <span>{% translate "Gérer le matériel" %}</span>
                     <i class="ti ti-chevron-right action-chevron"
                         style="margin-left:auto; transition: transform 0.2s ease, color 0.2s ease; color: var(--text-muted, #64748b);"></i>
                 </a>
@@ -647,7 +647,7 @@ Admin
                 <a href="{% url 'logistics:tickets' %}" class="action-btn">
                     <div class="action-icon" style="color: #10b981; background: rgba(16,185,129,0.1);"><i
                             class="ti ti-tool" style="font-size: 1.25rem;"></i></div>
-                    <span>Tickets GMAO</span>
+                    <span>{% translate "Tickets GMAO" %}</span>
                     <i class="ti ti-chevron-right action-chevron"
                         style="margin-left:auto; transition: transform 0.2s ease, color 0.2s ease; color: var(--text-muted, #64748b);"></i>
                 </a>
@@ -655,7 +655,7 @@ Admin
                 <a href="{% url 'apprentissage:liste_cours' %}" class="action-btn">
                     <div class="action-icon" style="color: #8b5cf6; background: rgba(139,92,246,0.1);"><i
                             class="ti ti-books" style="font-size: 1.25rem;"></i></div>
-                    <span>Superviser les cours</span>
+                    <span>{% translate "Superviser les cours" %}</span>
                     <i class="ti ti-chevron-right action-chevron"
                         style="margin-left:auto; transition: transform 0.2s ease, color 0.2s ease; color: var(--text-muted, #64748b);"></i>
                 </a>
@@ -667,7 +667,7 @@ Admin
                     style="background: rgba(255,255,255,0.5);">
                     <div class="action-icon" style="color: #475569; background: rgba(241,245,249,0.8);"><i
                             class="ti ti-layers-linked" style="font-size: 1.25rem;"></i></div>
-                    <span>Gestion de la Structure</span>
+                    <span>{% translate "Gestion de la Structure" %}</span>
                     <i class="ti ti-chevron-right action-chevron"
                         style="margin-left:auto; transition: transform 0.2s ease, color 0.2s ease; color: var(--text-muted, #64748b);"></i>
                 </a>
@@ -696,7 +696,7 @@ Admin
             new Chart(document.getElementById('usersChart'), {
                 type: 'doughnut',
                 data: {
-                    labels: ['Étudiants', 'Formateurs', 'Admins'],
+                    labels: ['{% translate "Étudiants" %}', '{% translate "Formateurs" %}', '{% translate "Admins" %}'],
                     datasets: [{
                         data: [data.users.students, data.users.formateurs, data.users.admins],
                         backgroundColor: ['#3b82f6', '#f59e0b', '#ef4444'],
@@ -722,7 +722,7 @@ Admin
                 data: {
                     labels: data.inscriptions.labels,
                     datasets: [{
-                        label: 'Nouvelles Inscriptions',
+                        label: '{% translate "Nouvelles Inscriptions" %}',
                         data: data.inscriptions.values,
                         borderColor: '#10b981',
                         backgroundColor: 'rgba(16, 185, 129, 0.1)',
@@ -752,9 +752,9 @@ Admin
             new Chart(document.getElementById('ticketsChart'), {
                 type: 'bar',
                 data: {
-                    labels: ['Ouverts', 'En Cours', 'Résolus'],
+                    labels: ['{% translate "Ouverts" %}', '{% translate "En Cours" %}', '{% translate "Résolus" %}'],
                     datasets: [{
-                        label: 'Tickets',
+                        label: '{% translate "Tickets" %}',
                         data: [data.tickets.ouvert, data.tickets.encours, data.tickets.resolu],
                         backgroundColor: ['#ef4444', '#f59e0b', '#10b981'],
                         borderRadius: 6,

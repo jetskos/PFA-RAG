@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
-{% block title %}Inventaire — Logistics{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Inventaire — Logistics" %}{% endblock %}
 {% block content %}
 <style>
   /* ═══════════════════════════════════════════════════
@@ -251,33 +252,33 @@
   <div class="logi-hero">
     <div class="logi-hero-left">
       <span class="logi-eyebrow"><i class="ti ti-package"></i> Logistics</span>
-      <h1 class="logi-page-title">Inventaire des équipements</h1>
-      <p class="logi-page-sub">Consultez, filtrez et gérez tout le parc matériel IoT.</p>
+      <h1 class="logi-page-title">{% translate "Inventaire des équipements" %}</h1>
+      <p class="logi-page-sub">{% translate "Consultez, filtrez et gérez tout le parc matériel IoT." %}</p>
       <div class="logi-subtabs">
         <a href="{% url 'logistics:inventaire' %}" class="logi-subtab active">
-          <i class="ti ti-package"></i> Inventaire
+          <i class="ti ti-package"></i> {% translate "Inventaire" %}
         </a>
         <a href="{% url 'logistics:tickets' %}" class="logi-subtab">
-          <i class="ti ti-ticket"></i> Tickets
+          <i class="ti ti-ticket"></i> {% translate "Tickets" %}
         </a>
         <a href="{% url 'logistics:ateliers' %}" class="logi-subtab">
-          <i class="ti ti-building-community"></i> Ateliers
+          <i class="ti ti-building-community"></i> {% translate "Ateliers" %}
         </a>
         <a href="{% url 'logistics:demandes' %}" class="logi-subtab">
-          <i class="ti ti-truck-delivery"></i> Demandes
+          <i class="ti ti-truck-delivery"></i> {% translate "Demandes" %}
         </a>
       </div>
     </div>
     <div class="logi-hero-right">
-      <a href="{% url 'logistics:exporter_equipements' %}" class="logi-btn-ghost" title="Exporter en Excel">
-        <i class="ti ti-download"></i> Exporter
+      <a href="{% url 'logistics:exporter_equipements' %}" class="logi-btn-ghost" title="{% translate 'Exporter en Excel' %}">
+        <i class="ti ti-download"></i> {% translate "Exporter" %}
       </a>
       {% if user.is_staff or user.role == "ADMIN" or user.is_formateur %}
       <button class="logi-btn-primary" type="button"
         hx-get="{% url 'logistics:ajouter_equipement' %}"
         hx-target="#form-equipement-container"
         hx-swap="innerHTML">
-        <i class="ti ti-plus"></i> Ajouter un équipement
+        <i class="ti ti-plus"></i> {% translate "Ajouter un équipement" %}
       </button>
       {% endif %}
     </div>
@@ -290,11 +291,11 @@
         <div class="stat-tile-icon" style="background:rgba(13,148,136,0.1);color:#0D9488;">
           <i class="ti ti-package"></i>
         </div>
-        <span class="stat-tile-trend" style="background:rgba(13,148,136,0.08);color:#0D9488;">Total</span>
+        <span class="stat-tile-trend" style="background:rgba(13,148,136,0.08);color:#0D9488;">{% translate "Total" %}</span>
       </div>
       <div>
         <div class="stat-tile-val">{{ equipements|length }}</div>
-        <div class="stat-tile-lbl">Équipements</div>
+        <div class="stat-tile-lbl">{% translate "Équipements" %}</div>
       </div>
       <div class="stat-tile-bar"><div class="stat-tile-bar-fill" style="width:100%;background:#0D9488;"></div></div>
     </div>
@@ -303,11 +304,11 @@
         <div class="stat-tile-icon" style="background:rgba(16,185,129,0.1);color:#10b981;">
           <i class="ti ti-circle-check"></i>
         </div>
-        <span class="stat-tile-trend" style="background:rgba(16,185,129,0.1);color:#059669;">Opérationnel</span>
+        <span class="stat-tile-trend" style="background:rgba(16,185,129,0.1);color:#059669;">{% translate "Opérationnel" %}</span>
       </div>
       <div>
         <div class="stat-tile-val">{{ equipements_disponibles|default:"—" }}</div>
-        <div class="stat-tile-lbl">Disponibles</div>
+        <div class="stat-tile-lbl">{% translate "Disponibles" %}</div>
       </div>
       <div class="stat-tile-bar"><div class="stat-tile-bar-fill" style="width:70%;background:#10b981;"></div></div>
     </div>
@@ -316,11 +317,11 @@
         <div class="stat-tile-icon" style="background:rgba(245,158,11,0.1);color:#f59e0b;">
           <i class="ti ti-tool"></i>
         </div>
-        <span class="stat-tile-trend" style="background:rgba(245,158,11,0.1);color:#d97706;">En cours</span>
+        <span class="stat-tile-trend" style="background:rgba(245,158,11,0.1);color:#d97706;">{% translate "En cours" %}</span>
       </div>
       <div>
         <div class="stat-tile-val">{{ equipements_maintenance|default:"—" }}</div>
-        <div class="stat-tile-lbl">En maintenance</div>
+        <div class="stat-tile-lbl">{% translate "En maintenance" %}</div>
       </div>
       <div class="stat-tile-bar"><div class="stat-tile-bar-fill" style="width:40%;background:#f59e0b;"></div></div>
     </div>
@@ -329,11 +330,11 @@
         <div class="stat-tile-icon" style="background:rgba(239,68,68,0.1);color:#ef4444;">
           <i class="ti ti-alert-triangle"></i>
         </div>
-        <span class="stat-tile-trend" style="background:rgba(239,68,68,0.08);color:#dc2626;">Alerte</span>
+        <span class="stat-tile-trend" style="background:rgba(239,68,68,0.08);color:#dc2626;">{% translate "Alerte" %}</span>
       </div>
       <div>
         <div class="stat-tile-val">{{ equipements_en_panne|default:"—" }}</div>
-        <div class="stat-tile-lbl">En panne</div>
+        <div class="stat-tile-lbl">{% translate "En panne" %}</div>
       </div>
       <div class="stat-tile-bar"><div class="stat-tile-bar-fill" style="width:20%;background:#ef4444;"></div></div>
     </div>
@@ -342,8 +343,8 @@
   <!-- ══ EQUIPMENT PANEL ══ -->
   <div class="logi-panel">
     <div class="logi-panel-head">
-      <span class="logi-panel-title"><i class="ti ti-list-details"></i> Équipements</span>
-      <span class="logi-panel-count">{{ equipements|length }} au total</span>
+      <span class="logi-panel-title"><i class="ti ti-list-details"></i> {% translate "Équipements" %}</span>
+      <span class="logi-panel-count">{% blocktranslate count counter=equipements|length %}{{ counter }} au total{% plural %}{{ counter }} au total{% endblocktranslate %}</span>
     </div>
 
     <!-- Filters & Search -->
@@ -356,20 +357,20 @@
       <div style="display:flex;gap:0.35rem;flex-wrap:wrap;">
         <button type="button" class="logi-fpill is-active"
           onclick="document.getElementById('etat-input').value='TOUS'; document.querySelectorAll('.logi-fpill').forEach(b=>b.classList.remove('is-active')); this.classList.add('is-active'); htmx.trigger('#filter-form','submit')">
-          Tous
+          {% translate "Tous" %}
         </button>
         <button type="button" class="logi-fpill"
           onclick="document.getElementById('etat-input').value='DISPONIBLE'; document.querySelectorAll('.logi-fpill').forEach(b=>b.classList.remove('is-active')); this.classList.add('is-active'); htmx.trigger('#filter-form','submit')">
-          <span class="pill-dot" style="background:#10b981;opacity:1;"></span> Actifs
+          <span class="pill-dot" style="background:#10b981;opacity:1;"></span> {% translate "Actifs" %}
         </button>
         <button type="button" class="logi-fpill"
           onclick="document.getElementById('etat-input').value='EN_PANNE'; document.querySelectorAll('.logi-fpill').forEach(b=>b.classList.remove('is-active')); this.classList.add('is-active'); htmx.trigger('#filter-form','submit')">
-          <span class="pill-dot" style="background:#ef4444;opacity:1;"></span> Inactifs
+          <span class="pill-dot" style="background:#ef4444;opacity:1;"></span> {% translate "Inactifs" %}
         </button>
       </div>
       <div class="logi-filter-search">
         <i class="ti ti-search"></i>
-        <input type="text" name="q" placeholder="Rechercher (S/N, Nom...)"
+        <input type="text" name="q" placeholder="{% translate 'Rechercher (S/N, Nom...)' %}"
                hx-trigger="keyup changed delay:300ms">
       </div>
     </form>
@@ -381,8 +382,8 @@
 
     <!-- Legend -->
     <div class="logi-legend">
-      <span class="leg-item"><span class="leg-dot" style="background:#10b981;"></span> Actif</span>
-      <span class="leg-item"><span class="leg-dot" style="background:#ef4444;"></span> Inactif / En panne</span>
+      <span class="leg-item"><span class="leg-dot" style="background:#10b981;"></span> {% translate "Actif" %}</span>
+      <span class="leg-item"><span class="leg-dot" style="background:#ef4444;"></span> {% translate "Inactif / En panne" %}</span>
     </div>
   </div>
 

@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
-{% block title %}Paramètres Système - Administration{% endblock %}
+{% block title %}{% translate "Paramètres Système - Administration" %}{% endblock %}
 
 {% block content %}
 <style>
@@ -72,8 +73,8 @@
 <div class="settings-shell">
     <div class="settings-hero">
         <div>
-            <h1 class="settings-hero-title"><i class="ti ti-settings"></i> Configuration Système</h1>
-            <p class="settings-hero-sub">Gérez le fonctionnement global de la plateforme, de l'IA au réseau.</p>
+            <h1 class="settings-hero-title"><i class="ti ti-settings"></i> {% translate "Configuration Système" %}</h1>
+            <p class="settings-hero-sub">{% translate "Gérez le fonctionnement global de la plateforme, de l'IA au réseau." %}</p>
         </div>
     </div>
 
@@ -90,37 +91,37 @@
             {% csrf_token %}
             
             <div class="form-group">
-                <label class="form-label">Mode Hors-Ligne</label>
+                <label class="form-label">{% translate "Mode Hors-Ligne" %}</label>
                 <div class="switch-wrapper">
                     {{ form.mode_hors_ligne }}
-                    <span style="font-weight: 600; color: var(--text-primary);">Activer le mode réseau local déconnecté</span>
+                    <span style="font-weight: 600; color: var(--text-primary);">{% translate "Activer le mode réseau local déconnecté" %}</span>
                 </div>
                 <p class="help-text">{{ form.mode_hors_ligne.help_text }}</p>
-                <div class="help-text" style="color: #f59e0b; margin-top: 5px;"><i class="ti ti-alert-triangle"></i> L'activation empêche les tentatives d'envoi d'e-mails (pour éviter les crashs) et force l'IA locale par défaut.</div>
+                <div class="help-text" style="color: #f59e0b; margin-top: 5px;"><i class="ti ti-alert-triangle"></i> {% translate "L'activation empêche les tentatives d'envoi d'e-mails (pour éviter les crashs) et force l'IA locale par défaut." %}</div>
             </div>
 
             <hr style="border: 0; border-top: 1px solid var(--border-light, #e2e8f0); margin: 2rem 0;">
 
             <div class="form-group">
-                <label class="form-label">Fournisseur d'Intelligence Artificielle</label>
+                <label class="form-label">{% translate "Fournisseur d'Intelligence Artificielle" %}</label>
                 {{ form.llm_provider }}
-                <p class="help-text">Si vous choisissez "Automatique", le système vérifiera la connexion Internet avant de décider.</p>
+                <p class="help-text">{% blocktranslate %}Si vous choisissez "Automatique", le système vérifiera la connexion Internet avant de décider.{% endblocktranslate %}</p>
             </div>
 
             <hr style="border: 0; border-top: 1px solid var(--border-light, #e2e8f0); margin: 2rem 0;">
 
             <div class="form-group">
-                <label class="form-label">Configuration Vidéo</label>
+                <label class="form-label">{% translate "Configuration Vidéo" %}</label>
                 <div class="switch-wrapper">
                     {{ form.activer_hls }}
-                    <span style="font-weight: 600; color: var(--text-primary);">Activer le streaming HLS</span>
+                    <span style="font-weight: 600; color: var(--text-primary);">{% translate "Activer le streaming HLS" %}</span>
                 </div>
                 <p class="help-text">{{ form.activer_hls.help_text }}</p>
             </div>
 
             <div style="margin-top: 2rem; display: flex; justify-content: flex-end;">
                 <button type="submit" class="admin-btn-primary">
-                    <i class="ti ti-device-floppy"></i> Sauvegarder les paramètres
+                    <i class="ti ti-device-floppy"></i> {% translate "Sauvegarder les paramètres" %}
                 </button>
             </div>
         </form>

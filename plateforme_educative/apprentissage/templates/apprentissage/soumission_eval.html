@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
-{% block title %}Évaluer la soumission{% endblock %}
+{% block title %}{% translate "Évaluer la soumission" %}{% endblock %}
 
 {% block content %}
 <section class="page-shell">
@@ -10,16 +11,16 @@
                 {{ devoir.titre }}
             </a>
         </p>
-        <h1>Évaluer la soumission de {{ soumission.etudiant.get_full_name }}</h1>
+        <h1>{% blocktranslate with nom=soumission.etudiant.get_full_name %}Évaluer la soumission de {{ nom }}{% endblocktranslate %}</h1>
     </div>
 
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 2rem; align-items: start;">
         <!-- Soumission de l'élève -->
         <div class="carte">
-            <h2 style="font-size: 1rem; margin-bottom: 1rem; border-bottom: 1px solid var(--bordure); padding-bottom: 0.75rem;">📎 Fichier soumis</h2>
+            <h2 style="font-size: 1rem; margin-bottom: 1rem; border-bottom: 1px solid var(--bordure); padding-bottom: 0.75rem;">📎 {% translate "Fichier soumis" %}</h2>
             <div style="margin-bottom: 1rem;">
                 <a href="{{ soumission.fichier.url }}" target="_blank" class="btn">
-                    <i class="ti ti-external-link"></i> Ouvrir le fichier
+                    <i class="ti ti-external-link"></i> {% translate "Ouvrir le fichier" %}
                 </a>
             </div>
             {% if soumission.commentaire_eleve %}
@@ -28,14 +29,14 @@
                 </div>
             {% endif %}
             <div style="margin-top: 1rem; font-size: 0.82rem; color: var(--texte-secondaire);">
-                Soumis le {{ soumission.date_soumission|date:"d/m/Y à H:i" }}
+                {% blocktranslate with d=soumission.date_soumission|date:"d/m/Y à H:i" %}Soumis le {{ d }}{% endblocktranslate %}
             </div>
         </div>
 
         <!-- Formulaire de notation -->
         <div class="carte">
             <h2 style="font-size: 1rem; margin-bottom: 1rem; border-bottom: 1px solid var(--bordure); padding-bottom: 0.75rem;">
-                <i class="ti ti-star"></i> Attribution de la note (sur {{ devoir.note_max }})
+                <i class="ti ti-star"></i> {% blocktranslate with max=devoir.note_max %}Attribution de la note (sur {{ max }}){% endblocktranslate %}
             </h2>
             <form method="post" style="display: flex; flex-direction: column; gap: 1rem;">
                 {% csrf_token %}
@@ -50,9 +51,9 @@
                     {% if form.feedback.errors %}<div class="form-error">{{ form.feedback.errors }}</div>{% endif %}
                 </div>
                 <div style="display: flex; gap: 0.75rem; justify-content: flex-end; border-top: 1px solid var(--bordure); padding-top: 1rem;">
-                    <a href="{% url 'apprentissage:devoir_detail' devoir_id=devoir.pk %}" class="btn btn-ghost">Annuler</a>
+                    <a href="{% url 'apprentissage:devoir_detail' devoir_id=devoir.pk %}" class="btn btn-ghost">{% translate "Annuler" %}</a>
                     <button type="submit" class="btn-primary">
-                        <i class="ti ti-check"></i> Valider la note
+                        <i class="ti ti-check"></i> {% translate "Valider la note" %}
                     </button>
                 </div>
             </form>

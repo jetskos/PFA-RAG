@@ -1,3 +1,4 @@
+{% load i18n %}
 <style>
     .modal-backdrop {
         position: fixed;
@@ -182,55 +183,55 @@
 <div class="modal-backdrop" id="niveau-modal">
     <div class="modal-dialog">
         <div class="modal-header">
-            <h3 class="modal-title">{% if is_create %}Créer un niveau{% else %}Modifier le niveau{% endif %}</h3>
-            <button class="btn-close" onclick="document.getElementById('modal-container').innerHTML=''" aria-label="Fermer">
+            <h3 class="modal-title">{% if is_create %}{% translate "Créer un niveau" %}{% else %}{% translate "Modifier le niveau" %}{% endif %}</h3>
+            <button class="btn-close" onclick="document.getElementById('modal-container').innerHTML=''" aria-label="{% translate 'Fermer' %}">
                 <i class="ti ti-x"></i>
             </button>
         </div>
-        
+
         <form method="post"
               hx-post="{{ action_url }}"
               hx-target="#niveau-modal"
               hx-swap="outerHTML">
             {% csrf_token %}
-            
+
             <div class="modal-body">
                 <div class="modal-form-field">
-                    <label for="{{ niveau_form.code.id_for_label }}">Code d'identification</label>
+                    <label for="{{ niveau_form.code.id_for_label }}">{% translate "Code d'identification" %}</label>
                     {{ niveau_form.code }}
                     {% if niveau_form.code.errors %}<span class="error-text">{{ niveau_form.code.errors.0 }}</span>{% endif %}
                 </div>
-                
+
                 <div class="modal-form-field">
-                    <label for="{{ niveau_form.nom.id_for_label }}">Nom complet du niveau</label>
+                    <label for="{{ niveau_form.nom.id_for_label }}">{% translate "Nom complet du niveau" %}</label>
                     {{ niveau_form.nom }}
                     {% if niveau_form.nom.errors %}<span class="error-text">{{ niveau_form.nom.errors.0 }}</span>{% endif %}
                 </div>
-                
+
                 <div class="modal-form-field">
-                    <label for="{{ niveau_form.ordre.id_for_label }}">Ordre d'affichage (ex: 1, 2, 3)</label>
+                    <label for="{{ niveau_form.ordre.id_for_label }}">{% translate "Ordre d'affichage (ex: 1, 2, 3)" %}</label>
                     {{ niveau_form.ordre }}
                     {% if niveau_form.ordre.errors %}<span class="error-text">{{ niveau_form.ordre.errors.0 }}</span>{% endif %}
                 </div>
-                
+
                 <div class="modal-checkbox-field">
                     {{ niveau_form.actif }}
-                    <label for="{{ niveau_form.actif.id_for_label }}">Niveau actif sur la plateforme</label>
+                    <label for="{{ niveau_form.actif.id_for_label }}">{% translate "Niveau actif sur la plateforme" %}</label>
                 </div>
-                
+
                 {% if niveau_form.non_field_errors %}
                     <div style="margin-top: 1rem; padding: 0.75rem; background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; color: #b91c1c;">
                         {{ niveau_form.non_field_errors.0 }}
                     </div>
                 {% endif %}
             </div>
-            
+
             <div class="modal-footer">
                 <button type="button" class="btn-modal-cancel" onclick="document.getElementById('modal-container').innerHTML=''">
-                    {{ cancel_label|default:'Annuler' }}
+                    {% if cancel_label %}{{ cancel_label }}{% else %}{% translate "Annuler" %}{% endif %}
                 </button>
                 <button type="submit" class="btn-modal-submit">
-                    {{ submit_label|default:'Enregistrer' }}
+                    {% if submit_label %}{{ submit_label }}{% else %}{% translate "Enregistrer" %}{% endif %}
                 </button>
             </div>
         </form>

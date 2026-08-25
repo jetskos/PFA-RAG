@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
-{% load static %}
-{% block title %}EduTech IoT & IA — La Plateforme Éducative Nouvelle Génération{% endblock %}
+{% load static i18n %}
+{% block title %}EduTech IoT & IA — {% translate "La Plateforme Éducative Nouvelle Génération" %}{% endblock %}
 
 {% block content %}
 <style>
@@ -411,41 +411,41 @@
         <div class="hero-content">
             <span class="hero-tag">
                 <span class="dot"></span>
-                IoT · Intelligence Artificielle · Logistique
+                {% translate "IoT · Intelligence Artificielle · Logistique" %}
             </span>
 
             <h1 class="hero-h1">
-                La plateforme<br>éducative
-                <span class="grad"><br>nouvelle génération.</span>
+                {% blocktranslate %}La plateforme<br>éducative
+                <span class="grad"><br>nouvelle génération.</span>{% endblocktranslate %}
             </h1>
 
             <p class="hero-desc">
-                Des parcours pédagogiques structurés en IoT et Réseaux, soutenus par un Tuteur IA socratique basé sur vos cours et un système de gestion d'atelier intégré.
+                {% translate "Des parcours pédagogiques structurés en IoT et Réseaux, soutenus par un Tuteur IA socratique basé sur vos cours et un système de gestion d'atelier intégré." %}
             </p>
 
             <div class="hero-ctas">
                 <a class="btn-hero-primary" href="{% url 'accounts:register' %}">
-                    <i class="ti ti-rocket"></i> Commencer maintenant
+                    <i class="ti ti-rocket"></i> {% translate "Commencer maintenant" %}
                 </a>
                 <a class="btn-hero-ghost" href="{% url 'accounts:login' %}">
-                    <i class="ti ti-login"></i> Se connecter
+                    <i class="ti ti-login"></i> {% translate "Se connecter" %}
                 </a>
             </div>
 
             <div class="hero-stats">
                 <div>
                     <div class="hero-stat-num">3</div>
-                    <div class="hero-stat-lbl">Profils</div>
+                    <div class="hero-stat-lbl">{% translate "Profils" %}</div>
                 </div>
                 <div class="hero-stat-divider"></div>
                 <div>
                     <div class="hero-stat-num">IA</div>
-                    <div class="hero-stat-lbl">Tuteur RAG local</div>
+                    <div class="hero-stat-lbl">{% translate "Tuteur RAG local" %}</div>
                 </div>
                 <div class="hero-stat-divider"></div>
                 <div>
                     <div class="hero-stat-num">100%</div>
-                    <div class="hero-stat-lbl">Contenu ciblé</div>
+                    <div class="hero-stat-lbl">{% translate "Contenu ciblé" %}</div>
                 </div>
             </div>
         </div>
@@ -453,23 +453,23 @@
         <!-- Visual cards — robot + mini cards -->
         <div class="hero-visual">
             <div class="vis-robot-card">
-                <img src="{% static 'images/AI-text-to-image-photo-robot-with-computer.webp' %}" alt="Tuteur IA">
+                <img src="{% static 'images/AI-text-to-image-photo-robot-with-computer.webp' %}" alt="{% translate 'Tuteur IA' %}">
                 <div class="vis-robot-card-overlay"></div>
                 <div class="vis-robot-card-label">
-                    <p><i class="ti ti-sparkles"></i> Tuteur IA</p>
-                    <h3>Session socratique intelligente</h3>
+                    <p><i class="ti ti-sparkles"></i> {% translate "Tuteur IA" %}</p>
+                    <h3>{% translate "Session socratique intelligente" %}</h3>
                 </div>
             </div>
             <div class="vis-mini-row">
                 <div class="vis-mini-card">
                     <div class="vis-mini-icon" style="background: none; padding: 0;"><img src="{% static 'images/01-CAP-US-Header-Elements-of-successful-microlearning-courses-US_1200x400_DLVR.jpg' %}" alt="IoT" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;"></div>
-                    <h4>Cours IoT</h4>
-                    <p>PDFs & chapitres indexés</p>
+                    <h4>{% translate "Cours IoT" %}</h4>
+                    <p>{% translate "PDFs & chapitres indexés" %}</p>
                 </div>
                 <div class="vis-mini-card">
-                    <div class="vis-mini-icon" style="background: none; padding: 0;"><img src="{% static 'images/4738482_fa68_7.PNG' %}" alt="Ateliers" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;"></div>
-                    <h4>Ateliers</h4>
-                    <p>Gestion logistique</p>
+                    <div class="vis-mini-icon" style="background: none; padding: 0;"><img src="{% static 'images/4738482_fa68_7.PNG' %}" alt="{% translate 'Ateliers' %}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;"></div>
+                    <h4>{% translate "Ateliers" %}</h4>
+                    <p>{% translate "Gestion logistique" %}</p>
                 </div>
             </div>
         </div>
@@ -480,34 +480,34 @@
         <div class="home-pillars" style="margin: 0;">
             <!-- Plain feature card -->
             <div class="pillar-feat">
-                <h3>Cours structurés</h3>
-                <p>Chapitres progressifs avec documents, vidéos et QCM auto-générés par l'IA.</p>
+                <h3>{% translate "Cours structurés" %}</h3>
+                <p>{% translate "Chapitres progressifs avec documents, vidéos et QCM auto-générés par l'IA." %}</p>
             </div>
 
             <!-- Image card — robotics -->
             <div class="pillar-card">
-                <img src="{% static 'images/robotics-for-beginners-v3.webp' %}" alt="Robotique IoT">
+                <img src="{% static 'images/robotics-for-beginners-v3.webp' %}" alt="{% translate 'Robotique IoT' %}">
                 <div class="pillar-card-overlay"></div>
                 <div class="pillar-card-content">
-                    <span class="pillar-card-tag">Matériel</span>
-                    <h3>Une gestion d'atelier intégrée et fluide.</h3>
+                    <span class="pillar-card-tag">{% translate "Matériel" %}</span>
+                    <h3>{% translate "Une gestion d'atelier intégrée et fluide." %}</h3>
                 </div>
             </div>
 
             <!-- Image card — student + kit -->
             <div class="pillar-card">
-                <img src="{% static 'images/unnamed_-_2025-11-07T141254.530.webp' %}" alt="Apprentissage concret">
+                <img src="{% static 'images/unnamed_-_2025-11-07T141254.530.webp' %}" alt="{% translate 'Apprentissage concret' %}">
                 <div class="pillar-card-overlay"></div>
                 <div class="pillar-card-content">
-                    <span class="pillar-card-tag">Apprentissage</span>
-                    <h3>Construire, tester et itérer sur de vrais projets.</h3>
+                    <span class="pillar-card-tag">{% translate "Apprentissage" %}</span>
+                    <h3>{% translate "Construire, tester et itérer sur de vrais projets." %}</h3>
                 </div>
             </div>
 
             <!-- Plain feature card -->
             <div class="pillar-feat">
-                <h3>Tuteur IA Dédié</h3>
-                <p>Assistant 100% basé sur les supports de cours fournis par les formateurs.</p>
+                <h3>{% translate "Tuteur IA Dédié" %}</h3>
+                <p>{% translate "Assistant 100% basé sur les supports de cours fournis par les formateurs." %}</p>
             </div>
         </div>
     </div>
@@ -515,38 +515,38 @@
     <!-- ═══════ BENTO — IoT SHOWCASE ═══════ -->
     <section class="home-bento">
         <div style="margin-bottom: 2.5rem;">
-            <p class="section-eyebrow">Modules IoT & Composants</p>
-            <h2 class="section-title-big" style="color: var(--text-primary,#0f172a);">Le matériel devient<br>un support d'apprentissage.</h2>
+            <p class="section-eyebrow">{% translate "Modules IoT & Composants" %}</p>
+            <h2 class="section-title-big" style="color: var(--text-primary,#0f172a);">{% blocktranslate %}Le matériel devient<br>un support d'apprentissage.{% endblocktranslate %}</h2>
         </div>
         <div class="bento-grid">
             <!-- Main image — IoT components -->
             <div class="bento-main">
-                <img src="{% static 'images/bento-components-bg.png' %}" alt="Composants IoT Arduino">
+                <img src="{% static 'images/bento-components-bg.png' %}" alt="{% translate 'Composants IoT Arduino' %}">
                 <div class="bento-main-overlay"></div>
                 <div class="bento-main-content">
-                    <span class="bento-tag"><i class="ti ti-circuit-board"></i> IoT Hardware</span>
-                    <h2>Capteurs, microcontrôleurs et protocoles réseaux.</h2>
-                    <p>De l'Arduino aux modules sans fil, chaque composant fait partie d'un cours structuré avec documentation technique.</p>
+                    <span class="bento-tag"><i class="ti ti-circuit-board"></i> {% translate "IoT Hardware" %}</span>
+                    <h2>{% translate "Capteurs, microcontrôleurs et protocoles réseaux." %}</h2>
+                    <p>{% translate "De l'Arduino aux modules sans fil, chaque composant fait partie d'un cours structuré avec documentation technique." %}</p>
                 </div>
             </div>
 
             <!-- Side — robot -->
             <div class="bento-side">
-                <img src="{% static 'images/ai-technology-microchip-background-vector-digital-transformation-concept_53876-112222.JPG' %}" alt="IA Tuteur">
+                <img src="{% static 'images/ai-technology-microchip-background-vector-digital-transformation-concept_53876-112222.JPG' %}" alt="{% translate 'IA Tuteur' %}">
                 <div class="bento-side-overlay"></div>
                 <div class="bento-side-content">
-                    <p>Intelligence Artificielle</p>
-                    <h3>L'IA au service de la pratique.</h3>
+                    <p>{% translate "Intelligence Artificielle" %}</p>
+                    <h3>{% translate "L'IA au service de la pratique." %}</h3>
                 </div>
             </div>
 
             <!-- Side — robotics workshop -->
             <div class="bento-side">
-                <img src="{% static 'images/enfant-faisant-robot_23-2148863405.avif' %}" alt="Atelier Robotique">
+                <img src="{% static 'images/enfant-faisant-robot_23-2148863405.avif' %}" alt="{% translate 'Atelier Robotique' %}">
                 <div class="bento-side-overlay"></div>
                 <div class="bento-side-content">
-                    <p>Ateliers Pratiques</p>
-                    <h3>Prototypage & expérimentation réels.</h3>
+                    <p>{% translate "Ateliers Pratiques" %}</p>
+                    <h3>{% translate "Prototypage & expérimentation réels." %}</h3>
                 </div>
             </div>
         </div>
@@ -555,34 +555,34 @@
     <!-- ═══════ HOW IT WORKS ═══════ -->
     <section class="home-steps">
         <div class="steps-inner">
-            <p class="section-eyebrow">Comment ça marche</p>
-            <h2 class="section-title-big" style="color: white;">Un parcours en 4 étapes.</h2>
-            <p style="color: rgba(255,255,255,0.5); font-size: 0.95rem;">De l'inscription à la maîtrise du contenu.</p>
+            <p class="section-eyebrow">{% translate "Comment ça marche" %}</p>
+            <h2 class="section-title-big" style="color: white;">{% translate "Un parcours en 4 étapes." %}</h2>
+            <p style="color: rgba(255,255,255,0.5); font-size: 0.95rem;">{% translate "De l'inscription à la maîtrise du contenu." %}</p>
 
             <div class="steps-grid">
                 <div class="step-item">
-                    <span class="step-num">Étape 1</span>
+                    <span class="step-num">{% translate "Étape 1" %}</span>
                     <div class="step-icon"><i class="ti ti-user-plus"></i></div>
-                    <h4>Inscription & Validation</h4>
-                    <p>Créez votre compte, choisissez votre rôle et attendez la validation par l'admin.</p>
+                    <h4>{% translate "Inscription & Validation" %}</h4>
+                    <p>{% translate "Créez votre compte, choisissez votre rôle et attendez la validation par l'admin." %}</p>
                 </div>
                 <div class="step-item">
-                    <span class="step-num">Étape 2</span>
+                    <span class="step-num">{% translate "Étape 2" %}</span>
                     <div class="step-icon"><i class="ti ti-books"></i></div>
-                    <h4>Accès aux Cours</h4>
-                    <p>Explorez le catalogue, accédez aux chapitres correspondant à votre niveau.</p>
+                    <h4>{% translate "Accès aux Cours" %}</h4>
+                    <p>{% translate "Explorez le catalogue, accédez aux chapitres correspondant à votre niveau." %}</p>
                 </div>
                 <div class="step-item">
-                    <span class="step-num">Étape 3</span>
+                    <span class="step-num">{% translate "Étape 3" %}</span>
                     <div class="step-icon"><i class="ti ti-robot"></i></div>
-                    <h4>Session Tuteur IA</h4>
-                    <p>Après chaque chapitre, démarrez une session socratique avec votre tuteur IA.</p>
+                    <h4>{% translate "Session Tuteur IA" %}</h4>
+                    <p>{% translate "Après chaque chapitre, démarrez une session socratique avec votre tuteur IA." %}</p>
                 </div>
                 <div class="step-item">
-                    <span class="step-num">Étape 4</span>
+                    <span class="step-num">{% translate "Étape 4" %}</span>
                     <div class="step-icon"><i class="ti ti-certificate"></i></div>
-                    <h4>Validation & QCM</h4>
-                    <p>Obtenez votre score de maîtrise et validez vos connaissances avec le QCM.</p>
+                    <h4>{% translate "Validation & QCM" %}</h4>
+                    <p>{% translate "Obtenez votre score de maîtrise et validez vos connaissances avec le QCM." %}</p>
                 </div>
             </div>
         </div>
@@ -593,10 +593,10 @@
     <!-- ═══════ CTA BOTTOM ═══════ -->
     <div class="home-cta-bottom">
         <div class="home-cta-inner">
-            <h2>Prêt à rejoindre l'aventure technologique ?</h2>
-            <p>Rejoignez des étudiants et formateurs qui utilisent EduTech pour des formations en IoT, Réseaux et Intelligence Artificielle.</p>
+            <h2>{% translate "Prêt à rejoindre l'aventure technologique ?" %}</h2>
+            <p>{% translate "Rejoignez des étudiants et formateurs qui utilisent EduTech pour des formations en IoT, Réseaux et Intelligence Artificielle." %}</p>
             <a href="{% url 'accounts:register' %}" class="btn-cta-white">
-                <i class="ti ti-rocket"></i> Créer mon compte — c'est gratuit
+                <i class="ti ti-rocket"></i> {% translate "Créer mon compte — c'est gratuit" %}
             </a>
         </div>
     </div>

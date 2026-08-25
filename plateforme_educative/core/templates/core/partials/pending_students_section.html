@@ -1,3 +1,4 @@
+{% load i18n %}
 <style>
     /* Pending Student Row styles */
     .pending-shell-container {
@@ -192,17 +193,17 @@
 
     <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:1.5rem; flex-wrap:wrap; gap:1rem;">
         <div>
-            <h2 style="margin:0; font-size:1.2rem; font-weight:700;">Inscriptions d'étudiants en attente</h2>
-            <p style="margin:0.25rem 0 0; color:var(--text-muted); font-size:0.85rem;">Attribuez une classe pour activer et valider les comptes.</p>
+            <h2 style="margin:0; font-size:1.2rem; font-weight:700;">{% translate "Inscriptions d'étudiants en attente" %}</h2>
+            <p style="margin:0.25rem 0 0; color:var(--text-muted); font-size:0.85rem;">{% translate "Attribuez une classe pour activer et valider les comptes." %}</p>
         </div>
-        
+
         <div class="control-bar" style="margin-bottom:0; flex:1; justify-content:flex-end;">
             <div class="search-filter-group" style="justify-content:flex-end;">
                 <div class="control-search">
                     <i class="ti ti-search"></i>
-                    <input type="search" 
-                           name="q" 
-                           placeholder="Rechercher un étudiant..." 
+                    <input type="search"
+                           name="q"
+                           placeholder="{% translate 'Rechercher un étudiant...' %}"
                            hx-get="{% url 'dashboard_admin_structure' %}?tab=students" 
                            hx-trigger="keyup changed delay:300ms" 
                            hx-target="#dashboard-structure"
@@ -241,9 +242,9 @@
                             {% endif %}
                         </h4>
                         <div class="pending-meta-row">
-                            <span><i class="ti ti-clock" aria-hidden="true"></i> Demandé le {{ row.user.date_creation|date:'d/m/Y à H:i' }}</span>
+                            <span><i class="ti ti-clock" aria-hidden="true"></i> {% blocktranslate with d=row.user.date_creation|date:'d/m/Y à H:i' %}Demandé le {{ d }}{% endblocktranslate %}</span>
                             <span>&bull;</span>
-                            <span style="color:var(--accent); font-weight: 600;">Validation requise</span>
+                            <span style="color:var(--accent); font-weight: 600;">{% translate "Validation requise" %}</span>
                         </div>
                     </div>
 
@@ -255,17 +256,17 @@
                           class="assign-form-box">
                         {% csrf_token %}
                         {{ row.form.student_id }}
-                        
+
                         <div class="assign-select-field">
-                            <label for="{{ row.form.classe.id_for_label }}">Attribuer une classe</label>
+                            <label for="{{ row.form.classe.id_for_label }}">{% translate "Attribuer une classe" %}</label>
                             {{ row.form.classe }}
                             {% if row.form.classe.errors %}
                                 <span class="error-text" style="font-size:0.75rem; color:#ef4444; margin-top:2px;">{{ row.form.classe.errors.0 }}</span>
                             {% endif %}
                         </div>
-                        
+
                         <button type="submit" class="assign-submit-btn">
-                            <i class="ti ti-circle-check" aria-hidden="true"></i> Valider
+                            <i class="ti ti-circle-check" aria-hidden="true"></i> {% translate "Valider" %}
                         </button>
                     </form>
                 </article>
@@ -274,18 +275,18 @@
     {% else %}
         <div class="glass-card" style="text-align:center; padding: 3rem 1.5rem;">
             <p class="message-empty" style="margin:0; color:var(--text-muted);">
-                Aucune demande d'inscription d'étudiant en attente actuellement.
+                {% translate "Aucune demande d'inscription d'étudiant en attente actuellement." %}
             </p>
         </div>
-        
+
         {% if pending_students.has_other_pages %}
         <div style="display: flex; justify-content: center; gap: 0.5rem; margin-top: 1.5rem;">
             {% if pending_students.has_previous %}
-            <button class="btn btn-ghost" hx-get="{% url 'dashboard_admin_structure' %}?tab=students&page={{ pending_students.previous_page_number }}" hx-target="#dashboard-structure" hx-include="[name='q'], [name='status']">Précédent</button>
+            <button class="btn btn-ghost" hx-get="{% url 'dashboard_admin_structure' %}?tab=students&page={{ pending_students.previous_page_number }}" hx-target="#dashboard-structure" hx-include="[name='q'], [name='status']">{% translate "Précédent" %}</button>
             {% endif %}
-            <span style="padding: 0.5rem 1rem; background: #e2e8f0; border-radius: 8px; font-weight: 600; color: #475569;">Page {{ pending_students.number }} sur {{ pending_students.paginator.num_pages }}</span>
+            <span style="padding: 0.5rem 1rem; background: #e2e8f0; border-radius: 8px; font-weight: 600; color: #475569;">{% blocktranslate with num=pending_students.number total=pending_students.paginator.num_pages %}Page {{ num }} sur {{ total }}{% endblocktranslate %}</span>
             {% if pending_students.has_next %}
-            <button class="btn btn-ghost" hx-get="{% url 'dashboard_admin_structure' %}?tab=students&page={{ pending_students.next_page_number }}" hx-target="#dashboard-structure" hx-include="[name='q'], [name='status']">Suivant</button>
+            <button class="btn btn-ghost" hx-get="{% url 'dashboard_admin_structure' %}?tab=students&page={{ pending_students.next_page_number }}" hx-target="#dashboard-structure" hx-include="[name='q'], [name='status']">{% translate "Suivant" %}</button>
             {% endif %}
         </div>
         {% endif %}
