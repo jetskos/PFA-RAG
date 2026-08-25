@@ -76,20 +76,6 @@
     border-color: rgba(255, 255, 255, 0.4) !important;
 }
 
-/* Premium Sidebar Chapters */
-.sidebar-chapter {
-    background: var(--bg-surface) !important;
-    border: 1px solid var(--border-light) !important;
-    box-shadow: var(--shadow-sm) !important;
-    border-radius: 12px !important;
-    transition: all 0.2s ease !important;
-}
-
-.sidebar-chapter:hover {
-    box-shadow: var(--shadow-md) !important;
-    transform: translateY(-1px) !important;
-}
-
 /* Premium Navigation Arrows */
 .nav-arrow-btn {
     background-color: var(--bg-surface) !important;
@@ -289,19 +275,6 @@
     box-shadow: 0 10px 28px rgba(13, 148, 136, 0.4) !important;
 }
 
-@media (max-width: 1024px) {
-    .chapitre-detail-container {
-        flex-direction: column;
-    }
-    .chapitre-col-gauche,
-    .chapitre-col-droite {
-        width: 100% !important;
-    }
-    .chapitre-col-droite {
-        position: static;
-    }
-}
-
 /* ── HEADER BAR & NAVIGATION ── */
 .chapitre-header-bar {
     display: flex;
@@ -318,33 +291,6 @@
     display: flex;
     gap: 0.5rem;
     flex-wrap: wrap;
-}
-
-.nav-arrow-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.5rem 1rem;
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: var(--text-secondary);
-    background-color: var(--bg-surface-alt);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-sm);
-    transition: var(--transition);
-    text-decoration: none;
-    cursor: pointer;
-}
-
-.nav-arrow-btn:hover:not(.disabled) {
-    border-color: var(--brand-primary);
-    color: var(--brand-primary);
-    background-color: var(--brand-light);
-}
-
-.nav-arrow-btn.disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
 }
 
 .breadcrumb-accent {
@@ -370,22 +316,6 @@
 }
 
 /* ── VIDEO PLAYER ── */
-.video-container-wrapper {
-    background-color: var(--bg-surface);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
-    padding: 1.25rem;
-    box-shadow: var(--shadow-sm);
-}
-
-.video-container-wrapper h3 {
-    margin-bottom: 1rem;
-    font-size: 1.1rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
 .video-player-direct {
     width: 100%;
     border-radius: var(--radius-sm);
@@ -405,29 +335,7 @@
     padding-top: 0.75rem;
 }
 
-.video-source-info a {
-    color: var(--brand-primary);
-    word-break: break-all;
-}
-
-.video-placeholder {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 280px;
-    background-color: var(--bg-surface-alt);
-    border: 1px dashed var(--border-color);
-    border-radius: var(--radius-md);
-    color: var(--text-muted);
-    gap: 0.75rem;
-}
-
 /* ── DOCUMENTS LIST ── */
-.docs-stack {
-    margin-top: 0.5rem;
-}
-
 .doc-group {
     margin-top: 1.5rem;
 }
@@ -473,36 +381,7 @@
     margin-top: 0.75rem;
 }
 
-.doc-embed-shell {
-    margin-top: 1rem;
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-sm);
-    overflow: hidden;
-}
-
-.doc-fallback {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    margin-top: 0.75rem;
-}
-
 /* ── EVALUATION SECTION ── */
-.eval-section {
-    background-color: var(--bg-surface);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
-    padding: 1.75rem;
-    box-shadow: var(--shadow-sm);
-}
-
-.eval-section h3 {
-    margin-bottom: 0.5rem;
-    font-size: 1.2rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
 .eval-intro-text {
     font-size: 0.9rem;
     color: var(--text-secondary);
@@ -515,55 +394,13 @@
     gap: 1.5rem;
 }
 
-@media (max-width: 640px) {
-    .eval-buttons-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-.eval-option {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    background-color: var(--bg-surface-alt);
-    padding: 1.25rem;
-    border-radius: var(--radius-md);
-    border: 1px solid var(--border-color);
-}
-
 .eval-desc {
     font-size: 0.82rem;
     color: var(--text-secondary);
     line-height: 1.5;
 }
 
-/* ── RAG TUTOR CARD ── */
-.tuteur-rag-card {
-    display: flex;
-    flex-direction: column;
-    height: 620px;
-    background-color: var(--bg-surface);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-lg);
-    overflow: hidden;
-}
-
-.chat-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.25rem;
-    border-bottom: 1px solid var(--border-color);
-    background-color: var(--bg-surface-alt);
-}
-
-.chat-title-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 0.65rem;
-}
-
+/* ── RAG TUTOR CARD (Specifics) ── */
 .status-indicator-dot {
     width: 9px;
     height: 9px;
@@ -577,64 +414,6 @@
 @keyframes indicator-pulse {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.45; }
-}
-
-.chat-menu-placeholder {
-    color: var(--text-muted);
-    cursor: pointer;
-    font-size: 1.1rem;
-    padding: 0.25rem;
-    transition: var(--transition);
-}
-.chat-menu-placeholder:hover {
-    color: var(--text-primary);
-}
-
-.chat-messages-area {
-    flex: 1;
-    overflow-y: auto;
-    padding: 1.25rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
-    background-color: var(--bg-app);
-}
-
-.chat-msg {
-    max-width: 88%;
-    padding: 0.85rem 1.1rem;
-    border-radius: var(--radius-md);
-    font-size: 0.88rem;
-    line-height: 1.6;
-    position: relative;
-    word-break: break-word;
-}
-
-.msg-assistant {
-    background-color: var(--bg-surface);
-    color: var(--text-primary);
-    border: 1px solid var(--border-color);
-    align-self: flex-start;
-    border-top-left-radius: 2px;
-}
-
-.msg-student {
-    background-color: var(--brand-primary);
-    color: #ffffff;
-    align-self: flex-end;
-    border-top-right-radius: 2px;
-}
-
-.msg-sources {
-    margin-top: 0.65rem;
-    border-top: 1px solid var(--border-color);
-    padding-top: 0.5rem;
-    font-size: 0.76rem;
-    color: var(--text-secondary);
-}
-
-.msg-sources details {
-    cursor: pointer;
 }
 
 .msg-sources summary {
@@ -658,72 +437,6 @@
     line-height: 1.4;
 }
 
-/* Code Styles */
-.inline-code {
-    background-color: var(--bg-surface-alt);
-    color: var(--accent-danger);
-    padding: 0.15rem 0.35rem;
-    border-radius: var(--radius-sm);
-    font-family: monospace;
-    font-size: 0.85rem;
-    font-weight: 600;
-}
-
-.msg-student .inline-code {
-    background-color: rgba(0, 0, 0, 0.25);
-    color: #ffffff;
-}
-
-.code-block-pre {
-    background-color: var(--bg-surface-alt);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-sm);
-    padding: 0.75rem;
-    overflow-x: auto;
-    margin: 0.65rem 0;
-}
-
-.code-block-code {
-    font-family: monospace;
-    font-size: 0.82rem;
-    color: var(--text-primary);
-    white-space: pre;
-    line-height: 1.4;
-}
-
-/* Action Chips */
-.chat-action-chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    padding: 0.85rem 1.25rem;
-    border-top: 1px solid var(--border-color);
-    background-color: var(--bg-surface-alt);
-}
-
-.chat-chip {
-    font-size: 0.78rem;
-    font-weight: 600;
-    color: var(--text-secondary);
-    background-color: var(--bg-surface);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-full);
-    padding: 0.35rem 0.85rem;
-    cursor: pointer;
-    transition: var(--transition);
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    text-decoration: none;
-}
-
-.chat-chip:hover {
-    border-color: var(--brand-primary);
-    color: var(--brand-primary);
-    background-color: var(--brand-light);
-}
-
-/* Chat Input Bar */
 .chat-input-bar {
     display: flex;
     padding: 0.85rem 1.25rem;
@@ -731,23 +444,6 @@
     border-top: 1px solid var(--border-color);
     gap: 0.65rem;
     align-items: center;
-}
-
-.chat-input-bar input {
-    flex: 1;
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-sm);
-    padding: 0.65rem 0.95rem;
-    font-size: 0.88rem;
-    background-color: var(--bg-app);
-    color: var(--text-primary);
-    outline: none;
-    transition: var(--transition);
-}
-
-.chat-input-bar input:focus {
-    border-color: var(--brand-primary);
-    box-shadow: 0 0 0 2px var(--brand-light);
 }
 
 .btn-chat-send {
@@ -765,35 +461,58 @@
     font-size: 1rem;
 }
 
-.btn-chat-send:hover {
-    filter: brightness(1.15);
-    transform: translateY(-1px);
+/* ── MOBILE OPTIMIZATIONS ── */
+@media (max-width: 1024px) {
+    .chapitre-detail-container {
+        flex-direction: column;
+    }
+    .chapitre-col-gauche,
+    .chapitre-col-droite {
+        width: 100% !important;
+    }
+    .chapitre-col-droite {
+        position: static;
+    }
 }
 
-/* Typing Indicator Animation */
-.typing-indicator {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    margin-right: 8px;
-    vertical-align: middle;
-}
-.typing-indicator span {
-    width: 6px;
-    height: 6px;
-    background-color: var(--brand-primary);
-    border-radius: 50%;
-    animation: typing-bounce 1.4s infinite ease-in-out both;
-}
-.typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
-.typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
-@keyframes typing-bounce {
-    0%, 80%, 100% { transform: scale(0); }
-    40% { transform: scale(1); }
-}
-.typing-text {
-    font-style: italic;
-    color: var(--text-secondary);
+@media (max-width: 768px) {
+    .chapitre-detail-container {
+        margin-top: 0;
+    }
+    
+    .eval-buttons-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    /* Make video wrapper flush and tight on mobile */
+    .video-container-wrapper {
+        padding: 0.75rem !important;
+        border-radius: 12px !important;
+    }
+    
+    /* Document previews adjustment */
+    .doc-preview {
+        padding: 1rem !important;
+        border-radius: 12px !important;
+        overflow: hidden;
+    }
+
+    /* PDF Viewer Edge-to-Edge on Mobile */
+    .mobile-pdf-viewer {
+        /* Break out of parent padding */
+        margin-left: -1rem !important;
+        margin-right: -1rem !important;
+        margin-bottom: -1rem !important;
+        width: calc(100% + 2rem) !important;
+        border-left: none !important;
+        border-right: none !important;
+        border-bottom: none !important;
+        border-radius: 0 !important;
+    }
+
+    .pdf-canvas-container {
+        padding: 0 !important; /* Remove 8px padding causing margins */
+    }
 }
 </style>
 
@@ -853,12 +572,12 @@
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
                 <h3><i class="ti ti-brand-youtube" style="color: var(--accent-danger);"></i> {% translate "Vidéo Pédagogique" %}</h3>
                 <button type="button" class="btn btn-outline btn-sm" onclick="toggleVideoFullscreen(this)" style="padding: 0.35rem 0.75rem;">
-                    <i class="ti ti-maximize"></i> {% translate "Plein Écran" %}
+                    <i class="ti ti-maximize"></i> <span class="desktop-only-pdf">{% translate "Plein Écran" %}</span>
                 </button>
             </div>
             {% if is_offline_video and chapitre.video_fichier %}
                 {% if chapitre.is_hls_ready and chapitre.video_hls_url %}
-                    <video id="hls-video-{{ chapitre.id }}" class="video-player-direct" controls playsinline style="width: 100%; max-height: 500px; background: #000; border-radius: var(--radius-md);"></video>
+                    <video id="hls-video-{{ chapitre.id }}" class="video-player-direct" controls playsinline preload="metadata" style="width: 100%; max-height: 500px; background: #000; border-radius: var(--radius-md);"></video>
                     <script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
                     <script>
                         (function() {
@@ -877,7 +596,7 @@
                         <i class="ti ti-bolt"></i> {% translate "Mode hors-ligne — Streaming Rapide HLS (Optimisé)" %}
                     </div>
                 {% else %}
-                    <video class="video-player-direct" controls playsinline style="width: 100%; max-height: 500px; background: #000; border-radius: var(--radius-md);">
+                    <video class="video-player-direct" controls playsinline preload="metadata" style="width: 100%; max-height: 500px; background: #000; border-radius: var(--radius-md);">
                         <source src="{{ chapitre.video_fichier.url }}" type="video/mp4">
                         {% translate "Votre navigateur ne supporte pas la lecture de vidéos." %}
                     </video>
@@ -888,21 +607,21 @@
                 {% endif %}
             {% elif chapitre.url_video %}
                 {% if is_direct_video %}
-                    <video class="video-player-direct" controls playsinline style="width: 100%; max-height: 500px; background: #000; border-radius: var(--radius-md);">
+                    <video class="video-player-direct" controls playsinline preload="metadata" style="width: 100%; max-height: 500px; background: #000; border-radius: var(--radius-md);">
                         <source src="{{ chapitre.url_video }}" type="video/mp4">
                         {% translate "Votre navigateur ne supporte pas la lecture de vidéos." %}
                     </video>
                 {% elif is_youtube %}
                     <div class="video-frame">
-                        <iframe src="{{ chapitre.url_video|youtube_embed }}" title="{{ chapitre.titre }}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe>
+                        <iframe src="{{ chapitre.url_video|youtube_embed }}" title="{{ chapitre.titre }}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" loading="lazy"></iframe>
                     </div>
                 {% elif is_vimeo %}
                     <div class="video-frame">
-                        <iframe src="{{ vimeo_embed_url }}" title="{{ chapitre.titre }}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" frameborder="0" allowfullscreen loading="lazy"></iframe>
+                        <iframe src="{{ vimeo_embed_url }}" title="{{ chapitre.titre }}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" frameborder="0" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" loading="lazy"></iframe>
                     </div>
                 {% else %}
                     <div class="video-frame">
-                        <iframe src="{{ chapitre.url_video }}" title="{{ chapitre.titre }}" allowfullscreen loading="lazy"></iframe>
+                        <iframe src="{{ chapitre.url_video }}" title="{{ chapitre.titre }}" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" loading="lazy"></iframe>
                     </div>
                 {% endif %}
                 <div class="video-source-info">
@@ -911,12 +630,12 @@
             {% elif is_unavailable_offline %}
                 <div class="video-placeholder">
                     <i class="ti ti-wifi-off" style="font-size: 2.5rem;"></i>
-                    <p>{% translate "Vidéo indisponible hors-ligne — connectez-vous à internet, ou demandez à votre formateur d'ajouter une version locale." %}</p>
+                    <p style="padding: 0 1rem; text-align: center;">{% translate "Vidéo indisponible hors-ligne — connectez-vous à internet, ou demandez à votre formateur d'ajouter une version locale." %}</p>
                 </div>
             {% else %}
                 <div class="video-placeholder">
                     <i class="ti ti-video-off" style="font-size: 2.5rem;"></i>
-                    <p>{% translate "Aucune vidéo disponible pour ce chapitre." %}</p>
+                    <p style="padding: 0 1rem; text-align: center;">{% translate "Aucune vidéo disponible pour ce chapitre." %}</p>
                 </div>
             {% endif %}
         </div>
@@ -944,12 +663,12 @@
                                         </div>
                                         <div style="display: flex; gap: 0.5rem;">
                                             {% if doc.fichier_pdf %}
-                                                <a class="btn btn-ghost" href="{{ doc.fichier_pdf.url }}" target="_blank" rel="noopener">
-                                                    <i class="ti ti-external-link"></i> {% translate "Visualiser" %}
+                                                <a class="btn btn-ghost desktop-only-pdf" href="{{ doc.fichier_pdf.url }}" target="_blank" rel="noopener" style="padding: 0.4rem 0.6rem;">
+                                                    <i class="ti ti-external-link"></i> {% translate "Ouvrir" %}
                                                 </a>
                                             {% endif %}
-                                            <a class="btn btn-outline" href="{% url 'apprentissage:telecharger_document' doc.id %}">
-                                                <i class="ti ti-download"></i> {% translate "Télécharger" %}
+                                            <a class="btn btn-outline" href="{% url 'apprentissage:telecharger_document' doc.id %}" style="padding: 0.4rem 0.6rem;">
+                                                <i class="ti ti-download"></i> <span class="desktop-only-pdf">{% translate "Télécharger" %}</span>
                                             </a>
                                         </div>
                                     </div>
@@ -960,10 +679,10 @@
 
                                     {% if doc.fichier_pdf %}
                                         <!-- DESKTOP VIEWER (NATIVE IFRAME INJECTED VIA JS) -->
-                                        <div class="desktop-pdf-viewer" data-src="{{ doc.fichier_pdf.url }}" style="margin-top: 1rem;"></div>
+                                        <div class="desktop-pdf-viewer desktop-only-pdf" data-src="{{ doc.fichier_pdf.url }}" style="margin-top: 1rem;"></div>
 
                                         <!-- MOBILE VIEWER (CUSTOM PDF.JS) -->
-                                        <div class="pdf-js-viewer mobile-pdf-viewer" data-pdf-url="{{ doc.fichier_pdf.url }}" id="pdf-viewer-{{ doc.id }}" style="display: none; margin-top: 1rem; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; background: #f8fafc; box-sizing: border-box; width: 100%; max-width: 100%;">
+                                        <div class="pdf-js-viewer mobile-pdf-viewer mobile-only-pdf" data-pdf-url="{{ doc.fichier_pdf.url }}" id="pdf-viewer-{{ doc.id }}" style="display: none; margin-top: 1rem; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; background: #f8fafc; box-sizing: border-box; width: 100%; max-width: 100%;">
                                             <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0.75rem; background: #fff; border-bottom: 1px solid #e5e7eb;">
                                                 <div style="display: flex; gap: 0.4rem;">
                                                     <button type="button" class="btn btn-outline pdf-prev" style="padding: 0.3rem 0.5rem; font-size: 0.8rem;"><i class="ti ti-chevron-left"></i></button>
@@ -975,8 +694,9 @@
                                                     <button type="button" class="btn btn-ghost pdf-zoom-in" style="padding: 0.3rem 0.4rem;"><i class="ti ti-zoom-in"></i></button>
                                                 </div>
                                             </div>
-                                            <div class="pdf-canvas-container" style="width: 100%; box-sizing: border-box; overflow: hidden; text-align: center; position: relative; background: #f1f5f9; padding: 8px;">
-                                                <canvas class="pdf-canvas" style="display: block; width: 100%; height: auto;"></canvas>
+                                            <!-- Container padding removed to ensure edge-to-edge canvas on mobile -->
+                                            <div class="pdf-canvas-container" style="width: 100%; box-sizing: border-box; overflow: hidden; text-align: center; position: relative; background: #f1f5f9; padding: 0;">
+                                                <canvas class="pdf-canvas" style="display: block; margin: 0 auto; width: 100%; height: auto;"></canvas>
                                                 <div class="pdf-loading-overlay" style="position: absolute; top:0; left:0; right:0; bottom:0; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,0.8); z-index: 10;">
                                                     <div style="width: 2rem; height: 2rem; border: 3px solid #e5e7eb; border-top: 3px solid #0d9488; border-radius: 50%; animation: spin 1s linear infinite;"></div>
                                                 </div>
@@ -996,7 +716,7 @@
         {% endif %}
 
         <!-- Section Evaluer mes connaissances -->
-        <section class="eval-section">
+        <section class="eval-section" style="margin-top: 2rem;">
             <h3><i class="ti ti-award" style="color: var(--accent-warning);"></i> {% translate "Évaluer mes connaissances" %}</h3>
             <p class="eval-intro-text">{% translate "Testez votre compréhension de ce chapitre avec les outils IA interactifs." %}</p>
             <div class="eval-buttons-grid">
@@ -1016,10 +736,11 @@
                         {% translate "Une discussion interactive où l'IA vous pose des questions et vous guide étape par étape. Atteindre 100% de maîtrise valide également le chapitre !" %}
                     </p>
                 </div>
+            </div>
         </section>
 
         <!-- Section Validation du Chapitre -->
-        <section class="eval-section" id="validation-section" style="margin-top: 1.5rem;">
+        <section class="eval-section" id="validation-section" style="margin-top: 1.5rem; margin-bottom: 2rem;">
             <h3><i class="ti ti-circle-check" style="color: var(--primary);"></i> {% translate "Validation du chapitre" %}</h3>
             <p class="eval-intro-text" style="margin-bottom: 1.25rem;">{% translate "Validez ce chapitre pour mettre à jour votre progression dans le cours." %}</p>
             
@@ -1031,7 +752,7 @@
                         </button>
                         {% if chapitre_suivant %}
                             <div style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.75rem;">
-                                <a href="{% url 'apprentissage:detail_chapitre' cours.id chapitre_suivant.id %}" hx-get="{% url 'apprentissage:detail_chapitre' cours.id chapitre_suivant.id %}" hx-target="#contenu-cours" hx-swap="innerHTML" hx-push-url="true" class="btn btn-primary" style="padding: 0.65rem 1.25rem; font-size: 0.9rem; border-radius: 8px; font-weight: 600; text-decoration:none; display:inline-flex; align-items:center; gap:4px;">
+                                <a href="{% url 'apprentissage:detail_chapitre' cours.id chapitre_suivant.id %}" hx-get="{% url 'apprentissage:detail_chapitre' cours.id chapitre_suivant.id %}" hx-target="#contenu-cours" hx-swap="innerHTML" hx-push-url="true" class="btn btn-primary" style="padding: 0.65rem 1.25rem; font-size: 0.9rem; border-radius: 8px; font-weight: 600; text-decoration:none; display:inline-flex; align-items:center; justify-content: center; gap:4px;">
                                     {% translate "Passer au chapitre suivant" %} <i class="ti ti-arrow-right"></i>
                                 </a>
                             </div>
@@ -1042,7 +763,7 @@
                             hx-post="{% url 'apprentissage:valider_chapitre' chapitre.id %}"
                             hx-target="#validation-button-container"
                             hx-swap="innerHTML"
-                            style="padding: 0.75rem 1.5rem; font-size: 0.95rem; border-radius: 8px; font-weight: 600; display:inline-flex; align-items:center; gap:4px;">
+                            style="padding: 0.75rem 1.5rem; font-size: 0.95rem; border-radius: 8px; font-weight: 600; display:inline-flex; align-items:center; justify-content: center; gap:4px; width: 100%;">
                         <i class="ti ti-circle-check"></i> {% translate "Marquer comme terminé" %}
                     </button>
                 {% endif %}
@@ -1145,13 +866,33 @@
 
 <!-- ── JAVASCRIPT CONTROLLER ── -->
 <script>
-// Video Fullscreen
-window.toggleVideoFullscreen = function(el) {
-    if (!el) return;
-    if (!document.fullscreenElement) {
-        (el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen || function(){}).call(el);
+// Video Fullscreen - Robust Native Approach
+window.toggleVideoFullscreen = function(btn) {
+    var container = btn.closest('.video-container-wrapper');
+    if (!container) return;
+    
+    var video = container.querySelector('video, iframe');
+    if (!video) return;
+    
+    // Explicit iOS handling first for mobile
+    if (video.tagName.toLowerCase() === 'video') {
+        if (video.webkitEnterFullscreen) {
+            video.webkitEnterFullscreen(); // Standard iOS Safari full-screen handler
+            return;
+        }
+    }
+
+    // Standard cross-browser fallback
+    if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement && !document.msFullscreenElement) {
+        if (video.requestFullscreen) { video.requestFullscreen(); }
+        else if (video.webkitRequestFullscreen) { video.webkitRequestFullscreen(); }
+        else if (video.mozRequestFullScreen) { video.mozRequestFullScreen(); }
+        else if (video.msRequestFullscreen) { video.msRequestFullscreen(); }
     } else {
-        (document.exitFullscreen || document.webkitExitFullscreen || document.msExitFullscreen || function(){}).call(document);
+        if (document.exitFullscreen) { document.exitFullscreen(); }
+        else if (document.webkitExitFullscreen) { document.webkitExitFullscreen(); }
+        else if (document.mozCancelFullScreen) { document.mozCancelFullScreen(); }
+        else if (document.msExitFullscreen) { document.msExitFullscreen(); }
     }
 };
 
@@ -1433,28 +1174,6 @@ window.toggleVideoFullscreen = function(el) {
             link.classList.add('active');
         }
     });
-
-    // Video Fullscreen Function
-    window.toggleVideoFullscreen = function(btn) {
-        var container = btn.closest('.video-container-wrapper');
-        if (!container) return;
-        var video = container.querySelector('video, iframe');
-        if (!video) return;
-        
-        if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement && !document.msFullscreenElement) {
-            if (video.requestFullscreen) { video.requestFullscreen(); }
-            else if (video.webkitRequestFullscreen) { video.webkitRequestFullscreen(); }
-            else if (video.mozRequestFullScreen) { video.mozRequestFullScreen(); }
-            else if (video.msRequestFullscreen) { video.msRequestFullscreen(); }
-            // Fallback for iOS Safari which only supports fullscreen on the video element itself
-            else if (video.webkitEnterFullscreen) { video.webkitEnterFullscreen(); }
-        } else {
-            if (document.exitFullscreen) { document.exitFullscreen(); }
-            else if (document.webkitExitFullscreen) { document.webkitExitFullscreen(); }
-            else if (document.mozCancelFullScreen) { document.mozCancelFullScreen(); }
-            else if (document.msExitFullscreen) { document.msExitFullscreen(); }
-        }
-    };
 
     // PDF.js & Viewer Initialization
     var isMobile = window.innerWidth <= 768;
