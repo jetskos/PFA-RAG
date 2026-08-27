@@ -152,6 +152,11 @@
     border-radius: 16px !important;
     border: 1px solid var(--border-light) !important;
     box-shadow: var(--shadow-lg) !important;
+    background-color: var(--bg-surface) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100% !important;
+    overflow: hidden !important;
 }
 
 .chat-header {
@@ -163,6 +168,11 @@
 .chat-messages-area {
     background-color: var(--bg-page) !important;
     padding: 1.5rem !important;
+    flex: 1 !important;
+    overflow-y: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1rem !important;
 }
 
 .chat-msg {
@@ -184,11 +194,26 @@
     box-shadow: 0 4px 10px rgba(13, 148, 136, 0.2) !important;
 }
 
+.chat-action-chips {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 0.5rem !important;
+    padding: 1rem 1.5rem !important;
+    background-color: var(--bg-page) !important;
+    border-top: 1px solid var(--border-light) !important;
+}
+
 .chat-chip {
     border-radius: 20px !important;
     padding: 0.45rem 1rem !important;
     box-shadow: var(--shadow-sm) !important;
     transition: all 0.2s ease !important;
+    background-color: var(--bg-surface) !important;
+    border: 1px solid var(--border-default) !important;
+    font-size: 0.85rem !important;
+    color: var(--text-primary) !important;
+    text-decoration: none !important;
+    cursor: pointer !important;
 }
 
 .chat-chip:hover {
