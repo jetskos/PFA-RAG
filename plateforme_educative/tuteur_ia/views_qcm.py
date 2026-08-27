@@ -243,6 +243,10 @@ def generer_qcm_api(request, chapitre_id):
                     'detail': "Le formateur doit d'abord uploader un PDF dans ce chapitre pour que le QCM puisse être généré automatiquement.",
                     'no_pdf': True,
                 }, status=404)
+            elif questions_pool:
+                logger.warning(f"La génération a échoué mais {len(questions_pool)} questions existent en cache. Utilisation du cache partiel.")
+                # Utiliser les questions du cache même si on n'en a pas assez
+                questions = questions_pool
             else:
                 return JsonResponse({
                     'error': "La génération du QCM par l'IA a échoué. Réessayez dans quelques instants.",
