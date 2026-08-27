@@ -515,8 +515,9 @@ let finie        = false;
 let iteration    = 0;
 let maxQuestions = 0;
 
-const URL_INIT    = `/tuteur/session/${CHAPITRE_ID}/`;
-const urlRepondre = id => `/tuteur/session/${id}/repondre/`;
+const langCode = "{{ request.LANGUAGE_CODE|default:'fr' }}";
+const URL_INIT    = `/${langCode}/tuteur/session/${CHAPITRE_ID}/`;
+const urlRepondre = id => `/${langCode}/tuteur/session/${id}/repondre/`;
 
 // ── UI ───────────────────────────────────────────────────────────────────
 function removeLoader(id='init-loader') { document.getElementById(id)?.remove(); }
