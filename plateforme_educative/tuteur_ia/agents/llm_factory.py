@@ -28,7 +28,7 @@ OLLAMA_KEEP_ALIVE = os.getenv("OLLAMA_KEEP_ALIVE", "30m")
 # limite jusqu'à la fenêtre de contexte). 1024 tokens laisse assez de marge
 # pour le cas le plus long — les 8 questions QCM en JSON (views_qcm.py,
 # ~900 tokens) — tout en bornant un tuteur/évaluateur qui partirait en boucle.
-OLLAMA_NUM_PREDICT = int(os.getenv("OLLAMA_NUM_PREDICT", "512"))
+OLLAMA_NUM_PREDICT = int(os.getenv("OLLAMA_NUM_PREDICT", "2048"))
 # Fenêtre de contexte : RAG + prompt système + historique sous 2048 tokens sur CPU.
 OLLAMA_NUM_CTX = int(os.getenv("OLLAMA_NUM_CTX", "2048"))
 # Laisse Ollama auto-détecter GPU/CPU par défaut (ne pas fixer num_gpu).

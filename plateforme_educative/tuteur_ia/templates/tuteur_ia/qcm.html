@@ -100,7 +100,8 @@ let soumis   = false;
 // Trigger AJAX loading immediately
 document.addEventListener('DOMContentLoaded', async () => {
     try {
-        const res = await fetch(`/tuteur/qcm/${CHAPITRE_ID}/generer-api/`);
+        const langCode = "{{ request.LANGUAGE_CODE|default:'fr' }}";
+        const res = await fetch(`/${langCode}/tuteur/qcm/${CHAPITRE_ID}/generer-api/`);
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "{% translate 'Erreur serveur' %}");
 
@@ -261,7 +262,7 @@ async function soumettre() {
     document.getElementById('btn-submit').textContent = "{% translate 'Correction en cours…' %}";
 
     try {
-        const r = await fetch(`/tuteur/qcm/${SESSION_ID}/corriger/`, {
+        const r = await fetch(`/${langCode}/tuteur/qcm/${SESSION_ID}/corriger/`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF_TOKEN },
             body: JSON.stringify({ reponses }),

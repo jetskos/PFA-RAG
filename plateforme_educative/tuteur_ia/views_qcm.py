@@ -137,7 +137,21 @@ def _generer_questions_ia(chapitre, n_questions: int = 8) -> tuple[list[dict], s
         start = content.find('{')
         end   = content.rfind('}') + 1
         if start != -1 and end > start:
-            data = json.loads(content[start:end])
+            json_str = content[start:end]
+            try:
+                data = json.loads(json_str)
+            except json.JSONDecodeError:
+                # Tentative de réparation d'un JSON tronqué par le LLM (ex: OLLAMA_NUM_PREDICT trop petit)
+                last_brace = json_str.rfind('}')
+                if last_brace != -1:
+                    try:
+                        data = json.loads(json_str[:last_brace+1] + "]}")
+                        logger.warning("[QCM IA] JSON tronqué récupéré avec succès (quelques questions perdues).")
+                    except json.JSONDecodeError:
+                        data = {}
+                else:
+                    data = {}
+                    
             questions = data.get('questions', [])
             valid = [
                 q for q in questions
