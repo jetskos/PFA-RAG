@@ -97,10 +97,11 @@ let current  = 0;
 let reponses = {};
 let soumis   = false;
 
+const langCode = "{{ request.LANGUAGE_CODE|default:'fr' }}";
+
 // Trigger AJAX loading immediately
 document.addEventListener('DOMContentLoaded', async () => {
     try {
-        const langCode = "{{ request.LANGUAGE_CODE|default:'fr' }}";
         const res = await fetch(`/${langCode}/tuteur/qcm/${CHAPITRE_ID}/generer-api/`);
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "{% translate 'Erreur serveur' %}");
