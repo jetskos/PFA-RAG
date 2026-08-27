@@ -1,5 +1,6 @@
 from django import forms
 from .models import Cours, Chapitre, Document, Devoir, Soumission
+from django.utils.translation import gettext_lazy as _
 
 
 class CoursForm(forms.ModelForm):
@@ -24,7 +25,7 @@ class ChapitreForm(forms.ModelForm):
             'titre': forms.TextInput(attrs={'class': 'form-control'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'ordre': forms.NumberInput(attrs={'class': 'form-control'}),
-            'url_video': forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'https://youtube.com/watch?v=...'}),
+            'url_video': forms.URLInput(attrs={'class': 'form-control', 'placeholder': _('https://youtube.com/watch?v=...')}),
             'video_fichier': forms.FileInput(attrs={'class': 'form-control', 'accept': '.mp4'}),
             'actif': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
@@ -56,8 +57,8 @@ class DevoirForm(forms.ModelForm):
         model = Devoir
         fields = ('titre', 'consigne', 'fichier_consigne', 'date_limite', 'note_max', 'actif')
         widgets = {
-            'titre': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Titre du devoir'}),
-            'consigne': forms.Textarea(attrs={'class': 'form-control', 'rows': 5, 'placeholder': 'Décrivez la consigne...'}),
+            'titre': forms.TextInput(attrs={'class': 'form-control', 'placeholder': _('Titre du devoir')}),
+            'consigne': forms.Textarea(attrs={'class': 'form-control', 'rows': 5, 'placeholder': _('Décrivez la consigne...')}),
             'fichier_consigne': forms.FileInput(attrs={'class': 'form-control', 'accept': '.pdf,.doc,.docx,.jpg,.jpeg,.png'}),
             'date_limite': forms.DateTimeInput(attrs={'class': 'form-control', 'type': 'datetime-local'}, format='%Y-%m-%dT%H:%M'),
             'note_max': forms.NumberInput(attrs={'class': 'form-control', 'min': 1, 'max': 100}),
@@ -87,7 +88,7 @@ class SoumissionForm(forms.ModelForm):
         fields = ('fichier', 'commentaire_eleve')
         widgets = {
             'fichier': forms.FileInput(attrs={'class': 'form-control', 'accept': '.pdf,.doc,.docx,.jpg,.jpeg,.png'}),
-            'commentaire_eleve': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Commentaire facultatif...'}),
+            'commentaire_eleve': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': _('Commentaire facultatif...')}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -104,15 +105,15 @@ class NotationSoumissionForm(forms.ModelForm):
         model = Soumission
         fields = ('note', 'feedback')
         widgets = {
-            'note': forms.NumberInput(attrs={'class': 'form-control', 'min': 0, 'max': 20, 'step': '0.25', 'placeholder': 'Ex: 16.5'}),
-            'feedback': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Commentaire et retour pour l\'élève...'}),
+            'note': forms.NumberInput(attrs={'class': 'form-control', 'min': 0, 'max': 20, 'step': '0.25', 'placeholder': _('Ex: 16.5')}),
+            'feedback': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': _('Commentaire et retour pour l\'élève...')}),
         }
 
     def clean_note(self):
         note = self.cleaned_data.get('note')
         if note is not None:
             if note < 0 or note > 20:
-                raise forms.ValidationError("La note doit être comprise entre 0 et 20.")
+                raise forms.ValidationError(_("La note doit être comprise entre 0 et 20."))
         return note
 
 
@@ -123,8 +124,8 @@ class EvenementForm(forms.ModelForm):
         model = Evenement
         fields = ('titre', 'description', 'type', 'date_debut', 'date_fin', 'cours', 'classe')
         widgets = {
-            'titre': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nom de l\'événement'}),
-            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Description...'}),
+            'titre': forms.TextInput(attrs={'class': 'form-control', 'placeholder': _('Nom de l\'événement')}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': _('Description...')}),
             'type': forms.Select(attrs={'class': 'form-control'}),
             'date_debut': forms.DateTimeInput(attrs={'class': 'form-control', 'type': 'datetime-local'}, format='%Y-%m-%dT%H:%M'),
             'date_fin': forms.DateTimeInput(attrs={'class': 'form-control', 'type': 'datetime-local'}, format='%Y-%m-%dT%H:%M'),

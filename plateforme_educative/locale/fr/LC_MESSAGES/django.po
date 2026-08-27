@@ -28,3 +28,51 @@ msgstr ""
 #: .\core\templates\core\dashboard_student.html:4
 msgid "Mon tableau de bord étudiant"
 msgstr ""
+
+#: .\core\templates\base.html:0
+msgid "Structure"
+msgstr "Structure"
+
+#: .\core\templates\base.html:0
+msgid "Menu"
+msgstr "Menu"
+
+#: .\core\templates\base.html:0
+msgid "Agenda"
+msgstr "Agenda"
+
+#: .\core\templates\base.html:0
+msgid "Profil"
+msgstr "Profil"
+
+#: .\core\templates\base.html:0
+msgid "Voir toutes les notifications"
+msgstr "Voir toutes les notifications"
+
+#: .\core\templates\base.html:0
+msgid "Admin"
+msgstr "Admin"
+
+#: .\core\templates\base.html:0
+msgid "Élève"
+msgstr "Élève"
+
+#: .\core\templates\base.html:0
+msgid "Plateforme Éducative IoT & IA"
+msgstr "Plateforme Éducative IoT & IA"
+
+#: .\core\templates\base.html:0
+msgid "Afficher le sommaire du cours"
+msgstr "Afficher le sommaire du cours"
+
+#: .\core\templates\base.html:0
+msgid "Masquer le sommaire"
+msgstr "Masquer le sommaire"
+
+#: .\core\templates\base.html:0
+msgid "Erreur de chargement du PDF."
+msgstr "Erreur de chargement du PDF."
+
+#: .\core\templates\base.html:0
+msgid "-- Aucun --"
+msgstr "-- Aucun --"

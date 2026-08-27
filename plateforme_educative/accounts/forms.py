@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
+from django.utils.translation import gettext_lazy as _
 
 Utilisateur = get_user_model()
 
@@ -9,9 +10,9 @@ class InscriptionForm(UserCreationForm):
         model = Utilisateur
         fields = ('first_name', 'last_name', 'email',)
         widgets = {
-            'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Votre prénom'}),
-            'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Votre nom'}),
-            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'votre.email@exemple.com'}),
+            'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': _('Votre prénom')}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': _('Votre nom')}),
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': _('votre.email@exemple.com')}),
         }
 
     def save(self, commit=True):
@@ -28,7 +29,7 @@ class InscriptionForm(UserCreationForm):
 
 class ProfileForm(forms.ModelForm):
     # Case à cocher virtuelle (pas en base) pour retirer l'avatar courant
-    supprimer_photo = forms.BooleanField(required=False, label='Supprimer la photo actuelle')
+    supprimer_photo = forms.BooleanField(required=False, label=_('Supprimer la photo actuelle'))
 
     class Meta:
         model = Utilisateur
@@ -48,12 +49,12 @@ class ProfileForm(forms.ModelForm):
 
 class PasswordResetRequestForm(forms.Form):
     email = forms.EmailField(
-        label="Courriel",
+        label=_("Courriel"),
         max_length=254,
         widget=forms.EmailInput(attrs={
             'autocomplete': 'email',
             'required': True,
-            'placeholder': 'votre.email@exemple.com'
+            'placeholder': _('votre.email@exemple.com')
         })
     )
 

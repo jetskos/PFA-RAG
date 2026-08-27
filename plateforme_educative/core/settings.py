@@ -146,6 +146,7 @@ from django.utils.translation import gettext_lazy as _
 LANGUAGES = [
     ('fr', _('Français')),
     ('en', _('English')),
+    ('ar', _('العربية')),
 ]
 
 LOCALE_PATHS = [
@@ -187,9 +188,11 @@ SIMPLE_JWT = {
 
 AUTH_USER_MODEL = 'accounts.Utilisateur'
 
-LOGIN_URL = '/auth/login/'
-LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/'
+# URL names (not hard paths) so login/redirect targets keep the active
+# language prefix from i18n_patterns instead of falling back to the browser locale.
+LOGIN_URL = 'accounts:login'
+LOGIN_REDIRECT_URL = 'accueil'
+LOGOUT_REDIRECT_URL = 'accueil'
 # Security settings for deployment
 if not DEBUG:
     SECURE_SSL_REDIRECT = True

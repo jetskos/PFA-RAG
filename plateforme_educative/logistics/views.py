@@ -14,6 +14,7 @@ from .excel_export import (
     export_tickets_excel
 )
 from django.http import HttpResponse
+from django.utils.translation import gettext_lazy as _
 
 
 def _is_htmx(request):
@@ -112,7 +113,7 @@ def tickets_view(request):
             return HttpResponseBadRequest('ticket_id manquant')
         # Only staff/formateurs can mark tickets resolved
         if not (request.user.is_staff or getattr(request.user, 'is_formateur', False)):
-            return HttpResponseForbidden('Permission refusée')
+            return HttpResponseForbidden(_('Permission refusée'))
         ticket = get_object_or_404(Ticket, id=ticket_id)
         ticket.statut = 'RESOLU'
         ticket.save()
@@ -333,7 +334,7 @@ def editer_atelier(request, pk):
     atelier = get_object_or_404(Workshop, pk=pk)
 
     if not request.user.is_staff and atelier.createur != request.user:
-        return HttpResponseForbidden("Vous n'êtes pas autorisé à modifier cet atelier.")
+        return HttpResponseForbidden(_("Vous n'êtes pas autorisé à modifier cet atelier."))
 
     if request.method == 'POST':
         form = WorkshopForm(request.POST, instance=atelier)
@@ -375,7 +376,7 @@ def supprimer_atelier(request, pk):
     atelier = get_object_or_404(Workshop, pk=pk)
     
     if not request.user.is_staff and atelier.createur != request.user:
-        return HttpResponseForbidden("Vous n'êtes pas autorisé à supprimer cet atelier.")
+        return HttpResponseForbidden(_("Vous n'êtes pas autorisé à supprimer cet atelier."))
 
     if atelier.demandes_materiel.filter(statut='APPROVED').exists():
         return HttpResponseBadRequest("Interdiction de supprimer cet atelier, il est lié à une Demande de Matériel validée.")
@@ -508,7 +509,7 @@ def editer_demande(request, pk):
     demande = get_object_or_404(DemandeMateriel, pk=pk)
 
     if not request.user.is_staff and demande.formateur != request.user:
-        return HttpResponseForbidden("Vous n'êtes pas autorisé à modifier cette demande.")
+        return HttpResponseForbidden(_("Vous n'êtes pas autorisé à modifier cette demande."))
     
     if demande.statut != 'PENDING':
         return HttpResponseBadRequest("Impossible de modifier une demande qui n'est plus en attente.")
@@ -553,7 +554,7 @@ def supprimer_demande(request, pk):
     demande = get_object_or_404(DemandeMateriel, pk=pk)
     
     if not request.user.is_staff and demande.formateur != request.user:
-        return HttpResponseForbidden("Vous n'êtes pas autorisé à supprimer cette demande.")
+        return HttpResponseForbidden(_("Vous n'êtes pas autorisé à supprimer cette demande."))
 
     if demande.statut != 'PENDING':
         return HttpResponseBadRequest("Seules les demandes en attente peuvent être supprimées.")

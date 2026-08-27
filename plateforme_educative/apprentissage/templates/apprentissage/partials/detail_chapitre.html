@@ -1268,7 +1268,7 @@ window.toggleVideoFullscreen = function(btn) {
                     renderPage(pageNum);
                 }).catch(function(err) {
                     console.error("PDF load error:", err);
-                    if (overlay) overlay.innerHTML = '<p style="color:red; padding:1rem;">Erreur de chargement du PDF.</p>';
+                    if (overlay) overlay.innerHTML = '<p style="color:red; padding:1rem;">{% translate "Erreur de chargement du PDF." %}</p>';
                 });
             });
         }

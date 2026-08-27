@@ -2,6 +2,7 @@ import uuid
 from django.db import models
 from django.core.validators import URLValidator, FileExtensionValidator
 from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _, pgettext_lazy
 from accounts.models import Niveau
 
 
@@ -9,14 +10,14 @@ def validate_file_size(value):
     """Valide que le fichier ne dépasse pas 10 Mo."""
     limit_mb = 10
     if value.size > limit_mb * 1024 * 1024:
-        raise ValidationError(f"Le fichier ne doit pas dépasser {limit_mb} Mo.")
+        raise ValidationError(_("Le fichier ne doit pas dépasser %(n)s Mo.") % {'n': limit_mb})
 
 
 def validate_video_file_size(value):
     """Valide que la vidéo ne dépasse pas 300 Mo."""
     limit_mb = 300
     if value.size > limit_mb * 1024 * 1024:
-        raise ValidationError(f"La vidéo ne doit pas dépasser {limit_mb} Mo.")
+        raise ValidationError(_("La vidéo ne doit pas dépasser %(n)s Mo.") % {'n': limit_mb})
 
 
 
@@ -26,39 +27,39 @@ class Cours(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     titre = models.CharField(
         max_length=255,
-        verbose_name='Titre du cours'
+        verbose_name=_('Titre du cours')
     )
     description = models.TextField(
-        verbose_name='Description'
+        verbose_name=_('Description')
     )
     niveau = models.ForeignKey(
         Niveau,
         on_delete=models.CASCADE,
         related_name='cours',
-        verbose_name='Niveau'
+        verbose_name=_('Niveau')
     )
     resume = models.TextField(
-        verbose_name='Résumé court',
+        verbose_name=_('Résumé court'),
         blank=True,
-        help_text='Résumé affiché dans les listes'
+        help_text=_('Résumé affiché dans les listes')
     )
     image_couverture = models.ImageField(
         upload_to='cours_covers/', 
         null=True, 
         blank=True, 
-        verbose_name='Image de couverture'
+        verbose_name=_('Image de couverture')
     )
     date_creation = models.DateTimeField(
         auto_now_add=True,
-        verbose_name='Date de création'
+        verbose_name=_('Date de création')
     )
     date_modification = models.DateTimeField(
         auto_now=True,
-        verbose_name='Date de modification'
+        verbose_name=_('Date de modification')
     )
     actif = models.BooleanField(
         default=True,
-        verbose_name='Actif'
+        verbose_name=_('Actif')
     )
     createur = models.ForeignKey(
         'accounts.Utilisateur',
@@ -66,11 +67,11 @@ class Cours(models.Model):
         null=True,
         blank=True,
         related_name='cours_crees',
-        verbose_name='Créateur'
+        verbose_name=_('Créateur')
     )
     
     class Meta:
-        verbose_name = 'Cours'
+        verbose_name = _('Cours')
         verbose_name_plural = 'Cours'
         ordering = ['-date_creation']
     
@@ -86,58 +87,58 @@ class Chapitre(models.Model):
         Cours,
         on_delete=models.CASCADE,
         related_name='chapitres',
-        verbose_name='Cours'
+        verbose_name=_('Cours')
     )
     titre = models.CharField(
         max_length=255,
-        verbose_name='Titre du chapitre'
+        verbose_name=_('Titre du chapitre')
     )
     description = models.TextField(
-        verbose_name='Description',
+        verbose_name=_('Description'),
         blank=True
     )
     ordre = models.PositiveIntegerField(
-        verbose_name='Ordre d\'affichage',
-        help_text='Numéro de position dans le cours'
+        verbose_name=_('Ordre d\'affichage'),
+        help_text=_('Numéro de position dans le cours')
     )
     url_video = models.URLField(
-        verbose_name='URL vidéo YouTube',
+        verbose_name=_('URL vidéo YouTube'),
         blank=True,
         validators=[URLValidator()],
-        help_text='Lien vers la vidéo YouTube'
+        help_text=_('Lien vers la vidéo YouTube')
     )
     video_fichier = models.FileField(
         upload_to='videos/%Y/%m/',
-        verbose_name='Vidéo hors-ligne (MP4)',
+        verbose_name=_('Vidéo hors-ligne (MP4)'),
         blank=True,
         null=True,
         validators=[
             FileExtensionValidator(allowed_extensions=['mp4']),
             validate_video_file_size,
         ],
-        help_text="Utilisée automatiquement à la place du lien YouTube quand l'élève n'a pas de connexion internet."
+        help_text=_("Utilisée automatiquement à la place du lien YouTube quand l'élève n'a pas de connexion internet.")
     )
     video_hls_url = models.CharField(
         max_length=512,
         blank=True,
         null=True,
-        verbose_name="Chemin Playlist HLS"
+        verbose_name=_("Chemin Playlist HLS")
     )
     is_hls_ready = models.BooleanField(
         default=False,
-        verbose_name="HLS Prêt"
+        verbose_name=_("HLS Prêt")
     )
     date_creation = models.DateTimeField(
         auto_now_add=True,
-        verbose_name='Date de création'
+        verbose_name=_('Date de création')
     )
     actif = models.BooleanField(
         default=True,
-        verbose_name='Actif'
+        verbose_name=_('Actif')
     )
     
     class Meta:
-        verbose_name = 'Chapitre'
+        verbose_name = _('Chapitre')
         verbose_name_plural = 'Chapitres'
         ordering = ['cours', 'ordre']
         unique_together = ('cours', 'ordre')
@@ -150,12 +151,12 @@ class Document(models.Model):
     """Modèle représentant un document pédagogique (PDF)."""
     
     TYPE_DOCUMENT_CHOICES = (
-        ('TP', 'TP (Travaux Pratiques)'),
-        ('ATELIER', 'Atelier'),
-        ('PROJET', 'Projet'),
-        ('QCM', 'QCM (Questionnaire)'),
-        ('COURS', 'Cours'),
-        ('RESSOURCE', 'Ressource'),
+        ('TP', pgettext_lazy('document type', 'TP (Travaux Pratiques)')),
+        ('ATELIER', pgettext_lazy('document type', 'Atelier')),
+        ('PROJET', pgettext_lazy('document type', 'Projet')),
+        ('QCM', pgettext_lazy('document type', 'QCM (Questionnaire)')),
+        ('COURS', pgettext_lazy('document type', 'Cours')),
+        ('RESSOURCE', pgettext_lazy('document type', 'Ressource')),
     )
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -163,55 +164,55 @@ class Document(models.Model):
         Chapitre,
         on_delete=models.CASCADE,
         related_name='documents',
-        verbose_name='Chapitre'
+        verbose_name=_('Chapitre')
     )
     titre = models.CharField(
         max_length=255,
-        verbose_name='Titre du document'
+        verbose_name=_('Titre du document')
     )
     type_document = models.CharField(
         max_length=20,
         choices=TYPE_DOCUMENT_CHOICES,
         default='RESSOURCE',
-        verbose_name='Type de document'
+        verbose_name=_('Type de document')
     )
     fichier_pdf = models.FileField(
         upload_to='documents/%Y/%m/',
-        verbose_name='Fichier PDF',
-        help_text='PDF à télécharger ou analyser',
+        verbose_name=_('Fichier PDF'),
+        help_text=_('PDF à télécharger ou analyser'),
         validators=[
             FileExtensionValidator(allowed_extensions=['pdf']),
             validate_file_size,
         ]
     )
     description = models.TextField(
-        verbose_name='Description',
+        verbose_name=_('Description'),
         blank=True
     )
     contenu_extrait = models.TextField(
-        verbose_name='Contenu extrait du PDF',
+        verbose_name=_('Contenu extrait du PDF'),
         blank=True,
-        help_text='Rempli automatiquement lors du téléchargement'
+        help_text=_('Rempli automatiquement lors du téléchargement')
     )
     ordre = models.PositiveIntegerField(
-        verbose_name='Ordre d\'affichage',
+        verbose_name=_('Ordre d\'affichage'),
         default=0
     )
     date_creation = models.DateTimeField(
         auto_now_add=True,
-        verbose_name='Date de création'
+        verbose_name=_('Date de création')
     )
     date_modification = models.DateTimeField(
         auto_now=True,
-        verbose_name='Date de modification'
+        verbose_name=_('Date de modification')
     )
     actif = models.BooleanField(
         default=True,
-        verbose_name='Actif'
+        verbose_name=_('Actif')
     )
     
     class Meta:
-        verbose_name = 'Document'
+        verbose_name = _('Document')
         verbose_name_plural = 'Documents'
         ordering = ['chapitre', 'type_document', 'ordre']
     
@@ -226,31 +227,31 @@ class Progression(models.Model):
         'accounts.Utilisateur',
         on_delete=models.CASCADE,
         related_name='progressions',
-        verbose_name='Étudiant'
+        verbose_name=_('Étudiant')
     )
     cours = models.ForeignKey(
         Cours,
         on_delete=models.CASCADE,
         related_name='progressions',
-        verbose_name='Cours'
+        verbose_name=_('Cours')
     )
     chapitres_valides = models.ManyToManyField(
         Chapitre,
         blank=True,
         related_name='progressions',
-        verbose_name='Chapitres validés'
+        verbose_name=_('Chapitres validés')
     )
     date_derniere_consultation = models.DateTimeField(
         auto_now=True,
-        verbose_name='Date de dernière consultation'
+        verbose_name=_('Date de dernière consultation')
     )
     date_creation = models.DateTimeField(
         auto_now_add=True,
-        verbose_name='Date de création'
+        verbose_name=_('Date de création')
     )
     
     class Meta:
-        verbose_name = 'Progression'
+        verbose_name = _('Progression')
         verbose_name_plural = 'Progressions'
         unique_together = ('etudiant', 'cours')
         ordering = ['-date_derniere_consultation']
@@ -276,18 +277,18 @@ class ChapitreVisite(models.Model):
         'accounts.Utilisateur',
         on_delete=models.CASCADE,
         related_name='chapitres_visites',
-        verbose_name='Utilisateur'
+        verbose_name=_('Utilisateur')
     )
     chapitre = models.ForeignKey(
         Chapitre,
         on_delete=models.CASCADE,
         related_name='visites',
-        verbose_name='Chapitre'
+        verbose_name=_('Chapitre')
     )
-    date_visite = models.DateTimeField(auto_now=True, verbose_name='Date de visite')
+    date_visite = models.DateTimeField(auto_now=True, verbose_name=_('Date de visite'))
 
     class Meta:
-        verbose_name = 'Visite de chapitre'
+        verbose_name = _('Visite de chapitre')
         verbose_name_plural = 'Visites de chapitres'
         unique_together = ('etudiant', 'chapitre')
         ordering = ['-date_visite']
@@ -304,18 +305,18 @@ class ChapitreComplete(models.Model):
         'accounts.Utilisateur',
         on_delete=models.CASCADE,
         related_name='chapitres_completes',
-        verbose_name='Utilisateur'
+        verbose_name=_('Utilisateur')
     )
     chapitre = models.ForeignKey(
         Chapitre,
         on_delete=models.CASCADE,
         related_name='validations',
-        verbose_name='Chapitre'
+        verbose_name=_('Chapitre')
     )
-    date_completion = models.DateTimeField(auto_now=True, verbose_name='Date de completion')
+    date_completion = models.DateTimeField(auto_now=True, verbose_name=_('Date de completion'))
 
     class Meta:
-        verbose_name = 'Chapitre terminé'
+        verbose_name = _('Chapitre terminé')
         verbose_name_plural = 'Chapitres terminés'
         unique_together = ('etudiant', 'chapitre')
         ordering = ['-date_completion']
@@ -336,15 +337,15 @@ class Devoir(models.Model):
         Chapitre,
         on_delete=models.CASCADE,
         related_name='devoirs',
-        verbose_name='Chapitre'
+        verbose_name=_('Chapitre')
     )
-    titre = models.CharField(max_length=255, verbose_name='Titre')
-    consigne = models.TextField(verbose_name='Consigne')
+    titre = models.CharField(max_length=255, verbose_name=_('Titre'))
+    consigne = models.TextField(verbose_name=_('Consigne'))
     fichier_consigne = models.FileField(
         upload_to='devoirs/consignes/%Y/%m/',
         blank=True,
         null=True,
-        verbose_name='Fichier consigne (facultatif)',
+        verbose_name=_('Fichier consigne (facultatif)'),
         validators=[
             FileExtensionValidator(allowed_extensions=EXTENSIONS_AUTORISEES),
             validate_file_size,
@@ -353,21 +354,21 @@ class Devoir(models.Model):
     date_limite = models.DateTimeField(
         null=True,
         blank=True,
-        verbose_name='Date limite de rendu'
+        verbose_name=_('Date limite de rendu')
     )
-    note_max = models.PositiveSmallIntegerField(default=20, verbose_name='Note maximale')
+    note_max = models.PositiveSmallIntegerField(default=20, verbose_name=_('Note maximale'))
     createur = models.ForeignKey(
         'accounts.Utilisateur',
         on_delete=models.SET_NULL,
         null=True,
         related_name='devoirs_crees',
-        verbose_name='Créateur'
+        verbose_name=_('Créateur')
     )
-    actif = models.BooleanField(default=True, verbose_name='Actif')
-    date_creation = models.DateTimeField(auto_now_add=True, verbose_name='Date de création')
+    actif = models.BooleanField(default=True, verbose_name=_('Actif'))
+    date_creation = models.DateTimeField(auto_now_add=True, verbose_name=_('Date de création'))
 
     class Meta:
-        verbose_name = 'Devoir'
+        verbose_name = _('Devoir')
         verbose_name_plural = 'Devoirs'
         ordering = ['-date_creation']
 
@@ -383,24 +384,24 @@ class Soumission(models.Model):
         Devoir,
         on_delete=models.CASCADE,
         related_name='soumissions',
-        verbose_name='Devoir'
+        verbose_name=_('Devoir')
     )
     etudiant = models.ForeignKey(
         'accounts.Utilisateur',
         on_delete=models.CASCADE,
         related_name='soumissions',
-        verbose_name='Étudiant'
+        verbose_name=_('Étudiant')
     )
     fichier = models.FileField(
         upload_to='devoirs/soumissions/%Y/%m/',
-        verbose_name='Fichier soumis',
+        verbose_name=_('Fichier soumis'),
         validators=[
             FileExtensionValidator(allowed_extensions=EXTENSIONS_AUTORISEES),
             validate_file_size,
         ]
     )
-    commentaire_eleve = models.TextField(blank=True, verbose_name='Commentaire de l\'élève')
-    date_soumission = models.DateTimeField(auto_now=True, verbose_name='Date de soumission')
+    commentaire_eleve = models.TextField(blank=True, verbose_name=_('Commentaire de l\'élève'))
+    date_soumission = models.DateTimeField(auto_now=True, verbose_name=_('Date de soumission'))
 
     # Correction
     note = models.DecimalField(
@@ -408,21 +409,21 @@ class Soumission(models.Model):
         decimal_places=2,
         null=True,
         blank=True,
-        verbose_name='Note obtenue'
+        verbose_name=_('Note obtenue')
     )
-    feedback = models.TextField(blank=True, verbose_name='Feedback du formateur')
+    feedback = models.TextField(blank=True, verbose_name=_('Feedback du formateur'))
     corrige_par = models.ForeignKey(
         'accounts.Utilisateur',
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
         related_name='soumissions_corrigees',
-        verbose_name='Corrigé par'
+        verbose_name=_('Corrigé par')
     )
-    date_correction = models.DateTimeField(null=True, blank=True, verbose_name='Date de correction')
+    date_correction = models.DateTimeField(null=True, blank=True, verbose_name=_('Date de correction'))
 
     class Meta:
-        verbose_name = 'Soumission'
+        verbose_name = _('Soumission')
         verbose_name_plural = 'Soumissions'
         unique_together = ('devoir', 'etudiant')
         ordering = ['-date_soumission']
@@ -473,37 +474,37 @@ class Soumission(models.Model):
 
 class Evenement(models.Model):
     TYPE_EVENEMENT_CHOICES = (
-        ('ECHEANCE_DEVOIR', 'Échéance Devoir'),
-        ('SESSION', 'Session'),
-        ('EXAMEN', 'Examen'),
-        ('AUTRE', 'Autre'),
+        ('ECHEANCE_DEVOIR', pgettext_lazy('event type', 'Échéance Devoir')),
+        ('SESSION', pgettext_lazy('event type', 'Session')),
+        ('EXAMEN', pgettext_lazy('event type', 'Examen')),
+        ('AUTRE', pgettext_lazy('event type', 'Autre')),
     )
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    titre = models.CharField(max_length=255, verbose_name="Titre")
-    description = models.TextField(blank=True, verbose_name="Description")
+    titre = models.CharField(max_length=255, verbose_name=_("Titre"))
+    description = models.TextField(blank=True, verbose_name=_("Description"))
     type = models.CharField(
         max_length=20,
         choices=TYPE_EVENEMENT_CHOICES,
         default='AUTRE',
-        verbose_name="Type d'événement"
+        verbose_name=_("Type d'événement")
     )
-    date_debut = models.DateTimeField(verbose_name="Date de début")
-    date_fin = models.DateTimeField(null=True, blank=True, verbose_name="Date de fin")
+    date_debut = models.DateTimeField(verbose_name=_("Date de début"))
+    date_fin = models.DateTimeField(null=True, blank=True, verbose_name=_("Date de fin"))
     cours = models.ForeignKey(
         Cours,
         on_delete=models.CASCADE,
         null=True,
         blank=True,
         related_name='evenements',
-        verbose_name="Cours"
+        verbose_name=_("Cours")
     )
     createur = models.ForeignKey(
         'accounts.Utilisateur',
         on_delete=models.SET_NULL,
         null=True,
         related_name='evenements_crees',
-        verbose_name="Créateur"
+        verbose_name=_("Créateur")
     )
     classe = models.ForeignKey(
         'accounts.Classe',
@@ -511,13 +512,13 @@ class Evenement(models.Model):
         null=True,
         blank=True,
         related_name='evenements',
-        verbose_name="Classe cible"
+        verbose_name=_("Classe cible")
     )
-    date_creation = models.DateTimeField(auto_now_add=True, verbose_name="Date de création")
+    date_creation = models.DateTimeField(auto_now_add=True, verbose_name=_("Date de création"))
 
     class Meta:
         ordering = ['date_debut']
-        verbose_name = "Événement"
+        verbose_name = _("Événement")
         verbose_name_plural = "Événements"
 
     def __str__(self):
@@ -577,31 +578,31 @@ def supprimer_devoir_evenement(sender, instance, **kwargs):
 class ExportJob(models.Model):
     """Suivi asynchrone des exportations de cours en ZIP."""
     STATUS_CHOICES = (
-        ('PENDING', 'En cours'),
-        ('SUCCESS', 'Terminé'),
-        ('FAILED', 'Échoué'),
+        ('PENDING', _('En cours')),
+        ('SUCCESS', _('Terminé')),
+        ('FAILED', _('Échoué')),
     )
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     formateur = models.ForeignKey(
         'accounts.Utilisateur',
         on_delete=models.CASCADE,
         related_name='export_jobs',
-        verbose_name='Formateur'
+        verbose_name=_('Formateur')
     )
     cours = models.ForeignKey(
         Cours,
         on_delete=models.CASCADE,
         related_name='export_jobs',
-        verbose_name='Cours'
+        verbose_name=_('Cours')
     )
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
-    fichier_zip = models.FileField(upload_to='exports/cours/%Y/%m/', null=True, blank=True, verbose_name='Fichier ZIP')
+    fichier_zip = models.FileField(upload_to='exports/cours/%Y/%m/', null=True, blank=True, verbose_name=_('Fichier ZIP'))
     erreur = models.TextField(blank=True, null=True)
     date_creation = models.DateTimeField(auto_now_add=True)
     date_fin = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        verbose_name = 'Tâche d\'export'
+        verbose_name = _('Tâche d\'export')
         verbose_name_plural = 'Tâches d\'export'
         ordering = ['-date_creation']
 
@@ -612,19 +613,19 @@ class ExportJob(models.Model):
 class ImportJob(models.Model):
     """Suivi asynchrone des importations de cours en ZIP."""
     STATUS_CHOICES = (
-        ('EN_ATTENTE', 'En attente'),
-        ('EXTRACTION', 'Extraction du ZIP'),
-        ('SAUVEGARDE_BDD', 'Sauvegarde en base de données'),
-        ('INDEXATION_IA', "Indexation pour l'IA"),
-        ('TERMINE', 'Terminé'),
-        ('FAILED', 'Échoué'),
+        ('EN_ATTENTE', _('En attente')),
+        ('EXTRACTION', _('Extraction du ZIP')),
+        ('SAUVEGARDE_BDD', _('Sauvegarde en base de données')),
+        ('INDEXATION_IA', _("Indexation pour l'IA")),
+        ('TERMINE', _('Terminé')),
+        ('FAILED', _('Échoué')),
     )
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     formateur = models.ForeignKey(
         'accounts.Utilisateur',
         on_delete=models.CASCADE,
         related_name='import_jobs',
-        verbose_name='Formateur'
+        verbose_name=_('Formateur')
     )
     status = models.CharField(max_length=30, choices=STATUS_CHOICES, default='EN_ATTENTE')
     titre_cours = models.CharField(max_length=255, blank=True, null=True)
@@ -633,7 +634,7 @@ class ImportJob(models.Model):
     date_fin = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        verbose_name = "Tâche d'import"
+        verbose_name = _("Tâche d'import")
         verbose_name_plural = "Tâches d'import"
         ordering = ['-date_creation']
 

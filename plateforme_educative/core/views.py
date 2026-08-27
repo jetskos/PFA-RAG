@@ -15,6 +15,7 @@ from accounts.models import Classe, Niveau
 from logistics.forms import DemandeMaterielForm
 from logistics.models import DemandeMateriel, Equipment
 from .forms import NiveauForm, ClasseForm, PendingStudentActivationForm
+from django.utils.translation import gettext_lazy as _
 
 Utilisateur = get_user_model()
 
@@ -249,9 +250,9 @@ def role_required(*allowed_roles):
         def _wrapped(request, *args, **kwargs):
             user = request.user
             if not getattr(user, 'is_active', False):
-                return HttpResponseForbidden('Votre compte est en attente de validation.')
+                return HttpResponseForbidden(_('Votre compte est en attente de validation.'))
             if user.role not in allowed_roles and not user.is_superuser:
-                return HttpResponseForbidden('Accès refusé.')
+                return HttpResponseForbidden(_('Accès refusé.'))
             return view_func(request, *args, **kwargs)
 
         return _wrapped
@@ -274,7 +275,7 @@ def dashboard_router(request):
         return redirect('accounts:login')
 
     if not getattr(request.user, 'is_active', False):
-        return HttpResponseForbidden('Votre compte est en attente de validation.')
+        return HttpResponseForbidden(_('Votre compte est en attente de validation.'))
 
     if request.user.is_superuser or request.user.role == 'ADMIN':
         return redirect('dashboard_admin')
@@ -672,7 +673,7 @@ def add_student_to_classe_page_view(request, classe_id):
 @require_http_methods(['GET', 'POST'])
 def activate_pending_student_view(request):
     if request.method != 'POST':
-        return HttpResponseForbidden('Méthode non autorisée.')
+        return HttpResponseForbidden(_('Méthode non autorisée.'))
 
     form = PendingStudentActivationForm(request.POST)
     if form.is_valid():

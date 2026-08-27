@@ -1,5 +1,6 @@
 from django.db import transaction
 import os
+from django.utils.translation import gettext_lazy as _
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 from django.http import HttpResponseForbidden
@@ -123,7 +124,7 @@ def espace_formateur(request):
 def nouveau_cours(request):
     """Créer un nouveau cours pour le formateur connecté. Réservé aux FORMATEURS."""
     if not (request.user.is_formateur or request.user.is_superuser):
-        return HttpResponseForbidden("Accès réservé aux formateurs.")
+        return HttpResponseForbidden(_("Accès réservé aux formateurs."))
     if hasattr(request.user, 'role') and request.user.role == 'ADMIN':
         return_url = reverse('apprentissage:liste_cours')
     else:
@@ -492,7 +493,7 @@ def detail_cours(request, cours_id):
         classe = getattr(request.user, 'classe', None)
         user_niveau = getattr(classe, 'niveau', None)
         if user_niveau and cours.niveau_id != user_niveau.id:
-            return HttpResponseForbidden("Ce cours ne correspond pas à votre niveau actuel.")
+            return HttpResponseForbidden(_("Ce cours ne correspond pas à votre niveau actuel."))
     
     # Précharger les chapitres avec les documents
     chapitres = cours.chapitres.filter(actif=True).prefetch_related(
@@ -686,7 +687,7 @@ def valider_chapitre(request, chapitre_id):
     
     if not has_passed_qcm:
         from django.contrib import messages
-        messages.warning(request, "Vous devez d'abord réussir le QCM de ce chapitre pour le marquer comme terminé.")
+        messages.warning(request, _("Vous devez d'abord réussir le QCM de ce chapitre pour le marquer comme terminé."))
         response = HttpResponse(status=204)
         from django.urls import reverse
         response['HX-Redirect'] = reverse('apprentissage:detail_chapitre', args=[chapitre.cours.id, chapitre.id])
@@ -792,7 +793,7 @@ def exporter_bulletin_csv(request):
 def formateur_notes_view(request):
     """Affiche les notes agrégées de tous les élèves de ses cours, avec filtre de classe."""
     if not (request.user.is_formateur or request.user.is_superuser):
-        return HttpResponseForbidden("Accès réservé aux formateurs.")
+        return HttpResponseForbidden(_("Accès réservé aux formateurs."))
 
     from .grades import calculer_bulletin
     from accounts.models import Utilisateur, Classe
@@ -863,7 +864,7 @@ def formateur_notes_view(request):
 def exporter_notes_classe_csv(request):
     """Exporte les notes de tous les élèves des cours du formateur en CSV avec support du filtre de classe."""
     if not (request.user.is_formateur or request.user.is_superuser):
-        return HttpResponseForbidden("Accès réservé aux formateurs.")
+        return HttpResponseForbidden(_("Accès réservé aux formateurs."))
 
     import csv
     from .grades import calculer_bulletin
@@ -1153,7 +1154,7 @@ def devoir_detail_view(request, devoir_id):
     is_formateur = request.user.is_formateur or request.user.is_superuser
 
     if not is_formateur and niveau and devoir.chapitre.cours.niveau != niveau:
-        return HttpResponseForbidden("Ce devoir ne correspond pas à votre niveau.")
+        return HttpResponseForbidden(_("Ce devoir ne correspond pas à votre niveau."))
 
     soumission = None
     form = None
@@ -1219,7 +1220,7 @@ from django.http import JsonResponse
 @login_required
 def formateur_analytics_dashboard(request):
     if not (request.user.is_superuser or request.user.role == 'ADMIN' or request.user.is_formateur):
-        return HttpResponseForbidden("Accès réservé aux formateurs.")
+        return HttpResponseForbidden(_("Accès réservé aux formateurs."))
     
     stats = stats_formateur(request.user)
     
@@ -1272,7 +1273,7 @@ def formateur_analytics_data(request):
 @login_required
 def admin_analytics_dashboard(request):
     if not (request.user.is_superuser or request.user.role == 'ADMIN'):
-        return HttpResponseForbidden("Accès réservé aux administrateurs.")
+        return HttpResponseForbidden(_("Accès réservé aux administrateurs."))
         
     stats = stats_plateforme()
     return render(request, 'apprentissage/analytics_admin.html', {
@@ -1382,7 +1383,7 @@ def calendrier_events_json(request):
 @login_required
 def creer_evenement(request):
     if not (request.user.is_superuser or request.user.role == 'ADMIN' or request.user.is_formateur):
-        return HttpResponseForbidden("Accès réservé aux formateurs et administrateurs.")
+        return HttpResponseForbidden(_("Accès réservé aux formateurs et administrateurs."))
         
     from .forms import EvenementForm
     if request.method == 'POST':
@@ -1391,13 +1392,13 @@ def creer_evenement(request):
             evt = form.save(commit=False)
             evt.createur = request.user
             evt.save()
-            messages.success(request, "L'événement a été créé avec succès.")
+            messages.success(request, _("L'événement a été créé avec succès."))
             return redirect('apprentissage:calendrier')
     else:
         form = EvenementForm()
     return render(request, 'apprentissage/evenement_form.html', {
         'form': form,
-        'titre_page': "Créer un événement",
+        'titre_page': _("Créer un événement"),
     })
 
 
@@ -1405,20 +1406,20 @@ def creer_evenement(request):
 def modifier_evenement(request, pk):
     evt = get_object_or_404(Evenement, pk=pk)
     if not (request.user.is_superuser or request.user.role == 'ADMIN' or (request.user.is_formateur and evt.createur == request.user)):
-        return HttpResponseForbidden("Vous n'êtes pas autorisé à modifier cet événement.")
+        return HttpResponseForbidden(_("Vous n'êtes pas autorisé à modifier cet événement."))
         
     from .forms import EvenementForm
     if request.method == 'POST':
         form = EvenementForm(request.POST, instance=evt)
         if form.is_valid():
             form.save()
-            messages.success(request, "L'événement a été modifié avec succès.")
+            messages.success(request, _("L'événement a été modifié avec succès."))
             return redirect('apprentissage:calendrier')
     else:
         form = EvenementForm(instance=evt)
     return render(request, 'apprentissage/evenement_form.html', {
         'form': form,
-        'titre_page': "Modifier l'événement",
+        'titre_page': _("Modifier l'événement"),
         'evenement': evt,
     })
 
@@ -1428,10 +1429,10 @@ def modifier_evenement(request, pk):
 def supprimer_evenement(request, pk):
     evt = get_object_or_404(Evenement, pk=pk)
     if not (request.user.is_superuser or request.user.role == 'ADMIN' or (request.user.is_formateur and evt.createur == request.user)):
-        return HttpResponseForbidden("Vous n'êtes pas autorisé à supprimer cet événement.")
+        return HttpResponseForbidden(_("Vous n'êtes pas autorisé à supprimer cet événement."))
         
     evt.delete()
-    messages.success(request, "L'événement a été supprimé.")
+    messages.success(request, _("L'événement a été supprimé."))
     return redirect('apprentissage:calendrier')
 
 import json

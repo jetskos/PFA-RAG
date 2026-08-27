@@ -13,6 +13,7 @@ from apprentissage.models import Progression, ChapitreVisite, ChapitreComplete, 
 import secrets
 import string
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 from datetime import timedelta
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
@@ -248,11 +249,11 @@ def profile_view(request):
 
     if request.user.is_superuser:
         role_context = {
-            'role_title': 'Profil administrateur',
-            'role_description': 'Vue de pilotage du compte administrateur et des accès système.',
+            'role_title': _('Profil administrateur'),
+            'role_description': _('Vue de pilotage du compte administrateur et des accès système.'),
             'role_actions': [
-                {'label': 'Gérer les utilisateurs', 'url': reverse('accounts:admin_dashboard')},
-                {'label': 'Voir l’inventaire', 'url': reverse('logistics:inventaire')},
+                {'label': _('Gérer les utilisateurs'), 'url': reverse('accounts:admin_dashboard')},
+                {'label': _('Voir l’inventaire'), 'url': reverse('logistics:inventaire')},
             ],
             'role_kpis': {
                 'courses': Cours.objects.filter(actif=True).count(),
@@ -262,11 +263,11 @@ def profile_view(request):
         }
     elif request.user.is_formateur:
         role_context = {
-            'role_title': 'Profil formateur',
-            'role_description': 'Vue de pilotage des contenus créés et des parcours encadrés.',
+            'role_title': _('Profil formateur'),
+            'role_description': _('Vue de pilotage des contenus créés et des parcours encadrés.'),
             'role_actions': [
-                {'label': 'Mon espace formateur', 'url': reverse('apprentissage:espace_formateur')},
-                {'label': 'Créer un cours', 'url': reverse('apprentissage:nouveau_cours')},
+                {'label': _('Mon espace formateur'), 'url': reverse('apprentissage:espace_formateur')},
+                {'label': _('Créer un cours'), 'url': reverse('apprentissage:nouveau_cours')},
             ],
             'role_kpis': {
                 'courses': Cours.objects.filter(createur=request.user).count(),
@@ -276,10 +277,10 @@ def profile_view(request):
         }
     else:
         role_context = {
-            'role_title': 'Profil apprenant',
-            'role_description': 'Vue personnelle du suivi pédagogique et des chapitres validés.',
+            'role_title': _('Profil apprenant'),
+            'role_description': _('Vue personnelle du suivi pédagogique et des chapitres validés.'),
             'role_actions': [
-                {'label': 'Voir les cours', 'url': reverse('apprentissage:liste_cours')},
+                {'label': _('Voir les cours'), 'url': reverse('apprentissage:liste_cours')},
             ],
             'role_kpis': {
                 'courses': len(progressions),
@@ -458,20 +459,26 @@ class CustomLoginView(LoginView):
     avec un mot de passe temporaire expiré (10 minutes).
     """
     template_name = 'accounts/login.html'
-    
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        form.fields['username'].label = _('Adresse e-mail')
+        form.fields['password'].label = _('Mot de passe')
+        return form
+
     def form_valid(self, form):
         user = form.get_user()
 
         if user.is_temp_password:  # noqa: SIM102
             # Vérification de l'expiration des 10 heures
             if not user.temp_password_created_at or timezone.now() - user.temp_password_created_at > timedelta(hours=10):
-                form.add_error(None, "Ce mot de passe temporaire a expiré (validité de 10 heures). L'administrateur doit en générer un nouveau.")
+                form.add_error(None, _("Ce mot de passe temporaire a expiré (validité de 10 heures). L'administrateur doit en générer un nouveau."))
                 return self.form_invalid(form)
             else:
                 # Connexion de l'utilisateur
                 login(self.request, user)
                 # Notification de sécurité
-                messages.warning(self.request, "Vous êtes connecté avec un mot de passe temporaire. Veuillez le modifier ci-dessous.")
+                messages.warning(self.request, _("Vous êtes connecté avec un mot de passe temporaire. Veuillez le modifier ci-dessous."))
                 return redirect('accounts:change_password')
                 
         return super().form_valid(form)
@@ -508,7 +515,7 @@ def change_password_view(request):
             
             # Maintenir la session après changement
             update_session_auth_hash(request, user)
-            messages.success(request, "Votre mot de passe a été mis à jour avec succès.")
+            messages.success(request, _("Votre mot de passe a été mis à jour avec succès."))
             return redirect('accounts:profile')
     else:
         form = PasswordChangeForm(request.user)
@@ -627,7 +634,7 @@ def system_settings_view(request):
         form = ConfigurationSystemeForm(request.POST, instance=config)
         if form.is_valid():
             form.save()
-            messages.success(request, "Configuration système mise à jour avec succès.")
+            messages.success(request, _("Configuration système mise à jour avec succès."))
             return redirect('accounts:system_settings')
     else:
         form = ConfigurationSystemeForm(instance=config)

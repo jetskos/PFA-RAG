@@ -1,5 +1,6 @@
 from django import forms
 from .models import Ticket, Equipment, DemandeMateriel, Workshop
+from django.utils.translation import gettext_lazy as _
 
 
 class TicketForm(forms.ModelForm):
@@ -7,8 +8,8 @@ class TicketForm(forms.ModelForm):
         model = Ticket
         fields = ['titre', 'description', 'equipement', 'atelier']
         widgets = {
-            'titre': forms.TextInput(attrs={'placeholder': 'Titre du ticket', 'class': 'form-input'}),
-            'description': forms.Textarea(attrs={'placeholder': 'Décrivez le problème...', 'rows': 5, 'class': 'form-input'}),
+            'titre': forms.TextInput(attrs={'placeholder': _('Titre du ticket'), 'class': 'form-input'}),
+            'description': forms.Textarea(attrs={'placeholder': _('Décrivez le problème...'), 'rows': 5, 'class': 'form-input'}),
             'equipement': forms.Select(attrs={'class': 'form-input'}),
             'atelier': forms.Select(attrs={'class': 'form-input'}),
         }
@@ -23,13 +24,21 @@ class EquipmentForm(forms.ModelForm):
     class Meta:
         model = Equipment
         fields = ['nom', 'reference', 'stock_total', 'stock_disponible', 'seuil_alerte', 'note']
+        labels = {
+            'nom': _("Nom de l'équipement"),
+            'reference': _('Référence'),
+            'stock_total': _('Stock total'),
+            'stock_disponible': _('Stock dispo'),
+            'seuil_alerte': _("Seuil d'alerte"),
+            'note': _('Note (Optionnelle)'),
+        }
         widgets = {
-            'nom': forms.TextInput(attrs={'placeholder': "Nom de l'équipement", 'class': 'form-input'}),
-            'reference': forms.TextInput(attrs={'placeholder': 'Référence (unique)', 'class': 'form-input'}),
+            'nom': forms.TextInput(attrs={'placeholder': _("Nom de l'équipement"), 'class': 'form-input'}),
+            'reference': forms.TextInput(attrs={'placeholder': _('Référence (unique)'), 'class': 'form-input'}),
             'stock_total': forms.NumberInput(attrs={'class': 'form-input', 'min': 0}),
             'stock_disponible': forms.NumberInput(attrs={'class': 'form-input', 'min': 0}),
             'seuil_alerte': forms.NumberInput(attrs={'class': 'form-input', 'min': 0}),
-            'note': forms.Textarea(attrs={'placeholder': 'Note interne (optionnel)', 'rows': 3, 'class': 'form-input'}),
+            'note': forms.Textarea(attrs={'placeholder': _('Note interne (optionnel)'), 'rows': 3, 'class': 'form-input'}),
         }
 
     def clean_reference(self):
@@ -40,7 +49,7 @@ class EquipmentForm(forms.ModelForm):
         if self.instance and self.instance.pk:
             qs = qs.exclude(pk=self.instance.pk)
         if qs.exists():
-            raise forms.ValidationError('Un équipement avec cette référence existe déjà.')
+            raise forms.ValidationError(_('Un équipement avec cette référence existe déjà.'))
         return ref
 
 
@@ -49,12 +58,12 @@ class WorkshopForm(forms.ModelForm):
         model = Workshop
         fields = ['titre', 'date_debut', 'date_fin', 'salle', 'tuteur', 'niveau_cible']
         widgets = {
-            'titre': forms.TextInput(attrs={'placeholder': "Titre de l'atelier", 'class': 'form-input'}),
+            'titre': forms.TextInput(attrs={'placeholder': _("Titre de l'atelier"), 'class': 'form-input'}),
             'date_debut': forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': 'form-input'}),
             'date_fin': forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': 'form-input'}),
-            'salle': forms.TextInput(attrs={'placeholder': "Salle (ex: Amphi A)", 'class': 'form-input'}),
+            'salle': forms.TextInput(attrs={'placeholder': _("Salle (ex: Amphi A)"), 'class': 'form-input'}),
             'tuteur': forms.Select(attrs={'class': 'form-input'}),
-            'niveau_cible': forms.TextInput(attrs={'placeholder': "Niveau cible", 'class': 'form-input'}),
+            'niveau_cible': forms.TextInput(attrs={'placeholder': _("Niveau cible"), 'class': 'form-input'}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -92,5 +101,5 @@ class DemandeMaterielForm(forms.ModelForm):
 
         if equipement and quantite:
             if quantite > equipement.stock_disponible:
-                self.add_error('quantite', f"Stock insuffisant. Il ne reste que {equipement.stock_disponible} unités.")
+                self.add_error('quantite', _("Stock insuffisant. Il ne reste que %(n)s unités.") % {'n': equipement.stock_disponible})
         return cleaned_data

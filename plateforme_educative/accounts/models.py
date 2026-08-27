@@ -1,6 +1,7 @@
 import uuid
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.utils.translation import gettext_lazy as _
 
 
 class Niveau(models.Model):
@@ -12,7 +13,7 @@ class Niveau(models.Model):
 
     class Meta:
         ordering = ['ordre', 'nom']
-        verbose_name = 'Niveau'
+        verbose_name = _('Niveau')
         verbose_name_plural = 'Niveaux'
 
     def __str__(self):
@@ -30,7 +31,7 @@ class Classe(models.Model):
 
     class Meta:
         ordering = ['niveau__ordre', 'nom']
-        verbose_name = 'Classe'
+        verbose_name = _('Classe')
         verbose_name_plural = 'Classes'
         constraints = [
             models.UniqueConstraint(
@@ -73,25 +74,25 @@ class UtilisateurManager(BaseUserManager):
     
 class Utilisateur(AbstractBaseUser, PermissionsMixin):
     ROLE_CHOICES = (
-        ('ELEVE', 'Élève'),
-        ('FORMATEUR', 'Formateur'),
-        ('ADMIN', 'Administrateur'),
+        ('ELEVE', _('Élève')),
+        ('FORMATEUR', _('Formateur')),
+        ('ADMIN', _('Administrateur')),
     )
 
     STATUT_COMPTE_CHOICES = (
-        ('PENDING', 'En attente'),
-        ('ACTIVE', 'Actif'),
+        ('PENDING', _('En attente')),
+        ('ACTIVE', _('Actif')),
     )
 
     # Correspondance avec le cahier des charges(email unique, rôle, etc.)
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False) 
-    email = models.EmailField(unique=True, max_length=255) 
-    first_name = models.CharField(max_length=150, blank=True, null=True, verbose_name="Prénom")
-    last_name = models.CharField(max_length=150, blank=True, null=True, verbose_name="Nom")
+    email = models.EmailField(unique=True, max_length=255, verbose_name=_('Adresse e-mail')) 
+    first_name = models.CharField(max_length=150, blank=True, null=True, verbose_name=_("Prénom"))
+    last_name = models.CharField(max_length=150, blank=True, null=True, verbose_name=_("Nom"))
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='ELEVE') 
     statut_compte = models.CharField(max_length=20, choices=STATUT_COMPTE_CHOICES, default='PENDING')
     classe = models.ForeignKey(Classe, on_delete=models.SET_NULL, null=True, blank=True, related_name='eleves')
-    photo = models.ImageField(upload_to='avatars/', null=True, blank=True, verbose_name='Photo de profil')
+    photo = models.ImageField(upload_to='avatars/', null=True, blank=True, verbose_name=_('Photo de profil'))
     date_creation = models.DateTimeField(auto_now_add=True) 
 
     # Requis par Django pour les modèles utilisateurs personnalisés
@@ -218,12 +219,12 @@ class Utilisateur(AbstractBaseUser, PermissionsMixin):
 
 class Notification(models.Model):
     TYPE_CHOICES = (
-        ('COMPTE_ACTIVE', 'Compte Activé'),
-        ('QCM_CORRIGE', 'QCM Corrigé'),
-        ('NOUVEAU_COURS', 'Nouveau Cours'),
-        ('DEMANDE_TRAITEE', 'Demande Traitée'),
-        ('NOUVELLE_INSCRIPTION', 'Nouvelle Inscription'),
-        ('NOUVELLE_DEMANDE', 'Nouvelle Demande'),
+        ('COMPTE_ACTIVE', _('Compte Activé')),
+        ('QCM_CORRIGE', _('QCM Corrigé')),
+        ('NOUVEAU_COURS', _('Nouveau Cours')),
+        ('DEMANDE_TRAITEE', _('Demande Traitée')),
+        ('NOUVELLE_INSCRIPTION', _('Nouvelle Inscription')),
+        ('NOUVELLE_DEMANDE', _('Nouvelle Demande')),
     )
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -231,42 +232,43 @@ class Notification(models.Model):
         Utilisateur,
         on_delete=models.CASCADE,
         related_name='notifications',
-        verbose_name='Destinataire'
+        verbose_name=_('Destinataire')
     )
     type = models.CharField(
         max_length=20,
         choices=TYPE_CHOICES,
-        verbose_name='Type de notification'
+        verbose_name=_('Type de notification')
     )
-    titre = models.CharField(max_length=255, verbose_name='Titre')
-    message = models.TextField(verbose_name='Message')
-    url = models.CharField(max_length=512, blank=True, null=True, verbose_name='URL associée')
-    lu = models.BooleanField(default=False, verbose_name='Lu')
-    date_creation = models.DateTimeField(auto_now_add=True, verbose_name='Date de création')
+    titre = models.CharField(max_length=255, verbose_name=_('Titre'))
+    message = models.TextField(verbose_name=_('Message'))
+    url = models.CharField(max_length=512, blank=True, null=True, verbose_name=_('URL associée'))
+    lu = models.BooleanField(default=False, verbose_name=_('Lu'))
+    date_creation = models.DateTimeField(auto_now_add=True, verbose_name=_('Date de création'))
 
     class Meta:
         ordering = ['-date_creation']
-        verbose_name = 'Notification'
+        verbose_name = _('Notification')
         verbose_name_plural = 'Notifications'
 
     @property
     def age_humanise(self):
         from django.utils import timezone
+        from django.utils.translation import gettext, ngettext
         delta = timezone.now() - self.date_creation
         if delta.days == 0:
             seconds = delta.seconds
             hours = seconds // 3600
             minutes = (seconds % 3600) // 60
             if hours > 0:
-                return f"Il y a {hours}h"
+                return gettext("Il y a %(n)s h") % {"n": hours}
             elif minutes > 0:
-                return f"Il y a {minutes}m"
+                return gettext("Il y a %(n)s min") % {"n": minutes}
             else:
-                return "À l'instant"
+                return gettext("À l'instant")
         elif delta.days == 1:
-            return "Hier"
+            return gettext("Hier")
         else:
-            return f"Il y a {delta.days} jours"
+            return ngettext("Il y a %(n)s jour", "Il y a %(n)s jours", delta.days) % {"n": delta.days}
 
     def __str__(self):
         return f"{self.titre} -> {self.destinataire.email} ({'Lu' if self.lu else 'Non lu'})"
@@ -276,31 +278,31 @@ class ConfigurationSysteme(models.Model):
     
     mode_hors_ligne = models.BooleanField(
         default=False, 
-        verbose_name="Mode Hors-Ligne",
-        help_text="Active le mode déconnecté. Coupe l'envoi d'e-mails et force l'IA locale."
+        verbose_name=_("Mode Hors-Ligne"),
+        help_text=_("Active le mode déconnecté. Coupe l'envoi d'e-mails et force l'IA locale.")
     )
     
     PROVIDER_CHOICES = (
-        ('AUTO', 'Automatique (Groq -> Ollama)'),
-        ('GROQ', 'Forcer Groq (API)'),
-        ('OPENAI', 'Forcer OpenAI (API)'),
-        ('OLLAMA', 'Forcer Ollama (Local)'),
+        ('AUTO', _('Automatique (Groq -> Ollama)')),
+        ('GROQ', _('Forcer Groq (API)')),
+        ('OPENAI', _('Forcer OpenAI (API)')),
+        ('OLLAMA', _('Forcer Ollama (Local)')),
     )
     llm_provider = models.CharField(
         max_length=20, 
         choices=PROVIDER_CHOICES, 
         default='AUTO',
-        verbose_name="Fournisseur IA (LLM)"
+        verbose_name=_("Fournisseur IA (LLM)")
     )
     
     activer_hls = models.BooleanField(
         default=True, 
-        verbose_name="Activer HLS (Projet FLUTE)",
-        help_text="Active la génération de vidéos par morceaux avec FFmpeg."
+        verbose_name=_("Activer HLS (Projet FLUTE)"),
+        help_text=_("Active la génération de vidéos par morceaux avec FFmpeg.")
     )
 
     class Meta:
-        verbose_name = "Configuration Système"
+        verbose_name = _("Configuration Système")
         verbose_name_plural = "Configurations Système"
 
     def save(self, *args, **kwargs):

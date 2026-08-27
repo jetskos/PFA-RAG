@@ -504,7 +504,7 @@
                     
                     <td>
                         <select name="niveau" class="inline-select">
-                            <option value="">-- Aucun --</option>
+                            <option value="">{% trans "-- Aucun --" %}</option>
                             {% for val, label in niveau_choices %}
                                 <option value="{{ val }}" {% if user.niveau == val %}selected{% endif %}>{{ label }}</option>
                             {% endfor %}
