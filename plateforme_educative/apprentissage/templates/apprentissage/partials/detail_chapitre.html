@@ -1079,7 +1079,8 @@ window.toggleVideoFullscreen = function(btn) {
             return;
         }
 
-        const url = `/tuteur/assistant/${sessionId}/question/`;
+        const langCode = "{{ request.LANGUAGE_CODE|default:'fr' }}";
+        const url = `/${langCode}/tuteur/assistant/${sessionId}/question/`;
 
         fetch(url, {
             method: "POST",
