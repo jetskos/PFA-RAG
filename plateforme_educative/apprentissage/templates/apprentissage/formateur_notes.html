@@ -245,6 +245,22 @@
         white-space: nowrap;
     }
     .btn-hero-secondary:hover { background: rgba(255,255,255,0.15); color: #2dd4bf; }
+
+    /* ── MOBILE ─────────────────────────────────────────── */
+    @media (max-width: 768px) {
+        .fn-hero {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1.25rem;
+            padding: 1.6rem 1.3rem;
+            border-radius: 18px;
+        }
+        .fn-title { font-size: 1.4rem; }
+        .fn-hero-right { width: 100%; }
+        .fn-hero-right > * { flex: 1 1 auto; justify-content: center; }
+        .fn-filter-bar { flex-wrap: wrap; }
+        .fn-filter-select { width: 100%; }
+    }
 </style>
 
 <div class="page-shell" style="max-width: 1200px; margin: 0 auto; padding-top: 2rem;">

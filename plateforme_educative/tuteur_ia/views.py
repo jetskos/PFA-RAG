@@ -11,6 +11,7 @@ import logging
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, render
 from django.http import JsonResponse, StreamingHttpResponse
+from django.utils.translation import gettext
 from django.views.decorators.http import require_http_methods
 from langchain_core.messages import HumanMessage
 
@@ -67,10 +68,10 @@ def demarrer_session(request, chapitre_id):
 
         # Message d'accueil instantané — aucun appel LLM
         prenom = request.user.get_short_name()
-        welcome = (
-            f"Prêt à explorer **{chapitre.titre}** ? "
-            f"Dis-moi d'abord ce que tu sais déjà sur ce sujet."
-        )
+        welcome = gettext(
+            "Prêt à explorer **%(chapitre)s** ? "
+            "Dis-moi d'abord ce que tu sais déjà sur ce sujet."
+        ) % {'chapitre': chapitre.titre}
 
         return JsonResponse({
             "session_id":    str(session.id),
@@ -96,7 +97,7 @@ def repondre(request, session_id):
     session = get_object_or_404(SessionTuteur, id=session_id, etudiant=request.user)
 
     if session.statut != 'EN_COURS':
-        return JsonResponse({"error": "Session déjà terminée."}, status=400)
+        return JsonResponse({"error": gettext("Session déjà terminée.")}, status=400)
 
     try:
         data    = json.loads(request.body)
@@ -227,7 +228,7 @@ def repondre(request, session_id):
         session.save()
 
         return JsonResponse({
-            "message":          tutor_response or "Continue, tu es sur la bonne voie !",
+            "message":          tutor_response or gettext("Continue, tu es sur la bonne voie !"),
             "mastery_score":    mastery_score,
             "iteration":        iteration,
             "session_terminee": session_terminee,
@@ -360,10 +361,10 @@ def poser_question(request, session_id):
                 content = msg.get('content', '')
                 chat_history.append(AIMessage(content=content[:400] if len(content) > 400 else content))
 
-        refus_hors_sujet = (
-            f"❌ Je réponds uniquement aux questions concernant le contenu "
-            f"du chapitre **« {titre_chapitre} »**. Cette question est hors sujet."
-        )
+        refus_hors_sujet = gettext(
+            "❌ Je réponds uniquement aux questions concernant le contenu "
+            "du chapitre **« %(chapitre)s »**. Cette question est hors sujet."
+        ) % {'chapitre': titre_chapitre}
 
         if aucun_document:
             # Pas de PDF indexé → on ne peut pas répondre

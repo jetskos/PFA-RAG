@@ -1,0 +1,146 @@
+{% load i18n %}
+{% comment %}
+    Carte "Mises à jour satellite" du tableau de bord admin.
+    Rendue par apprentissage:satellite_updates_card, rafraîchie par HTMX.
+    Cible de swap attendue : #satellite-card-slot
+{% endcomment %}
+
+{% if satellite_error %}
+<div class="sat-card sat-card--warn">
+    <i class="ti ti-satellite-off"></i>
+    <span>{{ satellite_error }}</span>
+</div>
+{% elif satellite_pending %}
+<div class="sat-card sat-card--alert">
+    <div class="sat-card-head">
+        <div class="sat-card-title">
+            <i class="ti ti-satellite"></i>
+            <span>{% blocktranslate count n=satellite_pending|length %}1 mise à jour reçue par satellite{% plural %}{{ n }} mises à jour reçues par satellite{% endblocktranslate %}</span>
+        </div>
+        <form method="post"
+              hx-post="{% url 'apprentissage:apply_all_satellite_updates' %}"
+              hx-target="#satellite-card-slot" hx-swap="innerHTML"
+              hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+              hx-disabled-elt="this">
+            {% csrf_token %}
+            <button type="submit" class="sat-btn sat-btn--primary">
+                <i class="ti ti-player-play"></i> {% translate "Tout appliquer" %}
+            </button>
+        </form>
+    </div>
+
+    <ul class="sat-list">
+        {% for u in satellite_pending %}
+        <li class="sat-row">
+            <div class="sat-row-info">
+                <i class="ti ti-package"></i>
+                <div>
+                    <div class="sat-row-name">{{ u.titre_cours|default:u.logical_name }}</div>
+                    <div class="sat-row-meta">
+                        {{ u.logical_name }}
+                        · {{ u.size|filesizeformat }}
+                        {% if u.cycle_id %}· {% blocktranslate with c=u.cycle_id %}cycle {{ c }}{% endblocktranslate %}{% endif %}
+                    </div>
+                </div>
+            </div>
+            <form method="post"
+                  hx-post="{% url 'apprentissage:apply_satellite_update' u.id %}"
+                  hx-target="#satellite-card-slot" hx-swap="innerHTML"
+                  hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                  hx-disabled-elt="this">
+                {% csrf_token %}
+                <button type="submit" class="sat-btn">
+                    <i class="ti ti-download"></i> {% translate "Appliquer" %}
+                </button>
+            </form>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+{% if satellite_recent %}
+<div class="sat-card sat-card--muted">
+    <div class="sat-card-title sat-card-title--sm">
+        <i class="ti ti-history"></i> {% translate "Mises à jour satellite récentes" %}
+    </div>
+    <ul class="sat-list">
+        {% for u in satellite_recent %}
+        <li class="sat-row sat-row--history">
+            <div class="sat-row-info">
+                {% if u.status == 'IMPORTING' %}<i class="ti ti-loader-2 sat-spin"></i>
+                {% elif u.status == 'APPLIED' %}<i class="ti ti-circle-check" style="color:#10b981;"></i>
+                {% elif u.status == 'FAILED' %}<i class="ti ti-alert-circle" style="color:#ef4444;"></i>
+                {% else %}<i class="ti ti-circle-dashed"></i>{% endif %}
+                <div>
+                    <div class="sat-row-name">{{ u.titre_cours|default:u.logical_name }}</div>
+                    <div class="sat-row-meta">
+                        {{ u.get_status_display }}
+                        {% if u.applied_at %}· {{ u.applied_at|date:"d/m H:i" }}{% endif %}
+                        {% if u.erreur %}· {{ u.erreur }}{% endif %}
+                    </div>
+                </div>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+<style>
+    #satellite-card-slot { display: block; }
+    .sat-card {
+        border-radius: 16px; padding: 1.1rem 1.25rem; margin-bottom: 1.25rem;
+        border: 1px solid var(--border-light, #e2e8f0);
+        background: var(--bg-surface, #fff);
+        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+    }
+    .sat-card--alert {
+        border-color: rgba(13, 148, 136, 0.35);
+        background: linear-gradient(135deg, rgba(13,148,136,0.08), rgba(13,148,136,0.02));
+    }
+    .sat-card--warn {
+        display: flex; align-items: center; gap: 0.6rem;
+        border-color: rgba(245, 158, 11, 0.4); color: #92400e;
+        background: rgba(245, 158, 11, 0.08); font-weight: 600;
+    }
+    .sat-card--muted { background: rgba(241, 245, 249, 0.6); }
+    .sat-card-head {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 1rem; flex-wrap: wrap; margin-bottom: 0.85rem;
+    }
+    .sat-card-title {
+        display: flex; align-items: center; gap: 0.55rem;
+        font-weight: 800; font-size: 1.02rem; color: var(--text-primary, #0f172a);
+    }
+    .sat-card-title i { font-size: 1.3rem; color: #0d9488; }
+    .sat-card-title--sm { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.6rem; color: var(--text-muted, #64748b); }
+    .sat-card-title--sm i { font-size: 1rem; color: inherit; }
+    .sat-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.5rem; }
+    .sat-row {
+        display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+        padding: 0.6rem 0.75rem; border-radius: 10px;
+        background: rgba(255, 255, 255, 0.7); border: 1px solid var(--border-light, #e2e8f0);
+    }
+    .sat-row--history { background: transparent; border-color: transparent; padding: 0.35rem 0.25rem; }
+    .sat-row-info { display: flex; align-items: center; gap: 0.65rem; min-width: 0; }
+    .sat-row-info > i { font-size: 1.2rem; color: #64748b; flex-shrink: 0; }
+    .sat-row-name {
+        font-weight: 700; color: var(--text-primary, #0f172a); font-size: 0.92rem;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 46vw;
+    }
+    .sat-row-meta { font-size: 0.78rem; color: var(--text-muted, #64748b); }
+    .sat-btn {
+        display: inline-flex; align-items: center; gap: 0.4rem;
+        padding: 0.5rem 0.9rem; border-radius: 9px; cursor: pointer;
+        font-size: 0.85rem; font-weight: 700; font-family: inherit;
+        border: 1px solid var(--border-light, #cbd5e1); background: #fff; color: #0f172a;
+        transition: all 0.15s ease; white-space: nowrap;
+    }
+    .sat-btn:hover { border-color: #0d9488; color: #0d9488; }
+    .sat-btn--primary { background: linear-gradient(135deg, #0d9488, #0f766e); border: none; color: #fff; }
+    .sat-btn--primary:hover { filter: brightness(1.08); color: #fff; }
+    .sat-btn[disabled] { opacity: 0.6; cursor: progress; }
+    .sat-spin { animation: sat-spin 1s linear infinite; color: #0d9488; }
+    @keyframes sat-spin { to { transform: rotate(360deg); } }
+</style>

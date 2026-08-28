@@ -38,8 +38,8 @@ def register_view(request):
                     notifier(
                         destinataire=admin,
                         type='NOUVELLE_INSCRIPTION',
-                        titre="Nouvelle inscription d'élève",
-                        message=f"L'étudiant {user.get_full_name()} s'est inscrit et attend d'être associé à une classe.",
+                        titre=_("Nouvelle inscription d'élève"),
+                        message=_("L'étudiant %(nom)s s'est inscrit et attend d'être associé à une classe.") % {"nom": user.get_full_name()},
                         url=reverse('dashboard_admin_structure') + '?tab=students',
                         envoyer_email=False
                     )
@@ -81,11 +81,11 @@ def admin_dashboard(request):
             last_name = (request.POST.get('last_name') or '').strip()
 
             if not email or not password:
-                return JsonResponse({'status': 'error', 'message': 'Email et mot de passe sont requis.'}, status=400)
+                return JsonResponse({'status': 'error', 'message': _('Email et mot de passe sont requis.')}, status=400)
             if Utilisateur.objects.filter(email=email).exists():
-                return JsonResponse({'status': 'error', 'message': 'Cet email existe deja.'}, status=400)
+                return JsonResponse({'status': 'error', 'message': _('Cet email existe deja.')}, status=400)
             if role not in dict(Utilisateur.ROLE_CHOICES):
-                return JsonResponse({'status': 'error', 'message': 'Role invalide.'}, status=400)
+                return JsonResponse({'status': 'error', 'message': _('Role invalide.')}, status=400)
 
             # Ensure role and helper flag remain coherent.
             if role == 'FORMATEUR':
@@ -96,12 +96,12 @@ def admin_dashboard(request):
                 try:
                     classe = Classe.objects.select_related('niveau').get(pk=classe_id)
                 except Classe.DoesNotExist:
-                    return JsonResponse({'status': 'error', 'message': 'Classe introuvable.'}, status=404)
+                    return JsonResponse({'status': 'error', 'message': _('Classe introuvable.')}, status=404)
             elif niveau_id:
                 try:
                     niveau = Niveau.objects.get(pk=niveau_id)
                 except Niveau.DoesNotExist:
-                    return JsonResponse({'status': 'error', 'message': 'Niveau introuvable.'}, status=404)
+                    return JsonResponse({'status': 'error', 'message': _('Niveau introuvable.')}, status=404)
                 classe = (
                     Classe.objects.filter(niveau=niveau, actif=True)
                     .order_by('annee_scolaire', 'nom')
@@ -148,7 +148,7 @@ def admin_dashboard(request):
         try:
             user = Utilisateur.objects.get(pk=user_id)
         except Utilisateur.DoesNotExist:
-            return JsonResponse({'status': 'error', 'message': 'Utilisateur introuvable'}, status=404)
+            return JsonResponse({'status': 'error', 'message': _('Utilisateur introuvable')}, status=404)
 
         if action == 'delete':
             success, error_msg = UserService.delete_user(user, request.user)
@@ -194,7 +194,7 @@ def user_details(request, user_id):
     try:
         user = Utilisateur.objects.get(pk=user_id)
     except Utilisateur.DoesNotExist:
-        return JsonResponse({'status': 'error', 'message': 'Utilisateur introuvable'}, status=404)
+        return JsonResponse({'status': 'error', 'message': _('Utilisateur introuvable')}, status=404)
 
     return JsonResponse({
         'status': 'success',
@@ -427,7 +427,7 @@ def custom_password_reset_view(request):
                 user.save()
 
                 # Envoi du mail (asynchrone via Celery)
-                subject = "Votre mot de passe temporaire - EduTech"
+                subject = str(_("Votre mot de passe temporaire - EduTech"))
                 context = {
                     'user': user,
                     'temp_pass': temp_pass,
@@ -527,15 +527,15 @@ def change_password_view(request):
 
 ONBOARDING_STEPS = {
     'FORMATEUR': [
-        {'id': 'welcome',    'title': 'Bienvenue sur EduTech !',          'skippable': False},
-        {'id': 'profil',     'title': 'Votre profil formateur',           'skippable': False},
-        {'id': 'cours',      'title': 'Créez votre premier cours',        'skippable': True},
-        {'id': 'logistique', 'title': 'Découvrez la logistique',          'skippable': False},
+        {'id': 'welcome',    'title': _('Bienvenue sur EduTech !'),          'skippable': False},
+        {'id': 'profil',     'title': _('Votre profil formateur'),           'skippable': False},
+        {'id': 'cours',      'title': _('Créez votre premier cours'),        'skippable': True},
+        {'id': 'logistique', 'title': _('Découvrez la logistique'),          'skippable': False},
     ],
     'ELEVE': [
-        {'id': 'welcome', 'title': 'Bienvenue sur EduTech !',      'skippable': False},
-        {'id': 'profil',  'title': 'Complétez votre profil',       'skippable': False},
-        {'id': 'explorer','title': 'Explorez les cours',           'skippable': False},
+        {'id': 'welcome', 'title': _('Bienvenue sur EduTech !'),      'skippable': False},
+        {'id': 'profil',  'title': _('Complétez votre profil'),       'skippable': False},
+        {'id': 'explorer','title': _('Explorez les cours'),           'skippable': False},
     ],
 }
 
@@ -654,12 +654,12 @@ def reset_user_password_ajax(request):
     """
     user_id = request.POST.get('user_id')
     if not user_id:
-        return JsonResponse({'status': 'error', 'message': 'ID utilisateur manquant.'}, status=400)
+        return JsonResponse({'status': 'error', 'message': _('ID utilisateur manquant.')}, status=400)
         
     try:
         user = Utilisateur.objects.get(pk=user_id)
     except Utilisateur.DoesNotExist:
-        return JsonResponse({'status': 'error', 'message': 'Utilisateur introuvable.'}, status=404)
+        return JsonResponse({'status': 'error', 'message': _('Utilisateur introuvable.')}, status=404)
         
     # Génération du mot de passe aléatoire (8 caractères)
     chars = string.ascii_letters + string.digits

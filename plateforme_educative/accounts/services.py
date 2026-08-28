@@ -1,6 +1,7 @@
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 import logging
 
@@ -80,7 +81,7 @@ class UserService:
                 html_content = render_to_string('accounts/emails/activation_email.html', ctx)
                 text_content = strip_tags(html_content)
                 envoyer_email_task.delay(
-                    subject="Votre compte EduTech est activé !",
+                    subject=str(_("Votre compte EduTech est activé !")),
                     text_content=text_content,
                     html_content=html_content,
                     from_email=settings.DEFAULT_FROM_EMAIL,
@@ -98,9 +99,9 @@ class UserService:
         Supprime un utilisateur avec vérifications.
         """
         if str(user.pk) == str(request_user.pk):
-            return False, 'Vous ne pouvez pas supprimer votre propre compte.'
+            return False, _('Vous ne pouvez pas supprimer votre propre compte.')
         if user.is_superuser:
-            return False, 'Impossible de supprimer un superuser.'
+            return False, _('Impossible de supprimer un superuser.')
         
         user.delete()
         return True, ''

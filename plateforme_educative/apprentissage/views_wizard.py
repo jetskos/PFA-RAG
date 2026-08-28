@@ -5,6 +5,7 @@ from django.http import HttpResponse, HttpResponseBadRequest
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
+from django.utils.translation import gettext as _
 
 from apprentissage.models import Cours, Chapitre, Document, Niveau
 from apprentissage.tasks import indexer_document_task
@@ -14,7 +15,7 @@ def wizard_start(request):
     """Affiche le layout du wizard avec l'étape 1 par défaut."""
     # S'assurer que l'utilisateur est formateur ou admin
     if not (getattr(request.user, 'is_staff', False) or getattr(request.user, 'role', '') in ['ADMIN', 'FORMATEUR'] or getattr(request.user, 'is_formateur', False)):
-        raise PermissionDenied("Vous n'êtes pas autorisé à créer des cours.")
+        raise PermissionDenied(_("Vous n'êtes pas autorisé à créer des cours."))
         
     niveaux = Niveau.objects.all()
     return render(request, 'apprentissage/wizard/wizard_layout.html', {'niveaux': niveaux})
@@ -24,7 +25,7 @@ def wizard_start(request):
 def wizard_step1_cours(request):
     """Étape 1 : Créer le cours avec Titre, Description et Niveau."""
     if not (getattr(request.user, 'is_staff', False) or getattr(request.user, 'role', '') in ['ADMIN', 'FORMATEUR'] or getattr(request.user, 'is_formateur', False)):
-        return HttpResponseBadRequest("Non autorisé")
+        return HttpResponseBadRequest(_("Non autorisé"))
 
     titre = request.POST.get('titre')
     description = request.POST.get('description')
@@ -32,7 +33,7 @@ def wizard_step1_cours(request):
     niveau_id = request.POST.get('niveau')
 
     if not titre or not niveau_id:
-        return HttpResponseBadRequest("Titre et Niveau sont obligatoires.")
+        return HttpResponseBadRequest(_("Titre et Niveau sont obligatoires."))
 
     niveau = get_object_or_404(Niveau, pk=niveau_id)
     cours = Cours.objects.create(
@@ -71,7 +72,7 @@ def wizard_step3_chapitre(request):
     description = request.POST.get('description', '')
 
     if not titre:
-        return HttpResponseBadRequest("Le titre du chapitre est obligatoire.")
+        return HttpResponseBadRequest(_("Le titre du chapitre est obligatoire."))
 
     chapitre = Chapitre.objects.create(
         cours=cours,

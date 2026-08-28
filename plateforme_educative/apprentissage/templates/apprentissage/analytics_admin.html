@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load i18n %}
+{% load i18n static %}
 
 {% block title %}{{ titre_page }}{% endblock %}
 
@@ -81,7 +81,7 @@
 </section>
 
 <!-- Chart.js -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{% static 'vendor/chart/chart.umd.min.js' %}"></script>
 <script>
     const ctx = document.getElementById('rolesChart').getContext('2d');
     new Chart(ctx, {

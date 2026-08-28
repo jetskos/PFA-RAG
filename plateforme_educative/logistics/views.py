@@ -601,14 +601,18 @@ def changer_statut_demande(request, pk):
     # Notifier le formateur de la décision (notification in-app)
     try:
         from accounts.notifications import notifier
-        statut_labels = {'APPROVED': 'approuvée ✅', 'REJECTED': 'rejetée ❌', 'RETURNED': 'marquée comme retournée 🔄'}
+        statut_labels = {
+            'APPROVED': _('approuvée ✅'),
+            'REJECTED': _('rejetée ❌'),
+            'RETURNED': _('marquée comme retournée 🔄'),
+        }
         label = statut_labels.get(nouveau_statut)
         if label:
             notifier(
                 destinataire=demande.formateur,
                 type='DEMANDE_TRAITEE',
-                titre='Votre demande a été traitée',
-                message=f'Votre demande de {demande.quantite}x {demande.equipement.nom} a été {label}.',
+                titre=_('Votre demande a été traitée'),
+                message=_('Votre demande de %(qte)sx %(equipement)s a été %(label)s.') % {'qte': demande.quantite, 'equipement': demande.equipement.nom, 'label': label},
                 url=reverse('logistics:demandes'),
             )
     except Exception as e:

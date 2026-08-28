@@ -29,6 +29,7 @@ from django.contrib.auth.mixins import AccessMixin
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
+from django.utils.translation import gettext as _
 from functools import wraps
 
 from apprentissage.models import Cours, Chapitre, Devoir, Progression, Soumission, Document
@@ -59,7 +60,7 @@ class FormateurCoursRequiredMixin(AccessMixin):
         if not request.user.is_authenticated:
             return self.handle_no_permission()
         if not self.has_permission(request, *args, **kwargs):
-            raise PermissionDenied("Vous n'êtes pas le créateur de ce cours.")
+            raise PermissionDenied(_("Vous n'êtes pas le créateur de ce cours."))
         return super().dispatch(request, *args, **kwargs)
 
     @classmethod
@@ -68,11 +69,11 @@ class FormateurCoursRequiredMixin(AccessMixin):
             @wraps(view_func)
             def _wrapped_view(request, *args, **kwargs):
                 if not request.user.is_authenticated:
-                    raise PermissionDenied("Connexion requise.")
+                    raise PermissionDenied(_("Connexion requise."))
                 mixin = cls()
                 mixin.allow_admin = allow_admin
                 if not mixin.has_permission(request, *args, **kwargs):
-                    raise PermissionDenied("Vous n'êtes pas le créateur de ce cours.")
+                    raise PermissionDenied(_("Vous n'êtes pas le créateur de ce cours."))
                 return view_func(request, *args, **kwargs)
             return _wrapped_view
         return decorator
@@ -107,7 +108,7 @@ class FormateurChapitreRequiredMixin(AccessMixin):
         if not request.user.is_authenticated:
             return self.handle_no_permission()
         if not self.has_permission(request, *args, **kwargs):
-            raise PermissionDenied("Vous n'êtes pas le créateur du cours associé.")
+            raise PermissionDenied(_("Vous n'êtes pas le créateur du cours associé."))
         return super().dispatch(request, *args, **kwargs)
 
     @classmethod
@@ -116,11 +117,11 @@ class FormateurChapitreRequiredMixin(AccessMixin):
             @wraps(view_func)
             def _wrapped_view(request, *args, **kwargs):
                 if not request.user.is_authenticated:
-                    raise PermissionDenied("Connexion requise.")
+                    raise PermissionDenied(_("Connexion requise."))
                 mixin = cls()
                 mixin.allow_admin = allow_admin
                 if not mixin.has_permission(request, *args, **kwargs):
-                    raise PermissionDenied("Vous n'êtes pas le créateur du cours associé.")
+                    raise PermissionDenied(_("Vous n'êtes pas le créateur du cours associé."))
                 return view_func(request, *args, **kwargs)
             return _wrapped_view
         return decorator
@@ -156,7 +157,7 @@ class FormateurDevoirRequiredMixin(AccessMixin):
         if not request.user.is_authenticated:
             return self.handle_no_permission()
         if not self.has_permission(request, *args, **kwargs):
-            raise PermissionDenied("Vous n'êtes pas autorisé à agir sur ce devoir.")
+            raise PermissionDenied(_("Vous n'êtes pas autorisé à agir sur ce devoir."))
         return super().dispatch(request, *args, **kwargs)
 
     @classmethod
@@ -165,11 +166,11 @@ class FormateurDevoirRequiredMixin(AccessMixin):
             @wraps(view_func)
             def _wrapped_view(request, *args, **kwargs):
                 if not request.user.is_authenticated:
-                    raise PermissionDenied("Connexion requise.")
+                    raise PermissionDenied(_("Connexion requise."))
                 mixin = cls()
                 mixin.allow_admin = allow_admin
                 if not mixin.has_permission(request, *args, **kwargs):
-                    raise PermissionDenied("Vous n'êtes pas autorisé à agir sur ce devoir.")
+                    raise PermissionDenied(_("Vous n'êtes pas autorisé à agir sur ce devoir."))
                 return view_func(request, *args, **kwargs)
             return _wrapped_view
         return decorator
@@ -216,7 +217,7 @@ class ElevePropreDonneeMixin(AccessMixin):
         if not request.user.is_authenticated:
             return self.handle_no_permission()
         if not self.has_permission(request, *args, **kwargs):
-            raise PermissionDenied("Accès interdit à ces données personnelles.")
+            raise PermissionDenied(_("Accès interdit à ces données personnelles."))
         return super().dispatch(request, *args, **kwargs)
 
     @classmethod
@@ -225,11 +226,11 @@ class ElevePropreDonneeMixin(AccessMixin):
             @wraps(view_func)
             def _wrapped_view(request, *args, **kwargs):
                 if not request.user.is_authenticated:
-                    raise PermissionDenied("Connexion requise.")
+                    raise PermissionDenied(_("Connexion requise."))
                 mixin = cls()
                 mixin.allow_admin = allow_admin
                 if not mixin.has_permission(request, *args, **kwargs):
-                    raise PermissionDenied("Accès interdit à ces données personnelles.")
+                    raise PermissionDenied(_("Accès interdit à ces données personnelles."))
                 return view_func(request, *args, **kwargs)
             return _wrapped_view
         return decorator

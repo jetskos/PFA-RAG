@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
-{% load i18n %}
+{% load i18n static %}
 
 {% block title %}{% trans "Mon tableau de bord étudiant" %}{% endblock %}
 
 {% block content %}
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+    /* Inter font is loaded globally by base.html (vendored, offline-safe) */
 
     :root {
         --teal: #0f766e;
@@ -946,7 +946,7 @@
 </div>
 
 <!-- Chart.js -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{% static 'vendor/chart/chart.umd.min.js' %}"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
 

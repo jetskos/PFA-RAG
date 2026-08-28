@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n static %}
 <div class="modal-backdrop-premium" id="ticket-modal-backdrop" onclick="document.getElementById('form-ticket-container').innerHTML=''" style="position: fixed; inset: 0; background: rgba(15,23,42,0.5); backdrop-filter: blur(6px); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 1.5rem;">
     <div class="modal-card-premium" onclick="event.stopPropagation()" style="background: var(--surface); width: 100%; max-width: 600px; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.15); overflow: hidden; animation: modalSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); display: flex; flex-direction: column; max-height: 90vh;">
         
@@ -80,8 +80,8 @@
 </style>
 
 <!-- TomSelect for searchable dropdowns -->
-<link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.default.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+<link href="{% static 'vendor/tom-select/tom-select.default.css' %}" rel="stylesheet">
+<script src="{% static 'vendor/tom-select/tom-select.complete.min.js' %}"></script>
 <script>
   (function() {
     const initSelects = () => {

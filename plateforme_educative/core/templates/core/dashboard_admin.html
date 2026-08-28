@@ -529,6 +529,12 @@ Admin
         <h1 class="cmd-title">{% translate "Centre de Commandement" %}</h1>
     </header>
 
+    <!-- Mises à jour reçues par satellite (carrousel FLUTE) -->
+    <div id="satellite-card-slot"
+         hx-get="{% url 'apprentissage:satellite_updates_card' %}"
+         hx-trigger="load, every 30s"
+         hx-swap="innerHTML"></div>
+
     <!-- 2. KPI Grid -->
     <section class="kpi-section">
         <a href="{% url 'dashboard_admin_structure' %}?tab=students" class="glass-kpi">
@@ -678,7 +684,7 @@ Admin
 
 <!-- INJECT CHART DATA & SCRIPT -->
 {{ chart_data|json_script:"chart-data" }}
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{% static 'vendor/chart/chart.umd.min.js' %}"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const rawData = document.getElementById('chart-data').textContent;

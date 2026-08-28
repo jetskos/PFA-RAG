@@ -641,8 +641,8 @@ def assign_student_to_classe_page_view(request, classe_id):
         notifier(
             destinataire=student,
             type='COMPTE_ACTIVE',
-            titre="Votre compte a été activé",
-            message=f"Votre inscription a été validée. Vous êtes maintenant affecté à la classe {classe.nom}.",
+            titre=_("Votre compte a été activé"),
+            message=_("Votre inscription a été validée. Vous êtes maintenant affecté à la classe %(classe)s.") % {"classe": classe.nom},
             envoyer_email=True
         )
     return redirect('dashboard_admin_manage_classe_students', classe_id=classe_id)
@@ -696,8 +696,8 @@ def activate_pending_student_view(request):
         notifier(
             destinataire=student,
             type='COMPTE_ACTIVE',
-            titre="Votre compte a été activé",
-            message=f"Félicitations ! Votre compte est désormais actif. Vous êtes affecté à la classe {student.classe.nom}.",
+            titre=_("Votre compte a été activé"),
+            message=_("Félicitations ! Votre compte est désormais actif. Vous êtes affecté à la classe %(classe)s.") % {"classe": student.classe.nom},
             envoyer_email=True
         )
         return _render_admin_structure(request, active_tab='students')
@@ -785,7 +785,7 @@ def admin_process_demande_view(request, demande_id):
             
             if action == 'approve':
                 if demande.quantite > equipement.stock_disponible:
-                    return _render_admin_structure(request, {'pending_error': f'Stock insuffisant (Reste: {equipement.stock_disponible}).'}, active_tab='logistics')
+                    return _render_admin_structure(request, {'pending_error': _('Stock insuffisant (Reste: %(stock)s).') % {'stock': equipement.stock_disponible}}, active_tab='logistics')
                 equipement.stock_disponible -= demande.quantite
                 equipement.save()
                 demande.statut = 'APPROVED'
@@ -797,7 +797,7 @@ def admin_process_demande_view(request, demande_id):
                     equipement.save()
                 demande.statut = 'RETURNED'
             else:
-                return _render_admin_structure(request, {'pending_error': 'Action invalide.'}, active_tab='logistics')
+                return _render_admin_structure(request, {'pending_error': _('Action invalide.')}, active_tab='logistics')
 
             demande.save(update_fields=['statut'])
     except Exception as e:
@@ -805,12 +805,12 @@ def admin_process_demande_view(request, demande_id):
 
     from accounts.notifications import notifier
     if action in ['approve', 'reject']:
-        statut_str = "approuvée" if action == 'approve' else "rejetée"
+        statut_str = _("approuvée") if action == 'approve' else _("rejetée")
         notifier(
             destinataire=demande.formateur,
             type='DEMANDE_TRAITEE',
-            titre=f"Demande de matériel {statut_str}",
-            message=f"Votre demande pour l'équipement '{demande.equipement.nom}' a été {statut_str} par l'administrateur.",
+            titre=_("Demande de matériel %(statut)s") % {"statut": statut_str},
+            message=_("Votre demande pour l'équipement '%(equipement)s' a été %(statut)s par l'administrateur.") % {"equipement": demande.equipement.nom, "statut": statut_str},
             envoyer_email=True
         )
 
@@ -887,5 +887,5 @@ def admin_force_password_reset_view(request, user_id):
     return JsonResponse({
         'status': 'success',
         'temp_password': temp_pass,
-        'message': f'Nouveau mot de passe pour {user_to_reset.email} : {temp_pass}'
+        'message': _('Nouveau mot de passe pour %(email)s : %(pass)s') % {'email': user_to_reset.email, 'pass': temp_pass}
     })

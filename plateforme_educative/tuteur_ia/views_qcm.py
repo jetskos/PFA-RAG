@@ -14,6 +14,7 @@ import random
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
+from django.utils.translation import gettext
 from django.views.decorators.http import require_http_methods
 
 from tuteur_ia.models import SessionQCM, QuestionCache
@@ -225,14 +226,14 @@ def generer_qcm_api(request, chapitre_id):
         if not questions:
             if reason == 'no_content':
                 return JsonResponse({
-                    'error': 'Aucun document PDF indexé pour ce chapitre.',
-                    'detail': "Le formateur doit d'abord uploader un PDF dans ce chapitre pour que le QCM puisse être généré automatiquement.",
+                    'error': gettext('Aucun document PDF indexé pour ce chapitre.'),
+                    'detail': gettext("Le formateur doit d'abord uploader un PDF dans ce chapitre pour que le QCM puisse être généré automatiquement."),
                     'no_pdf': True,
                 }, status=404)
             else:
                 return JsonResponse({
-                    'error': "La génération du QCM par l'IA a échoué. Réessayez dans quelques instants.",
-                    'detail': "Le contenu du chapitre est bien indexé, mais l'IA n'a pas réussi à produire les questions cette fois-ci.",
+                    'error': gettext("La génération du QCM par l'IA a échoué. Réessayez dans quelques instants."),
+                    'detail': gettext("Le contenu du chapitre est bien indexé, mais l'IA n'a pas réussi à produire les questions cette fois-ci."),
                     'no_pdf': False,
                 }, status=500)
 
@@ -318,8 +319,8 @@ def corriger_qcm(request, session_id):
         notifier(
             destinataire=session.etudiant,
             type='QCM_CORRIGE',
-            titre=f"QCM Corrigé : {session.chapitre.titre}",
-            message=f"Tu as complété le QCM du chapitre '{session.chapitre.titre}' avec un score de {score}/100.",
+            titre=gettext("QCM Corrigé : %(chapitre)s") % {'chapitre': session.chapitre.titre},
+            message=gettext("Tu as complété le QCM du chapitre '%(chapitre)s' avec un score de %(score)s/100.") % {'chapitre': session.chapitre.titre, 'score': score},
             url=reverse('tuteur_ia:resultats_qcm', args=[session.id])
         )
     except Exception as notif_err:
@@ -328,8 +329,8 @@ def corriger_qcm(request, session_id):
     if score >= 80:
         feedback = {
             'type':    'success',
-            'titre':   f'🎉 Bravo ! Tu as obtenu {score}/100 !',
-            'message': 'Excellent travail ! Tu maîtrises bien ce chapitre. Tu peux passer au chapitre suivant.',
+            'titre':   gettext('🎉 Bravo ! Tu as obtenu %(score)s/100 !') % {'score': score},
+            'message': gettext('Excellent travail ! Tu maîtrises bien ce chapitre. Tu peux passer au chapitre suivant.'),
             'action':  'next_chapter',
         }
         try:
@@ -348,8 +349,8 @@ def corriger_qcm(request, session_id):
     else:
         feedback = {
             'type':    'retry',
-            'titre':   f'Score : {score}/100',
-            'message': f'Tu as eu {correctes} bonne(s) réponse(s) sur {total}. Relis le chapitre et réessaie !',
+            'titre':   gettext('Score : %(score)s/100') % {'score': score},
+            'message': gettext('Tu as eu %(correctes)s bonne(s) réponse(s) sur %(total)s. Relis le chapitre et réessaie !') % {'correctes': correctes, 'total': total},
             'action':  'retry',
         }
 

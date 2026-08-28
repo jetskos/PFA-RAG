@@ -549,8 +549,8 @@ def synchroniser_devoir_evenement(sender, instance, created, **kwargs):
         return
 
     evt = Evenement.objects.filter(description__contains=search_str).first()
-    titre = f"Échéance : {instance.titre}"
-    description = f"Date limite pour rendre le devoir '{instance.titre}'. {search_str}"
+    titre = _("Échéance : %(devoir)s") % {'devoir': instance.titre}
+    description = _("Date limite pour rendre le devoir '%(devoir)s'.") % {'devoir': instance.titre} + f" {search_str}"
     
     if evt:
         evt.titre = titre
@@ -640,6 +640,45 @@ class ImportJob(models.Model):
 
     def __str__(self):
         return f"Import par {self.formateur.get_full_name()} ({self.get_status_display()})"
+
+
+class SatelliteUpdate(models.Model):
+    """Fichier de mise à jour de cours reçu par satellite (carrousel FLUTE), détecté
+    automatiquement dans SATELLITE_INBOX_DIR et en attente d'application manuelle
+    par un administrateur depuis le tableau de bord."""
+    STATUS_CHOICES = (
+        ('DETECTED', _('Détectée')),
+        ('IMPORTING', _('Import en cours')),
+        ('APPLIED', _('Appliquée')),
+        ('FAILED', _('Échouée')),
+        ('IGNORED', _('Ignorée')),
+    )
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    logical_name = models.CharField(max_length=255, verbose_name=_('Nom du fichier'))
+    file_hash = models.CharField(max_length=64, unique=True, db_index=True, verbose_name=_('Empreinte SHA-256'))
+    size = models.BigIntegerField(default=0, verbose_name=_('Taille (octets)'))
+    cycle_id = models.IntegerField(null=True, blank=True, verbose_name=_('Cycle satellite'))
+    titre_cours = models.CharField(max_length=255, blank=True, default='', verbose_name=_('Cours'))
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='DETECTED', db_index=True)
+    erreur = models.TextField(blank=True, default='')
+    import_job = models.ForeignKey(
+        'ImportJob', null=True, blank=True, on_delete=models.SET_NULL,
+        related_name='satellite_updates'
+    )
+    applied_by = models.ForeignKey(
+        'accounts.Utilisateur', null=True, blank=True, on_delete=models.SET_NULL,
+        related_name='satellite_updates_applied'
+    )
+    detected_at = models.DateTimeField(auto_now_add=True)
+    applied_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = _("Mise à jour satellite")
+        verbose_name_plural = _("Mises à jour satellite")
+        ordering = ['-detected_at']
+
+    def __str__(self):
+        return f"{self.logical_name} ({self.get_status_display()})"
 
 
 

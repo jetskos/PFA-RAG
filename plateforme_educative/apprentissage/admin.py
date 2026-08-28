@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Cours, Chapitre, Document
+from .models import Cours, Chapitre, Document, SatelliteUpdate
 
 
 @admin.register(Cours)
@@ -44,6 +44,15 @@ class ChapitreAdmin(admin.ModelAdmin):
         }),
     )
     readonly_fields = ('date_creation',)
+
+
+@admin.register(SatelliteUpdate)
+class SatelliteUpdateAdmin(admin.ModelAdmin):
+    list_display = ('logical_name', 'titre_cours', 'status', 'size', 'cycle_id', 'detected_at', 'applied_at')
+    list_filter = ('status', 'detected_at')
+    search_fields = ('logical_name', 'titre_cours', 'file_hash')
+    readonly_fields = ('id', 'file_hash', 'detected_at', 'applied_at', 'import_job', 'applied_by')
+    ordering = ('-detected_at',)
 
 
 @admin.register(Document)

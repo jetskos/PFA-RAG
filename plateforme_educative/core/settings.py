@@ -146,7 +146,6 @@ from django.utils.translation import gettext_lazy as _
 LANGUAGES = [
     ('fr', _('Français')),
     ('en', _('English')),
-    ('ar', _('العربية')),
 ]
 
 LOCALE_PATHS = [
@@ -158,6 +157,11 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# Boîte de réception satellite (carrousel FLUTE) : dossier où le récepteur multicast
+# (`carrousel_client.py --output <ce dossier>`) dépose les fichiers reçus. Le tableau
+# de bord admin y détecte les ZIP d'export de cours et propose de les importer.
+SATELLITE_INBOX_DIR = os.getenv('SATELLITE_INBOX_DIR') or str(MEDIA_ROOT / 'satellite_inbox')
 
 # Vidéos de secours hors-ligne (jusqu'à ~300 Mo, voir validate_video_file_size)
 DATA_UPLOAD_MAX_MEMORY_SIZE = 314572800  # 300 Mo

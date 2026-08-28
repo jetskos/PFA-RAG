@@ -22,3 +22,46 @@ Pour optimiser les ressources des serveurs hors-ligne (récepteurs) et permettre
 ## 4. Correction de l'indexation lors des imports ZIP
 Un bug empêchait le déclenchement de la conversion HLS et de l'indexation IA lorsque les cours étaient importés via un fichier ZIP (au lieu d'être créés manuellement via l'interface web).
 - **Correctif** : L'appel aux tâches asynchrones (`convertir_video_hls.delay()` et `indexer_document_task.delay()`) a été rajouté directement à la fin du traitement du ZIP dans `import_courses_task`.
+
+---
+
+## 5. Import automatisé depuis le satellite (bouton "Mises à jour" du tableau de bord)
+
+Le carrousel FLUTE (`FLUTE_Send--Receive_Project`, projet Python autonome de l'encadrant) est
+la **couche de transport** : l'émetteur diffuse en UDP multicast, le récepteur
+(`carrousel_client.py --output <dossier>`) reconstruit les fichiers et vérifie leur
+empreinte SHA-256.
+
+### Câblage
+
+1. Sur le serveur hors-ligne (VM 101), lancer le récepteur du carrousel en pointant sa
+   sortie sur la **boîte de réception** de la plateforme :
+   ```bash
+   python carrousel_client.py --output /var/www/plateforme_educative/plateforme_educative/media/satellite_inbox
+   ```
+   (ou définir `SATELLITE_INBOX_DIR` dans le `.env` et pointer `--output` sur la même valeur).
+
+2. L'encadrant diffuse depuis son poste les **ZIP d'export de cours** produits par la
+   plateforme (`cours_<id>_export.zip`, onglet *Espace formateur → Exporter*).
+
+### Côté plateforme
+
+- Le tableau de bord admin (`/dashboard/admin/`) affiche une carte **« N mises à jour reçues
+  par satellite »** dès qu'un ZIP d'export de cours valide est présent dans la boîte.
+  La carte se rafraîchit toute seule (HTMX, toutes les 30 s).
+- La détection (`apprentissage/satellite.py → scan_inbox`) :
+  - ne retient que les ZIP contenant un `course_metadata.json` (les autres fichiers du
+    carrousel sont ignorés) ;
+  - vérifie l'empreinte contre le `__MANIFEST__.xml` du carrousel quand il est présent
+    (statut `FAILED` + message si le fichier est corrompu) ;
+  - déduplique par empreinte SHA-256 (un cours déjà appliqué n'est pas re-proposé).
+- Le responsable clique **« Appliquer »** (par cours) ou **« Tout appliquer »**. Chaque
+  mise à jour :
+  - est copiée hors du dossier du récepteur (qui purge les fichiers absents du cycle
+    courant), puis passée à la tâche existante `import_courses_task` ;
+  - est archivée dans `media/satellite_inbox/processed/` ;
+  - suit son `ImportJob` ; le statut passe `DETECTED → IMPORTING → APPLIED` (ou `FAILED`).
+- Suivi et historique dans l'admin Django (`Apprentissage → Mises à jour satellite`).
+
+> Le fichier d'origine **n'est jamais supprimé** de la boîte de réception : c'est le
+> récepteur FLUTE qui gère ce dossier comme un miroir de son dernier cycle.

@@ -148,8 +148,8 @@ def nouveau_cours(request):
                     notifier(
                         destinataire=eleve,
                         type='NOUVEAU_COURS',
-                        titre=f"Nouveau cours : {cours.titre}",
-                        message=f"Le cours '{cours.titre}' est disponible pour votre niveau {cours.niveau.nom}.",
+                        titre=_("Nouveau cours : %(cours)s") % {'cours': cours.titre},
+                        message=_("Le cours '%(cours)s' est disponible pour votre niveau %(niveau)s.") % {'cours': cours.titre, 'niveau': cours.niveau.nom},
                         url=reverse('apprentissage:detail_cours', args=[cours.id])
                     )
             except Exception as e:
@@ -470,7 +470,7 @@ def liste_cours(request):
         'cours_list': page_obj,
         'page_obj': page_obj,
         'niveaux': niveaux,
-        'titre_page': 'Catalogue des cours',
+        'titre_page': _('Catalogue des cours'),
         'q': q,
         'niveau_filter_id': niveau_filter_id
     }
@@ -533,9 +533,13 @@ def detail_cours(request, cours_id):
     # Calcul des infos RAG et vidéo pour le premier chapitre
     chapitre_initial = None
     session_assistant = None
-    video_ctx = {'is_offline_video': False, 'is_direct_video': False, 'is_youtube': False, 'is_vimeo': False, 'vimeo_embed_url': ''}
+    video_ctx = {
+        'is_offline_video': False, 'is_direct_video': False, 'is_youtube': False,
+        'is_vimeo': False, 'vimeo_embed_url': '', 'is_unavailable_offline': False,
+    }
     chapitre_precedent = None
     chapitre_suivant = None
+    chapitre_initial_is_complete = False
 
     if chapitres.exists():
         chapitre_initial = chapitres.first()
@@ -754,7 +758,7 @@ def mes_notes_view(request):
 
     return render(request, 'apprentissage/mes_notes.html', {
         'bulletin': bulletin,
-        'titre_page': 'Mon carnet de notes',
+        'titre_page': _('Mon carnet de notes'),
         'search_query': search_query,
         'statut_filter': statut_filter,
     })
@@ -856,7 +860,7 @@ def formateur_notes_view(request):
         'classes': classes,
         'classe_selectionnee': classe_id,
         'moyenne_classe_par_cours': moyenne_classe_par_cours,
-        'titre_page': 'Notes de mes étudiants',
+        'titre_page': _('Notes de mes étudiants'),
     })
 
 
@@ -1028,8 +1032,8 @@ def soumission_noter_view(request, soumission_id):
                 notifier(
                     destinataire=soumission.etudiant,
                     type='QCM_CORRIGE',
-                    titre=f"Devoir corrigé : {devoir.titre}",
-                    message=f"Votre devoir '{devoir.titre}' a été corrigé. Note : {s.note}/{devoir.note_max}.",
+                    titre=_("Devoir corrigé : %(devoir)s") % {'devoir': devoir.titre},
+                    message=_("Votre devoir '%(devoir)s' a été corrigé. Note : %(note)s/%(max)s.") % {'devoir': devoir.titre, 'note': s.note, 'max': devoir.note_max},
                     url=reverse('apprentissage:devoir_detail', args=[devoir.pk])
                 )
             except Exception as e:
@@ -1139,7 +1143,7 @@ def devoirs_liste_view(request):
         'filtre_statut': filtre_statut,
         'stats': stats,
         'now': now,
-        'titre_page': 'Mes devoirs',
+        'titre_page': _('Mes devoirs'),
     })
 
 
@@ -1257,7 +1261,7 @@ def formateur_analytics_dashboard(request):
     return render(request, 'apprentissage/analytics_formateur.html', {
         'stats': stats,
         'diff_students': diff_students,
-        'titre_page': "Tableau de Bord Analytics Formateur",
+        'titre_page': _("Tableau de Bord Analytics Formateur"),
         'chart_data_json': chart_data_json,
     })
 
@@ -1265,7 +1269,7 @@ def formateur_analytics_dashboard(request):
 @login_required
 def formateur_analytics_data(request):
     if not (request.user.is_superuser or request.user.role == 'ADMIN' or request.user.is_formateur):
-        return JsonResponse({'error': 'Accès interdit'}, status=403)
+        return JsonResponse({'error': _("Accès interdit")}, status=403)
         
     stats = stats_formateur(request.user)
     return JsonResponse(stats)
@@ -1278,13 +1282,13 @@ def admin_analytics_dashboard(request):
     stats = stats_plateforme()
     return render(request, 'apprentissage/analytics_admin.html', {
         'stats': stats,
-        'titre_page': "Tableau de Bord Analytics Admin",
+        'titre_page': _("Tableau de Bord Analytics Admin"),
     })
 
 @login_required
 def admin_analytics_data(request):
     if not (request.user.is_superuser or request.user.role == 'ADMIN'):
-        return JsonResponse({'error': 'Accès interdit'}, status=403)
+        return JsonResponse({'error': _("Accès interdit")}, status=403)
         
     stats = stats_plateforme()
     return JsonResponse(stats)
@@ -1444,14 +1448,14 @@ from .models import ExportJob
 def export_multiple_courses_view(request):
     """Lance la tâche d'exportation (en arrière-plan) pour plusieurs cours."""
     if not request.user.is_formateur and request.user.role != 'ADMIN':
-        return JsonResponse({'status': 'error', 'message': "Non autorisé."}, status=403)
-        
+        return JsonResponse({'status': 'error', 'message': _("Non autorisé.")}, status=403)
+
     try:
         data = json.loads(request.body)
         course_ids = data.get('course_ids', [])
-        
+
         if not course_ids:
-            return JsonResponse({'status': 'error', 'message': "Aucun cours sélectionné."})
+            return JsonResponse({'status': 'error', 'message': _("Aucun cours sélectionné.")})
             
         jobs_created = []
         for cid in course_ids:
@@ -1469,9 +1473,9 @@ def export_multiple_courses_view(request):
             jobs_created.append({'id': str(job.id), 'cours_titre': cours.titre})
             
         if not jobs_created:
-            return JsonResponse({'status': 'error', 'message': "Aucun cours valide n'a pu être exporté."})
-            
-        return JsonResponse({'status': 'success', 'jobs': jobs_created, 'message': f"{len(jobs_created)} export(s) lancé(s)."})
+            return JsonResponse({'status': 'error', 'message': _("Aucun cours valide n'a pu être exporté.")})
+
+        return JsonResponse({'status': 'success', 'jobs': jobs_created, 'message': _("%(count)s export(s) lancé(s).") % {'count': len(jobs_created)}})
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
 
@@ -1506,12 +1510,12 @@ from django.core.files.storage import FileSystemStorage
 def import_multiple_courses_view(request):
     """Reçoit des fichiers ZIP et lance les tâches d'importation en arrière-plan."""
     if not request.user.is_formateur and request.user.role != 'ADMIN':
-        return JsonResponse({'status': 'error', 'message': "Non autorisé."}, status=403)
-        
+        return JsonResponse({'status': 'error', 'message': _("Non autorisé.")}, status=403)
+
     try:
         files = request.FILES.getlist('zip_files')
         if not files:
-            return JsonResponse({'status': 'error', 'message': "Aucun fichier reçu."})
+            return JsonResponse({'status': 'error', 'message': _("Aucun fichier reçu.")})
             
         # Sauvegarder temporairement les fichiers ZIP
         fs = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'imports', 'temp'))
@@ -1527,8 +1531,79 @@ def import_multiple_courses_view(request):
         # Lancer la tâche Celery pour l'importation
         from .tasks import import_courses_task
         import_courses_task.delay(str(import_job.id), request.user.id, saved_files)
-        
-        return JsonResponse({'status': 'success', 'job_id': str(import_job.id), 'message': f"{len(saved_files)} fichier(s) en cours d'importation."})
+
+        return JsonResponse({'status': 'success', 'job_id': str(import_job.id), 'message': _("%(count)s fichier(s) en cours d'importation.") % {'count': len(saved_files)}})
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
+
+# ── Mises à jour reçues par satellite (carrousel FLUTE) ───────────────────────
+
+def _is_admin(user):
+    return user.is_authenticated and (user.is_superuser or getattr(user, 'role', None) == 'ADMIN')
+
+
+def _render_satellite_card(request):
+    """Scanne la boîte satellite et renvoie la carte du tableau de bord (partial HTMX)."""
+    from .satellite import scan_inbox, reconcile_statuses
+    from .models import SatelliteUpdate
+
+    error = None
+    pending = SatelliteUpdate.objects.none()
+    try:
+        reconcile_statuses()
+        pending = list(scan_inbox().order_by('detected_at'))
+    except Exception as exc:  # dossier illisible, disque plein… : on n'écroule pas le dashboard
+        import logging
+        logging.getLogger(__name__).warning("Scan satellite impossible : %s", exc, exc_info=True)
+        error = _("Boîte de réception satellite inaccessible.")
+
+    recent = (
+        SatelliteUpdate.objects
+        .exclude(status='DETECTED')
+        .order_by('-applied_at', '-detected_at')[:5]
+    )
+    return render(request, 'apprentissage/partials/satellite_updates_card.html', {
+        'satellite_pending': pending,
+        'satellite_recent': recent,
+        'satellite_error': error,
+    })
+
+
+@login_required
+def satellite_updates_card(request):
+    if not _is_admin(request.user):
+        return HttpResponseForbidden(_("Accès réservé aux administrateurs."))
+    return _render_satellite_card(request)
+
+
+@login_required
+@require_http_methods(['POST'])
+def apply_satellite_update(request, update_id):
+    if not _is_admin(request.user):
+        return HttpResponseForbidden(_("Accès réservé aux administrateurs."))
+    from .satellite import apply_update
+    from .models import SatelliteUpdate
+
+    update = get_object_or_404(SatelliteUpdate, pk=update_id, status='DETECTED')
+    apply_update(update, request.user)
+    messages.success(request, _("Mise à jour « %(nom)s » : import lancé.") % {'nom': update.logical_name})
+    return _render_satellite_card(request)
+
+
+@login_required
+@require_http_methods(['POST'])
+def apply_all_satellite_updates(request):
+    if not _is_admin(request.user):
+        return HttpResponseForbidden(_("Accès réservé aux administrateurs."))
+    from .satellite import apply_update, scan_inbox
+    from .models import SatelliteUpdate
+
+    count = 0
+    for update in list(scan_inbox().order_by('detected_at')):
+        apply_update(update, request.user)
+        count += 1
+    if count:
+        messages.success(request, _("%(count)s mise(s) à jour satellite : import lancé.") % {'count': count})
+    return _render_satellite_card(request)
  

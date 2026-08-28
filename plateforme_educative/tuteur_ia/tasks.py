@@ -7,6 +7,7 @@ import logging
 import random
 
 from celery import shared_task
+from django.utils.translation import gettext
 
 logger = logging.getLogger(__name__)
 
@@ -69,14 +70,14 @@ def generer_qcm_task(self, chapitre_id: str, etudiant_id: str, n_questions: int 
             if not questions:
                 if reason == 'no_content':
                     return {
-                        'error': 'Aucun document PDF indexé pour ce chapitre.',
-                        'detail': "Le formateur doit d'abord uploader un PDF.",
+                        'error': gettext('Aucun document PDF indexé pour ce chapitre.'),
+                        'detail': gettext("Le formateur doit d'abord uploader un PDF."),
                         'no_pdf': True,
                     }
                 else:
                     return {
-                        'error': "La génération du QCM par l'IA a échoué. Réessayez dans quelques instants.",
-                        'detail': "Le contenu du chapitre est bien indexé, mais l'IA n'a pas réussi à produire les questions cette fois-ci.",
+                        'error': gettext("La génération du QCM par l'IA a échoué. Réessayez dans quelques instants."),
+                        'detail': gettext("Le contenu du chapitre est bien indexé, mais l'IA n'a pas réussi à produire les questions cette fois-ci."),
                         'no_pdf': False,
                     }
 

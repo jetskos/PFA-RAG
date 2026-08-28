@@ -1,13 +1,12 @@
 {% extends 'base.html' %}
-{% load i18n %}
+{% load i18n static %}
 {% get_current_language as LANGUAGE_CODE %}
 {% block title %}{% translate "Calendrier scolaire" %}{% endblock %}
 
 {% block content %}
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css">
-<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+<script src="{% static 'vendor/fullcalendar/index.global.min.js' %}"></script>
 {% if LANGUAGE_CODE != 'en' %}
-<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/locales/fr.global.min.js"></script>
+<script src="{% static 'vendor/fullcalendar/locales-fr.global.min.js' %}"></script>
 {% endif %}
 
 <style>

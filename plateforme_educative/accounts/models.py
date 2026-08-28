@@ -165,19 +165,19 @@ class Utilisateur(AbstractBaseUser, PermissionsMixin):
 
         # 1. Créer la notification In-App
         try:
-            titre = "Félicitations, vous êtes maintenant Formateur !" if self.role == 'FORMATEUR' else "Félicitations, vous êtes maintenant Administrateur !"
+            titre = _("Félicitations, vous êtes maintenant Formateur !") if self.role == 'FORMATEUR' else _("Félicitations, vous êtes maintenant Administrateur !")
             Notification.objects.create(
                 destinataire=self,
                 type='COMPTE_ACTIVE',
                 titre=titre,
-                message="Vos droits d'accès ont été mis à jour. Bienvenue dans l'équipe !",
+                message=_("Vos droits d'accès ont été mis à jour. Bienvenue dans l'équipe !"),
                 url='/dashboard/formateur/' if self.role == 'FORMATEUR' else '/dashboard/admin/'
             )
         except Exception as e:
             logger.error(f"Erreur création notification in-app pour {self.email} : {e}")
         
         try:
-            subject = "[EduTech] Votre compte est activé - Bienvenue dans l'équipe !"
+            subject = str(_("[EduTech] Votre compte est activé - Bienvenue dans l'équipe !"))
             base_url = getattr(settings, 'BASE_URL', 'http://127.0.0.1:8000')
             login_url = f"{base_url}/accounts/login/"
             

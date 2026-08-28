@@ -3,7 +3,7 @@
 {% block title %}{% translate "Tableau de bord — Formateur" %}{% endblock %}
 {% block content %}
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+/* Inter font is loaded globally by base.html (vendored, offline-safe) */
 
 /* ══════════════════════════════════════════════════
    FORMATEUR DASHBOARD — PREMIUM REDESIGN
@@ -177,12 +177,13 @@
 /* ── MAIN GRID ── */
 .fmt-main-grid {
   display: grid;
-  grid-template-columns: 1fr 340px;
+  grid-template-columns: minmax(0, 1fr) 340px;
   gap: 1.5rem;
   align-items: start;
   margin-bottom: 1.5rem;
 }
-@media (max-width: 1100px) { .fmt-main-grid { grid-template-columns: 1fr; } }
+.fmt-main-grid > * { min-width: 0; }
+@media (max-width: 1100px) { .fmt-main-grid { grid-template-columns: minmax(0, 1fr); } }
 
 /* ── PANELS ── */
 .fmt-panel {
@@ -212,10 +213,11 @@
 /* ── COURS GRID ── */
 .cours-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(255px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 255px), 1fr));
   gap: 1.1rem;
   padding: 1.4rem;
 }
+@media (max-width: 560px) { .cours-grid { padding: 1rem; gap: 0.9rem; } }
 .cours-card {
   border-radius: 18px; border: 1.5px solid var(--border-light, #e8edf3);
   overflow: hidden; background: var(--bg-surface, #fff);
@@ -412,6 +414,17 @@
 .btn-fmt-primary:hover { filter: brightness(1.08); transform: translateY(-1px); }
 .btn-fmt-outline { background: var(--bg-surface, #fff); color: var(--text-primary, #0f172a); border: 1.5px solid var(--border-default, #e2e8f0); }
 .btn-fmt-outline:hover { background: var(--bg-hover, #f8fafc); border-color: #cbd5e1; }
+
+/* ── MOBILE ─────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .fmt-hero { padding: 1.6rem 1.3rem; }
+  .fmt-hero-inner { flex-direction: column; align-items: flex-start; gap: 1.25rem; }
+  .fmt-hero-left { min-width: 0; }
+  .fmt-hero-title { font-size: 1.5rem; }
+  .fmt-panel-head { flex-wrap: wrap; }
+  .fmt-panel-head > div { flex-wrap: wrap; width: 100%; }
+  .fmt-panel-head .btn-fmt { flex: 1 1 auto; justify-content: center; }
+}
 </style>
 
 <div class="fmt">
