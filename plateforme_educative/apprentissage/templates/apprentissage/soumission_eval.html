@@ -14,7 +14,7 @@
         <h1>{% blocktranslate with nom=soumission.etudiant.get_full_name %}Évaluer la soumission de {{ nom }}{% endblocktranslate %}</h1>
     </div>
 
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 2rem; align-items: start;">
+    <div class="two-col-cards" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 2rem; align-items: start;">
         <!-- Soumission de l'élève -->
         <div class="carte">
             <h2 style="font-size: 1rem; margin-bottom: 1rem; border-bottom: 1px solid var(--bordure); padding-bottom: 0.75rem;">📎 {% translate "Fichier soumis" %}</h2>
@@ -50,7 +50,7 @@
                     {{ form.feedback }}
                     {% if form.feedback.errors %}<div class="form-error">{{ form.feedback.errors }}</div>{% endif %}
                 </div>
-                <div style="display: flex; gap: 0.75rem; justify-content: flex-end; border-top: 1px solid var(--bordure); padding-top: 1rem;">
+                <div class="form-actions-row" style="display: flex; gap: 0.75rem; justify-content: flex-end; border-top: 1px solid var(--bordure); padding-top: 1rem;">
                     <a href="{% url 'apprentissage:devoir_detail' devoir_id=devoir.pk %}" class="btn btn-ghost">{% translate "Annuler" %}</a>
                     <button type="submit" class="btn-primary">
                         <i class="ti ti-check"></i> {% translate "Valider la note" %}

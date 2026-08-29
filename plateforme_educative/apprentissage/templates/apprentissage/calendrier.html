@@ -530,15 +530,15 @@ let allEvents = [];
 let selectedDate = null;
 
 document.addEventListener('DOMContentLoaded', () => {
+    var isMobile = window.matchMedia('(max-width: 768px)').matches;
     cal = new FullCalendar.Calendar(document.getElementById('calendar'), {
         locale: CAL_LOCALE,
         firstDay: 1,
-        initialView: 'dayGridMonth',
-        headerToolbar: {
-            left: 'prev,next today',
-            center: 'title',
-            right: 'dayGridMonth,listMonth'
-        },
+        initialView: isMobile ? 'listMonth' : 'dayGridMonth',
+        headerToolbar: isMobile
+            ? { left: 'prev,next', center: 'title', right: 'today' }
+            : { left: 'prev,next today', center: 'title', right: 'dayGridMonth,listMonth' },
+        footerToolbar: isMobile ? { center: 'dayGridMonth,listMonth' } : false,
         buttonText: { today: "{% translate "Aujourd'hui" %}", month: '{% translate "Mois" %}', list: '{% translate "Liste" %}' },
         height: 'auto',
         dayMaxEvents: 3,

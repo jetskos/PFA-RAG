@@ -315,8 +315,9 @@ html, body {
     .btn-hero-primary, .btn-hero-ghost {
         width: 100% !important;
         justify-content: center !important;
-        padding: 0.75rem 1rem !important;
-        font-size: 0.9rem !important;
+        padding: 0.85rem 1rem !important;
+        min-height: 48px !important;
+        font-size: 0.95rem !important;
     }
     .hero-stats {
         flex-wrap: wrap !important;
@@ -358,8 +359,13 @@ html, body {
         gap: 1rem !important;
     }
     .section-title-big {
-        font-size: 1.4rem !important;
+        font-size: clamp(1.5rem, 6vw, 1.9rem) !important;
     }
+    .bento-main-content h2 {
+        font-size: clamp(1.25rem, 5.5vw, 1.6rem) !important;
+    }
+    .bento-main-content,
+    .bento-side-content { padding: 1.1rem !important; }
 
     /* Roles */
     .home-roles {
@@ -379,14 +385,17 @@ html, body {
         border-radius: 16px !important;
     }
     .home-cta-bottom h2 {
-        font-size: 1.4rem !important;
+        font-size: clamp(1.5rem, 6vw, 1.9rem) !important;
     }
     .home-cta-bottom p {
-        font-size: 0.88rem !important;
+        font-size: 0.9rem !important;
     }
     .btn-cta-white {
-        padding: 0.75rem 1.5rem !important;
-        font-size: 0.88rem !important;
+        width: 100% !important;
+        justify-content: center !important;
+        padding: 0.85rem 1.5rem !important;
+        min-height: 48px !important;
+        font-size: 0.92rem !important;
     }
 
     /* --- ADMIN DASHBOARD --- */
@@ -445,9 +454,16 @@ html, body {
         grid-template-columns: 1fr 1fr !important;
         gap: 0.75rem !important;
     }
-    .mid-grid {
+    .mid-grid,
+    .prog-hero-content,
+    .stat-strip {
         grid-template-columns: 1fr !important;
     }
+    .prog-hero-content { padding: 1.5rem 1.25rem !important; }
+    .prog-hero-name { font-size: clamp(1.5rem, 6vw, 2rem) !important; }
+    .prog-hero-stats { flex-direction: row !important; flex-wrap: wrap !important; min-width: 0 !important; }
+    .prog-stat-pill { flex: 1 1 44% !important; }
+    .db-hero-badge { align-self: flex-start !important; }
 
     /* --- FORMATEUR DASHBOARD --- */
     .fmt-hero {
@@ -485,13 +501,19 @@ html, body {
     /* --- COURSE CATALOG --- */
     .catalog-hero {
         min-height: auto !important;
-        padding: 2rem 1.25rem 1.75rem !important;
+        padding: 1.75rem 1.15rem !important;
         border-radius: 16px !important;
-        margin-bottom: 1.5rem !important;
+        margin-bottom: 1.25rem !important;
     }
     .hero-title {
         font-size: clamp(1.5rem, 6vw, 2rem) !important;
     }
+    /* Textes marketing non essentiels masqués sur mobile (catalogue) */
+    .catalog-hero .hero-tag,
+    .catalog-hero .hero-desc {
+        display: none !important;
+    }
+    .catalog-hero .hero-stats { margin-top: .75rem !important; }
     .hero-stats {
         gap: 1rem !important;
     }
@@ -500,10 +522,15 @@ html, body {
     }
     .catalog-filters-bar {
         flex-direction: column !important;
+        max-width: none !important;
     }
-    .nivel-select-wrap select {
-        min-width: 100% !important;
+    .nivel-select-wrap select,
+    .catalog-search-container,
+    .catalog-search-container input {
+        width: 100% !important;
+        min-width: 0 !important;
     }
+    .catalog-search-container input { font-size: 16px !important; min-height: 46px !important; }
     .grille-cours {
         grid-template-columns: 1fr !important;
         gap: 1rem !important;
@@ -514,6 +541,8 @@ html, body {
         -webkit-overflow-scrolling: touch;
         padding-bottom: 0.5rem;
     }
+    .card-footer .btn-consult { min-height: 46px !important; }
+    .card-footer .btn-edit-card { min-height: 46px !important; min-width: 46px !important; justify-content: center !important; }
 
     /* --- COURSE DETAIL --- */
     .course-hero-inner {
@@ -559,15 +588,117 @@ html, body {
     .doc-preview {
         padding: 1rem !important;
     }
+    /* Chapitre : header en colonne, flèches de nav pleine largeur, cibles 44px */
+    .chapitre-detail-container { flex-direction: column !important; gap: 1.25rem !important; }
+    .chapitre-header-bar { flex-direction: column !important; align-items: stretch !important; gap: .75rem !important; }
+    .chapitre-nav-arrows { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: .5rem !important; }
+    .chapitre-nav-arrows .nav-arrow-btn {
+        min-height: 44px !important;
+        justify-content: center !important;
+        display: inline-flex !important;
+        align-items: center !important;
+    }
+    .content-breadcrumb { font-size: .82rem !important; flex-wrap: wrap !important; }
+    .eval-buttons-grid,
+    .doc-grid { grid-template-columns: 1fr !important; }
+    .btn-chat-send { width: 44px !important; height: 44px !important; flex-shrink: 0 !important; }
+    .chat-input-bar { padding: .7rem .8rem !important; gap: .5rem !important; }
+    .chat-input-bar input,
+    .chat-input-bar textarea { font-size: 16px !important; min-height: 44px !important; }
+    .chat-fab {
+        bottom: calc(72px + env(safe-area-inset-bottom, 0px)) !important;
+        right: 1rem !important;
+    }
+
+    /* --- TUTEUR IA : session socratique --- */
+    .ia-shell {
+        grid-template-columns: 1fr !important;
+        height: auto !important;
+        gap: 1rem !important;
+        max-width: 100% !important;
+    }
+    .ia-sidebar {
+        flex-direction: row !important;
+        flex-wrap: wrap !important;
+        gap: .75rem !important;
+    }
+    .ia-chapter-card { flex: 1 1 100% !important; }
+    .ia-score-card, .ia-progress-card { flex: 1 1 45% !important; min-width: 0 !important; }
+    .ia-back-btn { flex: 1 1 100% !important; min-height: 46px !important; justify-content: center !important; }
+    .ia-chat-area {
+        height: calc(100dvh - 210px) !important;
+        min-height: 24rem !important;
+        border-radius: 16px !important;
+    }
+    .ia-chat-header { padding: .8rem 1rem !important; }
+    .ia-messages { padding: 1rem !important; }
+    .bubble { max-width: 88% !important; }
+    .ia-input-area, .ia-input-row { flex-shrink: 0 !important; }
+    .ia-textarea { font-size: 16px !important; }
+    .ia-send-btn { width: 46px !important; height: 46px !important; }
+    .ia-q-pill { display: none !important; }
+
+    /* --- TUTEUR IA : QCM --- */
+    .qcm-shell { margin: 1rem auto !important; }
+    .qcm-hdr { padding: 1.15rem 1.25rem !important; }
+    .qcm-hdr h1 { font-size: clamp(1.25rem, 5.5vw, 1.6rem) !important; }
+    .qcm-hdr .meta { flex-wrap: wrap !important; gap: .5rem !important; }
+    .q-card { padding: 1.25rem !important; }
+    .q-opt, .q-choice, .qcm-option { min-height: 46px !important; }
+    .q-nav { gap: .6rem !important; }
+    .q-nav .btn-nav { flex: 1 1 auto !important; min-height: 46px !important; }
+    .stats-row { flex-wrap: wrap !important; gap: .6rem !important; }
+    .stats-row .stat-box { flex: 1 1 28% !important; min-width: 0 !important; padding: .75rem .5rem !important; }
+    .result-panel { padding: 1.5rem 1.15rem !important; }
+    .result-actions { flex-direction: column !important; }
+    .result-actions > * { width: 100% !important; justify-content: center !important; min-height: 46px !important; }
+
+    /* --- CALENDRIER --- */
+    .cal-page { padding: 0 !important; }
+    .cal-hero { flex-direction: column !important; align-items: flex-start !important; gap: 1rem !important; padding: 1.5rem 1.25rem !important; }
+    .cal-hero-right { width: 100% !important; }
+    .cal-hero-right .cal-btn-primary, .cal-hero-right .btn-new {
+        width: 100% !important; justify-content: center !important; min-height: 46px !important;
+    }
+    .cal-page-title { font-size: clamp(1.4rem, 6vw, 1.9rem) !important; }
+    .cal-layout { grid-template-columns: 1fr !important; }
+    .cal-card { padding: .85rem !important; border-radius: 14px !important; }
+    .fc .fc-toolbar { gap: .4rem !important; }
+    .fc .fc-toolbar-title { font-size: .95rem !important; }
+    .fc .fc-button { padding: .5rem .7rem !important; min-height: 44px !important; }
+    .fc .fc-view-harness { min-height: 60vh !important; }
+    #modal-close { width: 40px !important; height: 40px !important; }
+    #modal-body { padding: 1.25rem !important; }
+
+    /* --- CARNET DE NOTES ÉLÈVE / ÉVALUATION --- */
+    .notes-toolbar {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        width: 100% !important;
+        margin-top: 1rem !important;
+    }
+    .notes-toolbar > * { width: 100% !important; text-align: center !important; justify-content: center !important; }
+    .notes-filter-form { flex-direction: column !important; align-items: stretch !important; }
+    .notes-filter-form > div,
+    .notes-filter-form select,
+    .notes-filter-form button { width: 100% !important; }
+    .notes-course-head { flex-direction: column !important; align-items: flex-start !important; gap: .5rem !important; text-align: left !important; }
+    .notes-course-head > div:last-child { text-align: left !important; }
+    .notes-table { min-width: 34rem !important; }
+
+    /* --- ÉTATS VIDES / PAGES CENTRÉES --- */
+    .empty-state-shell { margin: 1.5rem 0 !important; padding: 0 !important; }
+    .empty-state-card { padding: 2.25rem 1.25rem !important; }
+    .empty-state-card h1 { font-size: clamp(1.35rem, 5.5vw, 1.8rem) !important; }
 
     /* --- AI CHAT HALF-SHEET --- */
     .chapitre-col-droite.active {
         display: block !important;
         position: fixed !important;
-        bottom: 65px !important; /* Above bottom nav */
+        bottom: calc(65px + env(safe-area-inset-bottom, 0px)) !important; /* Au-dessus de la nav basse */
         left: 0 !important;
         width: 100% !important;
-        height: 55vh !important;
+        height: 55dvh !important;
         z-index: 1040 !important;
         box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.2) !important;
         border-radius: 20px 20px 0 0 !important;
@@ -662,9 +793,38 @@ html, body {
     }
 
     /* Global Tap Targets for Mobile (44x44px minimum recommended by Apple/Google) */
-    .btn, button, .sidebar-chapter-link, .bottom-nav-item, 
-    select, input[type="text"], input[type="password"], input[type="email"] {
+    .btn, button, .sidebar-chapter-link, .bottom-nav-item,
+    .btn-primary, .btn-secondary, .btn-ghost, .btn-outline, .btn-danger, .btn-success,
+    a.btn-primary, a.btn-secondary, a.btn-ghost,
+    select, input[type="text"], input[type="password"], input[type="email"],
+    input[type="number"], input[type="date"], input[type="datetime-local"],
+    input[type="search"], input[type="tel"], input[type="url"], textarea {
         min-height: 44px !important;
+    }
+    /* iOS : empêcher le zoom auto au focus des champs (police < 16px) */
+    input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+    select, textarea {
+        font-size: 16px !important;
+    }
+
+    /* Utilitaires mobile réutilisables */
+    .two-col-cards,
+    .three-col-cards,
+    .form-grid-2,
+    .details-info-grid {
+        grid-template-columns: 1fr !important;
+    }
+    .form-actions-row,
+    .page-header-actions,
+    .modal-actions {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        width: 100% !important;
+    }
+    .form-actions-row > *,
+    .page-header-actions > * {
+        width: 100% !important;
+        justify-content: center !important;
     }
 
     .level-item-row .btn-edit, 

@@ -11,7 +11,7 @@
             <h1>{% translate "Mon carnet de notes" %}</h1>
             <p>{% translate "Vue d'ensemble de vos scores QCM par chapitre." %}</p>
         </div>
-        <div style="display: flex; gap: 0.75rem; align-items: center;">
+        <div class="notes-toolbar" style="display: flex; gap: 0.75rem; align-items: center;">
             {% if bulletin.moyenne_generale is not None %}
                 <span class="badge badge-lg" style="
                     font-size: 1.1rem;
@@ -31,7 +31,7 @@
 
     <!-- Barre de recherche et filtres -->
     <div class="filters-section" style="margin-top: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap; background: var(--surface); padding: 1rem; border-radius: 12px; border: 1px solid var(--bordure);">
-        <form method="get" style="display: flex; gap: 1rem; width: 100%; align-items: center;">
+        <form method="get" class="notes-filter-form" style="display: flex; gap: 1rem; width: 100%; align-items: center;">
             <div style="flex: 1; position: relative;">
                 <i class="ti ti-search" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--texte-secondaire);"></i>
                 <input type="text" name="q" placeholder="{% translate 'Rechercher un cours...' %}" value="{{ search_query }}" style="width: 100%; padding: 0.6rem 1rem 0.6rem 2.5rem; border: 1px solid var(--bordure); border-radius: 8px; background: var(--fond); color: var(--texte);">
@@ -50,7 +50,7 @@
         {% for cours_data in bulletin.cours %}
         <div class="carte" style="margin-top: 2rem; padding: 0; overflow: hidden;">
             <!-- En-tête du cours -->
-            <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--bordure); display: flex; justify-content: space-between; align-items: center; background: var(--surface-alt);">
+            <div class="notes-course-head" style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--bordure); display: flex; justify-content: space-between; align-items: center; background: var(--surface-alt);">
                 <div>
                     <h3 style="margin: 0 0 0.25rem;">{{ cours_data.cours.titre }}</h3>
                     <span class="badge" style="font-size: 0.78rem;">{{ cours_data.cours.niveau.nom }}</span>
@@ -68,7 +68,7 @@
 
             <!-- Tableau des chapitres -->
             <div class="table-container">
-                <table style="width: 100%; border-collapse: collapse;">
+                <table class="notes-table" style="width: 100%; border-collapse: collapse;">
                     <thead>
                         <tr style="background: var(--surface-alt); font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--texte-secondaire);">
                             <th style="padding: 0.6rem 1.5rem; text-align: left;">#</th>
