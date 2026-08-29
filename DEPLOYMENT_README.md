@@ -162,4 +162,41 @@ Voir `plateforme_educative/DOCUMENTATION_HLS_FLUTE.md` §5 : lancer le récepteu
 carrousel FLUTE en tâche de fond, sortie pointée sur `SATELLITE_INBOX_DIR`.
 
 ---
-*Document généré le 23 Juin 2026 — section hors-ligne ajoutée le 29 Août 2026.*
+
+## 📱 7. Application mobile (PWA)
+
+La plateforme est une **Progressive Web App** : elle s'installe sur l'écran
+d'accueil d'un téléphone, s'ouvre en plein écran (sans barre de navigateur) et
+reste consultable sans réseau.
+
+- **Manifeste** : `/manifest.webmanifest` — nom, icônes (`static/images/pwa/`),
+  thème `#0d9488`, mode `standalone`, raccourcis « Mes cours » / « Calendrier ».
+- **Service worker** : `/sw.js` — réseau d'abord pour les pages (repli cache puis
+  page `/offline/`), cache d'abord pour `/static/`, jamais de mise en cache des
+  POST / de l'API tuteur IA / de la vidéo HLS. Purge automatique au changement de
+  version (`SW_CACHE_VERSION` dans `core/pwa.py`).
+- **Installation** : Android/Chrome/Edge affichent une bannière « Installer
+  EduTech » ; iOS/Safari → *Partager → Sur l'écran d'accueil*.
+
+> ⚠️ Le service worker et l'installation exigent un **contexte sécurisé** :
+> `https://…` **ou** `localhost`. En production (VM 101 derrière le reverse proxy
+> HTTPS) c'est automatique. En **HTTP nu sur IP LAN** (`http://192.168.x.x`) la
+> PWA est silencieusement désactivée.
+
+### Tester la PWA sur un vrai téléphone en local
+
+```bash
+# Terminal 1 — Django
+bash plateforme_educative/test_local.sh            # http://127.0.0.1:8000
+
+# Terminal 2 — proxy HTTPS auto-signé (aucune dépendance en plus)
+python plateforme_educative/serve_https.py         # https://<IP-PC>:8443
+```
+
+Sur le téléphone (même Wi-Fi) : `https://<IP-du-PC>:8443/` → accepter
+l'avertissement de certificat une fois → la bannière d'installation apparaît.
+Variante sans proxy (Android) : `chrome://flags/#unsafely-treat-insecure-origin-as-secure`
+→ ajouter `http://<IP-PC>:8000` → relancer Chrome.
+
+---
+*Document généré le 23 Juin 2026 — sections hors-ligne (29 Août 2026) et PWA (29 Août 2026) ajoutées.*

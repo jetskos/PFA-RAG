@@ -90,6 +90,8 @@ echo "════════════════════════�
 echo "  Sur ce PC     : http://127.0.0.1:8000/"
 echo "  Sur téléphone : http://${LAN_IP}:8000/   (même Wi-Fi + pare-feu autorisé)"
 echo "  Login         : admin@test.local / test1234"
+echo "  PWA (install/hors-ligne) : 2e terminal → python serve_https.py"
+echo "                             puis https://${LAN_IP}:8443/ sur le téléphone"
 echo "═══════════════════════════════════════════════════════════════════"
 # 0.0.0.0 = écoute sur toutes les interfaces (indispensable pour l'accès téléphone).
 python manage.py runserver 0.0.0.0:8000
