@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-29 14:07+0100\n"
+"POT-Creation-Date: 2026-08-29 14:42+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -46,7 +46,7 @@ msgid "Niveau"
 msgstr "Level"
 
 #: .\accounts\models.py:34
-#: .\accounts\templates\accounts\admin_dashboard.html:929
+#: .\accounts\templates\accounts\admin_dashboard.html:953
 #: .\accounts\templates\accounts\profile.html:72
 #: .\apprentissage\templates\apprentissage\formateur_notes.html:287
 #: .\core\templates\core\dashboard_student.html:868
@@ -62,7 +62,7 @@ msgstr "Student"
 #: .\accounts\models.py:78
 #: .\accounts\templates\accounts\emails\role_activation.html:165
 #: .\apprentissage\models.py:590 .\apprentissage\models.py:628
-#: .\apprentissage\templates\apprentissage\analytics_formateur.html:260
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:267
 #: .\core\templates\base.html:91 .\core\templates\base.html:235
 #: .\logistics\models.py:143
 #: .\logistics\templates\logistics\partials\demandes_list.html:101
@@ -78,11 +78,11 @@ msgstr "Administrator"
 #: .\apprentissage\models.py:616
 #: .\core\templates\core\partials\formateur_structure.html:257
 #: .\core\templates\core\partials\kanban_assignation_section.html:24
-#: .\logistics\models.py:133 .\logistics\templates\logistics\demandes.html:263
-#: .\logistics\templates\logistics\demandes.html:299
+#: .\logistics\models.py:133 .\logistics\templates\logistics\demandes.html:264
+#: .\logistics\templates\logistics\demandes.html:300
 #: .\logistics\templates\logistics\partials\demandes_list.html:43
 #: .\logistics\templates\logistics\partials\tickets_list.html:19
-#: .\logistics\templates\logistics\tickets.html:166
+#: .\logistics\templates\logistics\tickets.html:168
 msgid "En attente"
 msgstr "Pending"
 
@@ -91,7 +91,7 @@ msgstr "Pending"
 #: .\apprentissage\models.py:211 .\apprentissage\models.py:367
 #: .\core\forms.py:16 .\core\forms.py:36
 #: .\core\templates\core\partials\equipement_row.html:42
-#: .\logistics\templates\logistics\inventaire.html:385
+#: .\logistics\templates\logistics\inventaire.html:391
 #: .\logistics\templates\logistics\partials\equipements_list.html:24
 msgid "Actif"
 msgstr "Active"
@@ -101,8 +101,8 @@ msgid "Adresse e-mail"
 msgstr "Email address"
 
 #: .\accounts\models.py:90
-#: .\accounts\templates\accounts\admin_dashboard.html:363
-#: .\accounts\templates\accounts\admin_dashboard.html:909
+#: .\accounts\templates\accounts\admin_dashboard.html:384
+#: .\accounts\templates\accounts\admin_dashboard.html:933
 #: .\accounts\templates\accounts\partials\onboarding_step.html:236
 #: .\accounts\templates\accounts\partials\onboarding_step.html:397
 #: .\accounts\templates\accounts\profile_edit.html:287
@@ -112,8 +112,8 @@ msgid "Prénom"
 msgstr "First name"
 
 #: .\accounts\models.py:91
-#: .\accounts\templates\accounts\admin_dashboard.html:364
-#: .\accounts\templates\accounts\admin_dashboard.html:913
+#: .\accounts\templates\accounts\admin_dashboard.html:385
+#: .\accounts\templates\accounts\admin_dashboard.html:937
 #: .\accounts\templates\accounts\partials\onboarding_step.html:240
 #: .\accounts\templates\accounts\partials\onboarding_step.html:401
 #: .\accounts\templates\accounts\profile_edit.html:296
@@ -290,149 +290,153 @@ msgstr "Cannot delete a superuser."
 msgid "Administration Pédagogique"
 msgstr "Educational Administration"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:344
+#: .\accounts\templates\accounts\admin_dashboard.html:365
 #: .\core\templates\base.html:108
 #: .\core\templates\core\dashboard_admin_structure.html:78
 msgid "Administration"
 msgstr "Administration"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:345
+#: .\accounts\templates\accounts\admin_dashboard.html:366
 msgid "Gestion des utilisateurs"
 msgstr "User Management"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:346
+#: .\accounts\templates\accounts\admin_dashboard.html:367
 msgid "Gérez l'accès, les rôles et les profils de votre plateforme."
 msgstr "Manage access, roles, and profiles across your platform."
 
-#: .\accounts\templates\accounts\admin_dashboard.html:359
+#: .\accounts\templates\accounts\admin_dashboard.html:380
 msgid "Création de profil"
 msgstr "Profile Creation"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:363
+#: .\accounts\templates\accounts\admin_dashboard.html:384
 msgid "Ex: Jean"
 msgstr "E.g., John"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:364
+#: .\accounts\templates\accounts\admin_dashboard.html:385
 msgid "Ex: Dupont"
 msgstr "E.g., Smith"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:365
+#: .\accounts\templates\accounts\admin_dashboard.html:386
 #: .\core\templates\core\classe_students_page.html:29
 #: .\core\templates\core\classe_students_page.html:86
 msgid "Email"
 msgstr "Email"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:366
+#: .\accounts\templates\accounts\admin_dashboard.html:387
 #: .\accounts\views.py:466 .\core\templates\core\classe_students_page.html:90
 msgid "Mot de passe"
 msgstr "Password"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:367
-#: .\accounts\templates\accounts\admin_dashboard.html:921
-#: .\accounts\templates\accounts\admin_dashboard.html:1031
+#: .\accounts\templates\accounts\admin_dashboard.html:388
+#: .\accounts\templates\accounts\admin_dashboard.html:945
+#: .\accounts\templates\accounts\admin_dashboard.html:1055
 msgid "Rôle"
 msgstr "Role"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:374
+#: .\accounts\templates\accounts\admin_dashboard.html:395
 msgid "Niveau (Optionnel)"
 msgstr "Level (Optional)"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:376
-#: .\accounts\templates\accounts\admin_dashboard.html:653
-#: .\accounts\templates\accounts\admin_dashboard.html:926
+#: .\accounts\templates\accounts\admin_dashboard.html:397
+#: .\accounts\templates\accounts\admin_dashboard.html:677
+#: .\accounts\templates\accounts\admin_dashboard.html:950
 msgid "Aucun"
 msgstr "None"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:384
+#: .\accounts\templates\accounts\admin_dashboard.html:405
 msgid "Confirmer"
 msgstr "Confirm"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:396
+#: .\accounts\templates\accounts\admin_dashboard.html:417
 #: .\core\templates\base.html:121 .\core\templates\base.html:448
 #: .\core\templates\core\dashboard_admin_structure.html:84
 msgid "Utilisateurs"
 msgstr "Users"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:398
+#: .\accounts\templates\accounts\admin_dashboard.html:419
 msgid "Comptes enregistrés"
 msgstr "Registered accounts"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:406
-#: .\accounts\templates\accounts\admin_dashboard.html:473
-#: .\accounts\templates\accounts\admin_dashboard.html:1022
+#: .\accounts\templates\accounts\admin_dashboard.html:427
+#: .\accounts\templates\accounts\admin_dashboard.html:494
+#: .\accounts\templates\accounts\admin_dashboard.html:1046
 #: .\apprentissage\templates\apprentissage\analytics_admin.html:90
 msgid "Élèves"
 msgstr "Students"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:408
+#: .\accounts\templates\accounts\admin_dashboard.html:429
 msgid "Profils étudiants"
 msgstr "Student profiles"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:416
-#: .\accounts\templates\accounts\admin_dashboard.html:474
-#: .\accounts\templates\accounts\admin_dashboard.html:1022
+#: .\accounts\templates\accounts\admin_dashboard.html:437
+#: .\accounts\templates\accounts\admin_dashboard.html:495
+#: .\accounts\templates\accounts\admin_dashboard.html:1046
 #: .\apprentissage\templates\apprentissage\analytics_admin.html:90
 #: .\core\templates\core\dashboard_admin.html:705
 msgid "Formateurs"
 msgstr "Instructors"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:418
+#: .\accounts\templates\accounts\admin_dashboard.html:439
 msgid "Enseignants & tuteurs"
 msgstr "Teachers & tutors"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:426
-#: .\accounts\templates\accounts\admin_dashboard.html:475
-#: .\accounts\templates\accounts\admin_dashboard.html:1022
+#: .\accounts\templates\accounts\admin_dashboard.html:447
+#: .\accounts\templates\accounts\admin_dashboard.html:496
+#: .\accounts\templates\accounts\admin_dashboard.html:1046
 #: .\apprentissage\templates\apprentissage\analytics_admin.html:90
 msgid "Administrateurs"
 msgstr "Administrators"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:428
+#: .\accounts\templates\accounts\admin_dashboard.html:449
 msgid "Accès supervision"
 msgstr "Supervisory access"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:437
+#: .\accounts\templates\accounts\admin_dashboard.html:458
 msgid "Rechercher par nom, email..."
 msgstr "Search by name, email..."
 
-#: .\accounts\templates\accounts\admin_dashboard.html:444
+#: .\accounts\templates\accounts\admin_dashboard.html:465
 msgid "Tous les rôles"
 msgstr "All roles"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:467
+#: .\accounts\templates\accounts\admin_dashboard.html:488
 msgid "Exporter Excel..."
 msgstr "Export to Excel..."
 
-#: .\accounts\templates\accounts\admin_dashboard.html:471
-#: .\accounts\templates\accounts\admin_dashboard.html:1022
+#: .\accounts\templates\accounts\admin_dashboard.html:492
+#: .\accounts\templates\accounts\admin_dashboard.html:1046
 msgid "Tous les utilisateurs"
 msgstr "All users"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:472
+#: .\accounts\templates\accounts\admin_dashboard.html:493
 msgid "Vue filtrée actuelle"
 msgstr "Current filtered view"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:479
+#: .\accounts\templates\accounts\admin_dashboard.html:500
 msgid "Nouvel utilisateur"
 msgstr "New user"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:489
+#: .\accounts\templates\accounts\admin_dashboard.html:507
+msgid "Faites défiler pour voir toutes les colonnes"
+msgstr "Scroll to see all columns"
+
+#: .\accounts\templates\accounts\admin_dashboard.html:513
 #: .\accounts\templates\accounts\partials\users_table_body.html:6
 #: .\apprentissage\models.py:280 .\apprentissage\models.py:308
 msgid "Utilisateur"
 msgstr "User"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:490
+#: .\accounts\templates\accounts\admin_dashboard.html:514
 #: .\accounts\templates\accounts\partials\users_table_body.html:7
 msgid "Rôle Principal"
 msgstr "Primary Role"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:492
+#: .\accounts\templates\accounts\admin_dashboard.html:516
 #: .\accounts\templates\accounts\partials\users_table_body.html:8
 msgid "Niveau Assigné"
 msgstr "Assigned Level"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:493
+#: .\accounts\templates\accounts\admin_dashboard.html:517
 #: .\accounts\templates\accounts\partials\users_table_body.html:9
 #: .\apprentissage\templates\apprentissage\devoir_detail.html:338
 #: .\core\templates\core\classe_students_page.html:31
@@ -440,36 +444,36 @@ msgstr "Assigned Level"
 msgid "Actions"
 msgstr "Actions"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:527
+#: .\accounts\templates\accounts\admin_dashboard.html:551
 msgid "-- Aucun --"
 msgstr "-- None --"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:535
-#: .\accounts\templates\accounts\admin_dashboard.html:682
+#: .\accounts\templates\accounts\admin_dashboard.html:559
+#: .\accounts\templates\accounts\admin_dashboard.html:706
 msgid "Sauvegarder les modifications"
 msgstr "Save changes"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:538
-#: .\accounts\templates\accounts\admin_dashboard.html:683
+#: .\accounts\templates\accounts\admin_dashboard.html:562
+#: .\accounts\templates\accounts\admin_dashboard.html:707
 #: .\accounts\templates\accounts\notifications.html:62
 msgid "Voir les détails"
 msgstr "View details"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:541
+#: .\accounts\templates\accounts\admin_dashboard.html:565
 #: .\accounts\templates\accounts\password_reset_form.html:16
 msgid "Générer un mot de passe temporaire"
 msgstr "Generate a temporary password"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:544
-#: .\accounts\templates\accounts\admin_dashboard.html:684
+#: .\accounts\templates\accounts\admin_dashboard.html:568
+#: .\accounts\templates\accounts\admin_dashboard.html:708
 msgid "Supprimer l'utilisateur"
 msgstr "Delete the user"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:556
+#: .\accounts\templates\accounts\admin_dashboard.html:580
 msgid "Aucun utilisateur ne correspond à votre recherche."
 msgstr "No user matches your search."
 
-#: .\accounts\templates\accounts\admin_dashboard.html:565
+#: .\accounts\templates\accounts\admin_dashboard.html:589
 #: .\accounts\templates\accounts\partials\users_table_body.html:84
 #: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:568
 #: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:571
@@ -483,12 +487,12 @@ msgstr "No user matches your search."
 msgid "Précédent"
 msgstr "Previous"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:568
+#: .\accounts\templates\accounts\admin_dashboard.html:592
 #, python-format
 msgid "Page %(current)s / %(total)s"
 msgstr "Page %(current)s of %(total)s"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:571
+#: .\accounts\templates\accounts\admin_dashboard.html:595
 #: .\accounts\templates\accounts\partials\users_table_body.html:88
 #: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:582
 #: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:585
@@ -502,144 +506,144 @@ msgstr "Page %(current)s of %(total)s"
 msgid "Suivant"
 msgstr "Next"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:700
+#: .\accounts\templates\accounts\admin_dashboard.html:724
 msgid "Email et mot de passe sont obligatoires."
 msgstr "Email and password are required."
 
-#: .\accounts\templates\accounts\admin_dashboard.html:737
-#: .\accounts\templates\accounts\admin_dashboard.html:790
-#: .\accounts\templates\accounts\admin_dashboard.html:819
-#: .\accounts\templates\accounts\admin_dashboard.html:839
-#: .\accounts\templates\accounts\admin_dashboard.html:973
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:841
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:1106
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:1389
+#: .\accounts\templates\accounts\admin_dashboard.html:761
+#: .\accounts\templates\accounts\admin_dashboard.html:814
+#: .\accounts\templates\accounts\admin_dashboard.html:843
+#: .\accounts\templates\accounts\admin_dashboard.html:863
+#: .\accounts\templates\accounts\admin_dashboard.html:997
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:848
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1113
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1396
 #: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:1163
 #: .\core\templates\core\classe_students_page.html:144
-#: .\core\templates\core\dashboard_formateur.html:783
-#: .\core\templates\core\dashboard_formateur.html:824
+#: .\core\templates\core\dashboard_formateur.html:789
+#: .\core\templates\core\dashboard_formateur.html:830
 msgid "Erreur"
 msgstr "Error"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:737
-#: .\accounts\templates\accounts\admin_dashboard.html:790
-#: .\accounts\templates\accounts\admin_dashboard.html:819
-#: .\accounts\templates\accounts\admin_dashboard.html:839
+#: .\accounts\templates\accounts\admin_dashboard.html:761
+#: .\accounts\templates\accounts\admin_dashboard.html:814
+#: .\accounts\templates\accounts\admin_dashboard.html:843
+#: .\accounts\templates\accounts\admin_dashboard.html:863
 msgid "Échec"
 msgstr "Failed"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:741
-#: .\accounts\templates\accounts\admin_dashboard.html:795
-#: .\accounts\templates\accounts\admin_dashboard.html:821
+#: .\accounts\templates\accounts\admin_dashboard.html:765
+#: .\accounts\templates\accounts\admin_dashboard.html:819
+#: .\accounts\templates\accounts\admin_dashboard.html:845
 msgid "Erreur réseau"
 msgstr "Network error"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:803
+#: .\accounts\templates\accounts\admin_dashboard.html:827
 msgid "Supprimer définitivement cet utilisateur ?"
 msgstr "Permanently delete this user?"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:894
+#: .\accounts\templates\accounts\admin_dashboard.html:918
 msgid "Fiche Utilisateur"
 msgstr "User Record"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:910
-#: .\accounts\templates\accounts\admin_dashboard.html:914
+#: .\accounts\templates\accounts\admin_dashboard.html:934
+#: .\accounts\templates\accounts\admin_dashboard.html:938
 msgid "Non renseigné"
 msgstr "Not provided"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:917
+#: .\accounts\templates\accounts\admin_dashboard.html:941
 msgid "Adresse Email"
 msgstr "Email Address"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:925
+#: .\accounts\templates\accounts\admin_dashboard.html:949
 #: .\core\templates\core\dashboard_student.html:855
 #: .\core\templates\core\dashboard_student.html:872
 msgid "Niveau d'études"
 msgstr "Level of study"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:930
+#: .\accounts\templates\accounts\admin_dashboard.html:954
 msgid "Aucune"
 msgstr "None"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:933
+#: .\accounts\templates\accounts\admin_dashboard.html:957
 msgid "Statut du Compte"
 msgstr "Account Status"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:937
+#: .\accounts\templates\accounts\admin_dashboard.html:961
 msgid "Formateur Actif"
 msgstr "Active Instructor"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:938
-#: .\accounts\templates\accounts\admin_dashboard.html:1015
-#: .\accounts\templates\accounts\admin_dashboard.html:1061
+#: .\accounts\templates\accounts\admin_dashboard.html:962
+#: .\accounts\templates\accounts\admin_dashboard.html:1039
+#: .\accounts\templates\accounts\admin_dashboard.html:1085
 msgid "Oui"
 msgstr "Yes"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:938
-#: .\accounts\templates\accounts\admin_dashboard.html:1015
+#: .\accounts\templates\accounts\admin_dashboard.html:962
+#: .\accounts\templates\accounts\admin_dashboard.html:1039
 msgid "Non"
 msgstr "No"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:941
+#: .\accounts\templates\accounts\admin_dashboard.html:965
 msgid "Date d'inscription"
 msgstr "Registration Date"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:945
+#: .\accounts\templates\accounts\admin_dashboard.html:969
 msgid "Dernière connexion"
 msgstr "Last Login"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:951
+#: .\accounts\templates\accounts\admin_dashboard.html:975
 msgid "Erreur détails"
 msgstr "Details error"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:957
+#: .\accounts\templates\accounts\admin_dashboard.html:981
 msgid "Êtes-vous sûr de vouloir générer un mot de passe temporaire pour"
 msgstr "Are you sure you want to generate a temporary password for"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:971
+#: .\accounts\templates\accounts\admin_dashboard.html:995
 msgid "Nouveau mot de passe pour"
 msgstr "New password for"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:971
+#: .\accounts\templates\accounts\admin_dashboard.html:995
 msgid "Veuillez le communiquer à l'utilisateur."
 msgstr "Please share it with the user."
 
-#: .\accounts\templates\accounts\admin_dashboard.html:978
+#: .\accounts\templates\accounts\admin_dashboard.html:1002
 #: .\core\templates\core\classe_students_page.html:144
 msgid "Une erreur est survenue."
 msgstr "An error occurred."
 
-#: .\accounts\templates\accounts\admin_dashboard.html:1020
+#: .\accounts\templates\accounts\admin_dashboard.html:1044
 msgid "Aucun utilisateur à exporter."
 msgstr "No users to export."
 
-#: .\accounts\templates\accounts\admin_dashboard.html:1022
+#: .\accounts\templates\accounts\admin_dashboard.html:1046
 msgid "Vue filtrée"
 msgstr "Filtered view"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:1028
-#: .\accounts\templates\accounts\admin_dashboard.html:1069
+#: .\accounts\templates\accounts\admin_dashboard.html:1052
+#: .\accounts\templates\accounts\admin_dashboard.html:1093
 msgid "Export"
 msgstr "Export"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:1029
+#: .\accounts\templates\accounts\admin_dashboard.html:1053
 msgid "Généré le"
 msgstr "Generated on"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:1031
+#: .\accounts\templates\accounts\admin_dashboard.html:1055
 msgid "Nom complet"
 msgstr "Full name"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:1031
+#: .\accounts\templates\accounts\admin_dashboard.html:1055
 #: .\accounts\templates\accounts\profile_edit.html:307
 msgid "Adresse email"
 msgstr "Email address"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:1031
+#: .\accounts\templates\accounts\admin_dashboard.html:1055
 msgid "Formateur actif"
 msgstr "Active instructor"
 
-#: .\accounts\templates\accounts\admin_dashboard.html:1031
+#: .\accounts\templates\accounts\admin_dashboard.html:1055
 msgid "Niveau assigné"
 msgstr "Assigned level"
 
@@ -668,10 +672,10 @@ msgstr "Update password"
 #: .\accounts\templates\accounts\profile_edit.html:322
 #: .\apprentissage\templates\apprentissage\cours_form.html:356
 #: .\apprentissage\templates\apprentissage\devoir_form.html:62
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:924
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:972
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:1030
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:1188
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:931
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:979
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1037
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1195
 #: .\apprentissage\templates\apprentissage\evenement_form.html:329
 #: .\apprentissage\templates\apprentissage\partials\chapitre_form.html:94
 #: .\apprentissage\templates\apprentissage\partials\document_form.html:155
@@ -1023,7 +1027,7 @@ msgstr "Organize your content into chapters and modules"
 #: .\accounts\templates\accounts\partials\onboarding_step.html:281
 #: .\accounts\templates\accounts\profile.html:133
 #: .\apprentissage\templates\apprentissage\formateur_notes.html:387
-#: .\core\templates\core\dashboard_formateur.html:491
+#: .\core\templates\core\dashboard_formateur.html:497
 msgid "Chapitres"
 msgstr "Chapters"
 
@@ -1041,8 +1045,8 @@ msgid "Évaluations"
 msgstr "Assessments"
 
 #: .\accounts\templates\accounts\partials\onboarding_step.html:293
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:751
-#: .\core\templates\core\dashboard_formateur.html:590
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:758
+#: .\core\templates\core\dashboard_formateur.html:596
 #: .\core\templates\core\partials\formateur_structure.html:142
 msgid "Créer mon premier cours"
 msgstr "Create my first course"
@@ -1061,12 +1065,12 @@ msgid "Gérez vos ateliers et commandez le matériel nécessaire à vos formatio
 msgstr "Manage your workshops and order the equipment your training sessions need."
 
 #: .\accounts\templates\accounts\partials\onboarding_step.html:313
-#: .\core\templates\core\dashboard_formateur.html:501
+#: .\core\templates\core\dashboard_formateur.html:507
 #: .\core\templates\core\home.html:479 .\core\templates\core\home.html:480
-#: .\logistics\templates\logistics\ateliers.html:212
-#: .\logistics\templates\logistics\demandes.html:225
-#: .\logistics\templates\logistics\inventaire.html:265
-#: .\logistics\templates\logistics\tickets.html:135
+#: .\logistics\templates\logistics\ateliers.html:213
+#: .\logistics\templates\logistics\demandes.html:226
+#: .\logistics\templates\logistics\inventaire.html:271
+#: .\logistics\templates\logistics\tickets.html:137
 msgid "Ateliers"
 msgstr "Workshops"
 
@@ -1309,7 +1313,7 @@ msgstr "My profile"
 #: .\accounts\templates\accounts\profile.html:22
 #: .\apprentissage\templates\apprentissage\calendrier.html:506
 #: .\apprentissage\templates\apprentissage\devoir_detail.html:370
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:733
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:740
 #: .\apprentissage\templates\apprentissage\partials\chapitre_detail.html:48
 #: .\apprentissage\templates\apprentissage\partials\chapitres_list.html:28
 #: .\apprentissage\templates\apprentissage\partials\chapitres_list.html:83
@@ -1329,7 +1333,7 @@ msgstr "Delete your current photo?"
 
 #: .\accounts\templates\accounts\profile.html:25
 #: .\apprentissage\templates\apprentissage\calendrier.html:509
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:739
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:746
 #: .\apprentissage\templates\apprentissage\partials\chapitre_detail.html:53
 #: .\apprentissage\templates\apprentissage\partials\chapitres_list.html:35
 #: .\apprentissage\templates\apprentissage\partials\chapitres_list.html:88
@@ -1367,8 +1371,8 @@ msgstr "Started"
 
 #: .\accounts\templates\accounts\profile.html:119 .\apprentissage\models.py:581
 #: .\core\templates\core\dashboard_student.html:915 .\logistics\models.py:69
-#: .\logistics\models.py:87 .\logistics\templates\logistics\ateliers.html:250
-#: .\logistics\templates\logistics\inventaire.html:320
+#: .\logistics\models.py:87 .\logistics\templates\logistics\ateliers.html:251
+#: .\logistics\templates\logistics\inventaire.html:326
 #: .\logistics\templates\logistics\partials\ateliers_list.html:41
 #: .\tuteur_ia\templates\tuteur_ia\session.html:455
 msgid "En cours"
@@ -1627,7 +1631,7 @@ msgid "Mon espace formateur"
 msgstr "My instructor space"
 
 #: .\accounts\views.py:270
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:646
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:653
 msgid "Créer un cours"
 msgstr "Create a course"
 
@@ -1782,13 +1786,13 @@ msgstr "Creator"
 #: .\apprentissage\models.py:74 .\apprentissage\models.py:90
 #: .\apprentissage\models.py:236 .\apprentissage\models.py:500
 #: .\apprentissage\models.py:596 .\apprentissage\models.py:661
-#: .\apprentissage\templates\apprentissage\analytics_formateur.html:336
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:343
 #: .\apprentissage\templates\apprentissage\devoir_detail.html:475
 #: .\apprentissage\templates\apprentissage\liste_cours.html:485
 #: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:552
 #: .\apprentissage\templates\apprentissage\partials\detail_cours.html:5
 #: .\core\templates\base.html:471
-#: .\core\templates\core\dashboard_formateur.html:481
+#: .\core\templates\core\dashboard_formateur.html:487
 msgid "Cours"
 msgstr "Courses"
 
@@ -2037,7 +2041,7 @@ msgid "Date limite pour rendre le devoir '%(devoir)s'."
 msgstr "Due date to submit the assignment '%(devoir)s'."
 
 #: .\apprentissage\models.py:582 .\apprentissage\models.py:620
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:956
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:963
 #: .\logistics\models.py:71
 #: .\logistics\templates\logistics\partials\ateliers_list.html:43
 msgid "Terminé"
@@ -2177,97 +2181,97 @@ msgstr "Active Administrators:"
 msgid "Analytics Formateur"
 msgstr "Instructor Analytics"
 
-#: .\apprentissage\templates\apprentissage\analytics_formateur.html:259
-#: .\core\templates\core\dashboard_formateur.html:677
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:266
+#: .\core\templates\core\dashboard_formateur.html:683
 msgid "Analytics"
 msgstr "Analytics"
 
-#: .\apprentissage\templates\apprentissage\analytics_formateur.html:260
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:267
 msgid "Tableau de bord"
 msgstr "Dashboard"
 
-#: .\apprentissage\templates\apprentissage\analytics_formateur.html:261
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:268
 msgid "Vue d'ensemble de la progression et des performances de vos élèves."
 msgstr "Overview of your students' progress and performance."
 
-#: .\apprentissage\templates\apprentissage\analytics_formateur.html:265
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:272
 #: .\apprentissage\templates\apprentissage\devoir_detail.html:262
 #: .\apprentissage\templates\apprentissage\espace_formateur.html:3
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:619
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:626
 #: .\apprentissage\templates\apprentissage\gerer_chapitre.html:14
-#: .\core\templates\core\dashboard_formateur.html:440
+#: .\core\templates\core\dashboard_formateur.html:446
 msgid "Espace Formateur"
 msgstr "Instructor Space"
 
-#: .\apprentissage\templates\apprentissage\analytics_formateur.html:268
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:275
 msgid "Notes détaillées"
 msgstr "Detailed Grades"
 
-#: .\apprentissage\templates\apprentissage\analytics_formateur.html:279
-#: .\core\templates\core\dashboard_formateur.html:484
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:286
+#: .\core\templates\core\dashboard_formateur.html:490
 msgid "Cours créés"
 msgstr "Courses created"
 
-#: .\apprentissage\templates\apprentissage\analytics_formateur.html:286
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:293
 msgid "Élèves uniques"
 msgstr "Unique Students"
 
-#: .\apprentissage\templates\apprentissage\analytics_formateur.html:293
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:300
 msgid "Moyenne QCM Globale"
 msgstr "Overall Quiz Average"
 
-#: .\apprentissage\templates\apprentissage\analytics_formateur.html:300
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:307
 #: .\apprentissage\templates\apprentissage\formateur_notes.html:327
 msgid "En difficulté"
 msgstr "Struggling"
 
-#: .\apprentissage\templates\apprentissage\analytics_formateur.html:309
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:316
 #, python-format
 msgid "Complétion moyenne par cours (%%)"
 msgstr "Average Completion by Course (%%)"
 
-#: .\apprentissage\templates\apprentissage\analytics_formateur.html:317
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:324
 msgid "Répartition globale des progressions"
 msgstr "Overall Progress Distribution"
 
-#: .\apprentissage\templates\apprentissage\analytics_formateur.html:331
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:338
 msgid "Détails de vos cours"
 msgstr "Your Course Details"
 
-#: .\apprentissage\templates\apprentissage\analytics_formateur.html:337
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:344
 msgid "Inscrits"
 msgstr "Enrolled"
 
-#: .\apprentissage\templates\apprentissage\analytics_formateur.html:338
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:345
 msgid "Complétion"
 msgstr "Completion"
 
-#: .\apprentissage\templates\apprentissage\analytics_formateur.html:339
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:346
 msgid "Moy. QCM"
 msgstr "Avg. Quiz"
 
-#: .\apprentissage\templates\apprentissage\analytics_formateur.html:364
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:371
 msgid "Aucun cours créé pour le moment."
 msgstr "No courses created yet."
 
-#: .\apprentissage\templates\apprentissage\analytics_formateur.html:375
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:382
 msgid "Élèves en difficulté"
 msgstr "Struggling Students"
 
-#: .\apprentissage\templates\apprentissage\analytics_formateur.html:385
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:392
 #, python-format
 msgid "%(p)s%% complet"
 msgstr "%(p)s%% complete"
 
-#: .\apprentissage\templates\apprentissage\analytics_formateur.html:394
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:401
 msgid "Excellent !"
 msgstr "Excellent!"
 
-#: .\apprentissage\templates\apprentissage\analytics_formateur.html:395
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:402
 msgid "Aucun élève sous le seuil d'alerte."
 msgstr "No students below the alert threshold."
 
-#: .\apprentissage\templates\apprentissage\analytics_formateur.html:425
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:432
 #, python-format
 msgid "Complétion (%%)"
 msgstr "Completion (%%)"
@@ -2294,7 +2298,7 @@ msgstr "New Event"
 
 #: .\apprentissage\templates\apprentissage\calendrier.html:452
 #: .\apprentissage\templates\apprentissage\devoir_detail.html:264
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:664
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:671
 msgid "Devoirs"
 msgstr "Assignments"
 
@@ -2436,8 +2440,8 @@ msgid "Modifier le cours"
 msgstr "Edit course"
 
 #: .\apprentissage\templates\apprentissage\cours_form.html:4
-#: .\core\templates\core\dashboard_formateur.html:540
-#: .\core\templates\core\dashboard_formateur.html:649
+#: .\core\templates\core\dashboard_formateur.html:546
+#: .\core\templates\core\dashboard_formateur.html:655
 msgid "Nouveau cours"
 msgstr "New course"
 
@@ -2676,7 +2680,7 @@ msgstr "Overdue"
 
 #: .\apprentissage\templates\apprentissage\devoirs_liste.html:49
 #: .\apprentissage\templates\apprentissage\liste_cours.html:533
-#: .\logistics\templates\logistics\inventaire.html:360
+#: .\logistics\templates\logistics\inventaire.html:366
 msgid "Tous"
 msgstr "All"
 
@@ -2727,79 +2731,79 @@ msgstr "You don't have any assignments with this status at the moment."
 msgid "Voir tous mes devoirs assignés"
 msgstr "View all my assigned assignments"
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:622
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:629
 #, python-format
 msgid "Bienvenue, <span>%(nom)s</span>"
 msgstr "Welcome, <span>%(nom)s</span>"
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:624
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:631
 msgid "Gérez vos cours, suivez vos devoirs et pilotez l'apprentissage de vos étudiants."
 msgstr "Manage your courses, track assignments, and drive your students' learning."
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:629
-#: .\core\templates\core\dashboard_formateur.html:450
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:636
+#: .\core\templates\core\dashboard_formateur.html:456
 msgid "cours"
 msgid_plural "cours"
 msgstr[0] "course"
 msgstr[1] "courses"
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:633
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:640
 msgid "devoir"
 msgid_plural "devoirs"
 msgstr[0] "assignment"
 msgstr[1] "assignments"
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:638
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:645
 msgid "Mes étudiants"
 msgstr "My students"
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:649
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:656
 #: .\apprentissage\templates\apprentissage\formateur_notes.html:3
 msgid "Notes des étudiants"
 msgstr "Students' Grades"
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:659
-#: .\core\templates\core\dashboard_formateur.html:527
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:666
+#: .\core\templates\core\dashboard_formateur.html:533
 msgid "Mes Cours"
 msgstr "My Courses"
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:668
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:675
 msgid "Historique des Exports"
 msgstr "Export History"
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:678
-#: .\core\templates\core\dashboard_formateur.html:530
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:685
+#: .\core\templates\core\dashboard_formateur.html:536
 msgid "Importer (ZIP)"
 msgstr "Import (ZIP)"
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:683
-#: .\core\templates\core\dashboard_formateur.html:534
-#: .\logistics\templates\logistics\ateliers.html:222
-#: .\logistics\templates\logistics\demandes.html:235
-#: .\logistics\templates\logistics\inventaire.html:274
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:690
+#: .\core\templates\core\dashboard_formateur.html:540
+#: .\logistics\templates\logistics\ateliers.html:223
+#: .\logistics\templates\logistics\demandes.html:236
+#: .\logistics\templates\logistics\inventaire.html:280
 msgid "Exporter"
 msgstr "Export"
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:683
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:690
 msgid "sélectionné"
 msgstr "selected"
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:703
-#: .\core\templates\core\dashboard_formateur.html:558
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:710
+#: .\core\templates\core\dashboard_formateur.html:564
 #: .\core\templates\core\partials\formateur_structure.html:119
 msgid "Publié"
 msgstr "Published"
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:703
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:710
 #: .\apprentissage\templates\apprentissage\partials\liste_cours.html:15
-#: .\core\templates\core\dashboard_formateur.html:560
+#: .\core\templates\core\dashboard_formateur.html:566
 #: .\core\templates\core\partials\formateur_structure.html:121
 msgid "Brouillon"
 msgstr "Draft"
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:714
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:721
 #: .\apprentissage\templates\apprentissage\partials\liste_cours.html:30
-#: .\core\templates\core\dashboard_formateur.html:569
+#: .\core\templates\core\dashboard_formateur.html:575
 #: .\core\templates\core\dashboard_student.html:918
 #, python-format
 msgid "%(counter)s chapitre"
@@ -2807,62 +2811,62 @@ msgid_plural "%(counter)s chapitres"
 msgstr[0] "%(counter)s chapter"
 msgstr[1] "%(counter)s chapters"
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:731
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:738
 #: .\core\templates\core\partials\formateur_structure.html:128
 msgid "Gérer le contenu"
 msgstr "Manage content"
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:737
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:744
 #, python-format
 msgid "⚠️ Supprimer définitivement le cours « %(titre)s » ?\\n\\nCette action est irréversible."
 msgstr "⚠️ Permanently delete the course \"%(titre)s\"?\\n\\nThis action cannot be undone."
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:748
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:755
 msgid "Aucun cours pour le moment"
 msgstr "No courses yet"
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:749
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:756
 msgid "Commencez par créer votre premier cours et partagez votre savoir avec vos étudiants."
 msgstr "Start by creating your first course and share your knowledge with your students."
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:791
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:798
 msgid "Reçues"
 msgstr "Received"
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:796
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:803
 #, python-format
 msgid "%(counter)s à noter"
 msgid_plural "%(counter)s à noter"
 msgstr[0] "%(counter)s to grade"
 msgstr[1] "%(counter)s to grade"
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:798
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:805
 msgid "À jour"
 msgstr "Up to date"
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:803
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:810
 msgid "Voir les copies"
 msgstr "View submissions"
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:813
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:820
 msgid "Aucun devoir créé"
 msgstr "No assignment created"
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:814
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:821
 msgid "Pour assigner des devoirs, rendez-vous dans la gestion de l'un de vos cours puis ouvrez un chapitre."
 msgstr "To assign work, go to the management page of one of your courses and open a chapter."
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:830
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:837
 #, python-format
 msgid "Export: %(titre)s"
 msgstr "Export: %(titre)s"
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:834
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:841
 #, python-format
 msgid "Lancé le %(d)s"
 msgstr "Started on %(d)s"
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:837
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:844
 #: .\apprentissage\templates\apprentissage\mes_notes.html:77
 #: .\core\templates\core\classe_students_page.html:30
 #: .\core\templates\core\partials\equipements_section.html:142
@@ -2870,178 +2874,178 @@ msgstr "Started on %(d)s"
 msgid "Statut"
 msgstr "Status"
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:851
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:858
 msgid "Télécharger le ZIP"
 msgstr "Download the ZIP"
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:855
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:862
 msgid "En cours..."
 msgstr "In progress..."
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:865
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:872
 msgid "Aucun export en cours"
 msgstr "No export in progress"
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:866
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:873
 msgid "Sélectionnez des cours dans l'onglet \"Mes Cours\" et cliquez sur \"Exporter\" pour générer des fichiers ZIP."
 msgstr "Select courses in the \"My Courses\" tab and click \"Export\" to generate ZIP files."
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:878
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:885
 msgid "Importer un Cours"
 msgstr "Import a Course"
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:887
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:894
 msgid "Analyse locale"
 msgstr "Local analysis"
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:892
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:899
 msgid "Transfert"
 msgstr "Transfer"
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:897
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:904
 msgid "Création Base de données"
 msgstr "Database creation"
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:904
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:911
 msgid "Lecture de l'archive ZIP en cours..."
 msgstr "Reading ZIP archive..."
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:914
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:921
 msgid "Envoi vers le serveur..."
 msgstr "Uploading to server..."
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:926
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:933
 msgid "Confirmer l'Importation"
 msgstr "Confirm Import"
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:937
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:944
 msgid "Exporter des Cours"
 msgstr "Export Courses"
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:946
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:953
 msgid "Préparation"
 msgstr "Preparation"
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:951
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:958
 msgid "Génération ZIP"
 msgstr "ZIP Generation"
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:967
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:974
 msgid "Compression de vos cours en arrière-plan..."
 msgstr "Compressing your courses in the background..."
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:974
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:981
 msgid "Lancer l'Exportation"
 msgstr "Start Export"
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:1046
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1053
 msgid "Veuillez sélectionner au moins un cours à exporter en cochant la case sur son image."
 msgstr "Please select at least one course to export by checking the box on its image."
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:1057
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1064
 msgid "Vous avez sélectionné"
 msgstr "You have selected"
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:1057
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1064
 msgid "cours à exporter :"
 msgstr "course(s) to export:"
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:1079
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1086
 msgid "Masquer (Continuer en arrière-plan)"
 msgstr "Hide (Continue in background)"
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:1085
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1092
 msgid "L'exportation continue en arrière-plan."
 msgstr "The export continues in the background."
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:1112
-#: .\core\templates\core\dashboard_formateur.html:788
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1119
+#: .\core\templates\core\dashboard_formateur.html:794
 msgid "Erreur lors du lancement de l'export."
 msgstr "Error while starting the export."
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:1147
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1154
 msgid "Génération des archives ZIP en cours..."
 msgstr "Generating ZIP archives..."
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:1152
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1159
 msgid "Exportation terminée avec succès !"
 msgstr "Export completed successfully!"
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:1157
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1164
 msgid "Les archives ZIP sont prêtes ! Téléchargement en cours..."
 msgstr "The ZIP archives are ready! Downloading..."
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:1197
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:1200
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1204
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1207
 msgid "Octets"
 msgstr "Bytes"
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:1256
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1263
 msgid "Erreur : JSZip n'est pas chargé."
 msgstr "Error: JSZip is not loaded."
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:1263
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1270
 msgid "Erreur : Archive invalide (course_metadata.json introuvable)."
 msgstr "Error: Invalid archive (course_metadata.json not found)."
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:1321
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1328
 msgid "Erreur : Impossible de lire les métadonnées."
 msgstr "Error: Unable to read metadata."
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:1327
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1334
 msgid "Erreur : Impossible d'ouvrir l'archive ZIP."
 msgstr "Error: Unable to open the ZIP archive."
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:1347
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1354
 msgid "L'importation continue en arrière-plan. Vous pouvez suivre l'historique."
 msgstr "The import continues in the background. You can follow its progress in the history."
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:1372
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1379
 msgid "Traitement de la base de données..."
 msgstr "Processing database..."
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:1386
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1393
 #: .\apprentissage\templates\apprentissage\partials\document_form.html:137
 msgid "Sauvegarde et Indexation en cours..."
 msgstr "Saving and indexing in progress..."
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:1393
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1400
 msgid "Erreur fatale. Le serveur ne répond pas correctement."
 msgstr "Fatal error. The server is not responding correctly."
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:1397
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1404
 msgid "Erreur HTTP"
 msgstr "HTTP Error"
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:1403
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1410
 msgid "Erreur réseau. Connexion interrompue."
 msgstr "Network error. Connection interrupted."
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:1423
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1430
 msgid "Extraction des fichiers..."
 msgstr "Extracting files..."
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:1426
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1433
 msgid "Sauvegarde en base de données..."
 msgstr "Saving to database..."
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:1429
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1436
 msgid "Indexation pour l'IA en cours (cela peut prendre du temps)..."
 msgstr "AI indexing in progress (this may take a while)..."
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:1434
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1441
 msgid "Cours importé et indexé avec succès !"
 msgstr "Course imported and indexed successfully!"
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:1439
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1446
 msgid "Importation terminée ! Redirection..."
 msgstr "Import complete! Redirecting..."
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:1448
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1455
 msgid "Erreur lors de l'importation"
 msgstr "Error during import"
 
-#: .\apprentissage\templates\apprentissage\espace_formateur.html:1448
+#: .\apprentissage\templates\apprentissage\espace_formateur.html:1455
 msgid "Erreur inconnue"
 msgstr "Unknown error"
 
@@ -4044,7 +4048,7 @@ msgid "Plateforme Éducative IoT & IA"
 msgstr "IoT & AI Educational Platform"
 
 #: .\core\templates\base.html:95 .\core\templates\base.html:115
-#: .\core\templates\core\dashboard_formateur.html:511
+#: .\core\templates\core\dashboard_formateur.html:517
 msgid "Logistique"
 msgstr "Logistics"
 
@@ -4318,15 +4322,15 @@ msgid "En Cours"
 msgstr "In Progress"
 
 #: .\core\templates\core\dashboard_admin.html:761
-#: .\logistics\templates\logistics\tickets.html:184
+#: .\logistics\templates\logistics\tickets.html:186
 msgid "Résolus"
 msgstr "Resolved"
 
 #: .\core\templates\core\dashboard_admin.html:763
-#: .\logistics\templates\logistics\ateliers.html:208
-#: .\logistics\templates\logistics\demandes.html:221
-#: .\logistics\templates\logistics\inventaire.html:262
-#: .\logistics\templates\logistics\tickets.html:132
+#: .\logistics\templates\logistics\ateliers.html:209
+#: .\logistics\templates\logistics\demandes.html:222
+#: .\logistics\templates\logistics\inventaire.html:268
+#: .\logistics\templates\logistics\tickets.html:134
 msgid "Tickets"
 msgstr "Tickets"
 
@@ -4338,144 +4342,144 @@ msgstr "Manage the platform's levels, classes, registrations, and equipment."
 msgid "Tableau de bord — Formateur"
 msgstr "Instructor Dashboard"
 
-#: .\core\templates\core\dashboard_formateur.html:443
+#: .\core\templates\core\dashboard_formateur.html:449
 #, python-format
 msgid "Bonjour, <em>%(nom)s</em> 👋"
 msgstr "Hello, <em>%(nom)s</em> 👋"
 
-#: .\core\templates\core\dashboard_formateur.html:446
+#: .\core\templates\core\dashboard_formateur.html:452
 msgid "Prêt à inspirer vos apprenants aujourd'hui ?"
 msgstr "Ready to inspire your learners today?"
 
-#: .\core\templates\core\dashboard_formateur.html:453
+#: .\core\templates\core\dashboard_formateur.html:459
 msgid "chapitre"
 msgid_plural "chapitres"
 msgstr[0] "chapter"
 msgstr[1] "chapters"
 
-#: .\core\templates\core\dashboard_formateur.html:456
+#: .\core\templates\core\dashboard_formateur.html:462
 msgid "demande en attente"
 msgid_plural "demandes en attente"
 msgstr[0] "pending request"
 msgstr[1] "pending requests"
 
-#: .\core\templates\core\dashboard_formateur.html:494
+#: .\core\templates\core\dashboard_formateur.html:500
 msgid "Chapitres rédigés"
 msgstr "Chapters written"
 
-#: .\core\templates\core\dashboard_formateur.html:504
+#: .\core\templates\core\dashboard_formateur.html:510
 msgid "Ateliers organisés"
 msgstr "Workshops organized"
 
-#: .\core\templates\core\dashboard_formateur.html:514
+#: .\core\templates\core\dashboard_formateur.html:520
 #: .\core\templates\core\partials\pending_demandes_section.html:162
 msgid "Demandes en attente"
 msgstr "Pending requests"
 
-#: .\core\templates\core\dashboard_formateur.html:537
+#: .\core\templates\core\dashboard_formateur.html:543
 msgid "Notes"
 msgstr "Grades"
 
-#: .\core\templates\core\dashboard_formateur.html:575
-#: .\core\templates\core\dashboard_formateur.html:600
+#: .\core\templates\core\dashboard_formateur.html:581
+#: .\core\templates\core\dashboard_formateur.html:606
 msgid "Gérer"
 msgstr "Manage"
 
-#: .\core\templates\core\dashboard_formateur.html:587
+#: .\core\templates\core\dashboard_formateur.html:593
 msgid "Votre espace est prêt"
 msgstr "Your space is ready"
 
-#: .\core\templates\core\dashboard_formateur.html:588
+#: .\core\templates\core\dashboard_formateur.html:594
 msgid "Vous n'avez pas encore de cours. Créez votre premier module en quelques étapes."
 msgstr "You don't have any courses yet. Create your first module in a few steps."
 
-#: .\core\templates\core\dashboard_formateur.html:599
+#: .\core\templates\core\dashboard_formateur.html:605
 msgid "Mes Ateliers"
 msgstr "My Workshops"
 
-#: .\core\templates\core\dashboard_formateur.html:626
+#: .\core\templates\core\dashboard_formateur.html:632
 msgid "Pas encore d'atelier"
 msgstr "No workshops yet"
 
-#: .\core\templates\core\dashboard_formateur.html:627
+#: .\core\templates\core\dashboard_formateur.html:633
 msgid "Organisez des séances pratiques pour vos apprenants."
 msgstr "Organize hands-on sessions for your learners."
 
-#: .\core\templates\core\dashboard_formateur.html:629
+#: .\core\templates\core\dashboard_formateur.html:635
 msgid "Créer un atelier"
 msgstr "Create a workshop"
 
-#: .\core\templates\core\dashboard_formateur.html:642
+#: .\core\templates\core\dashboard_formateur.html:648
 msgid "Actions rapides"
 msgstr "Quick actions"
 
-#: .\core\templates\core\dashboard_formateur.html:656
+#: .\core\templates\core\dashboard_formateur.html:662
 msgid "Mes ateliers"
 msgstr "My workshops"
 
-#: .\core\templates\core\dashboard_formateur.html:663
+#: .\core\templates\core\dashboard_formateur.html:669
 msgid "Demande matériel"
 msgstr "Equipment request"
 
-#: .\core\templates\core\dashboard_formateur.html:670
+#: .\core\templates\core\dashboard_formateur.html:676
 msgid "Notes & Résultats"
 msgstr "Grades & Results"
 
-#: .\core\templates\core\dashboard_formateur.html:686
+#: .\core\templates\core\dashboard_formateur.html:692
 msgid "Mes Demandes"
 msgstr "My Requests"
 
-#: .\core\templates\core\dashboard_formateur.html:687
+#: .\core\templates\core\dashboard_formateur.html:693
 msgid "Voir tout"
 msgstr "View all"
 
-#: .\core\templates\core\dashboard_formateur.html:708
+#: .\core\templates\core\dashboard_formateur.html:714
 msgid "Attente"
 msgstr "Pending"
 
-#: .\core\templates\core\dashboard_formateur.html:709
+#: .\core\templates\core\dashboard_formateur.html:715
 msgid "Approuvé"
 msgstr "Approved"
 
-#: .\core\templates\core\dashboard_formateur.html:710
+#: .\core\templates\core\dashboard_formateur.html:716
 msgid "Rejeté"
 msgstr "Rejected"
 
-#: .\core\templates\core\dashboard_formateur.html:711
+#: .\core\templates\core\dashboard_formateur.html:717
 #: .\logistics\templates\logistics\emails\demande_traitee.html:186
 msgid "Retourné"
 msgstr "Returned"
 
-#: .\core\templates\core\dashboard_formateur.html:715
+#: .\core\templates\core\dashboard_formateur.html:721
 msgid "Panne"
 msgstr "Report issue"
 
-#: .\core\templates\core\dashboard_formateur.html:722
-#: .\logistics\templates\logistics\demandes.html:242
+#: .\core\templates\core\dashboard_formateur.html:728
+#: .\logistics\templates\logistics\demandes.html:243
 msgid "Nouvelle demande"
 msgstr "New request"
 
-#: .\core\templates\core\dashboard_formateur.html:728
+#: .\core\templates\core\dashboard_formateur.html:734
 msgid "Aucune demande"
 msgstr "No requests"
 
-#: .\core\templates\core\dashboard_formateur.html:729
+#: .\core\templates\core\dashboard_formateur.html:735
 msgid "Demandez du matériel pour vos ateliers."
 msgstr "Request equipment for your workshops."
 
-#: .\core\templates\core\dashboard_formateur.html:731
+#: .\core\templates\core\dashboard_formateur.html:737
 msgid "Faire une demande"
 msgstr "Make a request"
 
-#: .\core\templates\core\dashboard_formateur.html:779
+#: .\core\templates\core\dashboard_formateur.html:785
 msgid "Les exports ZIP s'exécutent en arrière-plan. (Vérifiez le dossier exports/cours/ de la plateforme)"
 msgstr "ZIP exports run in the background. (Check the platform's exports/courses/ folder)"
 
-#: .\core\templates\core\dashboard_formateur.html:804
+#: .\core\templates\core\dashboard_formateur.html:810
 msgid "Importation..."
 msgstr "Importing..."
 
-#: .\core\templates\core\dashboard_formateur.html:829
+#: .\core\templates\core\dashboard_formateur.html:835
 msgid "Erreur lors de l'importation."
 msgstr "Error during import."
 
@@ -4897,7 +4901,7 @@ msgid "Rechercher un équipement..."
 msgstr "Search for equipment..."
 
 #: .\core\templates\core\partials\demande_materiel_modal.html:268
-#: .\logistics\templates\logistics\ateliers.html:277
+#: .\logistics\templates\logistics\ateliers.html:278
 #: .\logistics\templates\logistics\partials\ticket_form_modal.html:92
 #: .\logistics\templates\logistics\ticket_form.html:263
 msgid "Rechercher un atelier..."
@@ -5394,7 +5398,7 @@ msgstr "Is cancelled"
 msgid "Annulé"
 msgstr "Cancelled"
 
-#: .\logistics\models.py:67 .\logistics\templates\logistics\ateliers.html:258
+#: .\logistics\models.py:67 .\logistics\templates\logistics\ateliers.html:259
 #: .\logistics\templates\logistics\partials\ateliers_list.html:42
 msgid "À venir"
 msgstr "Upcoming"
@@ -5431,64 +5435,64 @@ msgstr "Equipment request"
 msgid "Ateliers — Logistics"
 msgstr "Workshops — Logistics"
 
-#: .\logistics\templates\logistics\ateliers.html:200
+#: .\logistics\templates\logistics\ateliers.html:201
 msgid "Gestion des ateliers"
 msgstr "Workshop Management"
 
-#: .\logistics\templates\logistics\ateliers.html:201
+#: .\logistics\templates\logistics\ateliers.html:202
 msgid "Planifiez et gérez les ateliers de formation IoT."
 msgstr "Plan and manage IoT training workshops."
 
-#: .\logistics\templates\logistics\ateliers.html:205
-#: .\logistics\templates\logistics\demandes.html:218
-#: .\logistics\templates\logistics\inventaire.html:259
-#: .\logistics\templates\logistics\tickets.html:129
+#: .\logistics\templates\logistics\ateliers.html:206
+#: .\logistics\templates\logistics\demandes.html:219
+#: .\logistics\templates\logistics\inventaire.html:265
+#: .\logistics\templates\logistics\tickets.html:131
 msgid "Inventaire"
 msgstr "Inventory"
 
-#: .\logistics\templates\logistics\ateliers.html:215
-#: .\logistics\templates\logistics\demandes.html:228
-#: .\logistics\templates\logistics\inventaire.html:268
-#: .\logistics\templates\logistics\tickets.html:138
+#: .\logistics\templates\logistics\ateliers.html:216
+#: .\logistics\templates\logistics\demandes.html:229
+#: .\logistics\templates\logistics\inventaire.html:274
+#: .\logistics\templates\logistics\tickets.html:140
 msgid "Demandes"
 msgstr "Requests"
 
-#: .\logistics\templates\logistics\ateliers.html:221
-#: .\logistics\templates\logistics\demandes.html:234
-#: .\logistics\templates\logistics\inventaire.html:273
+#: .\logistics\templates\logistics\ateliers.html:222
+#: .\logistics\templates\logistics\demandes.html:235
+#: .\logistics\templates\logistics\inventaire.html:279
 msgid "Exporter en Excel"
 msgstr "Export to Excel"
 
-#: .\logistics\templates\logistics\ateliers.html:229
+#: .\logistics\templates\logistics\ateliers.html:230
 msgid "Nouvel atelier"
 msgstr "New workshop"
 
-#: .\logistics\templates\logistics\ateliers.html:240
-#: .\logistics\templates\logistics\demandes.html:253
-#: .\logistics\templates\logistics\inventaire.html:294
+#: .\logistics\templates\logistics\ateliers.html:241
+#: .\logistics\templates\logistics\demandes.html:254
+#: .\logistics\templates\logistics\inventaire.html:300
 #: .\tuteur_ia\templates\tuteur_ia\qcm.html:86
 msgid "Total"
 msgstr "Total"
 
-#: .\logistics\templates\logistics\ateliers.html:242
+#: .\logistics\templates\logistics\ateliers.html:243
 msgid "Ateliers créés"
 msgstr "Workshops created"
 
-#: .\logistics\templates\logistics\ateliers.html:248
-#: .\logistics\templates\logistics\inventaire.html:364
+#: .\logistics\templates\logistics\ateliers.html:249
+#: .\logistics\templates\logistics\inventaire.html:370
 msgid "Actifs"
 msgstr "Active"
 
-#: .\logistics\templates\logistics\ateliers.html:256
+#: .\logistics\templates\logistics\ateliers.html:257
 msgid "Planifiés"
 msgstr "Scheduled"
 
-#: .\logistics\templates\logistics\ateliers.html:264
-#: .\logistics\templates\logistics\ateliers.html:266
+#: .\logistics\templates\logistics\ateliers.html:265
+#: .\logistics\templates\logistics\ateliers.html:267
 msgid "Annulés"
 msgstr "Cancelled"
 
-#: .\logistics\templates\logistics\ateliers.html:274
+#: .\logistics\templates\logistics\ateliers.html:275
 msgid "Liste des ateliers"
 msgstr "Workshop list"
 
@@ -5496,52 +5500,52 @@ msgstr "Workshop list"
 msgid "Demandes Logistiques — Logistics"
 msgstr "Logistics Requests — Logistics"
 
-#: .\logistics\templates\logistics\demandes.html:213
+#: .\logistics\templates\logistics\demandes.html:214
 msgid "Demandes Logistiques"
 msgstr "Logistics Requests"
 
-#: .\logistics\templates\logistics\demandes.html:214
+#: .\logistics\templates\logistics\demandes.html:215
 msgid "Gérez vos demandes de matériel pour les ateliers."
 msgstr "Manage your equipment requests for workshops."
 
-#: .\logistics\templates\logistics\demandes.html:255
+#: .\logistics\templates\logistics\demandes.html:256
 msgid "Demandes soumises"
 msgstr "Requests submitted"
 
-#: .\logistics\templates\logistics\demandes.html:261
+#: .\logistics\templates\logistics\demandes.html:262
 msgid "À traiter"
 msgstr "To process"
 
-#: .\logistics\templates\logistics\demandes.html:269
-#: .\logistics\templates\logistics\demandes.html:303
+#: .\logistics\templates\logistics\demandes.html:270
+#: .\logistics\templates\logistics\demandes.html:304
 msgid "Approuvées"
 msgstr "Approved"
 
-#: .\logistics\templates\logistics\demandes.html:271
+#: .\logistics\templates\logistics\demandes.html:272
 msgid "Validées"
 msgstr "Validated"
 
-#: .\logistics\templates\logistics\demandes.html:277
+#: .\logistics\templates\logistics\demandes.html:278
 msgid "Refusées"
 msgstr "Refused"
 
-#: .\logistics\templates\logistics\demandes.html:279
+#: .\logistics\templates\logistics\demandes.html:280
 msgid "Rejetées"
 msgstr "Rejected"
 
-#: .\logistics\templates\logistics\demandes.html:287
+#: .\logistics\templates\logistics\demandes.html:288
 msgid "Historique des demandes"
 msgstr "Request history"
 
-#: .\logistics\templates\logistics\demandes.html:295
+#: .\logistics\templates\logistics\demandes.html:296
 msgid "Tout"
 msgstr "All"
 
-#: .\logistics\templates\logistics\demandes.html:307
+#: .\logistics\templates\logistics\demandes.html:308
 msgid "Retournées"
 msgstr "Returned"
 
-#: .\logistics\templates\logistics\demandes.html:312
+#: .\logistics\templates\logistics\demandes.html:313
 msgid "Rechercher une demande..."
 msgstr "Search for a request..."
 
@@ -5626,59 +5630,59 @@ msgstr "Do not reply to this email"
 msgid "Inventaire — Logistics"
 msgstr "Inventory — Logistics"
 
-#: .\logistics\templates\logistics\inventaire.html:255
+#: .\logistics\templates\logistics\inventaire.html:261
 msgid "Inventaire des équipements"
 msgstr "Equipment inventory"
 
-#: .\logistics\templates\logistics\inventaire.html:256
+#: .\logistics\templates\logistics\inventaire.html:262
 msgid "Consultez, filtrez et gérez tout le parc matériel IoT."
 msgstr "View, filter, and manage the entire IoT equipment fleet."
 
-#: .\logistics\templates\logistics\inventaire.html:281
+#: .\logistics\templates\logistics\inventaire.html:287
 msgid "Ajouter un équipement"
 msgstr "Add equipment"
 
-#: .\logistics\templates\logistics\inventaire.html:298
-#: .\logistics\templates\logistics\inventaire.html:346
+#: .\logistics\templates\logistics\inventaire.html:304
+#: .\logistics\templates\logistics\inventaire.html:352
 msgid "Équipements"
 msgstr "Equipment"
 
-#: .\logistics\templates\logistics\inventaire.html:307
+#: .\logistics\templates\logistics\inventaire.html:313
 msgid "Opérationnel"
 msgstr "Operational"
 
-#: .\logistics\templates\logistics\inventaire.html:311
+#: .\logistics\templates\logistics\inventaire.html:317
 msgid "Disponibles"
 msgstr "Available"
 
-#: .\logistics\templates\logistics\inventaire.html:324
+#: .\logistics\templates\logistics\inventaire.html:330
 msgid "En maintenance"
 msgstr "Under maintenance"
 
-#: .\logistics\templates\logistics\inventaire.html:333
+#: .\logistics\templates\logistics\inventaire.html:339
 msgid "Alerte"
 msgstr "Alert"
 
-#: .\logistics\templates\logistics\inventaire.html:337
+#: .\logistics\templates\logistics\inventaire.html:343
 msgid "En panne"
 msgstr "Faulty"
 
-#: .\logistics\templates\logistics\inventaire.html:347
+#: .\logistics\templates\logistics\inventaire.html:353
 #, python-format
 msgid "%(counter)s au total"
 msgid_plural "%(counter)s au total"
 msgstr[0] "%(counter)s in total"
 msgstr[1] "%(counter)s in total"
 
-#: .\logistics\templates\logistics\inventaire.html:368
+#: .\logistics\templates\logistics\inventaire.html:374
 msgid "Inactifs"
 msgstr "Inactive"
 
-#: .\logistics\templates\logistics\inventaire.html:373
+#: .\logistics\templates\logistics\inventaire.html:379
 msgid "Rechercher (S/N, Nom...)"
 msgstr "Search (S/N, Name...)"
 
-#: .\logistics\templates\logistics\inventaire.html:386
+#: .\logistics\templates\logistics\inventaire.html:392
 msgid "Inactif / En panne"
 msgstr "Inactive / Faulty"
 
@@ -5889,7 +5893,7 @@ msgid "Envoyer le Ticket"
 msgstr "Send Ticket"
 
 #: .\logistics\templates\logistics\partials\tickets_list.html:23
-#: .\logistics\templates\logistics\tickets.html:175
+#: .\logistics\templates\logistics\tickets.html:177
 msgid "En traitement"
 msgstr "In progress"
 
@@ -5910,7 +5914,7 @@ msgid "Nouveau Ticket — Logistics"
 msgstr "New Ticket — Logistics"
 
 #: .\logistics\templates\logistics\ticket_form.html:180
-#: .\logistics\templates\logistics\tickets.html:144
+#: .\logistics\templates\logistics\tickets.html:146
 msgid "Nouveau ticket"
 msgstr "New ticket"
 
@@ -5938,20 +5942,20 @@ msgstr "Submit the ticket"
 msgid "Tickets — Logistics"
 msgstr "Tickets — Logistics"
 
-#: .\logistics\templates\logistics\tickets.html:125
+#: .\logistics\templates\logistics\tickets.html:127
 msgid "Tickets de maintenance"
 msgstr "Maintenance Tickets"
 
-#: .\logistics\templates\logistics\tickets.html:126
+#: .\logistics\templates\logistics\tickets.html:128
 msgid "Suivi des signalements et demandes de maintenance."
 msgstr "Track issue reports and maintenance requests."
 
-#: .\logistics\templates\logistics\tickets.html:157
-#: .\logistics\templates\logistics\tickets.html:192
+#: .\logistics\templates\logistics\tickets.html:159
+#: .\logistics\templates\logistics\tickets.html:194
 msgid "Tickets actifs"
 msgstr "Active tickets"
 
-#: .\logistics\templates\logistics\tickets.html:195
+#: .\logistics\templates\logistics\tickets.html:197
 msgid "Rechercher un ticket..."
 msgstr "Search for a ticket..."
 

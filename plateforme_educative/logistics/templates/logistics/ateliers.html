@@ -102,7 +102,8 @@
   /* ── STAT TILES ── */
   .logi-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem; margin-bottom: 2rem; }
   @media (max-width: 900px) { .logi-stats { grid-template-columns: repeat(2,1fr); } }
-  @media (max-width: 540px) { .logi-stats { grid-template-columns: 1fr; } }
+  @media (max-width: 540px) { .logi-stats { grid-template-columns: 1fr 1fr; gap: 0.7rem; } }
+  @media (max-width: 360px) { .logi-stats { grid-template-columns: 1fr; } }
 
   .stat-tile {
     background: var(--bg-surface, #fff); border: 1px solid var(--border-light, #e2e8f0);

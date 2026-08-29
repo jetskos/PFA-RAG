@@ -113,7 +113,13 @@
     gap: 1rem; margin-bottom: 2rem;
   }
   @media (max-width: 900px) { .logi-stats { grid-template-columns: repeat(2,1fr); } }
-  @media (max-width: 540px) { .logi-stats { grid-template-columns: 1fr; } }
+  @media (max-width: 540px) {
+    .logi-stats { grid-template-columns: 1fr 1fr; gap: 0.7rem; }
+    .stat-tile { padding: 0.9rem; }
+    .stat-tile-val { font-size: 1.6rem; }
+    .stat-tile-trend { font-size: 0.62rem; padding: 2px 6px; }
+  }
+  @media (max-width: 360px) { .logi-stats { grid-template-columns: 1fr; } }
 
   .stat-tile {
     background: var(--bg-surface, #fff);

@@ -143,4 +143,19 @@
     .sat-btn[disabled] { opacity: 0.6; cursor: progress; }
     .sat-spin { animation: sat-spin 1s linear infinite; color: #0d9488; }
     @keyframes sat-spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 600px) {
+        .sat-card { padding: 1rem; }
+        /* Ligne : info au-dessus, bouton pleine largeur en dessous */
+        .sat-row { flex-direction: column; align-items: stretch; gap: 0.6rem; }
+        .sat-row-info { align-items: flex-start; }
+        .sat-row-name { white-space: normal; max-width: none; }
+        .sat-row form { width: 100%; }
+        .sat-row .sat-btn { width: 100%; justify-content: center; min-height: 42px; }
+        .sat-row--history { flex-direction: row; }
+        /* En-tête : titre puis « Tout appliquer » pleine largeur */
+        .sat-card-head { flex-direction: column; align-items: stretch; gap: 0.7rem; }
+        .sat-card-head form { width: 100%; }
+        .sat-card-head .sat-btn { width: 100%; justify-content: center; min-height: 44px; }
+    }
 </style>

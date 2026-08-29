@@ -391,10 +391,13 @@ html, body {
 
     /* --- ADMIN DASHBOARD --- */
     .cmd-header {
-        padding: 0.5rem 0 1rem 0 !important;
+        padding: 0.25rem 0 0.5rem 0 !important;
+        margin-bottom: 1rem !important;
+        text-align: left !important;
     }
     .cmd-title {
         font-size: clamp(1.5rem, 7vw, 2.5rem) !important;
+        margin-bottom: 0 !important;
     }
     .omnibar-container {
         max-width: 100% !important;
@@ -814,15 +817,11 @@ html, body {
 }
 
 /* =========================================
-   VERY SMALL PHONES (<= 400px)
+   VERY SMALL PHONES (<= 360px)
    ========================================= */
-@media (max-width: 400px) {
-    .kpi-section {
-        grid-template-columns: 1fr !important;
-    }
-    .quick-grid {
-        grid-template-columns: 1fr !important;
-    }
+@media (max-width: 360px) {
+    .kpi-section,
+    .quick-grid,
     .fmt-kpi-row {
         grid-template-columns: 1fr !important;
     }

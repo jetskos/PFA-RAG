@@ -607,6 +607,13 @@
         .tabs-nav::-webkit-scrollbar { display: none; }
         .tab-item { flex: 0 0 auto; padding: 0.7rem 1rem; font-size: 0.85rem; white-space: nowrap; }
         .formateur-courses-grid { grid-template-columns: 1fr; gap: 1rem; }
+        /* Barre Importer / Exporter : deux boutons pleine largeur empilés */
+        .fmt-io-toolbar { justify-content: stretch; gap: 0.6rem; }
+        .fmt-io-toolbar > button {
+            flex: 1 1 100%;
+            justify-content: center;
+            min-height: 46px;
+        }
     }
 </style>
 
@@ -673,7 +680,7 @@
     <!-- ═══════════════════ TAB: COURS ═══════════════════ -->
     <div id="tab-cours" class="tab-pane" style="display: block;">
         <!-- TOOLBAR EXPORT/IMPORT -->
-        <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-bottom:1.5rem;">
+        <div class="fmt-io-toolbar" style="display:flex; justify-content:flex-end; gap:0.75rem; margin-bottom:1.5rem; flex-wrap:wrap;">
             <button type="button" onclick="document.getElementById('import-zip-input').click()" style="display:inline-flex; align-items:center; gap:8px; padding:0.6rem 1.2rem; border-radius:10px; font-weight:600; font-size:0.9rem; cursor:pointer; transition:all 0.2s; color: #334155; background: #f8fafc; border: 1px solid #cbd5e1; box-shadow: 0 1px 2px rgba(0,0,0,0.05);" onmouseover="this.style.background='#f1f5f9'; this.style.borderColor='#94a3b8';" onmouseout="this.style.background='#f8fafc'; this.style.borderColor='#cbd5e1';">
                 <i class="ti ti-upload" style="color:#0D9488; font-size:1.1rem;"></i> {% translate "Importer (ZIP)" %}
             </button>

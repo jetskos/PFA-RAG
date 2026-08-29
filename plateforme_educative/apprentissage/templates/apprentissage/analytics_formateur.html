@@ -243,11 +243,18 @@
 
     /* ── MOBILE ─────────────────────────────────────────── */
     @media (max-width: 768px) {
-        .ah-hero { flex-direction: column; align-items: flex-start; gap: 1.1rem; padding: 1.5rem 1.25rem; }
-        .ah-right { width: 100%; }
-        .ah-right > * { flex: 1 1 auto; justify-content: center; }
-        .chart-card { padding: 1rem; }
-        .chart-card canvas { max-width: 100%; }
+        .analytics-hero { flex-direction: column; align-items: flex-start; gap: 1.1rem; padding: 1.5rem 1.25rem; }
+        .ah-right { width: 100%; display: flex; flex-wrap: wrap; gap: 0.6rem; }
+        .ah-right > * { flex: 1 1 46%; justify-content: center; white-space: nowrap; }
+        .kpi-grid { grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+        .kpi-card { padding: 1rem; gap: 0.6rem; }
+        .kpi-num { font-size: 1.6rem; }
+        .chart-card { padding: 1rem; overflow: hidden; }
+        .chart-card canvas { max-width: 100% !important; height: auto !important; }
+    }
+    @media (max-width: 360px) {
+        .kpi-grid { grid-template-columns: 1fr; }
+        .ah-right > * { flex: 1 1 100%; }
     }
 </style>
 

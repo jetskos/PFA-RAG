@@ -333,7 +333,28 @@
         .admin-filter-btn { flex: 0 0 auto; white-space: nowrap; }
         .custom-dropdown, .btn-export-select { width: 100%; }
         .btn-export-select { justify-content: center; }
+
+        /* Cartes de stats : 2 par ligne au lieu d'une colonne très haute */
+        .admin-stats-grid { grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+        .admin-stat-card { padding: 0.9rem; flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+        .admin-stat-content { min-width: 0; }
+        .admin-stat-title, .admin-stat-desc { white-space: normal; }
+        .admin-stat-value { font-size: 1.5rem; }
+
+        /* Tableau des utilisateurs : défile dans sa carte, colonnes lisibles */
+        .table-container {
+            overflow-x: auto; -webkit-overflow-scrolling: touch;
+            scroll-snap-type: x proximity;
+        }
+        .admin-table { min-width: 620px; }
+        .admin-table th, .admin-table td { padding: 12px 14px; }
+        .table-scroll-hint {
+            display: flex; align-items: center; gap: 6px;
+            font-size: 0.75rem; color: var(--text-muted, #64748b);
+            padding: 0.5rem 0.25rem 0; justify-content: flex-end;
+        }
     }
+    .table-scroll-hint { display: none; }
 </style>
 
 <div class="admin-shell">
@@ -482,6 +503,9 @@
     </div>
 
     <!-- Users Table -->
+    <div class="table-scroll-hint" aria-hidden="true">
+        <i class="ti ti-arrows-horizontal"></i> {% translate "Faites défiler pour voir toutes les colonnes" %}
+    </div>
     <div class="table-container">
         <table class="admin-table" id="usersTable">
             <thead>
