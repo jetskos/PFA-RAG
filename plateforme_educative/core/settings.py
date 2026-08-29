@@ -195,6 +195,13 @@ SIMPLE_JWT = {
 
 AUTH_USER_MODEL = 'accounts.Utilisateur'
 
+# Connexion par e-mail insensible à la casse (claviers mobiles + SQLite
+# sensible à la casse). ModelBackend gardé en repli.
+AUTHENTICATION_BACKENDS = [
+    'accounts.backends.CaseInsensitiveModelBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
 # URL names (not hard paths) so login/redirect targets keep the active
 # language prefix from i18n_patterns instead of falling back to the browser locale.
 LOGIN_URL = 'accounts:login'

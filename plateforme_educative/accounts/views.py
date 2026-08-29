@@ -464,6 +464,15 @@ class CustomLoginView(LoginView):
         form = super().get_form(form_class)
         form.fields['username'].label = _('Adresse e-mail')
         form.fields['password'].label = _('Mot de passe')
+        # Claviers mobiles : pas de majuscule auto ni d'autocorrection sur l'e-mail.
+        form.fields['username'].widget.attrs.update({
+            'type': 'email',
+            'inputmode': 'email',
+            'autocapitalize': 'none',
+            'autocorrect': 'off',
+            'autocomplete': 'username',
+            'spellcheck': 'false',
+        })
         return form
 
     def form_valid(self, form):
