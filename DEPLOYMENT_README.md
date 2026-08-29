@@ -110,4 +110,56 @@ Pour rendre le site accessible depuis la machine Windows hôte tout en protégea
 5.  **`Aucun LLM configuré`** : Corrigé en ajoutant la `GROQ_API_KEY` dans le `.env`.
 
 ---
-*Document généré le 23 Juin 2026 suite au succès du déploiement.*
+
+## 📴 6. Déploiement 100 % hors-ligne (serveur coupé d'internet)
+
+La plateforme fonctionne sans aucune connexion, mais **trois composants locaux**
+doivent être préparés **une fois, avec internet**, avant de couper le réseau :
+
+| Composant | Pourquoi | Préparation |
+|---|---|---|
+| **Ollama** + modèle | Tuteur IA & génération de QCM quand il n'y a pas de clé Groq/OpenAI | `curl -fsSL https://ollama.com/install.sh \| sh` puis `ollama pull qwen2.5:1.5b-instruct` ; lancer `ollama serve` (ou service systemd) |
+| **Modèle d'embeddings** (RAG) | Indexation des PDF pour le tuteur/QCM | il se télécharge tout seul au 1ᵉʳ import de PDF **tant qu'internet est là** — sinon `python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2')"` |
+| **FFmpeg** | Conversion vidéo HLS à l'import de cours | `apt install ffmpeg` (sinon les vidéos importées restent en MP4 brut, sans streaming) |
+
+Puis, à chaque mise en service :
+
+```bash
+source .venv/bin/activate
+python manage.py migrate
+python manage.py compilemessages          # traductions fr / en
+python manage.py collectstatic --noinput  # sert les librairies front en local (aucun CDN)
+python manage.py check_offline             # <-- vérifie que tout est prêt (voir ci-dessous)
+```
+
+### `python manage.py check_offline`
+
+Une seule commande qui affiche l'état de préparation :
+
+```
+[OK] Base de données joignable
+[OK] Migrations à jour
+[OK] Fichiers statiques collectés
+[OK] Librairies front vendored (aucun CDN)
+[OK] Traductions compilées (.mo présents)
+[OK] Ollama joignable + modèle présent
+[OK] Modèle d'embeddings RAG en cache
+[OK] FFmpeg installé
+[OK] Boîte de réception satellite prête
+```
+
+Un `[! ]` = fonctionnalité dégradée mais plateforme utilisable ; un `[KO]` = bloquant.
+Ajouter `--strict` pour traiter les avertissements comme des erreurs (utile en CI).
+
+### Réglage dans l'interface
+
+Admin → **Paramètres système** → activer **« Mode Hors-Ligne »** : coupe les tentatives
+d'envoi d'e-mail et force l'IA locale (Ollama) sans même tester le réseau.
+
+### Réception par satellite
+
+Voir `plateforme_educative/DOCUMENTATION_HLS_FLUTE.md` §5 : lancer le récepteur du
+carrousel FLUTE en tâche de fond, sortie pointée sur `SATELLITE_INBOX_DIR`.
+
+---
+*Document généré le 23 Juin 2026 — section hors-ligne ajoutée le 29 Août 2026.*

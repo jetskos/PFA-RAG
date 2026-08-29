@@ -235,6 +235,13 @@ def repondre(request, session_id):
         })
 
     except Exception as e:
+        from tuteur_ia.agents.llm_factory import is_llm_unavailable_error
+        if is_llm_unavailable_error(e):
+            logger.warning("Tuteur IA indisponible (LLM injoignable) : %s", e)
+            return JsonResponse({
+                "error": gettext("Le tuteur IA n'est pas disponible pour le moment. Réessaie dans un instant ou préviens ton formateur."),
+                "llm_unavailable": True,
+            }, status=503)
         import traceback
         traceback.print_exc()
         return JsonResponse({"error": str(e)}, status=500)
@@ -393,12 +400,21 @@ def poser_question(request, session_id):
                 f"\"{refus_hors_sujet}\""
             )
 
-        messages_to_send = [SystemMessage(content=system_prompt)] + chat_history + [HumanMessage(content=question)]
+        from tuteur_ia.agents.llm_factory import get_llm, with_language, is_llm_unavailable_error
+        messages_to_send = [SystemMessage(content=with_language(system_prompt))] + chat_history + [HumanMessage(content=question)]
 
         # ── LLM rapide : llama-3.1-8b-instant (le plus rapide sur Groq) ──
-        from tuteur_ia.agents.llm_factory import get_llm
         llm = get_llm(temperature=0.0)
-        response = llm.invoke(messages_to_send)
+        try:
+            response = llm.invoke(messages_to_send)
+        except Exception as llm_err:
+            if is_llm_unavailable_error(llm_err):
+                logger.warning("Assistant IA indisponible (LLM injoignable) : %s", llm_err)
+                return JsonResponse({
+                    "error": gettext("Le tuteur IA n'est pas disponible pour le moment. Réessaie dans un instant ou préviens ton formateur."),
+                    "llm_unavailable": True,
+                }, status=503)
+            raise
         reponse_content = response.content
 
         # ── Enregistrement historique ──

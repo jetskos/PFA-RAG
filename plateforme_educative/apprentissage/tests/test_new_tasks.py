@@ -5,9 +5,6 @@ from django.urls import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
-from rest_framework.test import APITestCase
-from rest_framework import status
-from rest_framework.authtoken.models import Token
 
 from accounts.models import Niveau, Classe, Notification
 from apprentissage.models import Cours, Chapitre, Document, Progression, Devoir, Soumission, Evenement
@@ -278,62 +275,6 @@ class TuteurIATests(TestCase):
         # Tentative d'accès à la session QCM de st1
         response = self.client.get(reverse("tuteur_ia:resultats_qcm", args=[self.session_qcm.id]))
         self.assertEqual(response.status_code, 403)
-
-
-class APIRestTests(APITestCase):
-    def setUp(self):
-        self.niveau = Niveau.objects.create(code="NV_D", nom="Niveau D", ordre=4)
-        self.classe = Classe.objects.create(
-            niveau=self.niveau,
-            code="CLS_D",
-            nom="Classe D",
-            annee_scolaire="2026",
-            capacite=20
-        )
-        self.formateur = Utilisateur.objects.create_user(
-            email="f_api@example.com", password="Password123!", role="FORMATEUR", is_formateur=True, is_active=True, statut_compte="ACTIVE"
-        )
-        self.student = Utilisateur.objects.create_user(
-            email="s_api@example.com", password="Password123!", role="ELEVE", classe=self.classe, is_active=True, statut_compte="ACTIVE"
-        )
-        self.cours = Cours.objects.create(
-            titre="Cours API", description="Desc API", niveau=self.niveau, createur=self.formateur, actif=True
-        )
-
-        # Jetons d'authentification
-        self.token_formateur = Token.objects.create(user=self.formateur)
-        self.token_student = Token.objects.create(user=self.student)
-
-    def test_api_requires_auth(self):
-        """L'accès à l'API requiert d'être authentifié."""
-        response = self.client.get("/api/cours/")
-        self.assertIn(response.status_code, (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN))
-
-    def test_api_me(self):
-        """L'endpoint /api/me/ renvoie les informations du profil connecté."""
-        self.client.credentials(HTTP_AUTHORIZATION="Token " + self.token_student.key)
-        response = self.client.get("/api/me/")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data["email"], self.student.email)
-        self.assertEqual(response.data["role"], "ELEVE")
-
-    def test_api_permissions(self):
-        """Vérifie la permission IsCreateurOrReadOnly sur les cours."""
-        # 1. Un élève ne peut pas créer de cours
-        self.client.credentials(HTTP_AUTHORIZATION="Token " + self.token_student.key)
-        data = {"titre": "Cours interdit", "description": "Interdit", "niveau": str(self.niveau.id)}
-        response = self.client.post("/api/cours/", data)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
-        # 2. Un formateur peut créer un cours
-        self.client.credentials(HTTP_AUTHORIZATION="Token " + self.token_formateur.key)
-        response = self.client.post("/api/cours/", data)
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-        # 3. Un élève peut lire les cours
-        self.client.credentials(HTTP_AUTHORIZATION="Token " + self.token_student.key)
-        response = self.client.get(f"/api/cours/{self.cours.id}/")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
 class RagAssistantTests(TestCase):

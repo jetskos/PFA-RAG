@@ -161,16 +161,14 @@ class RegistrationNotificationTests(TestCase):
         self.assertEqual(response.status_code, 302)
 
         # Check notifications generated for admin
-        admin_notifs = Notification.objects.filter(destinataire=self.admin)
+        admin_notifs = Notification.objects.filter(destinataire=self.admin, type='NOUVELLE_INSCRIPTION')
         self.assertEqual(admin_notifs.count(), 1)
-        self.assertEqual(admin_notifs.first().type, 'NOUVELLE_INSCRIPTION')
         self.assertIn('new_student_test@example.com', admin_notifs.first().message)
-        self.assertEqual(admin_notifs.first().url, reverse('dashboard_admin') + '?tab=students')
+        self.assertEqual(admin_notifs.first().url, reverse('dashboard_admin_structure') + '?tab=students')
 
         # Check notifications generated for superuser
-        super_notifs = Notification.objects.filter(destinataire=self.superuser)
+        super_notifs = Notification.objects.filter(destinataire=self.superuser, type='NOUVELLE_INSCRIPTION')
         self.assertEqual(super_notifs.count(), 1)
-        self.assertEqual(super_notifs.first().type, 'NOUVELLE_INSCRIPTION')
 
     def test_student_activation_deletes_registration_notification(self):
         """Test that activating a pending student deletes their registration notifications."""

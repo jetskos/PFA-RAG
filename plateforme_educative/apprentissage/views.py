@@ -550,7 +550,7 @@ def detail_cours(request, cours_id):
 
         if request.user.is_authenticated:
             from tuteur_ia.models import SessionAssistant
-            session_assistant, _ = SessionAssistant.objects.get_or_create(
+            session_assistant, _sa_created = SessionAssistant.objects.get_or_create(
                 etudiant=request.user,
                 chapitre=chapitre_initial
             )
@@ -631,7 +631,7 @@ def detail_chapitre(request, cours_id, chapitre_id):
     session_assistant = None
     if request.user.is_authenticated:
         from tuteur_ia.models import SessionAssistant
-        session_assistant, _ = SessionAssistant.objects.get_or_create(
+        session_assistant, _sa_created = SessionAssistant.objects.get_or_create(
             etudiant=request.user,
             chapitre=chapitre
         )

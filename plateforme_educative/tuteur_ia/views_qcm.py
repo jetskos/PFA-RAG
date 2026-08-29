@@ -97,7 +97,7 @@ def _generer_questions_ia(chapitre, n_questions: int = 8) -> tuple[list[dict], s
     Utilise le modèle Groq rapide llama-3.1-8b-instant avec un prompt court
     et un contexte limité pour minimiser le temps de génération.
     """
-    from tuteur_ia.agents.llm_factory import get_llm
+    from tuteur_ia.agents.llm_factory import get_llm, with_language, is_llm_unavailable_error
     from langchain_core.messages import SystemMessage, HumanMessage
 
     # Récupérer le contenu réel du PDF (tronqué à _QCM_MAX_CONTENT_CHARS)
@@ -130,7 +130,7 @@ def _generer_questions_ia(chapitre, n_questions: int = 8) -> tuple[list[dict], s
             f"({len(contenu)} chars de contexte, {n_questions} questions)"
         )
         response = llm.invoke([
-            SystemMessage(content=system_prompt),
+            SystemMessage(content=with_language(system_prompt)),
             HumanMessage(content=user_prompt),
         ])
 
@@ -166,6 +166,8 @@ def _generer_questions_ia(chapitre, n_questions: int = 8) -> tuple[list[dict], s
 
     except Exception as e:
         logger.error(f"Erreur génération QCM IA : {e}", exc_info=True)
+        if is_llm_unavailable_error(e):
+            return [], 'llm_unavailable'
 
     return [], 'generation_failed'
 
@@ -244,6 +246,12 @@ def generer_qcm_api(request, chapitre_id):
                     'detail': gettext("Le formateur doit d'abord uploader un PDF dans ce chapitre pour que le QCM puisse être généré automatiquement."),
                     'no_pdf': True,
                 }, status=404)
+            elif reason == 'llm_unavailable' and not questions_pool:
+                return JsonResponse({
+                    'error': gettext("Le service IA n'est pas disponible pour le moment."),
+                    'detail': gettext("La génération de QCM nécessite le moteur IA (local ou en ligne). Réessayez plus tard ou prévenez votre formateur."),
+                    'llm_unavailable': True,
+                }, status=503)
             elif questions_pool:
                 logger.warning(f"La génération a échoué mais {len(questions_pool)} questions existent en cache. Utilisation du cache partiel.")
                 # Utiliser les questions du cache même si on n'en a pas assez

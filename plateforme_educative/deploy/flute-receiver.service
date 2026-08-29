@@ -1,0 +1,32 @@
+# Récepteur du carrousel FLUTE — dépose les fichiers reçus par satellite dans la
+# boîte de réception de la plateforme. Le tableau de bord admin les détecte
+# ensuite automatiquement (voir DOCUMENTATION_HLS_FLUTE.md §5).
+#
+# Installation :
+#   1. Copier le projet FLUTE dans /opt/flute/   (carrousel_client.py, etc.)
+#   2. Adapter les chemins ci-dessous (User, WorkingDirectory, --output).
+#      --output DOIT valoir SATELLITE_INBOX_DIR du .env de la plateforme
+#      (défaut : <projet>/media/satellite_inbox).
+#   3. sudo cp deploy/flute-receiver.service /etc/systemd/system/
+#      sudo systemctl daemon-reload
+#      sudo systemctl enable --now flute-receiver
+#      journalctl -u flute-receiver -f      # suivre les logs
+
+[Unit]
+Description=Recepteur carrousel FLUTE (satellite -> plateforme educative)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=jatski1
+Group=jatski1
+WorkingDirectory=/opt/flute
+ExecStart=/usr/bin/python3 /opt/flute/carrousel_client.py --output /var/www/plateforme_educative/plateforme_educative/media/satellite_inbox
+Restart=always
+RestartSec=5
+# Le multicast n'a pas besoin d'internet ; garder le process léger.
+Nice=5
+
+[Install]
+WantedBy=multi-user.target

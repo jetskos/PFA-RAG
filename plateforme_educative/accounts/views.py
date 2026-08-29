@@ -470,9 +470,9 @@ class CustomLoginView(LoginView):
         user = form.get_user()
 
         if user.is_temp_password:  # noqa: SIM102
-            # Vérification de l'expiration des 10 heures
-            if not user.temp_password_created_at or timezone.now() - user.temp_password_created_at > timedelta(hours=10):
-                form.add_error(None, _("Ce mot de passe temporaire a expiré (validité de 10 heures). L'administrateur doit en générer un nouveau."))
+            # Vérification de l'expiration des 10 minutes
+            if not user.temp_password_created_at or timezone.now() - user.temp_password_created_at > timedelta(minutes=10):
+                form.add_error(None, _("Ce mot de passe temporaire a expiré (validité de 10 minutes). Veuillez effectuer une nouvelle demande."))
                 return self.form_invalid(form)
             else:
                 # Connexion de l'utilisateur

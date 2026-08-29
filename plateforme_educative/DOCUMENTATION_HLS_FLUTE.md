@@ -34,12 +34,21 @@ empreinte SHA-256.
 
 ### Câblage
 
-1. Sur le serveur hors-ligne (VM 101), lancer le récepteur du carrousel en pointant sa
-   sortie sur la **boîte de réception** de la plateforme :
+1. Sur le serveur hors-ligne (VM 101), lancer le récepteur du carrousel **en service**
+   (redémarre tout seul, démarre au boot), sa sortie pointée sur la **boîte de
+   réception** de la plateforme :
    ```bash
-   python carrousel_client.py --output /var/www/plateforme_educative/plateforme_educative/media/satellite_inbox
+   sudo cp plateforme_educative/deploy/flute-receiver.service /etc/systemd/system/
+   sudo systemctl daemon-reload && sudo systemctl enable --now flute-receiver
+   journalctl -u flute-receiver -f
    ```
-   (ou définir `SATELLITE_INBOX_DIR` dans le `.env` et pointer `--output` sur la même valeur).
+   Adapter dans le fichier `.service` : `User`, `WorkingDirectory`, et surtout
+   `--output` qui **doit valoir `SATELLITE_INBOX_DIR`** du `.env` de la plateforme
+   (défaut : `<projet>/media/satellite_inbox`).
+   Lancement manuel équivalent pour un test :
+   ```bash
+   python carrousel_client.py --output <SATELLITE_INBOX_DIR>
+   ```
 
 2. L'encadrant diffuse depuis son poste les **ZIP d'export de cours** produits par la
    plateforme (`cours_<id>_export.zip`, onglet *Espace formateur → Exporter*).

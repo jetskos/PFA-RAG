@@ -178,3 +178,42 @@ def get_llm(temperature: float = 0.7, model_name: str = None, max_tokens: int = 
     _llm_cache[cache_key] = llm
     return llm
 
+
+# ── Localisation des réponses IA ────────────────────────────────────────────
+
+_LANGUAGE_DIRECTIVES = {
+    'fr': "IMPORTANT : réponds toujours en français, quelle que soit la langue de la question.",
+    'en': "IMPORTANT: always answer in English, regardless of the language of the question.",
+    'ar': "مهم: أجب دائمًا باللغة العربية بغض النظر عن لغة السؤال.",
+}
+
+
+def language_directive() -> str:
+    """Consigne de langue à ajouter aux prompts système, selon la langue active de l'UI."""
+    try:
+        from django.utils.translation import get_language
+        lang = (get_language() or 'fr').split('-')[0]
+    except Exception:
+        lang = 'fr'
+    return _LANGUAGE_DIRECTIVES.get(lang, _LANGUAGE_DIRECTIVES['fr'])
+
+
+def with_language(system_prompt: str) -> str:
+    """Ajoute la consigne de langue active à un prompt système."""
+    return f"{system_prompt}\n\n{language_directive()}"
+
+
+# ── Détection « moteur LLM injoignable » ────────────────────────────────────
+
+def is_llm_unavailable_error(exc: BaseException) -> bool:
+    """True si l'exception vient d'un LLM injoignable (ni API en ligne, ni Ollama local)."""
+    text = f"{type(exc).__name__}: {exc}".lower()
+    needles = (
+        "connection error", "connection refused", "connexion refus",
+        "failed to establish a new connection", "max retries exceeded",
+        "timed out", "timeout", "getaddrinfo failed", "name or service not known",
+        "nameresolutionerror", "newconnectionerror", "apiconnectionerror",
+        "connecterror", "[errno 111]", "[winerror 10061]", "no llm", "aucun llm",
+    )
+    return any(n in text for n in needles)
+

@@ -74,6 +74,12 @@ def generer_qcm_task(self, chapitre_id: str, etudiant_id: str, n_questions: int 
                         'detail': gettext("Le formateur doit d'abord uploader un PDF."),
                         'no_pdf': True,
                     }
+                elif reason == 'llm_unavailable':
+                    return {
+                        'error': gettext("Le service IA n'est pas disponible pour le moment."),
+                        'detail': gettext("La génération de QCM nécessite le moteur IA (local ou en ligne). Réessayez plus tard ou prévenez votre formateur."),
+                        'llm_unavailable': True,
+                    }
                 else:
                     return {
                         'error': gettext("La génération du QCM par l'IA a échoué. Réessayez dans quelques instants."),

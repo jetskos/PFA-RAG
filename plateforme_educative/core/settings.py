@@ -136,7 +136,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-LANGUAGE_CODE = 'fr-fr'
+# 'fr' (et non 'fr-fr') : doit correspondre à une entrée de LANGUAGES pour que
+# reverse()/i18n_patterns génèrent des URLs valides (/fr/…) même hors requête
+# (tâches Celery, commandes, tests).
+LANGUAGE_CODE = 'fr'
 TIME_ZONE = 'Africa/Casablanca'
 USE_I18N = True
 USE_TZ = True
@@ -239,3 +242,12 @@ CELERY_TASK_DEFAULT_QUEUE = 'pfa_rag_queue_v2'
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_TASK_ALWAYS_EAGER = os.getenv('CELERY_TASK_ALWAYS_EAGER', 'False').lower() in {'1', 'true', 'yes', 'on'}
 CELERY_TASK_EAGER_PROPAGATES = os.getenv('CELERY_TASK_ALWAYS_EAGER', 'False').lower() in {'1', 'true', 'yes', 'on'}
+
+# Pendant `manage.py test`, exécuter les tâches Celery en synchrone (pas de worker
+# ni de Redis requis) et utiliser un backend e-mail en mémoire.
+import sys as _sys
+if 'test' in _sys.argv:
+    CELERY_TASK_ALWAYS_EAGER = True
+    CELERY_TASK_EAGER_PROPAGATES = True
+    EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
+    PASSWORD_HASHERS = ['django.contrib.auth.hashers.MD5PasswordHasher']  # tests plus rapides

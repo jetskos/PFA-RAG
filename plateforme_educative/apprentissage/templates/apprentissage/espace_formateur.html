@@ -980,6 +980,9 @@
 <input type="hidden" id="csrf-token-export" value="{{ csrf_token }}">
 <script src="{% static 'vendor/jszip/jszip.min.js' %}"></script>
 <script>
+    // Préfixe de langue pour les fetch() (URLs sous i18n_patterns : /fr/... ou /en/...)
+    const LANG_PREFIX = "/{{ request.LANGUAGE_CODE|default:'fr' }}";
+
     function switchFormTab(tabId, btn) {
         document.querySelectorAll('.tab-pane').forEach(el => el.style.display = 'none');
         document.querySelectorAll('.tab-item').forEach(el => el.classList.remove('active'));
@@ -1124,7 +1127,7 @@
                 if (!job.done) {
                     allDone = false;
                     currentPromises.push(
-                        fetch(`/apprentissage/formateur/export-status/${job.id}/`)
+                        fetch(`${LANG_PREFIX}/apprentissage/formateur/export-status/${job.id}/`)
                         .then(r => r.json())
                         .then(statusData => {
                             if (statusData.status === 'SUCCESS') {
@@ -1410,7 +1413,7 @@
 
     function pollImportStatus(jobId) {
         importPollingInterval = setInterval(() => {
-            fetch(`/apprentissage/formateur/import-status/${jobId}/`)
+            fetch(`${LANG_PREFIX}/apprentissage/formateur/import-status/${jobId}/`)
             .then(r => r.json())
             .then(data => {
                 const statusText = document.getElementById('upload-status-text');

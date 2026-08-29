@@ -1090,15 +1090,22 @@ window.toggleVideoFullscreen = function(btn) {
             },
             body: JSON.stringify({ question: question })
         })
-        .then(response => {
+        .then(async response => {
+            // On lit toujours le corps JSON : le serveur y met un message clair
+            // même pour les statuts d'erreur (503 = IA indisponible, etc.).
+            let data = null;
+            try { data = await response.json(); } catch (e) { data = null; }
             if (!response.ok) {
-                throw new Error("{% translate 'Erreur de communication avec le serveur.' %}");
+                const msg = (data && data.error)
+                    ? data.error
+                    : "{% translate 'Erreur de communication avec le serveur.' %}";
+                throw new Error(msg);
             }
-            return response.json();
+            return data;
         })
         .then(data => {
             typingIndicator.style.display = "none";
-            
+
             if (data.error) {
                 showErrorMessage(data.error);
                 return;

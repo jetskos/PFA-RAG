@@ -132,7 +132,8 @@
         gap: 1.5rem;
         align-items: start;
     }
-    @media (max-width: 900px) { .bottom-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 900px) { .bottom-grid { grid-template-columns: minmax(0, 1fr); } }
+    .bottom-grid > * { min-width: 0; }
 
     /* Data table */
     .data-card {
@@ -235,6 +236,19 @@
         text-decoration: none; backdrop-filter: blur(8px); transition: all 0.2s;
     }
     .btn-ah-secondary:hover { background: rgba(255,255,255,0.15); color: #a5b4fc; }
+
+    /* Tableau : défilement horizontal dans sa carte plutôt que de pousser la page */
+    .data-card { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .data-table { min-width: 460px; }
+
+    /* ── MOBILE ─────────────────────────────────────────── */
+    @media (max-width: 768px) {
+        .ah-hero { flex-direction: column; align-items: flex-start; gap: 1.1rem; padding: 1.5rem 1.25rem; }
+        .ah-right { width: 100%; }
+        .ah-right > * { flex: 1 1 auto; justify-content: center; }
+        .chart-card { padding: 1rem; }
+        .chart-card canvas { max-width: 100%; }
+    }
 </style>
 
 <div class="page-shell" style="max-width: 1200px; margin: 0 auto; padding-top: 2rem;">
