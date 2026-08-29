@@ -14,7 +14,7 @@
     </div>
 
     <!-- ── Stats rapides ── -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-top: 2rem;">
+    <div class="devoirs-stats" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-top: 2rem;">
         <div class="carte" style="padding: 1rem; text-align: center; border-top: 3px solid #ff9800;">
             <div style="font-size: 1.6rem; font-weight: 700; color: #ff9800;">{{ stats.a_rendre }}</div>
             <div style="font-size: 0.78rem; color: var(--texte-secondaire); text-transform: uppercase; letter-spacing: .05em;">{% translate "À rendre" %}</div>
@@ -34,7 +34,7 @@
     </div>
 
     <!-- ── Onglets de filtrage ── -->
-    <nav style="display: flex; gap: 0.35rem; flex-wrap: wrap; margin-top: 2rem; border-bottom: 2px solid var(--bordure);">
+    <nav class="devoirs-tabs" style="display: flex; gap: 0.35rem; flex-wrap: wrap; margin-top: 2rem; border-bottom: 2px solid var(--bordure);">
 
         {% with tab_data="tous:Tous:list-check:a_rendre:À rendre:clock:soumis:Soumis:upload:corrige:Corrigés:check:depasse:Délai dépassé:alert-triangle" %}
         {# Onglets manuels car Django templates n'ont pas de split complexe #}
@@ -138,7 +138,7 @@
                 </div>
 
                 <!-- Grille des devoirs de ce cours -->
-                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 1.25rem;">
+                <div class="devoir-card-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 1.25rem;">
                     {% for item in items %}
                     {% with devoir=item.devoir soumission=item.soumission statut=item.statut %}
                     {% with app=soumission.appreciation_details %}

@@ -691,6 +691,40 @@ html, body {
     .empty-state-card { padding: 2.25rem 1.25rem !important; }
     .empty-state-card h1 { font-size: clamp(1.35rem, 5.5vw, 1.8rem) !important; }
 
+    /* --- DEVOIRS --- */
+    .devoirs-stats { grid-template-columns: 1fr 1fr !important; gap: .7rem !important; }
+    .devoirs-tabs {
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        scrollbar-width: none;
+        padding-bottom: 2px !important;
+    }
+    .devoirs-tabs::-webkit-scrollbar { display: none; }
+    .devoirs-tabs > a { flex: 0 0 auto !important; white-space: nowrap !important; min-height: 44px !important; }
+    .devoir-card-grid { grid-template-columns: 1fr !important; }
+    .dd-layout { grid-template-columns: 1fr !important; }
+    .action-btns { flex-wrap: wrap !important; justify-content: flex-start !important; }
+    .action-btns > * { min-height: 44px !important; }
+
+    /* --- COMPTE : profil, édition, mot de passe, notifications --- */
+    .edit-card, .pw-card { padding: 1.5rem 1.25rem !important; }
+    .edit-card h1 { font-size: clamp(1.3rem, 5.5vw, 1.6rem) !important; }
+    .actions-panel {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: .6rem !important;
+    }
+    .actions-panel > * { width: 100% !important; justify-content: center !important; min-height: 46px !important; }
+    .actions { flex-direction: column !important; }
+    .actions > * { width: 100% !important; justify-content: center !important; }
+    .stat-mini-card { padding: .9rem !important; gap: .7rem !important; }
+    /* Notifications : en-tête empilé */
+    .notif-header { flex-direction: column !important; align-items: flex-start !important; gap: .75rem !important; }
+    .notif-header form, .notif-header form button { width: 100% !important; justify-content: center !important; }
+    .notification-item { padding: 14px 16px !important; gap: 10px !important; }
+    .notification-item > form button { width: 40px !important; height: 40px !important; }
+
     /* --- AI CHAT HALF-SHEET --- */
     .chapitre-col-droite.active {
         display: block !important;
