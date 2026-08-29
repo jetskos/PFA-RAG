@@ -81,9 +81,15 @@ man.append('</manifest>')
 print('  déposé dans', inbox)
 PY
 
+# IP LAN de ce PC (pour tester depuis un téléphone sur le même Wi-Fi).
+# Astuce socket : ne transmet rien, choisit juste l'interface de routage — marche hors-ligne.
+LAN_IP=$(python -c "import socket; s=socket.socket(socket.AF_INET,socket.SOCK_DGRAM); s.connect(('10.255.255.255',1)); print(s.getsockname()[0]); s.close()" 2>/dev/null || echo "IP-de-ce-PC")
+
 echo
 echo "═══════════════════════════════════════════════════════════════════"
-echo "  Serveur : http://127.0.0.1:8000/"
-echo "  Login   : admin@test.local / test1234"
+echo "  Sur ce PC     : http://127.0.0.1:8000/"
+echo "  Sur téléphone : http://${LAN_IP}:8000/   (même Wi-Fi + pare-feu autorisé)"
+echo "  Login         : admin@test.local / test1234"
 echo "═══════════════════════════════════════════════════════════════════"
-python manage.py runserver 127.0.0.1:8000
+# 0.0.0.0 = écoute sur toutes les interfaces (indispensable pour l'accès téléphone).
+python manage.py runserver 0.0.0.0:8000
