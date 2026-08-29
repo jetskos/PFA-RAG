@@ -258,3 +258,7 @@ if 'test' in _sys.argv:
     CELERY_TASK_EAGER_PROPAGATES = True
     EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
     PASSWORD_HASHERS = ['django.contrib.auth.hashers.MD5PasswordHasher']  # tests plus rapides
+    # Stockage statique simple : la suite de tests n'exige plus un
+    # `collectstatic` préalable (le storage à manifeste est strict et
+    # échoue sur `{% static %}` sans staticfiles.json).
+    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
