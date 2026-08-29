@@ -83,6 +83,31 @@ body {
     color: var(--text-primary);
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Retour tactile « app » : léger enfoncement sur les éléments cliquables */
+@media (hover: none) and (pointer: coarse) {
+    a, button, .btn, [role="button"],
+    .bottom-nav-item, .card, .course-card, .chapitre-card {
+        -webkit-touch-callout: none;
+    }
+    a:active, button:active, .btn:active, [role="button"]:active,
+    .bottom-nav-item:active {
+        transform: scale(0.97);
+    }
+    .card:active, .course-card:active, .chapitre-card:active,
+    .pillar-card:active, .role-card:active {
+        transform: scale(0.985);
+    }
+}
+
+/* Mode application installée (PWA plein écran) */
+@media (display-mode: standalone) {
+    #pwa-install-banner { display: none !important; }
+    .site-header { padding-top: env(safe-area-inset-top, 0px); }
 }
 
 /* Animations */

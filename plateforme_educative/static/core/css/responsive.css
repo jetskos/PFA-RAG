@@ -5,6 +5,25 @@
     display: none !important;
 }
 
+/* Pastille de marque affichée seulement sur les pages d'auth en mobile */
+.auth-mobile-brand {
+    display: none;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 1.5rem;
+}
+.auth-mobile-brand img { height: 40px; width: 40px; border-radius: 10px; }
+.auth-mobile-brand span {
+    font-weight: 800;
+    font-size: 1.05rem;
+    letter-spacing: -0.02em;
+    color: var(--text-primary, #0f172a);
+}
+.auth-mobile-brand span em {
+    font-style: normal;
+    color: var(--primary, #0d9488);
+}
+
 /* Prevent horizontal scroll on all devices */
 html, body {
     overflow-x: hidden;
@@ -142,11 +161,14 @@ html, body {
     .brand-tagline {
         display: none !important;
     }
-    /* Override the inline style height: 54px on the logo img */
-    .brand-icon,
-    .brand-icon img {
-        height: 28px !important;
-        width: auto !important;
+    /* Sur mobile : marque compacte = pastille d'icône PWA nette, pas le
+       logo blanc (fond gris illisible en 28px). */
+    .brand-logo-desktop { display: none !important; }
+    .brand-logo-mobile {
+        display: block !important;
+        height: 30px !important;
+        width: 30px !important;
+        border-radius: 8px;
     }
 
     /* Off-canvas navigation menu — FULLY OPAQUE, no blur */
@@ -567,6 +589,29 @@ html, body {
 
     .auth-right {
         padding: 2rem 1.5rem !important;
+    }
+
+    /* Le panneau marketing mange l'écran sur mobile : on le masque et on
+       garde uniquement le formulaire (une pastille de marque est réinjectée
+       dans .auth-form-panel via .auth-mobile-brand). */
+    .auth-brand-panel {
+        display: none !important;
+    }
+    .auth-page {
+        min-height: auto !important;
+        padding: 1.25rem 0.9rem 2rem !important;
+        align-items: flex-start !important;
+    }
+    .auth-split {
+        border: none !important;
+        border-radius: 18px !important;
+        box-shadow: 0 10px 30px rgba(2, 6, 23, 0.08) !important;
+    }
+    .auth-form-panel {
+        padding: 1.75rem 1.35rem 2rem !important;
+    }
+    .auth-mobile-brand {
+        display: flex !important;
     }
     
     /* --- ADMIN CARDS & LISTS OVERHAUL (Niveaux, Classes, Users) --- */

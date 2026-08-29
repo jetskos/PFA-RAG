@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-29 12:27+0100\n"
+"POT-Creation-Date: 2026-08-29 14:07+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -55,22 +55,22 @@ msgstr "Class"
 
 #: .\accounts\models.py:77
 #: .\apprentissage\templates\apprentissage\devoir_detail.html:335
-#: .\core\templates\base.html:220
+#: .\core\templates\base.html:235
 msgid "Élève"
 msgstr "Student"
 
 #: .\accounts\models.py:78
-#: .\accounts\templates\accounts\emails\role_activation.html:164
+#: .\accounts\templates\accounts\emails\role_activation.html:165
 #: .\apprentissage\models.py:590 .\apprentissage\models.py:628
-#: .\apprentissage\templates\apprentissage\analytics_formateur.html:246
-#: .\core\templates\base.html:76 .\core\templates\base.html:220
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:260
+#: .\core\templates\base.html:91 .\core\templates\base.html:235
 #: .\logistics\models.py:143
 #: .\logistics\templates\logistics\partials\demandes_list.html:101
 msgid "Formateur"
 msgstr "Instructor"
 
 #: .\accounts\models.py:79
-#: .\accounts\templates\accounts\emails\role_activation.html:162
+#: .\accounts\templates\accounts\emails\role_activation.html:163
 msgid "Administrateur"
 msgstr "Administrator"
 
@@ -238,10 +238,8 @@ msgid "Mode Hors-Ligne"
 msgstr "Offline Mode"
 
 #: .\accounts\models.py:282
-msgid ""
-"Active le mode déconnecté. Coupe l'envoi d'e-mails et force l'IA locale."
-msgstr ""
-"Enables disconnected mode. Stops email sending and forces the local AI."
+msgid "Active le mode déconnecté. Coupe l'envoi d'e-mails et force l'IA locale."
+msgstr "Enables disconnected mode. Stops email sending and forces the local AI."
 
 #: .\accounts\models.py:286
 msgid "Automatique (Groq -> Ollama)"
@@ -293,7 +291,7 @@ msgid "Administration Pédagogique"
 msgstr "Educational Administration"
 
 #: .\accounts\templates\accounts\admin_dashboard.html:344
-#: .\core\templates\base.html:93
+#: .\core\templates\base.html:108
 #: .\core\templates\core\dashboard_admin_structure.html:78
 msgid "Administration"
 msgstr "Administration"
@@ -350,7 +348,7 @@ msgid "Confirmer"
 msgstr "Confirm"
 
 #: .\accounts\templates\accounts\admin_dashboard.html:396
-#: .\core\templates\base.html:106 .\core\templates\base.html:433
+#: .\core\templates\base.html:121 .\core\templates\base.html:448
 #: .\core\templates\core\dashboard_admin_structure.html:84
 msgid "Utilisateurs"
 msgstr "Users"
@@ -659,12 +657,8 @@ msgid "Modifier mon mot de passe"
 msgstr "Change my password"
 
 #: .\accounts\templates\accounts\change_password.html:116
-msgid ""
-"Pour sécuriser votre compte, veuillez choisir un mot de passe robuste d'au "
-"moins 8 caractères."
-msgstr ""
-"To secure your account, please choose a strong password of at least 8 "
-"characters."
+msgid "Pour sécuriser votre compte, veuillez choisir un mot de passe robuste d'au moins 8 caractères."
+msgstr "To secure your account, please choose a strong password of at least 8 characters."
 
 #: .\accounts\templates\accounts\change_password.html:146
 msgid "Mettre à jour le mot de passe"
@@ -700,193 +694,147 @@ msgid "Votre compte est activé !"
 msgstr "Your account is activated!"
 
 #: .\accounts\templates\accounts\emails\activation_email.html:10
-#: .\accounts\views.py:530 .\accounts\views.py:536
+#: .\accounts\views.py:539 .\accounts\views.py:545
 msgid "Bienvenue sur EduTech !"
 msgstr "Welcome to EduTech!"
 
 #: .\accounts\templates\accounts\emails\activation_email.html:12
-#: .\accounts\templates\accounts\emails\role_activation.html:155
+#: .\accounts\templates\accounts\emails\role_activation.html:156
 #, python-format
 msgid "Bonjour %(nom)s,"
 msgstr "Hello %(nom)s,"
 
 #: .\accounts\templates\accounts\emails\activation_email.html:15
-msgid ""
-"Nous avons le plaisir de vous informer que votre compte a été activé par "
-"l'administration."
-msgstr ""
-"We are pleased to inform you that your account has been activated by the "
-"administration."
+msgid "Nous avons le plaisir de vous informer que votre compte a été activé par l'administration."
+msgstr "We are pleased to inform you that your account has been activated by the administration."
 
 #: .\accounts\templates\accounts\emails\activation_email.html:19
 #, python-format
-msgid ""
-"Vous êtes désormais affecté(e) à la classe <strong>%(classe)s</strong> et "
-"vous pouvez accéder à tous vos cours et devoirs."
-msgstr ""
-"You have now been assigned to the class <strong>%(classe)s</strong> and can "
-"access all your courses and assignments."
+msgid "Vous êtes désormais affecté(e) à la classe <strong>%(classe)s</strong> et vous pouvez accéder à tous vos cours et devoirs."
+msgstr "You have now been assigned to the class <strong>%(classe)s</strong> and can access all your courses and assignments."
 
 #: .\accounts\templates\accounts\emails\activation_email.html:21
-msgid ""
-"Vous êtes désormais affecté(e) à la classe <strong>(Non assignée)</strong> "
-"et vous pouvez accéder à tous vos cours et devoirs."
-msgstr ""
-"You have now been assigned to the class <strong>(Not assigned)</strong> and "
-"can access all your courses and assignments."
+msgid "Vous êtes désormais affecté(e) à la classe <strong>(Non assignée)</strong> et vous pouvez accéder à tous vos cours et devoirs."
+msgstr "You have now been assigned to the class <strong>(Not assigned)</strong> and can access all your courses and assignments."
 
 #: .\accounts\templates\accounts\emails\activation_email.html:26
-#: .\accounts\templates\accounts\emails\notification.html:93
+#: .\accounts\templates\accounts\emails\notification.html:94
 #: .\accounts\templates\accounts\partials\onboarding_step.html:465
 msgid "Accéder à la plateforme"
 msgstr "Go to the platform"
 
 #: .\accounts\templates\accounts\emails\activation_email.html:30
-msgid ""
-"Si vous avez des questions, n'hésitez pas à contacter votre formateur ou "
-"l'administration."
-msgstr ""
-"If you have any questions, feel free to contact your instructor or the "
-"administration."
+msgid "Si vous avez des questions, n'hésitez pas à contacter votre formateur ou l'administration."
+msgstr "If you have any questions, feel free to contact your instructor or the administration."
 
 #: .\accounts\templates\accounts\emails\activation_email.html:31
 msgid "L'équipe EduTech."
 msgstr "The EduTech Team."
 
-#: .\accounts\templates\accounts\emails\notification.html:98
-#: .\accounts\templates\accounts\emails\temp_password_email.html:126
-msgid ""
-"Cet e-mail vous a été envoyé automatiquement par la plateforme EduTech."
-msgstr "This email was sent automatically by the EduTech platform."
-
 #: .\accounts\templates\accounts\emails\notification.html:99
 #: .\accounts\templates\accounts\emails\temp_password_email.html:127
+msgid "Cet e-mail vous a été envoyé automatiquement par la plateforme EduTech."
+msgstr "This email was sent automatically by the EduTech platform."
+
+#: .\accounts\templates\accounts\emails\notification.html:100
+#: .\accounts\templates\accounts\emails\temp_password_email.html:128
 msgid "Tous droits réservés."
 msgstr "All rights reserved."
 
-#: .\accounts\templates\accounts\emails\role_activation.html:7
+#: .\accounts\templates\accounts\emails\role_activation.html:8
 msgid "Votre compte est activé"
 msgstr "Your account is activated"
 
-#: .\accounts\templates\accounts\emails\role_activation.html:149
+#: .\accounts\templates\accounts\emails\role_activation.html:150
 #: .\apprentissage\templates\apprentissage\wizard\success.html:9
 msgid "Félicitations !"
 msgstr "Congratulations!"
 
-#: .\accounts\templates\accounts\emails\role_activation.html:150
+#: .\accounts\templates\accounts\emails\role_activation.html:151
 msgid "Votre compte a été activé avec succès."
 msgstr "Your account has been successfully activated."
 
-#: .\accounts\templates\accounts\emails\role_activation.html:158
-msgid ""
-"Nous avons le plaisir de vous informer que votre compte sur la plateforme "
-"<strong>EduTech</strong> est désormais actif et que vos droits d'accès ont "
-"été mis à jour."
-msgstr ""
-"We are pleased to inform you that your account on the "
-"<strong>EduTech</strong> platform is now active and your access rights have "
-"been updated."
+#: .\accounts\templates\accounts\emails\role_activation.html:159
+msgid "Nous avons le plaisir de vous informer que votre compte sur la plateforme <strong>EduTech</strong> est désormais actif et que vos droits d'accès ont été mis à jour."
+msgstr "We are pleased to inform you that your account on the <strong>EduTech</strong> platform is now active and your access rights have been updated."
 
-#: .\accounts\templates\accounts\emails\role_activation.html:160
+#: .\accounts\templates\accounts\emails\role_activation.html:161
 msgid "Votre rôle officiel sur la plateforme est :"
 msgstr "Your official role on the platform is:"
 
-#: .\accounts\templates\accounts\emails\role_activation.html:168
-msgid ""
-"En tant que membre de l'équipe, vous avez accès à des fonctionnalités "
-"avancées vous permettant de piloter l'apprentissage et de contribuer au "
-"succès de nos apprenants."
-msgstr ""
-"As a team member, you now have access to advanced features that let you "
-"manage learning and contribute to our learners' success."
+#: .\accounts\templates\accounts\emails\role_activation.html:169
+msgid "En tant que membre de l'équipe, vous avez accès à des fonctionnalités avancées vous permettant de piloter l'apprentissage et de contribuer au succès de nos apprenants."
+msgstr "As a team member, you now have access to advanced features that let you manage learning and contribute to our learners' success."
 
-#: .\accounts\templates\accounts\emails\role_activation.html:172
+#: .\accounts\templates\accounts\emails\role_activation.html:173
 msgid "Accéder à mon espace"
 msgstr "Go to my space"
 
-#: .\accounts\templates\accounts\emails\role_activation.html:176
-msgid ""
-"Si vous avez des questions ou si vous avez besoin d'assistance pour "
-"démarrer, notre support technique reste à votre entière disposition."
-msgstr ""
-"If you have any questions or need help getting started, our technical "
-"support team is fully available to assist you."
-
 #: .\accounts\templates\accounts\emails\role_activation.html:177
+msgid "Si vous avez des questions ou si vous avez besoin d'assistance pour démarrer, notre support technique reste à votre entière disposition."
+msgstr "If you have any questions or need help getting started, our technical support team is fully available to assist you."
+
+#: .\accounts\templates\accounts\emails\role_activation.html:178
 msgid "Bienvenue à bord !"
 msgstr "Welcome aboard!"
 
-#: .\accounts\templates\accounts\emails\role_activation.html:177
+#: .\accounts\templates\accounts\emails\role_activation.html:178
 msgid "L'équipe EduTech"
 msgstr "The EduTech Team"
 
-#: .\accounts\templates\accounts\emails\role_activation.html:184
+#: .\accounts\templates\accounts\emails\role_activation.html:185
 msgid "La plateforme éducative de l'avenir."
 msgstr "The educational platform of the future."
 
-#: .\accounts\templates\accounts\emails\role_activation.html:186
-#: .\core\templates\base.html:60 .\core\templates\base.html:64
-#: .\core\templates\base.html:423 .\core\templates\base.html:451
+#: .\accounts\templates\accounts\emails\role_activation.html:187
+#: .\core\templates\base.html:75 .\core\templates\base.html:79
+#: .\core\templates\base.html:438 .\core\templates\base.html:466
 msgid "Accueil"
 msgstr "Home"
 
-#: .\accounts\templates\accounts\emails\role_activation.html:187
+#: .\accounts\templates\accounts\emails\role_activation.html:188
 msgid "Support"
 msgstr "Support"
 
-#: .\accounts\templates\accounts\emails\role_activation.html:190
+#: .\accounts\templates\accounts\emails\role_activation.html:191
 msgid "Cet e-mail est généré automatiquement. Merci de ne pas y répondre."
 msgstr "This email was generated automatically. Please do not reply to it."
 
-#: .\accounts\templates\accounts\emails\temp_password_email.html:6
+#: .\accounts\templates\accounts\emails\temp_password_email.html:7
 msgid "Votre mot de passe temporaire"
 msgstr "Your temporary password"
 
-#: .\accounts\templates\accounts\emails\temp_password_email.html:102
+#: .\accounts\templates\accounts\emails\temp_password_email.html:103
 msgid "Bonjour,"
 msgstr "Hello,"
 
-#: .\accounts\templates\accounts\emails\temp_password_email.html:103
-msgid ""
-"Vous avez demandé la réinitialisation de votre mot de passe pour votre "
-"compte sur la plateforme <strong>EduTech</strong>."
-msgstr ""
-"You requested a password reset for your account on the "
-"<strong>EduTech</strong> platform."
-
 #: .\accounts\templates\accounts\emails\temp_password_email.html:104
+msgid "Vous avez demandé la réinitialisation de votre mot de passe pour votre compte sur la plateforme <strong>EduTech</strong>."
+msgstr "You requested a password reset for your account on the <strong>EduTech</strong> platform."
+
+#: .\accounts\templates\accounts\emails\temp_password_email.html:105
 msgid "Voici votre mot de passe temporaire :"
 msgstr "Here is your temporary password:"
 
-#: .\accounts\templates\accounts\emails\temp_password_email.html:111
-msgid ""
-"Ce mot de passe temporaire est valide pour une durée limitée de 10 minutes."
+#: .\accounts\templates\accounts\emails\temp_password_email.html:112
+msgid "Ce mot de passe temporaire est valide pour une durée limitée de 10 minutes."
 msgstr "This temporary password is valid for a limited time of 10 minutes."
 
-#: .\accounts\templates\accounts\emails\temp_password_email.html:114
-msgid ""
-"Veuillez l'utiliser pour vous connecter, puis changez-le immédiatement dans "
-"la section <strong>Sécurité</strong> de votre profil."
-msgstr ""
-"Please use it to log in, then change it immediately in the "
-"<strong>Security</strong> section of your profile."
+#: .\accounts\templates\accounts\emails\temp_password_email.html:115
+msgid "Veuillez l'utiliser pour vous connecter, puis changez-le immédiatement dans la section <strong>Sécurité</strong> de votre profil."
+msgstr "Please use it to log in, then change it immediately in the <strong>Security</strong> section of your profile."
 
-#: .\accounts\templates\accounts\emails\temp_password_email.html:118
+#: .\accounts\templates\accounts\emails\temp_password_email.html:119
 msgid "Se connecter à la plateforme"
 msgstr "Log in to the platform"
 
-#: .\accounts\templates\accounts\emails\temp_password_email.html:122
-msgid ""
-"Si vous n'êtes pas à l'origine de cette demande, vous pouvez ignorer cet "
-"e-mail en toute sécurité. Votre mot de passe actuel restera inchangé dès "
-"lors que vous ne vous connectez pas avec ce code."
-msgstr ""
-"If you did not request this, you can safely ignore this email. Your current "
-"password will remain unchanged as long as you don't log in with this code."
+#: .\accounts\templates\accounts\emails\temp_password_email.html:123
+msgid "Si vous n'êtes pas à l'origine de cette demande, vous pouvez ignorer cet e-mail en toute sécurité. Votre mot de passe actuel restera inchangé dès lors que vous ne vous connectez pas avec ce code."
+msgstr "If you did not request this, you can safely ignore this email. Your current password will remain unchanged as long as you don't log in with this code."
 
 #: .\accounts\templates\accounts\login.html:3
-#: .\accounts\templates\accounts\login.html:290 .\core\templates\base.html:261
-#: .\core\templates\base.html:472
+#: .\accounts\templates\accounts\login.html:294 .\core\templates\base.html:276
+#: .\core\templates\base.html:487
 msgid "Connexion"
 msgstr "Login"
 
@@ -895,12 +843,8 @@ msgid "La plateforme<br>éducative <em>nouvelle<br>génération.</em>"
 msgstr "The next-generation<br>educational <em>platform.</em>"
 
 #: .\accounts\templates\accounts\login.html:271
-msgid ""
-"Apprentissage structuré en IoT, assisté par une IA pédagogique locale et un "
-"système logistique intégré."
-msgstr ""
-"Structured IoT learning, assisted by local pedagogical AI and an integrated "
-"logistics system."
+msgid "Apprentissage structuré en IoT, assisté par une IA pédagogique locale et un système logistique intégré."
+msgstr "Structured IoT learning, assisted by local pedagogical AI and an integrated logistics system."
 
 #: .\accounts\templates\accounts\login.html:277
 #: .\accounts\templates\accounts\register.html:269
@@ -926,29 +870,29 @@ msgstr "Real-time progression analytics"
 msgid "Gestion d'ateliers intégrée"
 msgstr "Integrated workshop management"
 
-#: .\accounts\templates\accounts\login.html:289
+#: .\accounts\templates\accounts\login.html:293
 msgid "Bienvenue"
 msgstr "Welcome"
 
-#: .\accounts\templates\accounts\login.html:291
+#: .\accounts\templates\accounts\login.html:295
 msgid "Connectez-vous à votre espace personnel."
 msgstr "Log in to your personal space."
 
-#: .\accounts\templates\accounts\login.html:305
-#: .\accounts\templates\accounts\register.html:288
+#: .\accounts\templates\accounts\login.html:309
+#: .\accounts\templates\accounts\register.html:292
 #: .\core\templates\core\home.html:440
 msgid "Se connecter"
 msgstr "Log In"
 
-#: .\accounts\templates\accounts\login.html:310
+#: .\accounts\templates\accounts\login.html:314
 msgid "Mot de passe oublié ?"
 msgstr "Forgot password?"
 
-#: .\accounts\templates\accounts\login.html:311
+#: .\accounts\templates\accounts\login.html:315
 msgid "Pas encore de compte ?"
 msgstr "Don't have an account yet?"
 
-#: .\accounts\templates\accounts\login.html:311
+#: .\accounts\templates\accounts\login.html:315
 msgid "Créer un compte"
 msgstr "Sign Up"
 
@@ -962,7 +906,7 @@ msgid "Consultez vos alertes et l'activité de votre compte."
 msgstr "Check your alerts and account activity."
 
 #: .\accounts\templates\accounts\notifications.html:18
-#: .\core\templates\base.html:137
+#: .\core\templates\base.html:152
 msgid "Tout marquer comme lu"
 msgstr "Mark all as read"
 
@@ -971,7 +915,7 @@ msgid "Marquer comme lu"
 msgstr "Mark as read"
 
 #: .\accounts\templates\accounts\notifications.html:88
-#: .\core\templates\base.html:173
+#: .\core\templates\base.html:188
 msgid "Aucune notification"
 msgstr "No notifications"
 
@@ -994,11 +938,8 @@ msgid "Bienvenue sur EduTech&nbsp;!"
 msgstr "Welcome to EduTech&nbsp;!"
 
 #: .\accounts\templates\accounts\partials\onboarding_step.html:188
-msgid ""
-"Votre espace formateur est prêt. Voici ce que vous pouvez faire sur la "
-"plateforme."
-msgstr ""
-"Your instructor space is ready. Here is what you can do on the platform."
+msgid "Votre espace formateur est prêt. Voici ce que vous pouvez faire sur la plateforme."
+msgstr "Your instructor space is ready. Here is what you can do on the platform."
 
 #: .\accounts\templates\accounts\partials\onboarding_step.html:194
 msgid "Créer & gérer des cours"
@@ -1029,7 +970,7 @@ msgid "Commencer la configuration"
 msgstr "Start setup"
 
 #: .\accounts\templates\accounts\partials\onboarding_step.html:226
-#: .\accounts\views.py:531
+#: .\accounts\views.py:540
 msgid "Votre profil formateur"
 msgstr "Your instructor profile"
 
@@ -1063,7 +1004,7 @@ msgid "Enregistrer & continuer"
 msgstr "Save & continue"
 
 #: .\accounts\templates\accounts\partials\onboarding_step.html:272
-#: .\accounts\views.py:532
+#: .\accounts\views.py:541
 msgid "Créez votre premier cours"
 msgstr "Create your first course"
 
@@ -1111,15 +1052,13 @@ msgid "Passer pour l'instant"
 msgstr "Skip for now"
 
 #: .\accounts\templates\accounts\partials\onboarding_step.html:307
-#: .\accounts\views.py:533
+#: .\accounts\views.py:542
 msgid "Découvrez la logistique"
 msgstr "Discover logistics"
 
 #: .\accounts\templates\accounts\partials\onboarding_step.html:308
-msgid ""
-"Gérez vos ateliers et commandez le matériel nécessaire à vos formations."
-msgstr ""
-"Manage your workshops and order the equipment your training sessions need."
+msgid "Gérez vos ateliers et commandez le matériel nécessaire à vos formations."
+msgstr "Manage your workshops and order the equipment your training sessions need."
 
 #: .\accounts\templates\accounts\partials\onboarding_step.html:313
 #: .\core\templates\core\dashboard_formateur.html:501
@@ -1145,7 +1084,7 @@ msgid "Soumettez des demandes d'équipement à l'admin"
 msgstr "Submit equipment requests to the admin"
 
 #: .\accounts\templates\accounts\partials\onboarding_step.html:323
-#: .\core\templates\base.html:132
+#: .\core\templates\base.html:147
 msgid "Notifications"
 msgstr "Notifications"
 
@@ -1166,12 +1105,8 @@ msgid "Accéder à mon tableau de bord"
 msgstr "Go to my dashboard"
 
 #: .\accounts\templates\accounts\partials\onboarding_step.html:349
-msgid ""
-"Votre espace d'apprentissage personnalisé vous attend. Découvrez tout ce que"
-" la plateforme vous offre."
-msgstr ""
-"Your personalized learning space awaits. Discover everything the platform "
-"has to offer."
+msgid "Votre espace d'apprentissage personnalisé vous attend. Découvrez tout ce que la plateforme vous offre."
+msgstr "Your personalized learning space awaits. Discover everything the platform has to offer."
 
 #: .\accounts\templates\accounts\partials\onboarding_step.html:355
 msgid "Accéder à vos cours"
@@ -1202,13 +1137,12 @@ msgid "C'est parti !"
 msgstr "Let's go!"
 
 #: .\accounts\templates\accounts\partials\onboarding_step.html:387
-#: .\accounts\views.py:537
+#: .\accounts\views.py:546
 msgid "Complétez votre profil"
 msgstr "Complete your profile"
 
 #: .\accounts\templates\accounts\partials\onboarding_step.html:388
-msgid ""
-"Personnalisez votre espace pour une meilleure expérience d'apprentissage."
+msgid "Personnalisez votre espace pour une meilleure expérience d'apprentissage."
 msgstr "Personalize your space for a better learning experience."
 
 #: .\accounts\templates\accounts\partials\onboarding_step.html:433
@@ -1216,12 +1150,8 @@ msgid "Explorez vos cours !"
 msgstr "Explore your courses!"
 
 #: .\accounts\templates\accounts\partials\onboarding_step.html:434
-msgid ""
-"Vos formateurs ont préparé des contenus riches pour vous accompagner tout au"
-" long de votre parcours."
-msgstr ""
-"Your instructors have prepared rich content to support you throughout your "
-"journey."
+msgid "Vos formateurs ont préparé des contenus riches pour vous accompagner tout au long de votre parcours."
+msgstr "Your instructors have prepared rich content to support you throughout your journey."
 
 #: .\accounts\templates\accounts\partials\onboarding_step.html:440
 msgid "Cours & chapitres"
@@ -1258,8 +1188,8 @@ msgid "Aperçu du profil"
 msgstr "Profile overview"
 
 #: .\accounts\templates\accounts\partials\profile_nav.html:9
-#: .\accounts\templates\accounts\profile.html:95
-#: .\core\templates\base.html:110 .\core\templates\base.html:438
+#: .\accounts\templates\accounts\profile.html:95 .\core\templates\base.html:125
+#: .\core\templates\base.html:453
 msgid "Paramètres"
 msgstr "Settings"
 
@@ -1311,20 +1241,12 @@ msgid "Mot de passe temporaire envoyé"
 msgstr "Temporary password sent"
 
 #: .\accounts\templates\accounts\password_reset_done.html:14
-msgid ""
-"Nous vous avons envoyé un mot de passe temporaire par e-mail. Si le compte "
-"existe avec cette adresse, vous devriez recevoir le message sous peu."
-msgstr ""
-"We have sent you a temporary password by email. If an account exists with "
-"this address, you should receive the message shortly."
+msgid "Nous vous avons envoyé un mot de passe temporaire par e-mail. Si le compte existe avec cette adresse, vous devriez recevoir le message sous peu."
+msgstr "We have sent you a temporary password by email. If an account exists with this address, you should receive the message shortly."
 
 #: .\accounts\templates\accounts\password_reset_done.html:17
-msgid ""
-"Ce mot de passe temporaire expire après 10 minutes. Connectez-vous avec, "
-"puis changez-le dans les paramètres de votre profil."
-msgstr ""
-"This temporary password expires after 10 minutes. Log in with it, then "
-"change it in your profile settings."
+msgid "Ce mot de passe temporaire expire après 10 minutes. Connectez-vous avec, puis changez-le dans les paramètres de votre profil."
+msgstr "This temporary password expires after 10 minutes. Log in with it, then change it in your profile settings."
 
 #: .\accounts\templates\accounts\password_reset_done.html:19
 #: .\accounts\templates\accounts\password_reset_form.html:19
@@ -1337,12 +1259,8 @@ msgid "Réinitialisation du mot de passe"
 msgstr "Password reset"
 
 #: .\accounts\templates\accounts\password_reset_form.html:11
-msgid ""
-"Saisissez votre adresse e-mail. Nous vous enverrons un mot de passe "
-"temporaire valide pendant 10 minutes."
-msgstr ""
-"Enter your email address. We will send you a temporary password valid for 10"
-" minutes."
+msgid "Saisissez votre adresse e-mail. Nous vous enverrons un mot de passe temporaire valide pendant 10 minutes."
+msgstr "Enter your email address. We will send you a temporary password valid for 10 minutes."
 
 #: .\accounts\templates\accounts\pending.html:4
 msgid "Compte en attente"
@@ -1357,12 +1275,8 @@ msgid "Votre compte est en attente de validation"
 msgstr "Your account is pending validation"
 
 #: .\accounts\templates\accounts\pending.html:11
-msgid ""
-"Un administrateur scolaire doit maintenant attribuer votre classe et activer"
-" votre compte. Vous pourrez ensuite vous connecter normalement."
-msgstr ""
-"A school administrator must now assign your class and activate your account."
-" You will then be able to log in normally."
+msgid "Un administrateur scolaire doit maintenant attribuer votre classe et activer votre compte. Vous pourrez ensuite vous connecter normalement."
+msgstr "A school administrator must now assign your class and activate your account. You will then be able to log in normally."
 
 #: .\accounts\templates\accounts\pending.html:16
 msgid "Étape actuelle"
@@ -1378,8 +1292,7 @@ msgstr "Next step"
 
 #: .\accounts\templates\accounts\pending.html:21
 msgid "L'administrateur vous affecte à une classe puis active votre accès."
-msgstr ""
-"The administrator will assign you to a class and then activate your access."
+msgstr "The administrator will assign you to a class and then activate your access."
 
 #: .\accounts\templates\accounts\pending.html:26
 msgid "Aller à la connexion"
@@ -1452,8 +1365,7 @@ msgstr "Security & Password"
 msgid "Commencés"
 msgstr "Started"
 
-#: .\accounts\templates\accounts\profile.html:119
-#: .\apprentissage\models.py:581
+#: .\accounts\templates\accounts\profile.html:119 .\apprentissage\models.py:581
 #: .\core\templates\core\dashboard_student.html:915 .\logistics\models.py:69
 #: .\logistics\models.py:87 .\logistics\templates\logistics\ateliers.html:250
 #: .\logistics\templates\logistics\inventaire.html:320
@@ -1519,8 +1431,7 @@ msgstr "On %(d)s"
 msgid "Aucune visite récente."
 msgstr "No recent visits."
 
-#: .\accounts\templates\accounts\profile.html:221
-#: .\apprentissage\models.py:242
+#: .\accounts\templates\accounts\profile.html:221 .\apprentissage\models.py:242
 msgid "Chapitres validés"
 msgstr "Chapters completed"
 
@@ -1564,12 +1475,8 @@ msgid "Modifier mes informations"
 msgstr "Edit my information"
 
 #: .\accounts\templates\accounts\profile_edit.html:222
-msgid ""
-"Mettez à jour vos identifiants ou importez une nouvelle photo de profil pour"
-" personnaliser votre espace."
-msgstr ""
-"Update your credentials or upload a new profile photo to personalize your "
-"space."
+msgid "Mettez à jour vos identifiants ou importez une nouvelle photo de profil pour personnaliser votre espace."
+msgstr "Update your credentials or upload a new profile photo to personalize your space."
 
 #: .\accounts\templates\accounts\profile_edit.html:241
 #: .\apprentissage\templates\apprentissage\wizard\step2_image.html:17
@@ -1597,8 +1504,8 @@ msgid "Aperçu de la nouvelle image"
 msgstr "Preview of the new image"
 
 #: .\accounts\templates\accounts\register.html:3
-#: .\accounts\templates\accounts\register.html:281
-#: .\core\templates\base.html:258
+#: .\accounts\templates\accounts\register.html:285
+#: .\core\templates\base.html:273
 msgid "Inscription"
 msgstr "Sign Up"
 
@@ -1607,22 +1514,18 @@ msgid "Rejoignez la<br>plateforme <em>nouvelle<br>génération.</em>"
 msgstr "Join the next-generation<br>platform."
 
 #: .\accounts\templates\accounts\register.html:263
-msgid ""
-"Inscrivez-vous pour accéder à vos cours, interagir avec le tuteur IA et "
-"soumettre vos travaux."
-msgstr ""
-"Sign up to access your courses, interact with the AI tutor, and submit your "
-"work."
+msgid "Inscrivez-vous pour accéder à vos cours, interagir avec le tuteur IA et soumettre vos travaux."
+msgstr "Sign up to access your courses, interact with the AI tutor, and submit your work."
 
-#: .\accounts\templates\accounts\register.html:280
+#: .\accounts\templates\accounts\register.html:284
 msgid "Nouveau Compte"
 msgstr "New Account"
 
-#: .\accounts\templates\accounts\register.html:282
+#: .\accounts\templates\accounts\register.html:286
 msgid "Créez votre compte EduTech pour commencer."
 msgstr "Create your EduTech account to get started."
 
-#: .\accounts\templates\accounts\register.html:288
+#: .\accounts\templates\accounts\register.html:292
 msgid "Déjà un compte ?"
 msgstr "Already have an account?"
 
@@ -1639,24 +1542,16 @@ msgid "Activer le mode réseau local déconnecté"
 msgstr "Enable disconnected local network mode"
 
 #: .\accounts\templates\accounts\system_settings.html:100
-msgid ""
-"L'activation empêche les tentatives d'envoi d'e-mails (pour éviter les "
-"crashs) et force l'IA locale par défaut."
-msgstr ""
-"Enabling this prevents email sending attempts (to avoid crashes) and forces "
-"the local AI by default."
+msgid "L'activation empêche les tentatives d'envoi d'e-mails (pour éviter les crashs) et force l'IA locale par défaut."
+msgstr "Enabling this prevents email sending attempts (to avoid crashes) and forces the local AI by default."
 
 #: .\accounts\templates\accounts\system_settings.html:106
 msgid "Fournisseur d'Intelligence Artificielle"
 msgstr "Artificial Intelligence Provider"
 
 #: .\accounts\templates\accounts\system_settings.html:108
-msgid ""
-"Si vous choisissez \"Automatique\", le système vérifiera la connexion "
-"Internet avant de décider."
-msgstr ""
-"If you choose \"Automatic\", the system will check the Internet connection "
-"before deciding."
+msgid "Si vous choisissez \"Automatique\", le système vérifiera la connexion Internet avant de décider."
+msgstr "If you choose \"Automatic\", the system will check the Internet connection before deciding."
 
 #: .\accounts\templates\accounts\system_settings.html:114
 msgid "Configuration Vidéo"
@@ -1676,10 +1571,8 @@ msgstr "New student registration"
 
 #: .\accounts\views.py:42
 #, python-format
-msgid ""
-"L'étudiant %(nom)s s'est inscrit et attend d'être associé à une classe."
-msgstr ""
-"Student %(nom)s has registered and is waiting to be assigned to a class."
+msgid "L'étudiant %(nom)s s'est inscrit et attend d'être associé à une classe."
+msgstr "Student %(nom)s has registered and is waiting to be assigned to a class."
 
 #: .\accounts\views.py:84
 msgid "Email et mot de passe sont requis."
@@ -1755,40 +1648,31 @@ msgstr "View courses"
 msgid "Votre mot de passe temporaire - EduTech"
 msgstr "Your temporary password - EduTech"
 
-#: .\accounts\views.py:475
-#| msgid ""
-#| "Ce mot de passe temporaire a expiré (validité de 10 heures). "
-#| "L'administrateur doit en générer un nouveau."
-msgid ""
-"Ce mot de passe temporaire a expiré (validité de 10 minutes). Veuillez "
-"effectuer une nouvelle demande."
-msgstr ""
-"This temporary password has expired (valid for 10 minutes). Please request a"
-" new one."
+#: .\accounts\views.py:484
+msgid "Ce mot de passe temporaire a expiré (validité de 10 minutes). Veuillez effectuer une nouvelle demande."
+msgstr "This temporary password has expired (valid for 10 minutes). Please request a new one."
 
-#: .\accounts\views.py:481
-msgid ""
-"Vous êtes connecté avec un mot de passe temporaire. Veuillez le modifier ci-"
-"dessous."
+#: .\accounts\views.py:490
+msgid "Vous êtes connecté avec un mot de passe temporaire. Veuillez le modifier ci-dessous."
 msgstr "You are logged in with a temporary password. Please change it below."
 
-#: .\accounts\views.py:518
+#: .\accounts\views.py:527
 msgid "Votre mot de passe a été mis à jour avec succès."
 msgstr "Your password has been updated successfully."
 
-#: .\accounts\views.py:538
+#: .\accounts\views.py:547
 msgid "Explorez les cours"
 msgstr "Explore the courses"
 
-#: .\accounts\views.py:637
+#: .\accounts\views.py:646
 msgid "Configuration système mise à jour avec succès."
 msgstr "System configuration updated successfully."
 
-#: .\accounts\views.py:657
+#: .\accounts\views.py:666
 msgid "ID utilisateur manquant."
 msgstr "Missing user ID."
 
-#: .\accounts\views.py:662
+#: .\accounts\views.py:671
 msgid "Utilisateur introuvable."
 msgstr "User not found."
 
@@ -1898,12 +1782,12 @@ msgstr "Creator"
 #: .\apprentissage\models.py:74 .\apprentissage\models.py:90
 #: .\apprentissage\models.py:236 .\apprentissage\models.py:500
 #: .\apprentissage\models.py:596 .\apprentissage\models.py:661
-#: .\apprentissage\templates\apprentissage\analytics_formateur.html:322
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:336
 #: .\apprentissage\templates\apprentissage\devoir_detail.html:475
 #: .\apprentissage\templates\apprentissage\liste_cours.html:485
 #: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:552
 #: .\apprentissage\templates\apprentissage\partials\detail_cours.html:5
-#: .\core\templates\base.html:456
+#: .\core\templates\base.html:471
 #: .\core\templates\core\dashboard_formateur.html:481
 msgid "Cours"
 msgstr "Courses"
@@ -1933,12 +1817,8 @@ msgid "Vidéo hors-ligne (MP4)"
 msgstr "Offline video (MP4)"
 
 #: .\apprentissage\models.py:119
-msgid ""
-"Utilisée automatiquement à la place du lien YouTube quand l'élève n'a pas de"
-" connexion internet."
-msgstr ""
-"Used automatically instead of the YouTube link when the student has no "
-"internet connection."
+msgid "Utilisée automatiquement à la place du lien YouTube quand l'élève n'a pas de connexion internet."
+msgstr "Used automatically instead of the YouTube link when the student has no internet connection."
 
 #: .\apprentissage\models.py:125
 msgid "Chemin Playlist HLS"
@@ -2238,21 +2118,16 @@ msgid "Mises à jour satellite"
 msgstr "Satellite updates"
 
 #: .\apprentissage\satellite.py:129
-msgid ""
-"Empreinte différente du manifeste satellite (fichier corrompu ou incomplet)."
-msgstr ""
-"Checksum does not match the satellite manifest (corrupt or incomplete file)."
+msgid "Empreinte différente du manifeste satellite (fichier corrompu ou incomplet)."
+msgstr "Checksum does not match the satellite manifest (corrupt or incomplete file)."
 
 #: .\apprentissage\satellite.py:164
 msgid "Import échoué."
 msgstr "Import failed."
 
 #: .\apprentissage\satellite.py:188
-msgid ""
-"Le fichier a été retiré de la boîte de réception satellite avant son "
-"application."
-msgstr ""
-"The file was removed from the satellite inbox before it could be applied."
+msgid "Le fichier a été retiré de la boîte de réception satellite avant son application."
+msgstr "The file was removed from the satellite inbox before it could be applied."
 
 #: .\apprentissage\templates\apprentissage\analytics_admin.html:11
 msgid "Tableau de bord Analytics — Administrateur"
@@ -2302,20 +2177,20 @@ msgstr "Active Administrators:"
 msgid "Analytics Formateur"
 msgstr "Instructor Analytics"
 
-#: .\apprentissage\templates\apprentissage\analytics_formateur.html:245
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:259
 #: .\core\templates\core\dashboard_formateur.html:677
 msgid "Analytics"
 msgstr "Analytics"
 
-#: .\apprentissage\templates\apprentissage\analytics_formateur.html:246
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:260
 msgid "Tableau de bord"
 msgstr "Dashboard"
 
-#: .\apprentissage\templates\apprentissage\analytics_formateur.html:247
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:261
 msgid "Vue d'ensemble de la progression et des performances de vos élèves."
 msgstr "Overview of your students' progress and performance."
 
-#: .\apprentissage\templates\apprentissage\analytics_formateur.html:251
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:265
 #: .\apprentissage\templates\apprentissage\devoir_detail.html:262
 #: .\apprentissage\templates\apprentissage\espace_formateur.html:3
 #: .\apprentissage\templates\apprentissage\espace_formateur.html:619
@@ -2324,75 +2199,75 @@ msgstr "Overview of your students' progress and performance."
 msgid "Espace Formateur"
 msgstr "Instructor Space"
 
-#: .\apprentissage\templates\apprentissage\analytics_formateur.html:254
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:268
 msgid "Notes détaillées"
 msgstr "Detailed Grades"
 
-#: .\apprentissage\templates\apprentissage\analytics_formateur.html:265
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:279
 #: .\core\templates\core\dashboard_formateur.html:484
 msgid "Cours créés"
 msgstr "Courses created"
 
-#: .\apprentissage\templates\apprentissage\analytics_formateur.html:272
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:286
 msgid "Élèves uniques"
 msgstr "Unique Students"
 
-#: .\apprentissage\templates\apprentissage\analytics_formateur.html:279
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:293
 msgid "Moyenne QCM Globale"
 msgstr "Overall Quiz Average"
 
-#: .\apprentissage\templates\apprentissage\analytics_formateur.html:286
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:300
 #: .\apprentissage\templates\apprentissage\formateur_notes.html:327
 msgid "En difficulté"
 msgstr "Struggling"
 
-#: .\apprentissage\templates\apprentissage\analytics_formateur.html:295
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:309
 #, python-format
 msgid "Complétion moyenne par cours (%%)"
 msgstr "Average Completion by Course (%%)"
 
-#: .\apprentissage\templates\apprentissage\analytics_formateur.html:303
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:317
 msgid "Répartition globale des progressions"
 msgstr "Overall Progress Distribution"
 
-#: .\apprentissage\templates\apprentissage\analytics_formateur.html:317
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:331
 msgid "Détails de vos cours"
 msgstr "Your Course Details"
 
-#: .\apprentissage\templates\apprentissage\analytics_formateur.html:323
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:337
 msgid "Inscrits"
 msgstr "Enrolled"
 
-#: .\apprentissage\templates\apprentissage\analytics_formateur.html:324
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:338
 msgid "Complétion"
 msgstr "Completion"
 
-#: .\apprentissage\templates\apprentissage\analytics_formateur.html:325
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:339
 msgid "Moy. QCM"
 msgstr "Avg. Quiz"
 
-#: .\apprentissage\templates\apprentissage\analytics_formateur.html:350
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:364
 msgid "Aucun cours créé pour le moment."
 msgstr "No courses created yet."
 
-#: .\apprentissage\templates\apprentissage\analytics_formateur.html:361
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:375
 msgid "Élèves en difficulté"
 msgstr "Struggling Students"
 
-#: .\apprentissage\templates\apprentissage\analytics_formateur.html:371
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:385
 #, python-format
 msgid "%(p)s%% complet"
 msgstr "%(p)s%% complete"
 
-#: .\apprentissage\templates\apprentissage\analytics_formateur.html:380
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:394
 msgid "Excellent !"
 msgstr "Excellent!"
 
-#: .\apprentissage\templates\apprentissage\analytics_formateur.html:381
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:395
 msgid "Aucun élève sous le seuil d'alerte."
 msgstr "No students below the alert threshold."
 
-#: .\apprentissage\templates\apprentissage\analytics_formateur.html:411
+#: .\apprentissage\templates\apprentissage\analytics_formateur.html:425
 #, python-format
 msgid "Complétion (%%)"
 msgstr "Completion (%%)"
@@ -2568,7 +2443,7 @@ msgstr "New course"
 
 #: .\apprentissage\templates\apprentissage\cours_form.html:273
 #: .\apprentissage\templates\apprentissage\devoirs_liste.html:11
-#: .\core\templates\base.html:70 .\core\templates\core\home.html:511
+#: .\core\templates\base.html:85 .\core\templates\core\home.html:511
 msgid "Apprentissage"
 msgstr "Learning"
 
@@ -2625,12 +2500,8 @@ msgid "Ce cours n'est pas encore actif"
 msgstr "This course is not yet active"
 
 #: .\apprentissage\templates\apprentissage\cours_inactif.html:14
-msgid ""
-"Le formateur travaille actuellement sur ce contenu. Il sera disponible ici "
-"dès qu'il aura été publié. Revenez plus tard !"
-msgstr ""
-"The instructor is currently working on this content. It will be available "
-"here once published. Check back later!"
+msgid "Le formateur travaille actuellement sur ce contenu. Il sera disponible ici dès qu'il aura été publié. Revenez plus tard !"
+msgstr "The instructor is currently working on this content. It will be available here once published. Check back later!"
 
 #: .\apprentissage\templates\apprentissage\cours_inactif.html:18
 msgid "Retour au catalogue"
@@ -2841,11 +2712,8 @@ msgid "Aucun devoir pour le moment"
 msgstr "No assignments yet"
 
 #: .\apprentissage\templates\apprentissage\devoirs_liste.html:246
-msgid ""
-"Vos formateurs n'ont pas encore publié de devoirs pour vos cours actuels."
-msgstr ""
-"Your instructors haven't published any assignments for your current courses "
-"yet."
+msgid "Vos formateurs n'ont pas encore publié de devoirs pour vos cours actuels."
+msgstr "Your instructors haven't published any assignments for your current courses yet."
 
 #: .\apprentissage\templates\apprentissage\devoirs_liste.html:248
 msgid "Aucun devoir dans cette catégorie"
@@ -2865,11 +2733,8 @@ msgid "Bienvenue, <span>%(nom)s</span>"
 msgstr "Welcome, <span>%(nom)s</span>"
 
 #: .\apprentissage\templates\apprentissage\espace_formateur.html:624
-msgid ""
-"Gérez vos cours, suivez vos devoirs et pilotez l'apprentissage de vos "
-"étudiants."
-msgstr ""
-"Manage your courses, track assignments, and drive your students' learning."
+msgid "Gérez vos cours, suivez vos devoirs et pilotez l'apprentissage de vos étudiants."
+msgstr "Manage your courses, track assignments, and drive your students' learning."
 
 #: .\apprentissage\templates\apprentissage\espace_formateur.html:629
 #: .\core\templates\core\dashboard_formateur.html:450
@@ -2949,24 +2814,16 @@ msgstr "Manage content"
 
 #: .\apprentissage\templates\apprentissage\espace_formateur.html:737
 #, python-format
-msgid ""
-"⚠️ Supprimer définitivement le cours « %(titre)s » ?\\n\\nCette action est "
-"irréversible."
-msgstr ""
-"⚠️ Permanently delete the course \"%(titre)s\"?\\n\\nThis action cannot be "
-"undone."
+msgid "⚠️ Supprimer définitivement le cours « %(titre)s » ?\\n\\nCette action est irréversible."
+msgstr "⚠️ Permanently delete the course \"%(titre)s\"?\\n\\nThis action cannot be undone."
 
 #: .\apprentissage\templates\apprentissage\espace_formateur.html:748
 msgid "Aucun cours pour le moment"
 msgstr "No courses yet"
 
 #: .\apprentissage\templates\apprentissage\espace_formateur.html:749
-msgid ""
-"Commencez par créer votre premier cours et partagez votre savoir avec vos "
-"étudiants."
-msgstr ""
-"Start by creating your first course and share your knowledge with your "
-"students."
+msgid "Commencez par créer votre premier cours et partagez votre savoir avec vos étudiants."
+msgstr "Start by creating your first course and share your knowledge with your students."
 
 #: .\apprentissage\templates\apprentissage\espace_formateur.html:791
 msgid "Reçues"
@@ -2992,12 +2849,8 @@ msgid "Aucun devoir créé"
 msgstr "No assignment created"
 
 #: .\apprentissage\templates\apprentissage\espace_formateur.html:814
-msgid ""
-"Pour assigner des devoirs, rendez-vous dans la gestion de l'un de vos cours "
-"puis ouvrez un chapitre."
-msgstr ""
-"To assign work, go to the management page of one of your courses and open a "
-"chapter."
+msgid "Pour assigner des devoirs, rendez-vous dans la gestion de l'un de vos cours puis ouvrez un chapitre."
+msgstr "To assign work, go to the management page of one of your courses and open a chapter."
 
 #: .\apprentissage\templates\apprentissage\espace_formateur.html:830
 #, python-format
@@ -3030,12 +2883,8 @@ msgid "Aucun export en cours"
 msgstr "No export in progress"
 
 #: .\apprentissage\templates\apprentissage\espace_formateur.html:866
-msgid ""
-"Sélectionnez des cours dans l'onglet \"Mes Cours\" et cliquez sur "
-"\"Exporter\" pour générer des fichiers ZIP."
-msgstr ""
-"Select courses in the \"My Courses\" tab and click \"Export\" to generate "
-"ZIP files."
+msgid "Sélectionnez des cours dans l'onglet \"Mes Cours\" et cliquez sur \"Exporter\" pour générer des fichiers ZIP."
+msgstr "Select courses in the \"My Courses\" tab and click \"Export\" to generate ZIP files."
 
 #: .\apprentissage\templates\apprentissage\espace_formateur.html:878
 msgid "Importer un Cours"
@@ -3086,12 +2935,8 @@ msgid "Lancer l'Exportation"
 msgstr "Start Export"
 
 #: .\apprentissage\templates\apprentissage\espace_formateur.html:1046
-msgid ""
-"Veuillez sélectionner au moins un cours à exporter en cochant la case sur "
-"son image."
-msgstr ""
-"Please select at least one course to export by checking the box on its "
-"image."
+msgid "Veuillez sélectionner au moins un cours à exporter en cochant la case sur son image."
+msgstr "Please select at least one course to export by checking the box on its image."
 
 #: .\apprentissage\templates\apprentissage\espace_formateur.html:1057
 msgid "Vous avez sélectionné"
@@ -3148,11 +2993,8 @@ msgid "Erreur : Impossible d'ouvrir l'archive ZIP."
 msgstr "Error: Unable to open the ZIP archive."
 
 #: .\apprentissage\templates\apprentissage\espace_formateur.html:1347
-msgid ""
-"L'importation continue en arrière-plan. Vous pouvez suivre l'historique."
-msgstr ""
-"The import continues in the background. You can follow its progress in the "
-"history."
+msgid "L'importation continue en arrière-plan. Vous pouvez suivre l'historique."
+msgstr "The import continues in the background. You can follow its progress in the history."
 
 #: .\apprentissage\templates\apprentissage\espace_formateur.html:1372
 msgid "Traitement de la base de données..."
@@ -3240,12 +3082,8 @@ msgid "étudiants"
 msgstr "students"
 
 #: .\apprentissage\templates\apprentissage\formateur_notes.html:273
-msgid ""
-"Scores QCM agrégés, progression par cours et détection des élèves en "
-"difficulté."
-msgstr ""
-"Aggregated quiz scores, course progress, and detection of struggling "
-"students."
+msgid "Scores QCM agrégés, progression par cours et détection des élèves en difficulté."
+msgstr "Aggregated quiz scores, course progress, and detection of struggling students."
 
 #: .\apprentissage\templates\apprentissage\formateur_notes.html:277
 #: .\apprentissage\templates\apprentissage\mes_notes.html:27
@@ -3298,12 +3136,8 @@ msgid "Aucun étudiant trouvé"
 msgstr "No students found"
 
 #: .\apprentissage\templates\apprentissage\formateur_notes.html:422
-msgid ""
-"Aucun élève ne correspond aux critères sélectionnés ou aucun élève n'a "
-"débuté vos cours."
-msgstr ""
-"No students match the selected criteria, or no students have started your "
-"courses."
+msgid "Aucun élève ne correspond aux critères sélectionnés ou aucun élève n'a débuté vos cours."
+msgstr "No students match the selected criteria, or no students have started your courses."
 
 #: .\apprentissage\templates\apprentissage\gerer_chapitre.html:3
 msgid "Gérer le chapitre"
@@ -3347,12 +3181,8 @@ msgid "Catalogue de Cours"
 msgstr "Course Catalog"
 
 #: .\apprentissage\templates\apprentissage\liste_cours.html:479
-msgid ""
-"Explorez nos formations en Intelligence Artificielle, IoT et Robotique. "
-"Apprenez à votre rythme, guidé par nos experts."
-msgstr ""
-"Explore our courses in Artificial Intelligence, IoT, and Robotics. Learn at "
-"your own pace, guided by our experts."
+msgid "Explorez nos formations en Intelligence Artificielle, IoT et Robotique. Apprenez à votre rythme, guidé par nos experts."
+msgstr "Explore our courses in Artificial Intelligence, IoT, and Robotics. Learn at your own pace, guided by our experts."
 
 #: .\apprentissage\templates\apprentissage\liste_cours.html:490
 #: .\core\templates\core\partials\admin_structure.html:104
@@ -3375,8 +3205,7 @@ msgstr "All levels"
 #: .\apprentissage\templates\apprentissage\liste_cours.html:548
 #, python-format
 msgid "<strong>%(counter)s</strong> cours correspond à votre recherche."
-msgid_plural ""
-"<strong>%(counter)s</strong> cours correspondent à votre recherche."
+msgid_plural "<strong>%(counter)s</strong> cours correspondent à votre recherche."
 msgstr[0] "<strong>%(counter)s</strong> course matches your search."
 msgstr[1] "<strong>%(counter)s</strong> courses match your search."
 
@@ -3437,8 +3266,7 @@ msgid "Aucune évaluation pour le moment"
 msgstr "No assessment yet"
 
 #: .\apprentissage\templates\apprentissage\mes_notes.html:114
-msgid ""
-"Commencez un cours et passez des QCM pour voir vos notes apparaître ici."
+msgid "Commencez un cours et passez des QCM pour voir vos notes apparaître ici."
 msgstr "Start a course and take quizzes to see your grades appear here."
 
 #: .\apprentissage\templates\apprentissage\partials\chapitre_detail.html:17
@@ -3577,12 +3405,8 @@ msgid "Source"
 msgstr "Source"
 
 #: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:658
-msgid ""
-"Vidéo indisponible hors-ligne — connectez-vous à internet, ou demandez à "
-"votre formateur d'ajouter une version locale."
-msgstr ""
-"Video unavailable offline — connect to the internet, or ask your instructor "
-"to add a local version."
+msgid "Vidéo indisponible hors-ligne — connectez-vous à internet, ou demandez à votre formateur d'ajouter une version locale."
+msgstr "Video unavailable offline — connect to the internet, or ask your instructor to add a local version."
 
 #: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:663
 msgid "Aucune vidéo disponible pour ce chapitre."
@@ -3611,8 +3435,7 @@ msgid "Évaluer mes connaissances"
 msgstr "Test my knowledge"
 
 #: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:746
-msgid ""
-"Testez votre compréhension de ce chapitre avec les outils IA interactifs."
+msgid "Testez votre compréhension de ce chapitre avec les outils IA interactifs."
 msgstr "Test your understanding of this chapter with interactive AI tools."
 
 #: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:750
@@ -3621,14 +3444,8 @@ msgstr "Take the quiz"
 
 #: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:753
 #, python-format
-msgid ""
-"Un questionnaire interactif auto-corrigé généré en temps réel par l'IA à "
-"partir du contenu des PDF du chapitre. Requis pour valider le chapitre "
-"(score minimal : 80%%)."
-msgstr ""
-"An interactive, self-graded quiz generated in real time by AI from the "
-"chapter's PDF content. Required to validate the chapter (minimum score: "
-"80%%)."
+msgid "Un questionnaire interactif auto-corrigé généré en temps réel par l'IA à partir du contenu des PDF du chapitre. Requis pour valider le chapitre (score minimal : 80%%)."
+msgstr "An interactive, self-graded quiz generated in real time by AI from the chapter's PDF content. Required to validate the chapter (minimum score: 80%%)."
 
 #: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:758
 msgid "mode socratique"
@@ -3636,20 +3453,15 @@ msgstr "Socratic mode"
 
 #: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:761
 #, python-format
-msgid ""
-"Une discussion interactive où l'IA vous pose des questions et vous guide "
-"étape par étape. Atteindre 100%% de maîtrise valide également le chapitre !"
-msgstr ""
-"An interactive discussion where the AI asks you questions and guides you "
-"step by step. Reaching 100%% mastery also validates the chapter!"
+msgid "Une discussion interactive où l'IA vous pose des questions et vous guide étape par étape. Atteindre 100%% de maîtrise valide également le chapitre !"
+msgstr "An interactive discussion where the AI asks you questions and guides you step by step. Reaching 100%% mastery also validates the chapter!"
 
 #: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:769
 msgid "Validation du chapitre"
 msgstr "Chapter validation"
 
 #: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:770
-msgid ""
-"Validez ce chapitre pour mettre à jour votre progression dans le cours."
+msgid "Validez ce chapitre pour mettre à jour votre progression dans le cours."
 msgstr "Validate this chapter to update your progress in the course."
 
 #: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:781
@@ -3679,12 +3491,8 @@ msgstr "Sources used"
 
 #: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:842
 #, python-format
-msgid ""
-"Bonjour ! Je suis connecté au contexte du chapitre "
-"<strong>%(titre)s</strong>. Que souhaitez-vous approfondir ?"
-msgstr ""
-"Hello! I am connected to the context of the chapter "
-"<strong>%(titre)s</strong>. What would you like to explore?"
+msgid "Bonjour ! Je suis connecté au contexte du chapitre <strong>%(titre)s</strong>. Que souhaitez-vous approfondir ?"
+msgstr "Hello! I am connected to the context of the chapter <strong>%(titre)s</strong>. What would you like to explore?"
 
 #: .\apprentissage\templates\apprentissage\partials\detail_chapitre.html:855
 msgid "L'assistant réfléchit..."
@@ -3796,9 +3604,7 @@ msgid "3. RAG Prêt"
 msgstr "3. RAG Ready"
 
 #: .\apprentissage\templates\apprentissage\partials\document_form.html:147
-msgid ""
-"Extraction du texte PDF & génération des embeddings vectoriels en cours. "
-"Veuillez patienter..."
+msgid "Extraction du texte PDF & génération des embeddings vectoriels en cours. Veuillez patienter..."
 msgstr "Extracting PDF text & generating vector embeddings. Please wait..."
 
 #: .\apprentissage\templates\apprentissage\partials\document_form.html:165
@@ -3832,8 +3638,7 @@ msgid "Aucun cours trouvé"
 msgstr "No courses found"
 
 #: .\apprentissage\templates\apprentissage\partials\liste_cours.html:63
-msgid ""
-"Essayez de modifier votre recherche ou de sélectionner un niveau différent."
+msgid "Essayez de modifier votre recherche ou de sélectionner un niveau différent."
 msgstr "Try adjusting your search or selecting a different level."
 
 #: .\apprentissage\templates\apprentissage\partials\satellite_updates_card.html:18
@@ -3913,8 +3718,7 @@ msgstr "First Chapter"
 
 #: .\apprentissage\templates\apprentissage\wizard\step3_chapitre.html:6
 #, python-format
-msgid ""
-"Définissez le premier module de votre cours <strong>%(titre)s</strong>."
+msgid "Définissez le premier module de votre cours <strong>%(titre)s</strong>."
 msgstr "Define the first module of your course <strong>%(titre)s</strong>."
 
 #: .\apprentissage\templates\apprentissage\wizard\step3_chapitre.html:14
@@ -3942,12 +3746,8 @@ msgid "Création du chapitre..."
 msgstr "Creating chapter..."
 
 #: .\apprentissage\templates\apprentissage\wizard\step4_pdfs.html:6
-msgid ""
-"Ajoutez vos PDF. Notre IA (Tuteur RAG) va les indexer automatiquement en "
-"arrière-plan."
-msgstr ""
-"Add your PDFs. Our AI (RAG Tutor) will index them automatically in the "
-"background."
+msgid "Ajoutez vos PDF. Notre IA (Tuteur RAG) va les indexer automatiquement en arrière-plan."
+msgstr "Add your PDFs. Our AI (RAG Tutor) will index them automatically in the background."
 
 #: .\apprentissage\templates\apprentissage\wizard\step4_pdfs.html:14
 msgid "Fichiers PDF (Plusieurs possibles)"
@@ -4053,9 +3853,7 @@ msgid "Ce cours ne correspond pas à votre niveau actuel."
 msgstr "This course does not match your current level."
 
 #: .\apprentissage\views.py:694
-msgid ""
-"Vous devez d'abord réussir le QCM de ce chapitre pour le marquer comme "
-"terminé."
+msgid "Vous devez d'abord réussir le QCM de ce chapitre pour le marquer comme terminé."
 msgstr "You must first pass this chapter's quiz to mark it as completed."
 
 #: .\apprentissage\views.py:863
@@ -4070,8 +3868,7 @@ msgstr "Assignment graded: %(devoir)s"
 #: .\apprentissage\views.py:1036
 #, python-format
 msgid "Votre devoir '%(devoir)s' a été corrigé. Note : %(note)s/%(max)s."
-msgstr ""
-"Your assignment '%(devoir)s' has been graded. Grade: %(note)s/%(max)s."
+msgstr "Your assignment '%(devoir)s' has been graded. Grade: %(note)s/%(max)s."
 
 #: .\apprentissage\views.py:1161
 msgid "Ce devoir ne correspond pas à votre niveau."
@@ -4246,47 +4043,69 @@ msgstr "English"
 msgid "Plateforme Éducative IoT & IA"
 msgstr "IoT & AI Educational Platform"
 
-#: .\core\templates\base.html:80 .\core\templates\base.html:100
+#: .\core\templates\base.html:95 .\core\templates\base.html:115
 #: .\core\templates\core\dashboard_formateur.html:511
 msgid "Logistique"
 msgstr "Logistics"
 
-#: .\core\templates\base.html:87
+#: .\core\templates\base.html:102
 #: .\core\templates\core\dashboard_student.html:794
 msgid "Calendrier"
 msgstr "Calendar"
 
-#: .\core\templates\base.html:179
+#: .\core\templates\base.html:194
 msgid "Voir toutes les notifications"
 msgstr "View all notifications"
 
-#: .\core\templates\base.html:220
+#: .\core\templates\base.html:235
 msgid "Admin"
 msgstr "Admin"
 
-#: .\core\templates\base.html:241
+#: .\core\templates\base.html:256
 msgid "Paramètres du profil"
 msgstr "Profile Settings"
 
-#: .\core\templates\base.html:251
+#: .\core\templates\base.html:266
 msgid "Déconnexion"
 msgstr "Logout"
 
-#: .\core\templates\base.html:428
+#: .\core\templates\base.html:443
 msgid "Structure"
 msgstr "Structure"
 
-#: .\core\templates\base.html:444 .\core\templates\base.html:479
+#: .\core\templates\base.html:459 .\core\templates\base.html:494
 msgid "Menu"
 msgstr "Menu"
 
-#: .\core\templates\base.html:462
+#: .\core\templates\base.html:477
 msgid "Agenda"
 msgstr "Agenda"
 
-#: .\core\templates\base.html:467
+#: .\core\templates\base.html:482
 msgid "Profil"
 msgstr "Profile"
+
+#: .\core\templates\base.html:501
+msgid "Installer l’application"
+msgstr "Install the app"
+
+#: .\core\templates\base.html:512
+msgid "Installer EduTech"
+msgstr "Install EduTech"
+
+#: .\core\templates\base.html:513
+msgid "Accès plein écran, hors-ligne, depuis l’écran d’accueil."
+msgstr "Full-screen, offline access, right from your home screen."
+
+#: .\core\templates\base.html:518
+msgid "Installer"
+msgstr "Install"
+
+#: .\core\templates\base.html:520
+#: .\core\templates\core\partials\classe_form.html:195
+#: .\core\templates\core\partials\niveau_form.html:187
+msgid "Fermer"
+msgstr "Close"
 
 #: .\core\templates\core\classe_students_page.html:4
 #, python-format
@@ -4365,20 +4184,12 @@ msgid "Assigner"
 msgstr "Assign"
 
 #: .\core\templates\core\classe_students_page.html:125
-msgid ""
-"Voulez-vous vraiment générer un nouveau mot de passe aléatoire pour cet "
-"utilisateur ?"
-msgstr ""
-"Are you sure you want to generate a new random password for this user?"
+msgid "Voulez-vous vraiment générer un nouveau mot de passe aléatoire pour cet utilisateur ?"
+msgstr "Are you sure you want to generate a new random password for this user?"
 
 #: .\core\templates\core\classe_students_page.html:142
-msgid ""
-"IMPORTANT: Veuillez communiquer ce mot de passe à l'utilisateur. Il devra "
-"obligatoirement le changer lors de sa première connexion (Valable 10 "
-"heures)."
-msgstr ""
-"IMPORTANT: Please share this password with the user. They will be required "
-"to change it on their first login (Valid for 10 hours)."
+msgid "IMPORTANT: Veuillez communiquer ce mot de passe à l'utilisateur. Il devra obligatoirement le changer lors de sa première connexion (Valable 10 heures)."
+msgstr "IMPORTANT: Please share this password with the user. They will be required to change it on their first login (Valid for 10 hours)."
 
 #: .\core\templates\core\classe_students_page.html:149
 msgid "Erreur lors de la requête."
@@ -4575,11 +4386,8 @@ msgid "Votre espace est prêt"
 msgstr "Your space is ready"
 
 #: .\core\templates\core\dashboard_formateur.html:588
-msgid ""
-"Vous n'avez pas encore de cours. Créez votre premier module en quelques "
-"étapes."
-msgstr ""
-"You don't have any courses yet. Create your first module in a few steps."
+msgid "Vous n'avez pas encore de cours. Créez votre premier module en quelques étapes."
+msgstr "You don't have any courses yet. Create your first module in a few steps."
 
 #: .\core\templates\core\dashboard_formateur.html:599
 msgid "Mes Ateliers"
@@ -4634,7 +4442,7 @@ msgid "Rejeté"
 msgstr "Rejected"
 
 #: .\core\templates\core\dashboard_formateur.html:711
-#: .\logistics\templates\logistics\emails\demande_traitee.html:185
+#: .\logistics\templates\logistics\emails\demande_traitee.html:186
 msgid "Retourné"
 msgstr "Returned"
 
@@ -4660,12 +4468,8 @@ msgid "Faire une demande"
 msgstr "Make a request"
 
 #: .\core\templates\core\dashboard_formateur.html:779
-msgid ""
-"Les exports ZIP s'exécutent en arrière-plan. (Vérifiez le dossier "
-"exports/cours/ de la plateforme)"
-msgstr ""
-"ZIP exports run in the background. (Check the platform's exports/courses/ "
-"folder)"
+msgid "Les exports ZIP s'exécutent en arrière-plan. (Vérifiez le dossier exports/cours/ de la plateforme)"
+msgstr "ZIP exports run in the background. (Check the platform's exports/courses/ folder)"
 
 #: .\core\templates\core\dashboard_formateur.html:804
 msgid "Importation..."
@@ -4795,13 +4599,8 @@ msgstr ""
 "                <span class=\"grad\"><br>next generation.</span>"
 
 #: .\core\templates\core\home.html:432
-msgid ""
-"Des parcours pédagogiques structurés en IoT et Réseaux, soutenus par un "
-"Tuteur IA socratique basé sur vos cours et un système de gestion d'atelier "
-"intégré."
-msgstr ""
-"Structured learning paths in IoT and Networks, supported by a Socratic AI "
-"Tutor based on your courses and an integrated workshop management system."
+msgid "Des parcours pédagogiques structurés en IoT et Réseaux, soutenus par un Tuteur IA socratique basé sur vos cours et un système de gestion d'atelier intégré."
+msgstr "Structured learning paths in IoT and Networks, supported by a Socratic AI Tutor based on your courses and an integrated workshop management system."
 
 #: .\core\templates\core\home.html:437
 msgid "Commencer maintenant"
@@ -4840,10 +4639,8 @@ msgid "Cours structurés"
 msgstr "Structured courses"
 
 #: .\core\templates\core\home.html:493
-msgid ""
-"Chapitres progressifs avec documents, vidéos et QCM auto-générés par l'IA."
-msgstr ""
-"Progressive chapters with documents, videos, and AI-generated quizzes."
+msgid "Chapitres progressifs avec documents, vidéos et QCM auto-générés par l'IA."
+msgstr "Progressive chapters with documents, videos, and AI-generated quizzes."
 
 #: .\core\templates\core\home.html:498
 msgid "Robotique IoT"
@@ -4867,8 +4664,7 @@ msgstr "Dedicated AI Tutor"
 
 #: .\core\templates\core\home.html:519
 #, python-format
-msgid ""
-"Assistant 100%% basé sur les supports de cours fournis par les formateurs."
+msgid "Assistant 100%% basé sur les supports de cours fournis par les formateurs."
 msgstr "Assistant based 100%% on course materials provided by instructors."
 
 #: .\core\templates\core\home.html:527
@@ -4892,12 +4688,8 @@ msgid "Capteurs, microcontrôleurs et protocoles réseaux."
 msgstr "Sensors, microcontrollers, and network protocols."
 
 #: .\core\templates\core\home.html:538
-msgid ""
-"De l'Arduino aux modules sans fil, chaque composant fait partie d'un cours "
-"structuré avec documentation technique."
-msgstr ""
-"From Arduino to wireless modules, every component is part of a structured "
-"course with technical documentation."
+msgid "De l'Arduino aux modules sans fil, chaque composant fait partie d'un cours structuré avec documentation technique."
+msgstr "From Arduino to wireless modules, every component is part of a structured course with technical documentation."
 
 #: .\core\templates\core\home.html:544
 msgid "IA Tuteur"
@@ -4945,9 +4737,7 @@ msgid "Inscription & Validation"
 msgstr "Registration & Validation"
 
 #: .\core\templates\core\home.html:576
-msgid ""
-"Créez votre compte, choisissez votre rôle et attendez la validation par "
-"l'admin."
+msgid "Créez votre compte, choisissez votre rôle et attendez la validation par l'admin."
 msgstr "Create your account, choose your role, and wait for admin validation."
 
 #: .\core\templates\core\home.html:579
@@ -4959,8 +4749,7 @@ msgid "Accès aux Cours"
 msgstr "Access to Courses"
 
 #: .\core\templates\core\home.html:582
-msgid ""
-"Explorez le catalogue, accédez aux chapitres correspondant à votre niveau."
+msgid "Explorez le catalogue, accédez aux chapitres correspondant à votre niveau."
 msgstr "Browse the catalog and access the chapters matching your level."
 
 #: .\core\templates\core\home.html:585
@@ -4972,8 +4761,7 @@ msgid "Session Tuteur IA"
 msgstr "AI Tutor Session"
 
 #: .\core\templates\core\home.html:588
-msgid ""
-"Après chaque chapitre, démarrez une session socratique avec votre tuteur IA."
+msgid "Après chaque chapitre, démarrez une session socratique avec votre tuteur IA."
 msgstr "After each chapter, start a Socratic session with your AI tutor."
 
 #: .\core\templates\core\home.html:591
@@ -4985,8 +4773,7 @@ msgid "Validation & QCM"
 msgstr "Validation & Quiz"
 
 #: .\core\templates\core\home.html:594
-msgid ""
-"Obtenez votre score de maîtrise et validez vos connaissances avec le QCM."
+msgid "Obtenez votre score de maîtrise et validez vos connaissances avec le QCM."
 msgstr "Get your mastery score and validate your knowledge with the quiz."
 
 #: .\core\templates\core\home.html:605
@@ -4994,12 +4781,8 @@ msgid "Prêt à rejoindre l'aventure technologique ?"
 msgstr "Ready to join the tech adventure?"
 
 #: .\core\templates\core\home.html:606
-msgid ""
-"Rejoignez des étudiants et formateurs qui utilisent EduTech pour des "
-"formations en IoT, Réseaux et Intelligence Artificielle."
-msgstr ""
-"Join students and instructors who use EduTech for training in IoT, Networks,"
-" and Artificial Intelligence."
+msgid "Rejoignez des étudiants et formateurs qui utilisent EduTech pour des formations en IoT, Réseaux et Intelligence Artificielle."
+msgstr "Join students and instructors who use EduTech for training in IoT, Networks, and Artificial Intelligence."
 
 #: .\core\templates\core\home.html:608
 msgid "Créer mon compte — c'est gratuit"
@@ -5020,11 +4803,6 @@ msgstr "Create a class"
 #: .\core\templates\core\partials\classe_form.html:194
 msgid "Modifier la classe"
 msgstr "Edit class"
-
-#: .\core\templates\core\partials\classe_form.html:195
-#: .\core\templates\core\partials\niveau_form.html:187
-msgid "Fermer"
-msgstr "Close"
 
 #: .\core\templates\core\partials\classe_form.html:210
 msgid "Niveau d'appartenance"
@@ -5095,7 +4873,7 @@ msgstr "Required equipment"
 
 #: .\core\templates\core\partials\demande_materiel_modal.html:29
 #: .\logistics\models.py:157
-#: .\logistics\templates\logistics\emails\demande_traitee.html:158
+#: .\logistics\templates\logistics\emails\demande_traitee.html:159
 #: .\logistics\templates\logistics\ticket_form.html:236
 msgid "Atelier cible"
 msgstr "Target workshop"
@@ -5103,7 +4881,7 @@ msgstr "Target workshop"
 #: .\core\templates\core\partials\demande_materiel_modal.html:37
 #: .\core\templates\core\partials\formateur_structure.html:267
 #: .\logistics\models.py:159
-#: .\logistics\templates\logistics\emails\demande_traitee.html:147
+#: .\logistics\templates\logistics\emails\demande_traitee.html:148
 msgid "Quantité"
 msgstr "Quantity"
 
@@ -5216,9 +4994,7 @@ msgid "Catalogue vide"
 msgstr "Empty catalog"
 
 #: .\core\templates\core\partials\equipements_section.html:157
-msgid ""
-"Commencez à ajouter du matériel pour permettre aux formateurs de faire des "
-"demandes."
+msgid "Commencez à ajouter du matériel pour permettre aux formateurs de faire des demandes."
 msgstr "Start adding equipment to let instructors make requests."
 
 #: .\core\templates\core\partials\formateur_structure.html:117
@@ -5231,11 +5007,8 @@ msgid "Votre espace de travail est prêt"
 msgstr "Your workspace is ready"
 
 #: .\core\templates\core\partials\formateur_structure.html:140
-msgid ""
-"Vous n'avez pas encore de cours. Créez votre premier module pour commencer à"
-" enseigner."
-msgstr ""
-"You don't have any courses yet. Create your first module to start teaching."
+msgid "Vous n'avez pas encore de cours. Créez votre premier module pour commencer à enseigner."
+msgstr "You don't have any courses yet. Create your first module to start teaching."
 
 #: .\core\templates\core\partials\formateur_structure.html:150
 msgid "Suivi Logistique"
@@ -5248,14 +5021,14 @@ msgstr "Requested on %(d)s"
 
 #: .\core\templates\core\partials\formateur_structure.html:258
 #: .\logistics\models.py:134
-#: .\logistics\templates\logistics\emails\demande_traitee.html:173
+#: .\logistics\templates\logistics\emails\demande_traitee.html:174
 #: .\logistics\templates\logistics\partials\demandes_list.html:44
 msgid "Approuvée"
 msgstr "Approved"
 
 #: .\core\templates\core\partials\formateur_structure.html:259
 #: .\logistics\models.py:135
-#: .\logistics\templates\logistics\emails\demande_traitee.html:179
+#: .\logistics\templates\logistics\emails\demande_traitee.html:180
 #: .\logistics\templates\logistics\partials\demandes_list.html:45
 msgid "Rejetée"
 msgstr "Rejected"
@@ -5273,7 +5046,7 @@ msgid "Atelier"
 msgstr "Workshop"
 
 #: .\core\templates\core\partials\formateur_structure.html:276
-#: .\logistics\templates\logistics\emails\demande_traitee.html:161
+#: .\logistics\templates\logistics\emails\demande_traitee.html:162
 #: .\logistics\templates\logistics\partials\ateliers_list.html:73
 msgid "Non spécifié"
 msgstr "Not specified"
@@ -5291,12 +5064,8 @@ msgid "Assignation Kanban"
 msgstr "Kanban Assignment"
 
 #: .\core\templates\core\partials\kanban_assignation_section.html:8
-msgid ""
-"Glissez-déposez les étudiants en attente vers la classe de votre choix pour "
-"les assigner et activer leur compte."
-msgstr ""
-"Drag and drop pending students onto the class of your choice to assign them "
-"and activate their account."
+msgid "Glissez-déposez les étudiants en attente vers la classe de votre choix pour les assigner et activer leur compte."
+msgstr "Drag and drop pending students onto the class of your choice to assign them and activate their account."
 
 #: .\core\templates\core\partials\kanban_assignation_section.html:13
 #, python-format
@@ -5402,7 +5171,7 @@ msgid "Il y a %(t)s"
 msgstr "%(t)s ago"
 
 #: .\core\templates\core\partials\pending_demandes_section.html:194
-#: .\logistics\templates\logistics\emails\demande_traitee.html:150
+#: .\logistics\templates\logistics\emails\demande_traitee.html:151
 #, python-format
 msgid "%(counter)s unité"
 msgid_plural "%(counter)s unités"
@@ -5473,6 +5242,30 @@ msgstr "Validate"
 msgid "Aucune demande d'inscription d'étudiant en attente actuellement."
 msgstr "No pending student registration requests at this time."
 
+#: .\core\templates\pwa\offline.html:6
+msgid "Hors ligne"
+msgstr "Offline"
+
+#: .\core\templates\pwa\offline.html:64
+msgid "Vous êtes hors ligne"
+msgstr "You are offline"
+
+#: .\core\templates\pwa\offline.html:65
+msgid "Aucune connexion réseau. Les pages déjà consultées restent accessibles ; réessayez dès que le réseau revient."
+msgstr "No network connection. Pages you have already opened stay available; try again once the network is back."
+
+#: .\core\templates\pwa\offline.html:66
+msgid "Réessayer"
+msgstr "Try again"
+
+#: .\core\templates\pwa\offline.html:67
+msgid "Revenir à l’accueil"
+msgstr "Back to home"
+
+#: .\core\templates\pwa\offline.html:68
+msgid "Connexion rétablie — rechargement…"
+msgstr "Connection restored — reloading…"
+
 #: .\core\views.py:253 .\core\views.py:278
 msgid "Votre compte est en attente de validation."
 msgstr "Your account is pending validation."
@@ -5487,12 +5280,8 @@ msgstr "Your account has been activated"
 
 #: .\core\views.py:645
 #, python-format
-msgid ""
-"Votre inscription a été validée. Vous êtes maintenant affecté à la classe "
-"%(classe)s."
-msgstr ""
-"Your registration has been approved. You are now assigned to class "
-"%(classe)s."
+msgid "Votre inscription a été validée. Vous êtes maintenant affecté à la classe %(classe)s."
+msgstr "Your registration has been approved. You are now assigned to class %(classe)s."
 
 #: .\core\views.py:676
 msgid "Méthode non autorisée."
@@ -5500,12 +5289,8 @@ msgstr "Method not allowed."
 
 #: .\core\views.py:700
 #, python-format
-msgid ""
-"Félicitations ! Votre compte est désormais actif. Vous êtes affecté à la "
-"classe %(classe)s."
-msgstr ""
-"Congratulations! Your account is now active. You are assigned to class "
-"%(classe)s."
+msgid "Félicitations ! Votre compte est désormais actif. Vous êtes affecté à la classe %(classe)s."
+msgstr "Congratulations! Your account is now active. You are assigned to class %(classe)s."
 
 #: .\core\views.py:788
 #, python-format
@@ -5531,20 +5316,15 @@ msgstr "Equipment request %(statut)s"
 
 #: .\core\views.py:813
 #, python-format
-msgid ""
-"Votre demande pour l'équipement '%(equipement)s' a été %(statut)s par "
-"l'administrateur."
-msgstr ""
-"Your request for equipment '%(equipement)s' has been %(statut)s by the "
-"administrator."
+msgid "Votre demande pour l'équipement '%(equipement)s' a été %(statut)s par l'administrateur."
+msgstr "Your request for equipment '%(equipement)s' has been %(statut)s by the administrator."
 
 #: .\core\views.py:890
 #, python-format
 msgid "Nouveau mot de passe pour %(email)s : %(pass)s"
 msgstr "New password for %(email)s: %(pass)s"
 
-#: .\logistics\forms.py:11
-#: .\logistics\templates\logistics\ticket_form.html:210
+#: .\logistics\forms.py:11 .\logistics\templates\logistics\ticket_form.html:210
 msgid "Titre du ticket"
 msgstr "Ticket title"
 
@@ -5590,7 +5370,7 @@ msgid "Est actif"
 msgstr "Is active"
 
 #: .\logistics\models.py:18 .\logistics\models.py:99 .\logistics\models.py:149
-#: .\logistics\templates\logistics\emails\demande_traitee.html:138
+#: .\logistics\templates\logistics\emails\demande_traitee.html:139
 #: .\logistics\templates\logistics\partials\demande_form.html:72
 #: .\logistics\templates\logistics\partials\tickets_list.html:34
 msgid "Équipement"
@@ -5765,61 +5545,57 @@ msgstr "Returned"
 msgid "Rechercher une demande..."
 msgstr "Search for a request..."
 
-#: .\logistics\templates\logistics\emails\demande_traitee.html:7
+#: .\logistics\templates\logistics\emails\demande_traitee.html:8
 #: .\logistics\views.py:614
 msgid "Votre demande a été traitée"
 msgstr "Your request has been processed"
 
-#: .\logistics\templates\logistics\emails\demande_traitee.html:62
+#: .\logistics\templates\logistics\emails\demande_traitee.html:63
 msgid "Demande approuvée !"
 msgstr "Request approved!"
 
-#: .\logistics\templates\logistics\emails\demande_traitee.html:63
+#: .\logistics\templates\logistics\emails\demande_traitee.html:64
 msgid "Demande rejetée"
 msgstr "Request rejected"
 
-#: .\logistics\templates\logistics\emails\demande_traitee.html:64
+#: .\logistics\templates\logistics\emails\demande_traitee.html:65
 msgid "Équipement retourné"
 msgstr "Equipment returned"
 
-#: .\logistics\templates\logistics\emails\demande_traitee.html:68
+#: .\logistics\templates\logistics\emails\demande_traitee.html:69
 msgid "Notification automatique · EduTech Logistics"
 msgstr "Automatic notification · EduTech Logistics"
 
-#: .\logistics\templates\logistics\emails\demande_traitee.html:84
+#: .\logistics\templates\logistics\emails\demande_traitee.html:85
 msgid "APPROUVÉE — Matériel disponible"
 msgstr "APPROVED — Equipment available"
 
-#: .\logistics\templates\logistics\emails\demande_traitee.html:92
+#: .\logistics\templates\logistics\emails\demande_traitee.html:93
 msgid "REJETÉE — Demande non accordée"
 msgstr "REJECTED — Request not granted"
 
-#: .\logistics\templates\logistics\emails\demande_traitee.html:100
+#: .\logistics\templates\logistics\emails\demande_traitee.html:101
 msgid "RETOURNÉ — Équipement récupéré"
 msgstr "RETURNED — Equipment collected"
 
-#: .\logistics\templates\logistics\emails\demande_traitee.html:113
+#: .\logistics\templates\logistics\emails\demande_traitee.html:114
 #, python-format
 msgid "Bonjour %(formateur_nom)s&nbsp;👋"
 msgstr "Hello %(formateur_nom)s&nbsp;👋"
 
-#: .\logistics\templates\logistics\emails\demande_traitee.html:116
-msgid ""
-"Votre demande de matériel a été traitée par l'administration. Voici le "
-"détail de la décision&nbsp;:"
-msgstr ""
-"Your equipment request has been processed by the administration. Here are "
-"the details of the decision&nbsp;:"
+#: .\logistics\templates\logistics\emails\demande_traitee.html:117
+msgid "Votre demande de matériel a été traitée par l'administration. Voici le détail de la décision&nbsp;:"
+msgstr "Your equipment request has been processed by the administration. Here are the details of the decision&nbsp;:"
 
-#: .\logistics\templates\logistics\emails\demande_traitee.html:127
+#: .\logistics\templates\logistics\emails\demande_traitee.html:128
 msgid "Détail de la demande"
 msgstr "Request details"
 
-#: .\logistics\templates\logistics\emails\demande_traitee.html:167
+#: .\logistics\templates\logistics\emails\demande_traitee.html:168
 msgid "Décision"
 msgstr "Decision"
 
-#: .\logistics\templates\logistics\emails\demande_traitee.html:203
+#: .\logistics\templates\logistics\emails\demande_traitee.html:204
 #, python-format
 msgid ""
 "<strong>Félicitations !</strong> Votre demande a été approuvée.\n"
@@ -5830,28 +5606,19 @@ msgstr ""
 "                      You can collect %(qte)sx <strong>%(nom)s</strong>\n"
 "                      from the logistics department."
 
-#: .\logistics\templates\logistics\emails\demande_traitee.html:217
-msgid ""
-"Nous sommes désolés, votre demande n'a pas pu être accordée. Vous pouvez "
-"contacter l'administration ou soumettre une nouvelle demande via la "
-"plateforme."
-msgstr ""
-"We're sorry, your request could not be granted. You can contact the "
-"administration or submit a new request via the platform."
+#: .\logistics\templates\logistics\emails\demande_traitee.html:218
+msgid "Nous sommes désolés, votre demande n'a pas pu être accordée. Vous pouvez contacter l'administration ou soumettre une nouvelle demande via la plateforme."
+msgstr "We're sorry, your request could not be granted. You can contact the administration or submit a new request via the platform."
 
-#: .\logistics\templates\logistics\emails\demande_traitee.html:231
+#: .\logistics\templates\logistics\emails\demande_traitee.html:232
 msgid "Voir mes demandes"
 msgstr "View my requests"
 
-#: .\logistics\templates\logistics\emails\demande_traitee.html:243
-msgid ""
-"Cet email a été envoyé automatiquement par la plateforme <strong "
-"style=\"color:#0f766e;\">EduTech</strong>."
-msgstr ""
-"This email was sent automatically by the <strong "
-"style=\"color:#0f766e;\">EduTech</strong> platform."
+#: .\logistics\templates\logistics\emails\demande_traitee.html:244
+msgid "Cet email a été envoyé automatiquement par la plateforme <strong style=\"color:#0f766e;\">EduTech</strong>."
+msgstr "This email was sent automatically by the <strong style=\"color:#0f766e;\">EduTech</strong> platform."
 
-#: .\logistics\templates\logistics\emails\demande_traitee.html:246
+#: .\logistics\templates\logistics\emails\demande_traitee.html:247
 msgid "Ne pas répondre à cet email"
 msgstr "Do not reply to this email"
 
@@ -5981,9 +5748,7 @@ msgid "Aucun atelier trouvé"
 msgstr "No workshop found"
 
 #: .\logistics\templates\logistics\partials\ateliers_list.html:91
-msgid ""
-"Créez votre premier atelier en cliquant sur <strong>\"Nouvel "
-"atelier\"</strong>."
+msgid "Créez votre premier atelier en cliquant sur <strong>\"Nouvel atelier\"</strong>."
 msgstr "Create your first workshop by clicking <strong>\"New Workshop\"</strong>."
 
 #: .\logistics\templates\logistics\partials\demande_form.html:8
@@ -6063,12 +5828,8 @@ msgid "Aucune demande trouvée"
 msgstr "No request found"
 
 #: .\logistics\templates\logistics\partials\demandes_list.html:120
-msgid ""
-"Soumettez votre première demande de matériel en cliquant sur "
-"<strong>\"Nouvelle demande\"</strong>."
-msgstr ""
-"Submit your first equipment request by clicking <strong>\"New "
-"Request\"</strong>."
+msgid "Soumettez votre première demande de matériel en cliquant sur <strong>\"Nouvelle demande\"</strong>."
+msgstr "Submit your first equipment request by clicking <strong>\"New Request\"</strong>."
 
 #: .\logistics\templates\logistics\partials\equipement_form.html:10
 msgid "Formulaire équipement"
@@ -6104,13 +5865,8 @@ msgstr "Ticket Form"
 
 #: .\logistics\templates\logistics\partials\ticket_formateur_form.html:12
 #, python-format
-msgid ""
-"Vous signalez un problème pour l'équipement <strong>%(equipement)s</strong> "
-"emprunté pour l'atelier <strong>%(atelier)s</strong>."
-msgstr ""
-"You are reporting an issue with the equipment "
-"<strong>%(equipement)s</strong> borrowed for the workshop "
-"<strong>%(atelier)s</strong>."
+msgid "Vous signalez un problème pour l'équipement <strong>%(equipement)s</strong> emprunté pour l'atelier <strong>%(atelier)s</strong>."
+msgstr "You are reporting an issue with the equipment <strong>%(equipement)s</strong> borrowed for the workshop <strong>%(atelier)s</strong>."
 
 #: .\logistics\templates\logistics\partials\ticket_formateur_form.html:17
 msgid "Titre du problème"
@@ -6249,25 +6005,16 @@ msgid "Le service IA n'est pas disponible pour le moment."
 msgstr "The AI service is currently unavailable."
 
 #: .\tuteur_ia\tasks.py:80 .\tuteur_ia\views_qcm.py:252
-msgid ""
-"La génération de QCM nécessite le moteur IA (local ou en ligne). Réessayez "
-"plus tard ou prévenez votre formateur."
-msgstr ""
-"Quiz generation needs the AI engine (local or online). Please try again "
-"later or let your instructor know."
+msgid "La génération de QCM nécessite le moteur IA (local ou en ligne). Réessayez plus tard ou prévenez votre formateur."
+msgstr "Quiz generation needs the AI engine (local or online). Please try again later or let your instructor know."
 
 #: .\tuteur_ia\tasks.py:85 .\tuteur_ia\views_qcm.py:261
-msgid ""
-"La génération du QCM par l'IA a échoué. Réessayez dans quelques instants."
+msgid "La génération du QCM par l'IA a échoué. Réessayez dans quelques instants."
 msgstr "AI quiz generation failed. Please try again in a moment."
 
 #: .\tuteur_ia\tasks.py:86 .\tuteur_ia\views_qcm.py:262
-msgid ""
-"Le contenu du chapitre est bien indexé, mais l'IA n'a pas réussi à produire "
-"les questions cette fois-ci."
-msgstr ""
-"The chapter content is indexed, but the AI could not produce the questions "
-"this time."
+msgid "Le contenu du chapitre est bien indexé, mais l'IA n'a pas réussi à produire les questions cette fois-ci."
+msgstr "The chapter content is indexed, but the AI could not produce the questions this time."
 
 #: .\tuteur_ia\templates\tuteur_ia\profil.html:4
 msgid "Mon Profil IA"
@@ -6278,24 +6025,16 @@ msgid "Mon Profil Cognitif IA"
 msgstr "My AI Cognitive Profile"
 
 #: .\tuteur_ia\templates\tuteur_ia\profil.html:12
-msgid ""
-"Découvrez comment l'IA s'adapte à votre apprentissage en temps réel en "
-"identifiant vos forces et vos axes d'amélioration."
-msgstr ""
-"Discover how the AI adapts to your learning in real time by identifying your"
-" strengths and areas for improvement."
+msgid "Découvrez comment l'IA s'adapte à votre apprentissage en temps réel en identifiant vos forces et vos axes d'amélioration."
+msgstr "Discover how the AI adapts to your learning in real time by identifying your strengths and areas for improvement."
 
 #: .\tuteur_ia\templates\tuteur_ia\profil.html:22
 msgid "Concepts Maîtrisés"
 msgstr "Mastered Concepts"
 
 #: .\tuteur_ia\templates\tuteur_ia\profil.html:33
-msgid ""
-"L'IA n'a pas encore validé de concepts majeurs. Continuez vos sessions avec "
-"le Tuteur IA !"
-msgstr ""
-"The AI hasn't validated any major concepts yet. Keep going with your AI "
-"Tutor sessions!"
+msgid "L'IA n'a pas encore validé de concepts majeurs. Continuez vos sessions avec le Tuteur IA !"
+msgstr "The AI hasn't validated any major concepts yet. Keep going with your AI Tutor sessions!"
 
 #: .\tuteur_ia\templates\tuteur_ia\profil.html:40
 msgid "Concepts Fragiles (À réviser)"
@@ -6318,19 +6057,15 @@ msgid "Style d'apprentissage"
 msgstr "Learning style"
 
 #: .\tuteur_ia\templates\tuteur_ia\profil.html:77
-msgid ""
-"Votre profil d'apprentissage IA aide le tuteur à personnaliser ses "
-"explications."
-msgstr ""
-"Your AI learning profile helps the tutor personalize its explanations."
+msgid "Votre profil d'apprentissage IA aide le tuteur à personnaliser ses explications."
+msgstr "Your AI learning profile helps the tutor personalize its explanations."
 
 #: .\tuteur_ia\templates\tuteur_ia\profil.html:85
 msgid "Prêt à progresser ?"
 msgstr "Ready to progress?"
 
 #: .\tuteur_ia\templates\tuteur_ia\profil.html:87
-msgid ""
-"Lancez une nouvelle session de tutorat ou un QCM pour affiner votre profil."
+msgid "Lancez une nouvelle session de tutorat ou un QCM pour affiner votre profil."
 msgstr "Start a new tutoring session or a quiz to refine your profile."
 
 #: .\tuteur_ia\templates\tuteur_ia\profil.html:89
@@ -6360,12 +6095,8 @@ msgid "Génération du QCM en cours..."
 msgstr "Generating the quiz..."
 
 #: .\tuteur_ia\templates\tuteur_ia\qcm.html:35
-msgid ""
-"L'IA ou le cache génèrent vos questions basées sur le cours. Merci de "
-"patienter quelques secondes."
-msgstr ""
-"The AI or the cache is generating your questions based on the course. Please"
-" wait a few seconds."
+msgid "L'IA ou le cache génèrent vos questions basées sur le cours. Merci de patienter quelques secondes."
+msgstr "The AI or the cache is generating your questions based on the course. Please wait a few seconds."
 
 #: .\tuteur_ia\templates\tuteur_ia\qcm.html:64
 #: .\tuteur_ia\templates\tuteur_ia\qcm.html:280
@@ -6400,12 +6131,8 @@ msgid "Impossible de charger le QCM"
 msgstr "Unable to load the quiz"
 
 #: .\tuteur_ia\templates\tuteur_ia\qcm.html:193
-msgid ""
-"Le formateur doit d'abord uploader un document PDF dans ce chapitre pour "
-"activer la génération automatique du QCM."
-msgstr ""
-"The instructor must first upload a PDF document to this chapter to enable "
-"automatic quiz generation."
+msgid "Le formateur doit d'abord uploader un document PDF dans ce chapitre pour activer la génération automatique du QCM."
+msgstr "The instructor must first upload a PDF document to this chapter to enable automatic quiz generation."
 
 #: .\tuteur_ia\templates\tuteur_ia\qcm.html:194
 msgid "Erreur de connexion."
@@ -6472,20 +6199,12 @@ msgid "Continue d'apprendre !"
 msgstr "Keep learning!"
 
 #: .\tuteur_ia\templates\tuteur_ia\qcm_resultats.html:36
-msgid ""
-"Tu as validé ce chapitre avec succès ! Tu maîtrises les notions clés "
-"présentées dans le document."
-msgstr ""
-"You successfully passed this chapter! You have mastered the key concepts "
-"presented in the document."
+msgid "Tu as validé ce chapitre avec succès ! Tu maîtrises les notions clés présentées dans le document."
+msgstr "You successfully passed this chapter! You have mastered the key concepts presented in the document."
 
 #: .\tuteur_ia\templates\tuteur_ia\qcm_resultats.html:38
-msgid ""
-"Le seuil de réussite est de <strong>80/100</strong>. Prends le temps de "
-"relire le document du chapitre et tente à nouveau le QCM."
-msgstr ""
-"The passing threshold is <strong>80/100</strong>. Take the time to re-read "
-"the chapter document and try the quiz again."
+msgid "Le seuil de réussite est de <strong>80/100</strong>. Prends le temps de relire le document du chapitre et tente à nouveau le QCM."
+msgstr "The passing threshold is <strong>80/100</strong>. Take the time to re-read the chapter document and try the quiz again."
 
 #: .\tuteur_ia\templates\tuteur_ia\qcm_resultats.html:46
 #, python-format
@@ -6561,8 +6280,7 @@ msgstr "Congratulations! Score:"
 
 #: .\tuteur_ia\templates\tuteur_ia\session.html:601
 msgid "Tu maîtrises bien ce chapitre ! Teste tes connaissances avec le QCM."
-msgstr ""
-"You have a good grasp of this chapter! Test your knowledge with the quiz."
+msgstr "You have a good grasp of this chapter! Test your knowledge with the quiz."
 
 #: .\tuteur_ia\templates\tuteur_ia\session.html:603
 msgid "Faire le QCM"
@@ -6582,10 +6300,8 @@ msgstr "Keep going!"
 
 #: .\tuteur_ia\templates\tuteur_ia\session.html:612
 #, python-format
-msgid ""
-"Tu n'as pas encore atteint 75%%. Relis le chapitre et recommence la session."
-msgstr ""
-"You haven't reached 75%% yet. Review the chapter and restart the session."
+msgid "Tu n'as pas encore atteint 75%%. Relis le chapitre et recommence la session."
+msgstr "You haven't reached 75%% yet. Review the chapter and restart the session."
 
 #: .\tuteur_ia\templates\tuteur_ia\session.html:615
 msgid "Recommencer"
@@ -6601,12 +6317,8 @@ msgstr "Error:"
 
 #: .\tuteur_ia\views.py:72
 #, python-format
-msgid ""
-"Prêt à explorer **%(chapitre)s** ? Dis-moi d'abord ce que tu sais déjà sur "
-"ce sujet."
-msgstr ""
-"Ready to explore **%(chapitre)s**? First, tell me what you already know "
-"about this topic."
+msgid "Prêt à explorer **%(chapitre)s** ? Dis-moi d'abord ce que tu sais déjà sur ce sujet."
+msgstr "Ready to explore **%(chapitre)s**? First, tell me what you already know about this topic."
 
 #: .\tuteur_ia\views.py:100
 msgid "Session déjà terminée."
@@ -6617,29 +6329,17 @@ msgid "Continue, tu es sur la bonne voie !"
 msgstr "Keep going, you're on the right track!"
 
 #: .\tuteur_ia\views.py:242 .\tuteur_ia\views.py:414
-msgid ""
-"Le tuteur IA n'est pas disponible pour le moment. Réessaie dans un instant "
-"ou préviens ton formateur."
-msgstr ""
-"The AI tutor is currently unavailable. Try again in a moment or let your "
-"instructor know."
+msgid "Le tuteur IA n'est pas disponible pour le moment. Réessaie dans un instant ou préviens ton formateur."
+msgstr "The AI tutor is currently unavailable. Try again in a moment or let your instructor know."
 
 #: .\tuteur_ia\views.py:372
 #, python-format
-msgid ""
-"❌ Je réponds uniquement aux questions concernant le contenu du chapitre **« "
-"%(chapitre)s »**. Cette question est hors sujet."
-msgstr ""
-"❌ I only answer questions about the content of chapter **“%(chapitre)s”**. "
-"This question is off topic."
+msgid "❌ Je réponds uniquement aux questions concernant le contenu du chapitre **« %(chapitre)s »**. Cette question est hors sujet."
+msgstr "❌ I only answer questions about the content of chapter **“%(chapitre)s”**. This question is off topic."
 
 #: .\tuteur_ia\views_qcm.py:246
-msgid ""
-"Le formateur doit d'abord uploader un PDF dans ce chapitre pour que le QCM "
-"puisse être généré automatiquement."
-msgstr ""
-"The instructor must first upload a PDF to this chapter so the quiz can be "
-"generated automatically."
+msgid "Le formateur doit d'abord uploader un PDF dans ce chapitre pour que le QCM puisse être généré automatiquement."
+msgstr "The instructor must first upload a PDF to this chapter so the quiz can be generated automatically."
 
 #: .\tuteur_ia\views_qcm.py:348
 #, python-format
@@ -6648,12 +6348,8 @@ msgstr "Quiz graded: %(chapitre)s"
 
 #: .\tuteur_ia\views_qcm.py:349
 #, python-format
-msgid ""
-"Tu as complété le QCM du chapitre '%(chapitre)s' avec un score de "
-"%(score)s/100."
-msgstr ""
-"You completed the quiz for chapter '%(chapitre)s' with a score of "
-"%(score)s/100."
+msgid "Tu as complété le QCM du chapitre '%(chapitre)s' avec un score de %(score)s/100."
+msgstr "You completed the quiz for chapter '%(chapitre)s' with a score of %(score)s/100."
 
 #: .\tuteur_ia\views_qcm.py:358
 #, python-format
@@ -6661,12 +6357,8 @@ msgid "🎉 Bravo ! Tu as obtenu %(score)s/100 !"
 msgstr "🎉 Well done! You scored %(score)s/100!"
 
 #: .\tuteur_ia\views_qcm.py:359
-msgid ""
-"Excellent travail ! Tu maîtrises bien ce chapitre. Tu peux passer au "
-"chapitre suivant."
-msgstr ""
-"Excellent work! You have a good grasp of this chapter. You can move on to "
-"the next one."
+msgid "Excellent travail ! Tu maîtrises bien ce chapitre. Tu peux passer au chapitre suivant."
+msgstr "Excellent work! You have a good grasp of this chapter. You can move on to the next one."
 
 #: .\tuteur_ia\views_qcm.py:378
 #, python-format
@@ -6675,9 +6367,5 @@ msgstr "Score: %(score)s/100"
 
 #: .\tuteur_ia\views_qcm.py:379
 #, python-format
-msgid ""
-"Tu as eu %(correctes)s bonne(s) réponse(s) sur %(total)s. Relis le chapitre "
-"et réessaie !"
-msgstr ""
-"You got %(correctes)s correct answer(s) out of %(total)s. Review the chapter"
-" and try again!"
+msgid "Tu as eu %(correctes)s bonne(s) réponse(s) sur %(total)s. Relis le chapitre et réessaie !"
+msgstr "You got %(correctes)s correct answer(s) out of %(total)s. Review the chapter and try again!"
