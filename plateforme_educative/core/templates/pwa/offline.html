@@ -1,0 +1,81 @@
+{% load static i18n %}<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:'fr' }}" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>{% trans "Hors ligne" %} — EduTech</title>
+  <meta name="theme-color" content="#0d9488">
+  <link rel="icon" href="{% static 'images/pwa/favicon-32.png' %}" sizes="32x32">
+  <style>
+    :root { color-scheme: light dark; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100dvh;
+      display: flex; align-items: center; justify-content: center;
+      padding: max(1.5rem, env(safe-area-inset-top)) 1.5rem max(1.5rem, env(safe-area-inset-bottom));
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(160deg, #0d9488 0%, #312e81 100%);
+      color: #fff; text-align: center; -webkit-font-smoothing: antialiased;
+    }
+    .card {
+      max-width: 26rem; width: 100%;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.16);
+      border-radius: 22px;
+      padding: 2.5rem 1.75rem;
+      backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    }
+    .glyph {
+      width: 76px; height: 76px; margin: 0 auto 1.4rem;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.14); border-radius: 20px; font-size: 2.2rem;
+    }
+    h1 { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 0.6rem; }
+    p { font-size: 0.95rem; line-height: 1.6; opacity: 0.9; margin-bottom: 1.6rem; }
+    button {
+      appearance: none; border: none; cursor: pointer;
+      width: 100%; min-height: 48px; padding: 0.85rem 1.5rem;
+      background: #fff; color: #0f766e;
+      font-size: 1rem; font-weight: 700; border-radius: 12px;
+      transition: transform .15s ease, opacity .15s ease;
+    }
+    button:active { transform: scale(0.97); }
+    a.home {
+      display: inline-block; margin-top: 1rem;
+      color: #fff; opacity: 0.8; font-size: 0.9rem; text-decoration: underline; text-underline-offset: 3px;
+    }
+    .status { margin-top: 1.1rem; font-size: 0.8rem; opacity: 0.7; min-height: 1.2em; }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <div class="glyph" aria-hidden="true">
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 3l18 18"/>
+        <path d="M10.7 5.1A16 16 0 0 1 22 9"/>
+        <path d="M2 8.8a16 16 0 0 1 4.6-2.9"/>
+        <path d="M5 12.9a10 10 0 0 1 3-2"/>
+        <path d="M16.7 12.7A10 10 0 0 1 19 12.9"/>
+        <path d="M8.6 16.9a5 5 0 0 1 6.8 0"/>
+        <line x1="12" y1="20" x2="12.01" y2="20"/>
+      </svg>
+    </div>
+    <h1>{% trans "Vous êtes hors ligne" %}</h1>
+    <p>{% trans "Aucune connexion réseau. Les pages déjà consultées restent accessibles ; réessayez dès que le réseau revient." %}</p>
+    <button type="button" onclick="retry()">{% trans "Réessayer" %}</button>
+    <a class="home" href="/">{% trans "Revenir à l’accueil" %}</a>
+    <div class="status" id="status" data-online-msg="{% trans 'Connexion rétablie — rechargement…' %}" aria-live="polite"></div>
+  </main>
+  <script>
+    function retry() { location.reload(); }
+    var s = document.getElementById('status');
+    // Rechargement automatique dès que le réseau revient (event, pas au chargement).
+    window.addEventListener('online', function () {
+      s.textContent = s.dataset.onlineMsg;
+      setTimeout(function () { location.reload(); }, 600);
+    });
+    if (navigator.onLine) { s.textContent = s.dataset.onlineMsg; setTimeout(retry, 900); }
+  </script>
+</body>
+</html>

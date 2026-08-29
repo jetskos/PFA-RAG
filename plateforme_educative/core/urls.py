@@ -45,9 +45,14 @@ from .views import (
 )
 
 from django.conf.urls.i18n import i18n_patterns
+from . import pwa
 
 urlpatterns = [
     path('i18n/', include('django.conf.urls.i18n')),
+    # PWA — servis à la racine (pas de préfixe de langue) pour une portée SW = /
+    path('sw.js', pwa.service_worker, name='pwa_service_worker'),
+    path('manifest.webmanifest', pwa.manifest, name='pwa_manifest'),
+    path('offline/', pwa.offline, name='pwa_offline'),
 ]
 
 urlpatterns += i18n_patterns(

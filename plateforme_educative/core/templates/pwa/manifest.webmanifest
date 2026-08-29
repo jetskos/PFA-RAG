@@ -1,0 +1,35 @@
+{% load static i18n %}{
+  "name": "EduTech IoT & IA",
+  "short_name": "EduTech",
+  "description": "{% trans 'Plateforme éducative IoT & IA : cours structurés, tuteur IA socratique et suivi de progression.' %}",
+  "lang": "{{ LANGUAGE_CODE|default:'fr' }}",
+  "dir": "ltr",
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait-primary",
+  "background_color": "#0f172a",
+  "theme_color": "#0d9488",
+  "categories": ["education", "productivity"],
+  "icons": [
+    { "src": "{% static 'images/pwa/icon-192.png' %}", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "{% static 'images/pwa/icon-512.png' %}", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "{% static 'images/pwa/icon-maskable-192.png' %}", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "{% static 'images/pwa/icon-maskable-512.png' %}", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    {
+      "name": "{% trans 'Mes cours' %}",
+      "short_name": "{% trans 'Cours' %}",
+      "url": "/apprentissage/?source=pwa",
+      "icons": [{ "src": "{% static 'images/pwa/icon-192.png' %}", "sizes": "192x192" }]
+    },
+    {
+      "name": "{% trans 'Calendrier' %}",
+      "short_name": "{% trans 'Agenda' %}",
+      "url": "/apprentissage/calendrier/?source=pwa",
+      "icons": [{ "src": "{% static 'images/pwa/icon-192.png' %}", "sizes": "192x192" }]
+    }
+  ]
+}
