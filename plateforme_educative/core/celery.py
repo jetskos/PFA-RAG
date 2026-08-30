@@ -15,8 +15,3 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 
 # Découverte automatique des tâches dans tous les modules tasks.py
 app.autodiscover_tasks()
-
-
-@app.task(bind=True, ignore_result=True)
-def debug_task(self):
-    print(f'Request: {self.request!r}')

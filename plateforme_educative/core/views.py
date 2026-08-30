@@ -29,7 +29,7 @@ def home_view(request):
 
 
 def _admin_dashboard_context(request=None):
-    from django.db.models import Q
+    from django.db.models import Q, Count
     pending_students = Utilisateur.objects.filter(role='ELEVE', statut_compte='PENDING').order_by('-date_creation')
     pending_rows = [
         {
@@ -165,13 +165,24 @@ def _admin_dashboard_context(request=None):
     }
 
     today = timezone.now().date()
+    week_start = today - timedelta(days=6)
+    # 1 requête groupée par jour au lieu de 7 COUNT successifs.
+    from django.db.models.functions import TruncDate
+    per_day = dict(
+        Utilisateur.objects
+        .filter(date_creation__date__gte=week_start)
+        .annotate(jour=TruncDate('date_creation'))
+        .values('jour')
+        .order_by('jour')
+        .annotate(n=Count('id'))
+        .values_list('jour', 'n')
+    )
     labels = []
     values = []
     for i in range(6, -1, -1):
         day = today - timedelta(days=i)
-        count = Utilisateur.objects.filter(date_creation__date=day).count()
         labels.append(day.strftime('%d/%m'))
-        values.append(count)
+        values.append(per_day.get(day, 0))
     inscriptions_chart = {
         'labels': labels,
         'values': values
@@ -330,30 +341,45 @@ def formateur_dashboard_view(request):
 
 @role_required('ELEVE')
 def student_dashboard_view(request):
+    from django.db.models import Count
     from apprentissage.models import Progression
 
     classe = getattr(request.user, 'classe', None)
     niveau = getattr(classe, 'niveau', None) if classe else None
-    
+
     cours_data = []
     radar_labels = []
     radar_data = []
 
     if niveau:
-        mes_cours = Cours.objects.filter(niveau=niveau, actif=True).order_by('titre')
+        # 3 requêtes au total (cours annotés + progressions + chapitres validés
+        # préchargés), au lieu de ~4 par cours.
+        mes_cours = list(
+            Cours.objects.filter(niveau=niveau, actif=True)
+            .annotate(n_chapitres=Count('chapitres'))
+            .order_by('titre')
+        )
+        progs = {
+            p.cours_id: p
+            for p in Progression.objects
+            .filter(etudiant=request.user, cours__in=mes_cours)
+            .prefetch_related('chapitres_valides')
+        }
         for cours in mes_cours:
-            progression_obj = Progression.objects.filter(etudiant=request.user, cours=cours).first()
-            progression_percent = progression_obj.pourcentage if progression_obj else 0
-            
+            total = cours.n_chapitres or 0
+            prog = progs.get(cours.id)
+            faits = len(prog.chapitres_valides.all()) if prog else 0  # préchargé
+            progression_percent = int(faits / total * 100) if total else 0
+
             cours_data.append({
                 'id': cours.id,
                 'titre': cours.titre,
                 'description': cours.description,
-                'chapitres_count': cours.chapitres.count(),
+                'chapitres_count': total,
                 'progression_percent': progression_percent,
-                'image_couverture': cours.image_couverture
+                'image_couverture': cours.image_couverture,
             })
-            
+
             radar_labels.append(cours.titre[:15] + '...' if len(cours.titre) > 15 else cours.titre)
             radar_data.append(progression_percent)
 

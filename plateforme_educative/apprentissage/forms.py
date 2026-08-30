@@ -134,10 +134,17 @@ class EvenementForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
         self.fields['date_fin'].required = False
         self.fields['cours'].required = False
         self.fields['classe'].required = False
+
+        # Un formateur ne rattache un événement qu'à ses propres cours.
+        if user is not None and not (user.is_superuser or getattr(user, 'role', '') == 'ADMIN'):
+            from apprentissage.models import Cours
+            self.fields['cours'].queryset = Cours.objects.filter(createur=user)
+
         if self.instance and self.instance.date_debut:
             self.initial['date_debut'] = self.instance.date_debut.strftime('%Y-%m-%dT%H:%M')
         if self.instance and self.instance.date_fin:

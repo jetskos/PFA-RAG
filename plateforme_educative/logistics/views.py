@@ -1,9 +1,13 @@
+import logging
+
 from django.db import transaction
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.http import require_http_methods
 from django.http import HttpResponseBadRequest, HttpResponseForbidden
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.urls import reverse
+
+logger = logging.getLogger(__name__)
 
 from .models import Equipment, Ticket, Workshop, DemandeMateriel
 from .forms import TicketForm, EquipmentForm, WorkshopForm, DemandeMaterielForm
@@ -615,8 +619,8 @@ def changer_statut_demande(request, pk):
                 message=_('Votre demande de %(qte)sx %(equipement)s a été %(label)s.') % {'qte': demande.quantite, 'equipement': demande.equipement.nom, 'label': label},
                 url=reverse('logistics:demandes'),
             )
-    except Exception as e:
-        print(f"Erreur notification: {e}")
+    except Exception:
+        logger.exception("Notification « demande traitée » échouée (demande %s)", demande.pk)
 
     # Envoyer un email au formateur via SMTP
     if nouveau_statut in ('APPROVED', 'REJECTED', 'RETURNED'):
@@ -664,8 +668,8 @@ def changer_statut_demande(request, pk):
             )
             email.attach_alternative(html_body, 'text/html')
             email.send(fail_silently=False)
-        except Exception as e:
-            print(f"Erreur envoi email demande: {e}")
+        except Exception:
+            logger.exception("Envoi e-mail « demande traitée » échoué (demande %s)", demande.pk)
 
     if getattr(request.user, 'is_staff', False) or getattr(request.user, 'role', '') == 'ADMIN':
         demandes = DemandeMateriel.objects.all()

@@ -1422,7 +1422,7 @@ def creer_evenement(request):
         
     from .forms import EvenementForm
     if request.method == 'POST':
-        form = EvenementForm(request.POST)
+        form = EvenementForm(request.POST, user=request.user)
         if form.is_valid():
             evt = form.save(commit=False)
             evt.createur = request.user
@@ -1430,7 +1430,7 @@ def creer_evenement(request):
             messages.success(request, _("L'événement a été créé avec succès."))
             return redirect('apprentissage:calendrier')
     else:
-        form = EvenementForm()
+        form = EvenementForm(user=request.user)
     return render(request, 'apprentissage/evenement_form.html', {
         'form': form,
         'titre_page': _("Créer un événement"),
@@ -1445,13 +1445,13 @@ def modifier_evenement(request, pk):
         
     from .forms import EvenementForm
     if request.method == 'POST':
-        form = EvenementForm(request.POST, instance=evt)
+        form = EvenementForm(request.POST, instance=evt, user=request.user)
         if form.is_valid():
             form.save()
             messages.success(request, _("L'événement a été modifié avec succès."))
             return redirect('apprentissage:calendrier')
     else:
-        form = EvenementForm(instance=evt)
+        form = EvenementForm(instance=evt, user=request.user)
     return render(request, 'apprentissage/evenement_form.html', {
         'form': form,
         'titre_page': _("Modifier l'événement"),
