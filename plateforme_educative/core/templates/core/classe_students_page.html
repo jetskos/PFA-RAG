@@ -11,19 +11,20 @@
             <h1>{% blocktranslate with nom=classe.nom %}Élèves : {{ nom }}{% endblocktranslate %}</h1>
             <p>{% blocktranslate with niveau=classe.niveau.nom annee=classe.annee_scolaire %}Niveau : {{ niveau }} | Année : {{ annee }}{% endblocktranslate %}</p>
         </div>
-        <div>
-            <a href="{% url 'dashboard_admin_export_classe_students' classe.id %}" class="btn btn-primary" style="margin-right: 0.5rem;">
+        <div class="page-header-actions" style="display:flex; gap:0.5rem;">
+            <a href="{% url 'dashboard_admin_export_classe_students' classe.id %}" class="btn btn-primary">
                 <i class="ti ti-file-export"></i> {% translate "Exporter (Excel)" %}
             </a>
             <a href="{% url 'dashboard_admin' %}?tab=classes" class="btn btn-ghost"><i class="ti ti-arrow-left"></i> {% translate "Retour aux classes" %}</a>
         </div>
     </div>
 
-    <div style="display:grid; grid-template-columns: 1fr 320px; gap:1.5rem; align-items:start;">
+    <div class="two-col-cards" style="display:grid; grid-template-columns: 1fr 320px; gap:1.5rem; align-items:start;">
         <div class="carte">
             <h2 style="margin-top:0;">{% blocktranslate with n=eleves.count %}Liste des élèves ({{ n }}){% endblocktranslate %}</h2>
             {% if eleves %}
-                <table style="width:100%; border-collapse: collapse;">
+                <div class="table-container">
+                <table class="mobile-scroll-table" style="width:100%; border-collapse: collapse;">
                     <thead>
                         <tr>
                             <th style="text-align:left; padding:8px; border-bottom:1px solid var(--border);">{% translate "Email" %}</th>
@@ -62,6 +63,7 @@
                         {% endfor %}
                     </tbody>
                 </table>
+                </div>
             {% else %}
                 <p class="message-empty">{% translate "Aucun élève dans cette classe." %}</p>
             {% endif %}
@@ -72,7 +74,7 @@
                 <h3 style="margin-top:0;">{% translate "Créer un nouvel élève" %}</h3>
                 <form method="post" action="{% url 'dashboard_admin_add_student_page' classe.id %}" style="display:grid; gap:0.8rem;">
                     {% csrf_token %}
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.8rem;">
+                    <div class="form-grid-2" style="display:grid; grid-template-columns: 1fr 1fr; gap:0.8rem;">
                         <label>
                             {% translate "Prénom" %}
                             <input type="text" name="first_name" placeholder="{% translate 'Prénom' %}" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px; margin-top:4px;">

@@ -846,9 +846,40 @@ html, body {
     .three-col-cards,
     .form-grid-2,
     .details-info-grid,
-    .drawer-grid {
+    .drawer-grid,
+    .aa-charts-grid {
         grid-template-columns: 1fr !important;
     }
+    /* Grilles de tuiles compactes : 2 colonnes (pas 1) sur mobile */
+    .aa-kpi-grid { grid-template-columns: 1fr 1fr !important; gap: .7rem !important; }
+    .aa-kpi-grid .carte { padding: .9rem !important; gap: .6rem !important; flex-direction: column !important; align-items: flex-start !important; }
+    .aa-kpi-grid .carte > div:first-child { font-size: 1.6rem !important; }
+    /* Tableaux inline sans classe .table : défilent dans leur conteneur */
+    .mobile-scroll-table { min-width: 34rem !important; }
+
+    /* --- LOGISTIQUE (héros + formulaire, partagé par 5 pages) --- */
+    .logi-shell { padding-left: 0 !important; padding-right: 0 !important; }
+    .logi-hero {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 1rem !important;
+        padding: 1.5rem 1.25rem !important;
+        border-radius: 16px !important;
+    }
+    .logi-hero-right { width: 100% !important; }
+    .logi-hero-right > * {
+        flex: 1 1 auto !important;
+        justify-content: center !important;
+        min-height: 46px !important;
+    }
+    .logi-page-title { font-size: clamp(1.35rem, 5.5vw, 1.8rem) !important; }
+    .logi-form-card { padding: 0 !important; }
+    .logi-form-body { padding: 1.25rem !important; }
+    .logi-row-2 { grid-template-columns: 1fr !important; }
+    .ts-control,
+    .logi-field input,
+    .logi-field textarea,
+    .logi-field select { font-size: 16px !important; }
     .form-actions-row,
     .form-actions,
     .page-header-actions,

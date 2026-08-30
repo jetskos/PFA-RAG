@@ -6,7 +6,7 @@
 {% block content %}
 <section class="page-shell" style="max-width: 1000px; margin: 0 auto; padding: 2rem 1rem;">
     <!-- En-tête -->
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <div class="page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
         <div>
             <h1>⚙️ {% translate "Tableau de bord Analytics — Administrateur" %}</h1>
             <p class="muted">{% translate "Statistiques et indicateurs généraux de l'activité sur la plateforme." %}</p>
@@ -14,7 +14,7 @@
     </div>
 
     <!-- KPIs Synthèse -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem;">
+    <div class="aa-kpi-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem;">
         <!-- Card 1 -->
         <div class="carte" style="background: var(--surface); border: 1px solid var(--bordure); border-radius: 12px; padding: 1.5rem; display: flex; align-items: center; gap: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
             <div style="font-size: 2.5rem; color: var(--brand-primary);">👥</div>
@@ -50,7 +50,7 @@
     </div>
 
     <!-- Layout: Chart & Summary -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2rem;">
+    <div class="aa-charts-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2rem;">
         <!-- Chart: User Roles -->
         <div class="carte" style="background: var(--surface); border: 1px solid var(--bordure); border-radius: 12px; padding: 1.5rem; display: flex; flex-direction: column; align-items: center;">
             <h3 style="margin-top: 0; margin-bottom: 1.5rem; font-size: 1.15rem; font-weight: 700; color: var(--text-primary); width: 100%;">👥 {% translate "Répartition des rôles" %}</h3>
