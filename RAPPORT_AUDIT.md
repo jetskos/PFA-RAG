@@ -312,6 +312,22 @@ sentence-transformers, à garder.
 sous MySQL, ré-export d'un vrai logo dédié si besoin (les 2 fichiers sont
 identiques pour l'instant).
 
+## Correctifs mobile — « zoom / scroll / dynamique » (2026-08-31, `2594af7`)
+
+CSS uniquement (`base.css` + `responsive.css`), 99 tests verts, revue navigateur à 375 px.
+
+| Zone | Problème | Correctif | Vérifié |
+|------|----------|-----------|---------|
+| Menu latéral (`.main-nav` @≤768) | Glissement animé via `left` (reflow à chaque frame) | `transform: translateX()` + `.main-nav.open { transform: translateX(0) !important }` (composited) | Ouverture OK au screenshot (375 px), panneau 280 px, plein écran ✓ |
+| Volet notifications (`@≤768`) | `.notifications-dropdown-menu` débordait ~112 px **hors écran à gauche** (cloche au centre de `.header-actions`) | `position: fixed; top: calc(52px + safe-area); left/right: .6rem; width:auto; max-height:70dvh` | Rendu dans le viewport (l:10 → r:366 sur 375) ✓ |
+| Bouton « tout marquer comme lu » | Écrasé à 32 px (texte sur 4 lignes) — la règle des boutons ronds `.notifications-dropdown-container button` le ciblait aussi | Sélecteur `> button` (cloche = enfant direct) ; `base.css` : `gap:12px` + `white-space:nowrap; flex-shrink:0` sur h3 / bouton / form | Bouton 83 px, une ligne ✓ |
+| Détail chapitre (`@≤768`) | Fil d'Ariane sur 4 lignes (229 px de barre d'en-tête avant le contenu), titre `<h2>` sur 3 lignes | Fil d'Ariane → `← Courses` seul (`> span` + `> a:not(:first-child)` masqués) ; `.chapitre-title` `clamp(1.15rem, 5vw, 1.6rem)` | En-tête 229 → 105 px, vidéo visible sans défiler, page 2813 → 2547 px ✓ |
+| En-tête QCM (`.qcm-hdr` @≤768) | `<h1>` comprimé dans une colonne de ~161 px (titre sur 6 lignes, 186 px) — `.meta` occupait la droite | `flex-wrap:wrap` + titre `flex:1 1 0; min-width:0` + `.meta` `flex-basis:100%` sous un filet | Titre 255 px sur 3 lignes, métas en dessous ✓ |
+
+Note : le panneau navigateur en arrière-plan gèle le recalc de style (`document.visibilityState='hidden'`) → `getComputedStyle` renvoie des valeurs de `transform` périmées ; un `screenshot` force le paint. C'est ce qui avait fait croire, en session précédente, que « le menu latéral ne s'ouvrait pas » — le CSS `left` d'origine fonctionnait déjà.
+
+Restant (dynamique, non bloquant) : page session socratique — `.ia-sidebar` ≈ 413 px avant le chat sur mobile ; zone `.ia-chat-area` très aérée quand il n'y a qu'un message (par nature).
+
 ## Annexe A — 21 images orphelines de `static/images/` (≈ 10 Mo)
 
 ```
