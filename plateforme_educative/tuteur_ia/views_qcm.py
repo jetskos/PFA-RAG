@@ -460,6 +460,14 @@ def verifier_statut_qcm(request, task_id):
       - {"status": "pret", "session_id": ..., "questions": ...} si terminée
       - {"status": "erreur", "detail": ...} en cas d'échec
     """
+    # Un id de tâche Celery est un UUID : sinon inutile d'interroger le backend
+    # (qui renvoie PENDING pour n'importe quoi et ferait boucler le client).
+    import uuid
+    try:
+        uuid.UUID(str(task_id))
+    except (ValueError, TypeError, AttributeError):
+        return JsonResponse({'status': 'erreur', 'detail': gettext("Tâche introuvable.")}, status=404)
+
     try:
         from celery.result import AsyncResult
         result = AsyncResult(task_id)
@@ -483,5 +491,5 @@ def verifier_statut_qcm(request, task_id):
 
     except Exception as e:
         logger.error(f"Erreur vérification statut QCM task {task_id}: {e}", exc_info=True)
-        return JsonResponse({'status': 'erreur', 'detail': str(e)}, status=500)
+        return JsonResponse({'status': 'erreur', 'detail': gettext("Erreur lors de la vérification du statut.")}, status=500)
 

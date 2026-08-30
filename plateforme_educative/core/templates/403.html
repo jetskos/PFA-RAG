@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Accès refusé" %}{% endblock %}
+
+{% block content %}
+<div style="max-width: 32rem; margin: 4rem auto; padding: 2rem 1.5rem; text-align: center;">
+    <div style="font-size: 4rem; font-weight: 800; color: var(--accent-danger, #ef4444); line-height: 1;">403</div>
+    <h1 style="font-size: 1.4rem; margin: 1rem 0 0.5rem;">{% trans "Vous n'avez pas accès à cette page" %}</h1>
+    <p style="color: var(--text-secondary, #64748b); margin-bottom: 1.75rem;">
+        {% if exception %}{{ exception }}{% else %}{% trans "Cette section est réservée à un autre rôle." %}{% endif %}
+    </p>
+    <a href="/" class="btn btn-primary" style="text-decoration: none;">
+        {% trans "Retour à l'accueil" %}
+    </a>
+</div>
+{% endblock %}

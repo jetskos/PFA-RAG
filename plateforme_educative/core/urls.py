@@ -16,8 +16,6 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from django.conf import settings
-from django.conf.urls.static import static
 from .views import (
     home_view,
     dashboard_router,
@@ -87,8 +85,11 @@ urlpatterns += i18n_patterns(
 )
 
 from django.urls import re_path
-from django.views.static import serve
+from .protected_media import serve_protected_media
 
+# /media/ derrière l'authentification (voir core/protected_media.py). En prod,
+# un vrai serveur front (nginx) devrait prendre le relais avec une règle
+# `internal;` équivalente.
 urlpatterns += [
-    re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
+    re_path(r'^media/(?P<path>.*)$', serve_protected_media, name='protected_media'),
 ]

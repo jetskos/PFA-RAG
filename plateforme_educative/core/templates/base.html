@@ -8,6 +8,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>{% block title %}{% trans "Plateforme Éducative IoT & IA" %}{% endblock %}</title>
 
+    {# Applique le thème avant le rendu pour éviter le flash clair en mode sombre. #}
+    <script>
+        (function () {
+            try {
+                var t = localStorage.getItem('theme') ||
+                    (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+                document.documentElement.setAttribute('data-theme', t);
+            } catch (e) {}
+        })();
+    </script>
+
     {# ── PWA ── #}
     <link rel="manifest" href="/manifest.webmanifest">
     <meta name="theme-color" content="#0d9488" media="(prefers-color-scheme: light)">
@@ -48,7 +59,7 @@
     <header class="site-header">
         <div class="header-inner">
             <div style="display:flex; align-items:center; gap:1rem;">
-                <button id="mobile-menu-btn" class="mobile-only" onclick="toggleMobileMenu()" aria-label="Menu">
+                <button id="mobile-menu-btn" class="mobile-only" onclick="toggleMobileMenu()" aria-label="{% trans 'Menu' %}">
                     <i class="ti ti-menu-2"></i>
                 </button>
                 <a href="{% url 'accueil' %}" class="brand">
@@ -132,7 +143,7 @@
                 <div class="notifications-dropdown-container">
                     <button class="btn-ghost" id="notifications-dropdown-btn" aria-haspopup="true" aria-expanded="false"
                         style="padding: 8px; border-radius: 50%; width: 36px; height: 36px; justify-content: center; position: relative; display: inline-flex; cursor: pointer; color: var(--text-secondary); background: transparent;"
-                        title="Notifications">
+                        title="{% trans 'Notifications' %}">
                         <i class="ti ti-bell" style="font-size: 18px;"></i>
                         {% if unread_notifications_count > 0 %}
                         <span class="notifications-badge"
@@ -237,7 +248,7 @@
                         </div>
                         <div class="profile-capsule-avatar">
                             {% if user.photo %}
-                            <img src="{{ user.photo.url }}" alt="Photo de profil" class="profile-capsule-img">
+                            <img src="{{ user.photo.url }}" alt="{% trans 'Photo de profil' %}" class="profile-capsule-img">
                             {% else %}
                             <span class="profile-capsule-initials">
                                 {% if user.first_name %}

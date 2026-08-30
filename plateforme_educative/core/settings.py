@@ -4,9 +4,13 @@ try:
 except ImportError:
     pass
 
-from datetime import timedelta
 from pathlib import Path
 import os
+import sys as _sys
+
+# `manage.py test` : évite d'appliquer le durcissement de prod (redirection SSL,
+# garde SECRET_KEY…) à la suite de tests, qui tourne sans variables d'env.
+_TESTING = 'test' in _sys.argv
 
 
 def _load_env_file(env_path: Path) -> None:
@@ -32,7 +36,9 @@ _load_env_file(BASE_DIR / '.env')
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-9h8fzyz98diom8_mc@mb%y*%--n3)$!=#-4*l(&e38@pegwd-b')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DJANGO_DEBUG', 'True').lower() in {'1', 'true', 'yes', 'on'}
+# Défaut sûr : False. Le développement local active DJANGO_DEBUG=True via .env
+# ou test_local.sh.
+DEBUG = os.getenv('DJANGO_DEBUG', 'False').lower() in {'1', 'true', 'yes', 'on'}
 
 
 def _env_list(name: str, default: list[str]) -> list[str]:
@@ -42,7 +48,12 @@ def _env_list(name: str, default: list[str]) -> list[str]:
     return [item.strip() for item in raw_value.split(',') if item.strip()]
 
 
-ALLOWED_HOSTS = _env_list('DJANGO_ALLOWED_HOSTS', ['127.0.0.1', 'localhost', '*'])
+# En prod : liste blanche stricte via DJANGO_ALLOWED_HOSTS (ex. "mon-noeud.lan,10.0.0.5").
+# En dev (DEBUG) : wildcard toléré pour l'accès téléphone en LAN sans configuration.
+ALLOWED_HOSTS = _env_list(
+    'DJANGO_ALLOWED_HOSTS',
+    ['*'] if DEBUG else ['127.0.0.1', 'localhost'],
+)
 
 CSRF_TRUSTED_ORIGINS = _env_list('DJANGO_CSRF_TRUSTED_ORIGINS', [
     'https://*.up.railway.app', 
@@ -60,10 +71,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'rest_framework',
-    'rest_framework.authtoken',
-    'rest_framework_simplejwt',
-   
     'accounts',
     'apprentissage',
     'logistics',
@@ -191,25 +198,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.TokenAuthentication',
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ),
-    'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
-    ),
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10,
-}
-
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(hours=24),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
-    'AUTH_HEADER_TYPES': ('Bearer',),
-}
-
 AUTH_USER_MODEL = 'accounts.Utilisateur'
 
 # Connexion par e-mail insensible à la casse (claviers mobiles + SQLite
@@ -225,18 +213,27 @@ LOGIN_URL = 'accounts:login'
 LOGIN_REDIRECT_URL = 'accueil'
 LOGOUT_REDIRECT_URL = 'accueil'
 # Security settings for deployment
-if not DEBUG:
-    SECURE_SSL_REDIRECT = True
+if not DEBUG and not _TESTING:
+    SECURE_SSL_REDIRECT = os.getenv('DJANGO_SECURE_SSL_REDIRECT', 'True').lower() in {'1', 'true', 'yes', 'on'}
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
     SECURE_HSTS_SECONDS = 31536000 # 1 year
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
     X_FRAME_OPTIONS = 'DENY'
-    
-    # Check for insecure secret key in production
-    if 'django-insecure-' in SECRET_KEY:
-        raise ValueError("Unsafe SECRET_KEY in production! Set DJANGO_SECRET_KEY in your environment.")
+
+    # Pas de clé secrète fournie en prod : on en génère une éphémère (les sessions
+    # existantes seront invalidées au redémarrage) plutôt que de servir la clé
+    # `django-insecure-` du dépôt. Un déploiement sérieux fixe DJANGO_SECRET_KEY.
+    if not os.getenv('DJANGO_SECRET_KEY') or 'django-insecure-' in SECRET_KEY:
+        import warnings
+        from django.core.management.utils import get_random_secret_key
+        SECRET_KEY = get_random_secret_key()
+        warnings.warn(
+            "DJANGO_SECRET_KEY non défini en production : clé aléatoire éphémère "
+            "générée. Fixez DJANGO_SECRET_KEY pour des sessions persistantes.",
+            RuntimeWarning,
+        )
 else:
     X_FRAME_OPTIONS = 'SAMEORIGIN'
 
@@ -269,8 +266,7 @@ CELERY_TASK_EAGER_PROPAGATES = os.getenv('CELERY_TASK_ALWAYS_EAGER', 'False').lo
 
 # Pendant `manage.py test`, exécuter les tâches Celery en synchrone (pas de worker
 # ni de Redis requis) et utiliser un backend e-mail en mémoire.
-import sys as _sys
-if 'test' in _sys.argv:
+if _TESTING:
     CELERY_TASK_ALWAYS_EAGER = True
     CELERY_TASK_EAGER_PROPAGATES = True
     EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'

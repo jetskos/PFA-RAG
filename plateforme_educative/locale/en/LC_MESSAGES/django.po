@@ -6373,3 +6373,62 @@ msgstr "Score: %(score)s/100"
 #, python-format
 msgid "Tu as eu %(correctes)s bonne(s) réponse(s) sur %(total)s. Relis le chapitre et réessaie !"
 msgstr "You got %(correctes)s correct answer(s) out of %(total)s. Review the chapter and try again!"
+
+# --- Ajouts audit 2026-08-30 (SEC-01, I18N-01/02, BUG-03/05/08) ---
+
+msgid "Accès refusé"
+msgstr "Access denied"
+
+msgid "Vous n'avez pas accès à cette page"
+msgstr "You don't have access to this page"
+
+msgid "Cette section est réservée à un autre rôle."
+msgstr "This section is reserved for another role."
+
+msgid "Page introuvable"
+msgstr "Page not found"
+
+msgid "Cette page n'existe pas"
+msgstr "This page doesn't exist"
+
+msgid "Le lien est peut-être cassé, ou la page a été déplacée."
+msgstr "The link may be broken, or the page may have been moved."
+
+msgid "Nouveau ticket matériel ouvert"
+msgstr "New equipment ticket opened"
+
+msgid "Cours publié"
+msgstr "Course published"
+
+msgid "Nouvel utilisateur inscrit"
+msgstr "New user registered"
+
+msgid "du matériel"
+msgstr "equipment"
+
+msgid "Une erreur est survenue pendant l'export."
+msgstr "An error occurred during export."
+
+msgid "Une erreur est survenue pendant l'import."
+msgstr "An error occurred during import."
+
+msgid "Fichier non disponible"
+msgstr "File not available"
+
+msgid "Tâche introuvable."
+msgstr "Task not found."
+
+msgid "Erreur lors de la vérification du statut."
+msgstr "Error while checking status."
+
+#, python-format
+msgid "Le formateur %(nom)s a signalé un besoin pour %(materiel)s."
+msgstr "%(nom)s reported a need for %(materiel)s."
+
+#, python-format
+msgid "Le module « %(titre)s » a été mis en ligne pour le niveau %(niveau)s."
+msgstr "The module \"%(titre)s\" was published for level %(niveau)s."
+
+#, python-format
+msgid "L'utilisateur %(nom)s a créé son compte."
+msgstr "%(nom)s created their account."

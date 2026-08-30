@@ -57,10 +57,13 @@ def _admin_dashboard_context(request=None):
             'date': t.date_creation,
             'type': 'ticket',
             'dot_class': 'dot-red',
-            'title': 'Nouveau ticket matériel ouvert',
-            'desc': f"Le formateur {t.formateur.get_full_name()} a signalé un besoin pour {t.equipement.nom if t.equipement else 'du matériel'}."
+            'title': _('Nouveau ticket matériel ouvert'),
+            'desc': _("Le formateur %(nom)s a signalé un besoin pour %(materiel)s.") % {
+                'nom': t.formateur.get_full_name(),
+                'materiel': t.equipement.nom if t.equipement else _('du matériel'),
+            }
         })
-        
+
     # 2. Recent courses
     recent_courses = Cours.objects.select_related('createur', 'niveau').order_by('-date_creation')[:3]
     for c in recent_courses:
@@ -68,10 +71,13 @@ def _admin_dashboard_context(request=None):
             'date': c.date_creation,
             'type': 'cours',
             'dot_class': 'dot-blue',
-            'title': 'Cours publié',
-            'desc': f"Le module '{c.titre}' a été mis en ligne pour le niveau {c.niveau.nom}."
+            'title': _('Cours publié'),
+            'desc': _("Le module « %(titre)s » a été mis en ligne pour le niveau %(niveau)s.") % {
+                'titre': c.titre,
+                'niveau': c.niveau.nom,
+            }
         })
-        
+
     # 3. Recent users
     recent_users = Utilisateur.objects.order_by('-date_creation')[:3]
     for u in recent_users:
@@ -79,8 +85,8 @@ def _admin_dashboard_context(request=None):
             'date': u.date_creation,
             'type': 'user',
             'dot_class': 'dot-green',
-            'title': 'Nouvel utilisateur inscrit',
-            'desc': f"L'utilisateur {u.get_full_name()} a créé son compte."
+            'title': _('Nouvel utilisateur inscrit'),
+            'desc': _("L'utilisateur %(nom)s a créé son compte.") % {'nom': u.get_full_name()},
         })
         
     # Sort timeline by date descending and limit to 5
@@ -248,11 +254,12 @@ def role_required(*allowed_roles):
         @wraps(view_func)
         @login_required
         def _wrapped(request, *args, **kwargs):
+            from django.core.exceptions import PermissionDenied
             user = request.user
             if not getattr(user, 'is_active', False):
-                return HttpResponseForbidden(_('Votre compte est en attente de validation.'))
+                raise PermissionDenied(_('Votre compte est en attente de validation.'))
             if user.role not in allowed_roles and not user.is_superuser:
-                return HttpResponseForbidden(_('Accès refusé.'))
+                raise PermissionDenied(_('Accès refusé.'))
             return view_func(request, *args, **kwargs)
 
         return _wrapped
@@ -670,11 +677,8 @@ def add_student_to_classe_page_view(request, classe_id):
 
 
 @role_required('ADMIN')
-@require_http_methods(['GET', 'POST'])
+@require_http_methods(['POST'])
 def activate_pending_student_view(request):
-    if request.method != 'POST':
-        return HttpResponseForbidden(_('Méthode non autorisée.'))
-
     form = PendingStudentActivationForm(request.POST)
     if form.is_valid():
         student = Utilisateur.objects.get(pk=form.cleaned_data['student_id'])

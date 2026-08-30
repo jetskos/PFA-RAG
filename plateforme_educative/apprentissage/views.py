@@ -29,6 +29,15 @@ def _htmx_modal_error_response(request, template_name, context):
     return response
 
 
+def _eleve_peut_acceder_cours(user, cours):
+    """Un élève ne voit que les cours de son niveau. Formateurs/admins : tout."""
+    if user.is_superuser or getattr(user, 'is_formateur', False) or getattr(user, 'role', None) == 'ADMIN':
+        return True
+    user_niveau = getattr(getattr(user, 'classe', None), 'niveau', None)
+    # Pas de niveau assigné : on ne bloque pas (comportement historique du catalogue).
+    return user_niveau is None or cours.niveau_id == user_niveau.id
+
+
 def _get_video_context(chapitre):
     """
     Calcule comment afficher la vidéo d'un chapitre.
@@ -96,6 +105,11 @@ def _get_video_context(chapitre):
 @login_required
 def espace_formateur(request):
     """Espace dédié aux formateurs pour gérer leurs cours."""
+    # Réservé aux formateurs (les admins/superusers passent aussi).
+    if not request.user.is_formateur and request.user.role != 'ADMIN' and not request.user.is_superuser:
+        from django.core.exceptions import PermissionDenied
+        raise PermissionDenied(_("Accès réservé aux formateurs."))
+
     # Si le champ createur est null pour certains cours, on filtre proprement
     mes_cours = Cours.objects.filter(createur=request.user).order_by('-date_creation')
 
@@ -509,15 +523,6 @@ def detail_cours(request, cours_id):
         # Grouper les documents par type et filtrer les vides
         documents_par_type = {}
         for doc in chapitre.documents.all():
-            if settings.DEBUG:
-                file_exists = False
-                file_path = ''
-                try:
-                    file_path = doc.fichier_pdf.path
-                    file_exists = os.path.exists(file_path)
-                except Exception as exc:
-                    file_path = f'INDISPONIBLE ({exc})'
-
             type_key = doc.get_type_document_display()
             if type_key not in documents_par_type:
                 documents_par_type[type_key] = []
@@ -603,11 +608,15 @@ def detail_chapitre(request, cours_id, chapitre_id):
         actif=True
     )
 
-    if request.user.is_authenticated:
-        ChapitreVisite.objects.update_or_create(
-            etudiant=request.user,
-            chapitre=chapitre,
-        )
+    # Même règle de niveau que detail_cours : un élève ne lit pas un chapitre
+    # d'un cours hors de son niveau (accès direct par URL).
+    if not _eleve_peut_acceder_cours(request.user, cours):
+        return HttpResponseForbidden(_("Ce cours ne correspond pas à votre niveau actuel."))
+
+    ChapitreVisite.objects.update_or_create(
+        etudiant=request.user,
+        chapitre=chapitre,
+    )
     
     # Regrouper les documents par type
     documents = chapitre.documents.filter(actif=True).order_by('type_document', 'ordre')
@@ -661,18 +670,25 @@ def detail_chapitre(request, cours_id, chapitre_id):
 
 @login_required
 def telecharger_document(request, document_id):
-    """Télécharge le fichier PDF d'un document. Réservé aux utilisateurs connectés."""
-    document = get_object_or_404(Document, id=document_id, actif=True)
-    
-    if not document.fichier_pdf:
-        return HttpResponse('Fichier non disponible', status=404)
-    
-    response = HttpResponse(
-        document.fichier_pdf.read(),
-        content_type='application/pdf'
+    """Télécharge le PDF d'un document — connecté + niveau de l'élève respecté."""
+    document = get_object_or_404(
+        Document.objects.select_related('chapitre__cours'),
+        id=document_id, actif=True,
     )
-    response['Content-Disposition'] = f'attachment; filename="{document.titre}.pdf"'
-    return response
+
+    if not _eleve_peut_acceder_cours(request.user, document.chapitre.cours):
+        return HttpResponseForbidden(_("Ce cours ne correspond pas à votre niveau actuel."))
+
+    if not document.fichier_pdf:
+        return HttpResponse(_('Fichier non disponible'), status=404)
+
+    from django.http import FileResponse
+    return FileResponse(
+        document.fichier_pdf.open('rb'),
+        as_attachment=True,
+        filename=f"{document.titre}.pdf",
+        content_type='application/pdf',
+    )
 
 
 @login_required
@@ -1476,8 +1492,10 @@ def export_multiple_courses_view(request):
             return JsonResponse({'status': 'error', 'message': _("Aucun cours valide n'a pu être exporté.")})
 
         return JsonResponse({'status': 'success', 'jobs': jobs_created, 'message': _("%(count)s export(s) lancé(s).") % {'count': len(jobs_created)}})
-    except Exception as e:
-        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+    except Exception:
+        import logging
+        logging.getLogger(__name__).exception("Échec du lancement de l'export multiple")
+        return JsonResponse({'status': 'error', 'message': _("Une erreur est survenue pendant l'export.")}, status=500)
 
 @login_required
 def check_export_status_view(request, job_id):
@@ -1533,8 +1551,10 @@ def import_multiple_courses_view(request):
         import_courses_task.delay(str(import_job.id), request.user.id, saved_files)
 
         return JsonResponse({'status': 'success', 'job_id': str(import_job.id), 'message': _("%(count)s fichier(s) en cours d'importation.") % {'count': len(saved_files)}})
-    except Exception as e:
-        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+    except Exception:
+        import logging
+        logging.getLogger(__name__).exception("Échec du lancement de l'import multiple")
+        return JsonResponse({'status': 'error', 'message': _("Une erreur est survenue pendant l'import.")}, status=500)
 
 
 # ── Mises à jour reçues par satellite (carrousel FLUTE) ───────────────────────

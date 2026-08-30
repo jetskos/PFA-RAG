@@ -4,7 +4,7 @@ Ces classes héritent de AccessMixin et proposent également un décorateur
 pour être appliquées facilement aux vues basées sur des fonctions (FBV).
 
 Vues auditées et corrigées :
-- apprentissage:espace_formateur : OK (vérifie le rôle FORMATEUR)
+- apprentissage:espace_formateur : garde de rôle inline (FORMATEUR / ADMIN / superuser)
 - apprentissage:nouveau_cours : OK (vérifie le rôle FORMATEUR)
 - apprentissage:editer_cours : CORRIGÉE -> FormateurCoursRequiredMixin
 - apprentissage:supprimer_cours : CORRIGÉE -> FormateurCoursRequiredMixin
