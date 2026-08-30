@@ -32,6 +32,10 @@ echo "▶ Données de démo (cours FR + cours EN)…"
 python manage.py seed_demo 2>&1 | tail -2 || true
 python manage.py seed_english_course 2>&1 | tail -1 || true
 
+echo "▶ Pré-chauffage du cache QCM (peut prendre quelques minutes si un LLM local tourne ;"
+echo "  ignoré proprement si le moteur IA est absent)…"
+python manage.py warmup_qcm 2>&1 | tail -3 || true
+
 echo "▶ Compte admin de test…"
 python manage.py shell -c "
 from accounts.models import Utilisateur
