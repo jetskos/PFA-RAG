@@ -515,6 +515,27 @@ Admin
         border-color: var(--primary, #0D9488);
         background: var(--bg-surface);
     }
+
+    /* ════ MOBILE : rythme vertical resserré ════ */
+    @media (max-width: 768px) {
+        .page-shell { padding: 0.8rem 0.85rem !important; }
+        .cmd-header { margin-bottom: 1rem !important; }
+
+        /* KPI : on garde 2×2 mais compact (au lieu de 4 empilés) */
+        .kpi-section { grid-template-columns: repeat(2, 1fr) !important; gap: 0.7rem !important; margin-bottom: 1.4rem !important; }
+        .glass-kpi { padding: 0.95rem 0.9rem !important; }
+
+        .charts-grid { gap: 0.85rem !important; margin-bottom: 1.4rem !important; }
+        .glass-chart-card { padding: 1.1rem !important; }
+
+        .cmd-grid { gap: 1rem !important; margin: 0 auto 1.25rem auto !important; }
+        .cmd-panel { padding: 1rem !important; }
+
+        .sat-card { padding: 1rem !important; margin-bottom: 0.9rem !important; }
+    }
+    @media (max-width: 330px) {
+        .kpi-section { grid-template-columns: 1fr !important; }
+    }
 </style>
 
 
