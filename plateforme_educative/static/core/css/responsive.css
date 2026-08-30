@@ -113,9 +113,10 @@ html, body {
         font-size: 0.9rem;
     }
 
-    /* Theme toggle and notification buttons */
+    /* Theme toggle and notification bell trigger (direct child only — ne doit pas
+       toucher les boutons DANS le volet de notifications, ex. « tout marquer lu ») */
     .header-actions #theme-toggle,
-    .header-actions .notifications-dropdown-container button {
+    .header-actions .notifications-dropdown-container > button {
         width: 32px !important;
         height: 32px !important;
         padding: 0.25rem !important;
@@ -158,26 +159,28 @@ html, body {
 
     /* Off-canvas navigation menu — FULLY OPAQUE, no blur */
     .main-nav {
-        position: fixed;
-        top: 0;
-        left: -100%;
-        width: 280px;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 280px !important;
+        max-width: 82vw;
         height: 100vh;
         height: 100dvh;
         background: var(--bg-surface, #ffffff) !important;
         backdrop-filter: none !important;
         -webkit-backdrop-filter: none !important;
-        flex-direction: column;
-        align-items: flex-start;
-        padding: calc(5rem + env(safe-area-inset-top, 0px)) 1.5rem 2rem 1.5rem;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        padding: calc(5rem + env(safe-area-inset-top, 0px)) 1.5rem 2rem 1.5rem !important;
         box-shadow: 4px 0 24px rgba(0,0,0,0.15);
-        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        z-index: 999;
+        transform: translateX(-101%);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        z-index: 999 !important;
         overflow-y: auto;
     }
 
     .main-nav.open {
-        left: 0;
+        transform: translateX(0) !important;
     }
 
     .main-nav a {
@@ -468,7 +471,7 @@ html, body {
     }
     /* Chapitre : header en colonne, flèches de nav pleine largeur, cibles 44px */
     .chapitre-detail-container { flex-direction: column !important; gap: 1.25rem !important; }
-    .chapitre-header-bar { flex-direction: column !important; align-items: stretch !important; gap: .75rem !important; }
+    .chapitre-header-bar { flex-direction: column !important; align-items: stretch !important; gap: .6rem !important; padding-bottom: .8rem !important; }
     .chapitre-nav-arrows { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: .5rem !important; }
     .chapitre-nav-arrows .nav-arrow-btn {
         min-height: 44px !important;
@@ -476,7 +479,22 @@ html, body {
         display: inline-flex !important;
         align-items: center !important;
     }
-    .content-breadcrumb { font-size: .82rem !important; flex-wrap: wrap !important; }
+    /* Fil d'Ariane du chapitre : réduit à un simple lien retour sur mobile
+       (le titre du chapitre et le bouton « plan du cours » donnent déjà le contexte) */
+    .content-breadcrumb { font-size: .85rem !important; flex-wrap: nowrap !important; gap: .3rem !important; overflow: hidden; }
+    .content-breadcrumb > span,
+    .content-breadcrumb > a:not(:first-child) { display: none !important; }
+    .content-breadcrumb > a:first-child {
+        display: inline-flex !important;
+        align-items: center;
+        gap: .3rem;
+        white-space: nowrap;
+        font-weight: 600;
+    }
+    .content-breadcrumb > a:first-child::before { content: "\2190"; font-weight: 700; }
+    /* Titre de chapitre : plancher plus bas sur mobile pour limiter la hauteur */
+    .chapitre-title { font-size: clamp(1.15rem, 5vw, 1.6rem) !important; line-height: 1.25 !important; }
+    .chapitre-col-gauche .eyebrow { margin-bottom: .3rem !important; }
     .eval-buttons-grid,
     .doc-grid { grid-template-columns: 1fr !important; }
     .btn-chat-send { width: 44px !important; height: 44px !important; flex-shrink: 0 !important; }
@@ -518,9 +536,23 @@ html, body {
 
     /* --- TUTEUR IA : QCM --- */
     .qcm-shell { margin: 1rem auto !important; }
-    .qcm-hdr { padding: 1.15rem 1.25rem !important; }
-    .qcm-hdr h1 { font-size: clamp(1.25rem, 5.5vw, 1.6rem) !important; }
-    .qcm-hdr .meta { flex-wrap: wrap !important; gap: .5rem !important; }
+    /* En-tête : l'icône + le titre sur une ligne, les métas passent dessous
+       (évite que le titre soit compressé dans une colonne de ~160 px) */
+    .qcm-hdr { padding: 1.15rem 1.25rem !important; flex-wrap: wrap !important; gap: .45rem .9rem !important; align-items: flex-start !important; }
+    .qcm-hdr > div:not(.ic):not(.meta) { flex: 1 1 0 !important; min-width: 0 !important; }
+    .qcm-hdr .ic { font-size: 1.9rem !important; }
+    .qcm-hdr h1 { font-size: clamp(1.15rem, 4.6vw, 1.5rem) !important; line-height: 1.25 !important; }
+    .qcm-hdr .meta {
+        margin-left: 0 !important;
+        flex: 1 1 100% !important;
+        text-align: left !important;
+        display: flex !important;
+        flex-wrap: wrap !important;
+        align-items: baseline !important;
+        gap: .3rem .9rem !important;
+        padding-top: .35rem !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.25) !important;
+    }
     .q-card { padding: 1.25rem !important; }
     .q-opt, .q-choice, .qcm-option { min-height: 46px !important; }
     .q-nav { gap: .6rem !important; }
@@ -926,11 +958,15 @@ html, body {
         min-width: 600px;
     }
 
-    /* --- Notifications dropdown --- */
+    /* --- Notifications dropdown : panneau plein-largeur ancré au viewport --- */
     .notifications-dropdown-menu {
-        right: -2rem !important;
-        width: calc(100vw - 2rem) !important;
-        max-width: 360px !important;
+        position: fixed !important;
+        top: calc(52px + env(safe-area-inset-top, 0px)) !important;
+        left: 0.6rem !important;
+        right: 0.6rem !important;
+        width: auto !important;
+        max-width: none !important;
+        max-height: 70dvh !important;
     }
 
     /* --- Toast messages --- */
