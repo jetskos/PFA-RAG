@@ -898,6 +898,20 @@ html, body {
         justify-content: center !important;
         min-height: 46px !important;
     }
+    /* Boutons d'action de formulaire dans une modale (styles inline flex-end) */
+    .modal-content > div[style*="flex-end"],
+    .modal-body > div[style*="flex-end"],
+    #modal-body > div[style*="flex-end"] {
+        flex-direction: column !important;
+        gap: .6rem !important;
+    }
+    .modal-content > div[style*="flex-end"] > *,
+    .modal-body > div[style*="flex-end"] > *,
+    #modal-body > div[style*="flex-end"] > * {
+        width: 100% !important;
+        justify-content: center !important;
+        min-height: 46px !important;
+    }
 
     .level-item-row .btn-edit, 
     .class-item-row .btn-edit, 
