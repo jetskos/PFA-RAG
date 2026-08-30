@@ -614,6 +614,21 @@
             justify-content: center;
             min-height: 46px;
         }
+        /* Lignes de devoirs / exports : carte empilée au lieu d'une rangée */
+        .devoir-row {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 0.85rem;
+            padding: 1rem 1.15rem;
+        }
+        .devoir-row > div[style*="width: 1px"] { display: none; }
+        .devoir-stat, .devoir-stats { flex-direction: row; align-items: center; gap: 0.5rem; }
+        .devoir-action {
+            width: 100%;
+            justify-content: center;
+            min-height: 46px;
+        }
+        .devoir-meta { flex-wrap: wrap; gap: 0.4rem 0.75rem; }
     }
 </style>
 

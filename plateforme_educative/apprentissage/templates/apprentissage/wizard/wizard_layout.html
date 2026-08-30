@@ -152,6 +152,20 @@
     }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
+    @media (max-width: 768px) {
+        .wiz-container {
+            margin: 1rem 0;
+            padding: 1.5rem 1.25rem;
+            border-radius: 14px;
+        }
+        .wiz-header { margin-bottom: 1.5rem; }
+        .wiz-title { font-size: clamp(1.4rem, 6vw, 1.9rem); }
+        .wiz-progress { margin-bottom: 1.75rem; }
+        .wiz-step { width: 32px; height: 32px; }
+        .wiz-btn { padding: 14px 20px; }
+        .wiz-input, .wiz-textarea, .wiz-select { font-size: 16px; }
+    }
+
 </style>
 
 <div class="wiz-container">

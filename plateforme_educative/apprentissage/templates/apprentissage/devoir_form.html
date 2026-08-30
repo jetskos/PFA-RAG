@@ -40,7 +40,7 @@
                 {% if form.fichier_consigne.errors %}<div class="form-error">{{ form.fichier_consigne.errors }}</div>{% endif %}
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                 <div class="form-group">
                     <label class="form-label">{{ form.date_limite.label }} <span style="color: var(--texte-secondaire); font-size: 0.8rem;">({% translate "facultatif" %})</span></label>
                     {{ form.date_limite }}
@@ -58,7 +58,7 @@
                 <label style="margin: 0; cursor: pointer;">{% translate "Devoir visible par les élèves" %}</label>
             </div>
 
-            <div style="display: flex; gap: 0.75rem; justify-content: flex-end; border-top: 1px solid var(--bordure); padding-top: 1.25rem;">
+            <div class="form-actions-row" style="display: flex; gap: 0.75rem; justify-content: flex-end; border-top: 1px solid var(--bordure); padding-top: 1.25rem;">
                 <a href="{% url 'apprentissage:gerer_chapitre' chapitre_id=chapitre.pk %}" class="btn btn-ghost">{% translate "Annuler" %}</a>
                 <button type="submit" class="btn-primary">
                     <i class="ti ti-device-floppy"></i> {{ action }}

@@ -265,6 +265,20 @@
         text-decoration: none; backdrop-filter: blur(8px); transition: all 0.2s;
     }
     .btn-hero-secondary:hover { background: rgba(255,255,255,0.15); color: #2dd4bf; }
+
+    @media (max-width: 768px) {
+        .cf-hero {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1.5rem 1.25rem;
+            border-radius: 16px;
+        }
+        .cf-title { font-size: clamp(1.4rem, 6vw, 1.9rem); }
+        .cf-hero-right { width: 100%; }
+        .cf-hero-right > * { flex: 1 1 auto; justify-content: center; min-height: 46px; }
+        .cours-form-card { margin: 1rem 0; padding: 1.5rem 1.25rem; border-radius: 16px; }
+    }
 </style>
 
 <section class="page-shell">

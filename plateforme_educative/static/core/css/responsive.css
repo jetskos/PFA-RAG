@@ -845,20 +845,27 @@ html, body {
     .two-col-cards,
     .three-col-cards,
     .form-grid-2,
-    .details-info-grid {
+    .details-info-grid,
+    .drawer-grid {
         grid-template-columns: 1fr !important;
     }
     .form-actions-row,
+    .form-actions,
     .page-header-actions,
-    .modal-actions {
+    .modal-actions,
+    .wizard-nav {
         flex-direction: column !important;
         align-items: stretch !important;
         width: 100% !important;
     }
     .form-actions-row > *,
-    .page-header-actions > * {
+    .form-actions > *,
+    .page-header-actions > *,
+    .modal-actions > *,
+    .wizard-nav > * {
         width: 100% !important;
         justify-content: center !important;
+        min-height: 46px !important;
     }
 
     .level-item-row .btn-edit, 
