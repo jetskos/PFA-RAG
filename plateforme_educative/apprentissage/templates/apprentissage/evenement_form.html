@@ -199,11 +199,12 @@
         filter: brightness(1.05);
     }
     
-    @media (max-width: 640px) {
+    @media (max-width: 768px) {
         .form-row { grid-template-columns: 1fr; gap: 0; }
         .unified-form-card { padding: 1.4rem 1.2rem; }
+        .form-hero-title { font-size: clamp(1.4rem, 6vw, 2rem); }
         .unified-form-actions { flex-direction: column-reverse; align-items: stretch; }
-        .unified-form-actions a, .unified-form-actions button { justify-content: center; }
+        .unified-form-actions a, .unified-form-actions button { justify-content: center; min-height: 46px; }
     }
 </style>
 
