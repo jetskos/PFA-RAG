@@ -27,7 +27,6 @@ const PRECACHE_URLS = [
   "{% static 'vendor/htmx/htmx.min.js' %}",
   "{% static 'images/pwa/icon-192.png' %}",
   "{% static 'images/pwa/icon-512.png' %}",
-  "{% static 'images/logo_white.png' %}",
 ];
 
 self.addEventListener("install", (event) => {

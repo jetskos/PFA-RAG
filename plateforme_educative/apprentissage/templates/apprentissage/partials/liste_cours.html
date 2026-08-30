@@ -21,8 +21,10 @@
                     <i class="ti ti-user-circle"></i>
                     {% if cours.createur == request.user %}
                         {% translate "Par vous" %}
-                    {% else %}
+                    {% elif cours.createur %}
                         {{ cours.createur.get_full_name|default:cours.createur.email }}
+                    {% else %}
+                        {% translate "Formateur" %}
                     {% endif %}
                 </span>
                 <span class="cover-chapters">

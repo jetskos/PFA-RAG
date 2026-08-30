@@ -667,7 +667,7 @@
 
         {% if chapitre.description %}
             <div class="rich-copy" style="font-size: 1rem; color: var(--text-secondary); line-height: 1.6;">
-                {{ chapitre.description|safe }}
+                {{ chapitre.description|linebreaks }}
             </div>
         {% endif %}
 

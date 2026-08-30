@@ -10,8 +10,6 @@ sans réseau. Choisi pour sa rapidité sur CPU (~2-4s/appel) et sa fiabilité
 """
 import logging
 import os
-import socket
-import time
 
 
 logger = logging.getLogger(__name__)
@@ -45,33 +43,13 @@ OLLAMA_NUM_GPU = int(_ollama_num_gpu_env) if _ollama_num_gpu_env is not None els
 # Cache global des instances LLM
 _llm_cache = {}
 
-# Cache de connectivité — évite de re-tester le réseau à chaque appel LLM
-_connectivity_cache = {"online": None, "checked_at": 0.0}
-CONNECTIVITY_TTL_SECONDS = 30
-CONNECTIVITY_TIMEOUT_SECONDS = 2.0
-
-
 def _has_internet() -> bool:
-    """
-    Test de connectivité rapide (connexion TCP vers l'API Groq), mis en cache
-    quelques secondes pour ne pas ralentir chaque message avec un aller-retour réseau.
-    """
-    now = time.time()
-    if (
-        _connectivity_cache["online"] is not None
-        and (now - _connectivity_cache["checked_at"]) < CONNECTIVITY_TTL_SECONDS
-    ):
-        return _connectivity_cache["online"]
+    """Groq est-il joignable ? (TCP vers api.groq.com:443, mis en cache).
 
-    try:
-        socket.create_connection(("api.groq.com", 443), timeout=CONNECTIVITY_TIMEOUT_SECONDS).close()
-        online = True
-    except OSError:
-        online = False
-
-    _connectivity_cache["online"] = online
-    _connectivity_cache["checked_at"] = now
-    return online
+    Réutilise l'implémentation partagée `core.utils.has_internet` — même
+    mécanisme de test + cache, mais pointé sur l'endpoint LLM."""
+    from core.utils import has_internet
+    return has_internet(host="api.groq.com", port=443, timeout=2.0, ttl=30.0)
 
 
 def get_llm(temperature: float = 0.7, model_name: str = None, max_tokens: int = None):

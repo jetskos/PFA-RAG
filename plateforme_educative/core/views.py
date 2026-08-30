@@ -330,7 +330,6 @@ def formateur_dashboard_view(request):
 
 @role_required('ELEVE')
 def student_dashboard_view(request):
-    import json
     from apprentissage.models import Progression
 
     classe = getattr(request.user, 'classe', None)
@@ -359,7 +358,7 @@ def student_dashboard_view(request):
             radar_data.append(progression_percent)
 
     if not radar_labels:
-        radar_labels = ['Aucun cours']
+        radar_labels = [str(_('Aucun cours'))]
         radar_data = [0]
 
     return render(request, 'core/dashboard_student.html', {
@@ -367,8 +366,8 @@ def student_dashboard_view(request):
         'classe': classe,
         'niveau': niveau,
         'mes_cours': cours_data,
-        'radar_labels_json': json.dumps(radar_labels),
-        'radar_data_json': json.dumps(radar_data),
+        'radar_labels': radar_labels,
+        'radar_data': radar_data,
     })
 
 

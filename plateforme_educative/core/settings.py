@@ -55,11 +55,9 @@ ALLOWED_HOSTS = _env_list(
     ['*'] if DEBUG else ['127.0.0.1', 'localhost'],
 )
 
-CSRF_TRUSTED_ORIGINS = _env_list('DJANGO_CSRF_TRUSTED_ORIGINS', [
-    'https://*.up.railway.app', 
-    'https://*.railway.app',
-    'https://edutech1.up.railway.app'
-])
+# Renseigner via DJANGO_CSRF_TRUSTED_ORIGINS si la plateforme est servie derrière
+# un proxy HTTPS ou sur un domaine (ex. "https://noeud.lan,https://10.0.0.5").
+CSRF_TRUSTED_ORIGINS = _env_list('DJANGO_CSRF_TRUSTED_ORIGINS', [])
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
@@ -224,16 +222,11 @@ if not DEBUG and not _TESTING:
 
     # Pas de clé secrète fournie en prod : on en génère une éphémère (les sessions
     # existantes seront invalidées au redémarrage) plutôt que de servir la clé
-    # `django-insecure-` du dépôt. Un déploiement sérieux fixe DJANGO_SECRET_KEY.
+    # `django-insecure-` du dépôt. `manage.py check --deploy` signale déjà qu'il
+    # faut fixer DJANGO_SECRET_KEY pour des sessions persistantes.
     if not os.getenv('DJANGO_SECRET_KEY') or 'django-insecure-' in SECRET_KEY:
-        import warnings
         from django.core.management.utils import get_random_secret_key
         SECRET_KEY = get_random_secret_key()
-        warnings.warn(
-            "DJANGO_SECRET_KEY non défini en production : clé aléatoire éphémère "
-            "générée. Fixez DJANGO_SECRET_KEY pour des sessions persistantes.",
-            RuntimeWarning,
-        )
 else:
     X_FRAME_OPTIONS = 'SAMEORIGIN'
 

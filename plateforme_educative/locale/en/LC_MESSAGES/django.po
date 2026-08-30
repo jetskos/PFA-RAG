@@ -6432,3 +6432,15 @@ msgstr "The module \"%(titre)s\" was published for level %(niveau)s."
 #, python-format
 msgid "L'utilisateur %(nom)s a créé son compte."
 msgstr "%(nom)s created their account."
+
+# --- Ajouts audit passe 2 (wizard, notifications) ---
+
+msgid "Le fichier de couverture doit être une image."
+msgstr "The cover file must be an image."
+
+msgid "Aucun cours"
+msgstr "No course"
+
+#, python-format
+msgid "Le cours « %(cours)s » est disponible pour votre niveau %(niveau)s."
+msgstr "The course \"%(cours)s\" is available for your level %(niveau)s."

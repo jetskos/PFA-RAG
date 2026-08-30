@@ -38,6 +38,33 @@ def _eleve_peut_acceder_cours(user, cours):
     return user_niveau is None or cours.niveau_id == user_niveau.id
 
 
+def _notifier_nouveau_cours(cours):
+    """Notifie les élèves du niveau qu'un cours vient d'être publié. Best-effort.
+
+    À n'appeler que lorsque le cours est réellement visible (actif=True) : sinon
+    on notifie pour un brouillon vide (voir wizard de création)."""
+    if not cours.actif:
+        return
+    try:
+        from accounts.models import Utilisateur
+        from accounts.notifications import notifier
+        eleves = Utilisateur.objects.filter(
+            role='ELEVE', is_active=True, classe__niveau=cours.niveau,
+        )
+        for eleve in eleves:
+            notifier(
+                destinataire=eleve,
+                type='NOUVEAU_COURS',
+                titre=_("Nouveau cours : %(cours)s") % {'cours': cours.titre},
+                message=_("Le cours « %(cours)s » est disponible pour votre niveau %(niveau)s.")
+                        % {'cours': cours.titre, 'niveau': cours.niveau.nom},
+                url=reverse('apprentissage:detail_cours', args=[cours.id]),
+            )
+    except Exception:
+        import logging
+        logging.getLogger(__name__).exception("Notification « nouveau cours » échouée")
+
+
 def _get_video_context(chapitre):
     """
     Calcule comment afficher la vidéo d'un chapitre.
@@ -150,24 +177,8 @@ def nouveau_cours(request):
             cours = form.save(commit=False)
             cours.createur = request.user
             cours.save()
-            try:
-                from accounts.models import Utilisateur
-                from accounts.notifications import notifier
-                eleves = Utilisateur.objects.filter(
-                    role='ELEVE',
-                    is_active=True,
-                    classe__niveau=cours.niveau
-                )
-                for eleve in eleves:
-                    notifier(
-                        destinataire=eleve,
-                        type='NOUVEAU_COURS',
-                        titre=_("Nouveau cours : %(cours)s") % {'cours': cours.titre},
-                        message=_("Le cours '%(cours)s' est disponible pour votre niveau %(niveau)s.") % {'cours': cours.titre, 'niveau': cours.niveau.nom},
-                        url=reverse('apprentissage:detail_cours', args=[cours.id])
-                    )
-            except Exception as e:
-                pass
+            # Notifie seulement si le cours est publié (pas pour un brouillon).
+            _notifier_nouveau_cours(cours)
             return redirect(return_url)
     else:
         form = CoursForm()
@@ -191,9 +202,13 @@ def editer_cours(request, pk):
         return_url = reverse('apprentissage:espace_formateur')
 
     if request.method == 'POST':
+        etait_actif = cours.actif
         form = CoursForm(request.POST, request.FILES, instance=cours)
         if form.is_valid():
-            form.save()
+            cours = form.save()
+            # Publication d'un brouillon (actif False -> True) : on notifie les élèves.
+            if cours.actif and not etait_actif:
+                _notifier_nouveau_cours(cours)
             return redirect(return_url)
     else:
         form = CoursForm(instance=cours)

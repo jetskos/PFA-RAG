@@ -947,11 +947,13 @@
 
 <!-- Chart.js -->
 <script src="{% static 'vendor/chart/chart.umd.min.js' %}"></script>
+{{ radar_labels|json_script:"radar-labels-data" }}
+{{ radar_data|json_script:"radar-values-data" }}
 <script>
     document.addEventListener('DOMContentLoaded', function () {
 
         // ── Compute overall progression from radar data ──
-        const radarDataForOverall = {{ radar_data_json|safe }};
+        const radarDataForOverall = JSON.parse(document.getElementById('radar-values-data').textContent);
         if (radarDataForOverall && radarDataForOverall.length > 0) {
             const sum = radarDataForOverall.reduce((a, b) => a + b, 0);
             const avg = Math.round(sum / radarDataForOverall.length);
@@ -964,8 +966,8 @@
         }
 
         const ctx = document.getElementById('skillsRadarChart').getContext('2d');
-        const labels = {{ radar_labels_json|safe }};
-        const dataValues = {{ radar_data_json|safe }};
+        const labels = JSON.parse(document.getElementById('radar-labels-data').textContent);
+        const dataValues = JSON.parse(document.getElementById('radar-values-data').textContent);
 
     new Chart(ctx, {
         type: 'radar',

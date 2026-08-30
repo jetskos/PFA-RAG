@@ -85,7 +85,7 @@
                 <article class="content-card course-empty">
                     <p class="eyebrow">{% translate "Aperçu du cours" %}</p>
                     <h2>{{ cours.titre }}</h2>
-                    <p>{{ cours.description|safe }}</p>
+                    <p>{{ cours.description|linebreaks }}</p>
                     <p class="message-empty">{% translate "Aucun chapitre disponible dans ce cours." %}</p>
                 </article>
             {% endif %}
