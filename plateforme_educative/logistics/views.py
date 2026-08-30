@@ -109,7 +109,16 @@ def inventaire_view(request):
 @require_http_methods(['GET', 'POST'])
 def tickets_view(request):
     """Page support avec la liste des tickets actifs et résolution HTMX."""
-    tickets = Ticket.objects.exclude(statut='RESOLU')
+    from django.core.paginator import Paginator
+    from django.db.models import Count, Q
+
+    def _page(qs):
+        return Paginator(qs.select_related('ouvert_par', 'equipement', 'atelier'), 15).get_page(request.GET.get('page'))
+
+    actifs = Ticket.objects.exclude(statut='RESOLU').order_by('-date_creation', '-id')
+    q = (request.GET.get('q') or '').strip()
+    if q:
+        actifs = actifs.filter(Q(titre__icontains=q) | Q(description__icontains=q))
 
     if _is_htmx(request) and request.method == 'POST':
         ticket_id = request.POST.get('ticket_id')
@@ -121,24 +130,32 @@ def tickets_view(request):
         ticket = get_object_or_404(Ticket, id=ticket_id)
         ticket.statut = 'RESOLU'
         ticket.save()
-        tickets = Ticket.objects.exclude(statut='RESOLU')
+        actifs = Ticket.objects.exclude(statut='RESOLU').order_by('-date_creation', '-id')
         return render(request, 'logistics/partials/tickets_list.html', {
-            'tickets': tickets,
+            'page_obj': _page(actifs),
             'resolve_url': reverse('logistics:tickets'),
         })
 
-    # Stats for UI
-    all_tickets = Ticket.objects.all()
-    tickets_en_attente = all_tickets.filter(statut='OUVERT').count()
-    tickets_en_cours = all_tickets.filter(statut='EN_COURS').count()
-    tickets_resolus = all_tickets.filter(statut='RESOLU').count()
+    # Recherche / pagination HTMX : on ne renvoie que la liste.
+    if _is_htmx(request):
+        return render(request, 'logistics/partials/tickets_list.html', {
+            'page_obj': _page(actifs),
+            'resolve_url': reverse('logistics:tickets'),
+        })
+
+    # Stats for UI — 1 requête groupée
+    par_statut = {
+        row['statut']: row['n']
+        for row in Ticket.objects.values('statut').annotate(n=Count('id'))
+    }
 
     return render(request, 'logistics/tickets.html', {
-        'tickets': tickets,
+        'page_obj': _page(actifs),
+        'tickets_actifs_total': sum(v for k, v in par_statut.items() if k != 'RESOLU'),
         'resolve_url': reverse('logistics:tickets'),
-        'tickets_en_attente': tickets_en_attente,
-        'tickets_en_cours': tickets_en_cours,
-        'tickets_resolus': tickets_resolus,
+        'tickets_en_attente': par_statut.get('OUVERT', 0),
+        'tickets_en_cours': par_statut.get('EN_COURS', 0),
+        'tickets_resolus': par_statut.get('RESOLU', 0),
     })
 
 

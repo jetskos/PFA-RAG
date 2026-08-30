@@ -118,11 +118,16 @@ class Ticket(models.Model):
         default='OUVERT',
         verbose_name=_('Statut'),
     )
+    date_creation = models.DateTimeField(
+        auto_now_add=True,
+        null=True,
+        verbose_name=_('Date de création'),
+    )
 
     class Meta:
         verbose_name = _('Ticket')
         verbose_name_plural = 'Tickets'
-        ordering = ['-id']
+        ordering = ['-date_creation', '-id']
 
     def __str__(self):
         return self.titre

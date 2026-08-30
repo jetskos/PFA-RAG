@@ -155,7 +155,7 @@
         <i class="ti ti-ticket"></i>
       </div>
       <div>
-        <div class="stat-tile-val">{{ tickets|length }}</div>
+        <div class="stat-tile-val">{{ tickets_actifs_total|default:"0" }}</div>
         <div class="stat-tile-lbl">{% translate "Tickets actifs" %}</div>
       </div>
     </div>
@@ -202,7 +202,7 @@
     </div>
     <div class="tick-list-body">
       <div id="tickets-list">
-        {% include 'logistics/partials/tickets_list.html' with tickets=tickets resolve_url=resolve_url %}
+        {% include 'logistics/partials/tickets_list.html' with page_obj=page_obj resolve_url=resolve_url %}
       </div>
     </div>
   </div>
