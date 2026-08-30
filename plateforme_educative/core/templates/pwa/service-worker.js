@@ -77,13 +77,21 @@ function bypass(url, request) {
   return false;
 }
 
+/* Pages liées à un compte : on les sert réseau-d'abord mais on ne les met
+   JAMAIS en cache — sinon, sur un appareil partagé utilisé hors-ligne, un
+   utilisateur pourrait revoir le tableau de bord / le profil du précédent. */
+function isPrivatePage(url) {
+  return /\/(dashboard|auth|logistics)\//.test(url.pathname)
+      || /\/apprentissage\/formateur\//.test(url.pathname);
+}
+
 self.addEventListener("fetch", (event) => {
   const { request } = event;
   const url = new URL(request.url);
   if (bypass(url, request)) return;
 
   if (request.mode === "navigate") {
-    event.respondWith(networkFirstPage(request));
+    event.respondWith(networkFirstPage(request, isPrivatePage(url)));
     return;
   }
   if (isStatic(url)) {
@@ -100,18 +108,20 @@ self.addEventListener("fetch", (event) => {
   event.respondWith(staleWhileRevalidate(request, RUNTIME));
 });
 
-async function networkFirstPage(request) {
+async function networkFirstPage(request, isPrivate) {
   const cache = await caches.open(PAGES);
   try {
     const fresh = await fetch(request);
-    if (fresh && fresh.ok && fresh.type === "basic") {
+    if (!isPrivate && fresh && fresh.ok && fresh.type === "basic") {
       cache.put(request, fresh.clone());
       trim(PAGES, MAX_PAGES);
     }
     return fresh;
   } catch (err) {
-    const cached = await cache.match(request, { ignoreSearch: true });
-    if (cached) return cached;
+    if (!isPrivate) {
+      const cached = await cache.match(request, { ignoreSearch: true });
+      if (cached) return cached;
+    }
     const offline = await caches.match(OFFLINE_URL);
     return offline || new Response("Hors ligne", { status: 503, headers: { "Content-Type": "text/plain" } });
   }

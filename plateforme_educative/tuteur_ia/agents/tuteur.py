@@ -7,7 +7,7 @@ from typing import Any
 from langchain_core.messages import SystemMessage, HumanMessage
 from tuteur_ia.graph.state import StudyBuddyState
 from tuteur_ia.prompts.tuteur import TUTOR_SYSTEM_PROMPT, TUTOR_USER_PROMPT_TEMPLATE
-from tuteur_ia.agents.llm_factory import get_llm, with_language
+from tuteur_ia.agents.llm_factory import get_llm, with_language, language_directive
 
 logger = logging.getLogger(__name__)
 
@@ -90,9 +90,12 @@ def tuteur_node(state: StudyBuddyState) -> dict[str, Any]:
         recent_messages=recent_messages or "[Début de la session]",
     )
 
+    # La consigne de langue est répétée à la fin du prompt utilisateur : les
+    # petits modèles locaux mirroir la langue de leur dernière entrée (ici un
+    # gabarit en français), la consigne système seule ne suffit pas.
     messages = [
         SystemMessage(content=with_language(TUTOR_SYSTEM_PROMPT)),
-        HumanMessage(content=user_prompt),
+        HumanMessage(content=f"{user_prompt}\n\n{language_directive()}"),
     ]
 
     t0 = time.perf_counter()

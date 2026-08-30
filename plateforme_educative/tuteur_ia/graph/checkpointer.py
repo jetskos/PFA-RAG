@@ -81,11 +81,15 @@ class DjangoCheckpointSaver(BaseCheckpointSaver):
             if obj.parent_checkpoint_id else None
         )
 
-        writes_qs = GraphWrite.objects.filter(
+        # `list(...)` force la consommation immédiate du curseur : sous SQLite,
+        # un queryset itéré paresseusement laisse un curseur ouvert qui verrouille
+        # la base pour toute écriture ultérieure de la même connexion
+        # (« database is locked » dans la vue repondre).
+        writes_qs = list(GraphWrite.objects.filter(
             thread_id=thread_id,
             checkpoint_ns=checkpoint_ns,
             checkpoint_id=obj.checkpoint_id,
-        ).order_by("task_id", "idx")
+        ).order_by("task_id", "idx"))
 
         pending_writes = []
         for w in writes_qs:
@@ -171,7 +175,10 @@ class DjangoCheckpointSaver(BaseCheckpointSaver):
         if limit is not None:
             qs = qs[:limit]
 
-        for obj in qs:
+        # Matérialiser avant de `yield` : ne pas garder un curseur SQLite ouvert
+        # pendant que l'appelant (LangGraph) consomme le générateur — sinon toute
+        # écriture concurrente échoue avec « database is locked ».
+        for obj in list(qs):
             try:
                 yield self._row_to_tuple(obj, thread_id, checkpoint_ns)
             except Exception as e:

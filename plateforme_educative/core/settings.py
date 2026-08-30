@@ -121,6 +121,23 @@ DATABASES = {
     }
 }
 
+# SQLite (test local, mode hors-ligne sur petit nœud) : laisser plus de temps
+# aux écritures pour prendre le verrou plutôt que d'échouer immédiatement, et
+# passer en WAL pour que lectures et écritures ne se bloquent pas mutuellement
+# (utile pour le tuteur IA : le checkpointer LangGraph écrit pendant la requête).
+if db_engine == 'django.db.backends.sqlite3':
+    DATABASES['default'].setdefault('OPTIONS', {})['timeout'] = 20
+    from django.db.backends.signals import connection_created
+
+    def _sqlite_pragmas(sender, connection, **kwargs):
+        if connection.vendor == 'sqlite':
+            cur = connection.cursor()
+            cur.execute('PRAGMA journal_mode=WAL;')
+            cur.execute('PRAGMA synchronous=NORMAL;')
+            cur.execute('PRAGMA busy_timeout=20000;')
+
+    connection_created.connect(_sqlite_pragmas)
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',

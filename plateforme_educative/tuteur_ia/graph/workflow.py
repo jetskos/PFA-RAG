@@ -66,13 +66,26 @@ def get_graph():
             {"tutor": "tutor", END: END},
         )
 
-        try:
-            from tuteur_ia.graph.checkpointer import DjangoCheckpointSaver
-            checkpointer = DjangoCheckpointSaver()
-        except Exception as e:
-            import logging
-            logger = logging.getLogger(__name__)
-            logger.debug(f"Impossible de charger DjangoCheckpointSaver, utilisation de MemorySaver: {e}")
+        import logging
+        logger = logging.getLogger(__name__)
+
+        # Sous SQLite (test local, petit nœud hors-ligne), le checkpointer ORM
+        # écrit pendant que la requête tient déjà une transaction : SQLite
+        # verrouille toute la base et la vue repondre() échoue en
+        # « database is locked ». On garde alors les checkpoints en RAM (perdus
+        # au redémarrage, mais une session socratique est courte et ne survit
+        # de toute façon pas à un restart). Sur MySQL (prod), on persiste.
+        from django.db import connection as _default_conn
+        use_orm_saver = _default_conn.vendor != 'sqlite'
+
+        checkpointer = None
+        if use_orm_saver:
+            try:
+                from tuteur_ia.graph.checkpointer import DjangoCheckpointSaver
+                checkpointer = DjangoCheckpointSaver()
+            except Exception as e:
+                logger.warning(f"DjangoCheckpointSaver indisponible, repli MemorySaver : {e}")
+        if checkpointer is None:
             from langgraph.checkpoint.memory import MemorySaver
             checkpointer = MemorySaver()
 

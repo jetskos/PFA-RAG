@@ -17,7 +17,7 @@ from tuteur_ia.prompts.memoire import (
     MEMORY_SYSTEM_PROMPT,
     MEMORY_USER_PROMPT_TEMPLATE,
 )
-from tuteur_ia.agents.llm_factory import get_llm
+from tuteur_ia.agents.llm_factory import get_llm, with_language
 
 logger = logging.getLogger(__name__)
 
@@ -86,7 +86,7 @@ def memoire_node(state: StudyBuddyState) -> dict[str, Any]:
     new_profile = state["student_profile"].copy()
     try:
         response = llm.invoke([
-            SystemMessage(content=MEMORY_SYSTEM_PROMPT),
+            SystemMessage(content=with_language(MEMORY_SYSTEM_PROMPT)),
             HumanMessage(content=user_prompt),
         ])
 
