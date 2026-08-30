@@ -2,11 +2,18 @@
 
 Branche `finalisation-plateforme` (`4ae801d`) · re-audit du 2026-08-30 · Django 4.2.30 / Python 3.13
 
-> **MÀJ 2026-08-30 — correctifs passe 2 appliqués.** SEC-07/08/09, BUG-09/10/11,
-> UX-09, CLEAN-05/06/09/11/12/16/21/23 + optimisation des logos (2,2 Mo → 56 Ko).
-> Détail en § « Correctifs passe 2 appliqués ». Restent : CLEAN-13 (purge `base.css`),
-> CLEAN-22 (pagination logistique), styles inline. `manage.py test` = **99 verts**
-> (SQLite). Aucun 500 sur l'ensemble des routes × 4 rôles.
+> **MÀJ 2026-08-30 — correctifs passe 2 appliqués** (`bef6bc1`) : SEC-07/08/09,
+> BUG-09/10/11, UX-09, CLEAN-05/06/09/11/12/16/21/23 + logos (2,2 Mo → 56 Ko).
+>
+> **MÀJ 2026-08-30 — derniers P3 nettoyés** (`9f9a042`) : `print()` d'exceptions
+> avalées (`logistics/views.py`) → `logger` ; `debug_task` Celery inutilisé
+> supprimé ; `EvenementForm` — champ `cours` restreint au formateur ; N+1
+> supprimées (`student_dashboard_view` 3 req au lieu de ~4/cours ;
+> `_admin_dashboard_context` graphe 7 jours = 1 req → dashboard admin 29→23 req).
+>
+> **Plus aucun bug P1/P2/P3 connu.** Restent : CLEAN-13 (purge `base.css`),
+> CLEAN-22 (pagination logistique), styles inline (chantiers). `manage.py test`
+> = **99 verts** (SQLite). Aucun 500 sur l'ensemble des routes × 4 rôles.
 
 Cette passe suit le premier audit et ses correctifs (commit `4ae801d`). Méthode :
 99 tests de référence rejoués (verts, SQLite), parcours de toutes les routes GET
