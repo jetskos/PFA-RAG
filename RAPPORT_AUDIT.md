@@ -11,9 +11,16 @@ Branche `finalisation-plateforme` (`4ae801d`) · re-audit du 2026-08-30 · Djang
 > supprimées (`student_dashboard_view` 3 req au lieu de ~4/cours ;
 > `_admin_dashboard_context` graphe 7 jours = 1 req → dashboard admin 29→23 req).
 >
-> **Plus aucun bug P1/P2/P3 connu.** Restent : CLEAN-13 (purge `base.css`),
-> CLEAN-22 (pagination logistique), styles inline (chantiers). `manage.py test`
-> = **99 verts** (SQLite). Aucun 500 sur l'ensemble des routes × 4 rôles.
+> **MÀJ 2026-08-30 — chantiers finaux traités** :
+> `691a614` pagination + recherche des tickets (+ champ `Ticket.date_creation`
+> manquant) · `b3e91e5` purge `base.css` **109→70 Ko** (62 blocs morts,
+> vérifié au navigateur sur 6 types de page) · `484444e` styles inline du
+> header `base.html` → classes **+ correction d'un bug préexistant de bascule
+> de langue** (ne marchait pas au retour FR↔EN sur les sous-pages).
+>
+> **Plus aucun bug connu.** Reste : passe de masse des styles inline par
+> template (chantier, non fait — risque > bénéfice). `manage.py test` = **99
+> verts** (SQLite). Aucun 500 sur l'ensemble des routes × 4 rôles.
 
 Cette passe suit le premier audit et ses correctifs (commit `4ae801d`). Méthode :
 99 tests de référence rejoués (verts, SQLite), parcours de toutes les routes GET
