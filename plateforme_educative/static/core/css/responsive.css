@@ -43,23 +43,8 @@ html, body {
         font-size: 0.95rem;
     }
 
-    /* Home page steps grid */
-    .steps-grid {
-        grid-template-columns: repeat(2, 1fr) !important;
-    }
-
-    /* Home CTA bottom */
-    .home-cta-bottom {
-        padding: 3rem 1.5rem !important;
-    }
-    .home-cta-bottom h2 {
-        font-size: 1.8rem !important;
-    }
-
-    /* Section titles */
-    .section-title-big {
-        font-size: 1.6rem !important;
-    }
+    /* NB : styles mobiles de la page d'accueil (steps-grid, hero, bento, cta…)
+       portés par le <style> de core/home.html — voir son bloc @media final. */
 }
 
 /* =========================================
@@ -243,8 +228,10 @@ html, body {
     }
 
     /* --- GENERAL LAYOUT --- */
+    /* le <body> porte déjà le dégagement de la nav basse (65px) : pas besoin
+       d'un gros padding-bottom ici en plus. */
     .site-main {
-        padding: 1rem 0.75rem 3rem 0.75rem !important;
+        padding: 0.9rem 0.75rem 1rem 0.75rem !important;
     }
     
     main.main-content,
@@ -282,121 +269,8 @@ html, body {
     }
 
     /* --- HOME PAGE --- */
-    /* Hero */
-    .home-hero {
-        padding: 2rem 1.25rem !important;
-        min-height: auto !important;
-        border-radius: 16px !important;
-        margin-bottom: 2rem !important;
-    }
-    .home-hero::before,
-    .home-hero::after {
-        border-radius: 16px !important;
-    }
-    .hero-h1 {
-        font-size: clamp(1.6rem, 7vw, 2.2rem) !important;
-        margin-bottom: 0.75rem !important;
-    }
-    .hero-desc {
-        font-size: 0.88rem !important;
-        line-height: 1.5 !important;
-        margin-bottom: 1.25rem !important;
-    }
-    .hero-tag {
-        font-size: 0.6rem !important;
-        padding: 3px 10px !important;
-        margin-bottom: 0.75rem !important;
-    }
-    .hero-ctas {
-        flex-direction: column !important;
-        width: 100% !important;
-        gap: 0.6rem !important;
-    }
-    .btn-hero-primary, .btn-hero-ghost {
-        width: 100% !important;
-        justify-content: center !important;
-        padding: 0.85rem 1rem !important;
-        min-height: 48px !important;
-        font-size: 0.95rem !important;
-    }
-    .hero-stats {
-        flex-wrap: wrap !important;
-        gap: 1rem !important;
-        margin-top: 1.25rem !important;
-    }
-    .hero-stat-divider {
-        display: none !important;
-    }
-    .hero-visual {
-        display: none !important;
-    }
-
-    /* Pillars */
-    .home-pillars {
-        grid-template-columns: 1fr !important;
-        gap: 1rem !important;
-    }
-    .pillar-card {
-        min-height: 200px !important;
-    }
-
-    /* Bento Grid */
-    .bento-grid {
-        grid-template-columns: 1fr !important;
-    }
-    .bento-main {
-        min-height: 280px !important;
-    }
-
-    /* Steps */
-    .home-steps {
-        padding: 2rem 1.25rem !important;
-        border-radius: 16px !important;
-        margin-bottom: 3rem !important;
-    }
-    .steps-grid {
-        grid-template-columns: 1fr !important;
-        gap: 1rem !important;
-    }
-    .section-title-big {
-        font-size: clamp(1.5rem, 6vw, 1.9rem) !important;
-    }
-    .bento-main-content h2 {
-        font-size: clamp(1.25rem, 5.5vw, 1.6rem) !important;
-    }
-    .bento-main-content,
-    .bento-side-content { padding: 1.1rem !important; }
-
-    /* Roles */
-    .home-roles {
-        grid-template-columns: 1fr !important;
-        gap: 1rem !important;
-    }
-    .role-card {
-        padding: 1.5rem !important;
-    }
-    .role-card h3 {
-        font-size: 1.2rem !important;
-    }
-
-    /* CTA */
-    .home-cta-bottom {
-        padding: 2rem 1.25rem !important;
-        border-radius: 16px !important;
-    }
-    .home-cta-bottom h2 {
-        font-size: clamp(1.5rem, 6vw, 1.9rem) !important;
-    }
-    .home-cta-bottom p {
-        font-size: 0.9rem !important;
-    }
-    .btn-cta-white {
-        width: 100% !important;
-        justify-content: center !important;
-        padding: 0.85rem 1.5rem !important;
-        min-height: 48px !important;
-        font-size: 0.92rem !important;
-    }
+    /* Styles mobiles portés par le <style> de core/home.html (bloc @media
+       en fin de feuille) pour éviter la guerre de !important entre les deux. */
 
     /* --- ADMIN DASHBOARD --- */
     .cmd-header {
@@ -1076,11 +950,5 @@ html, body {
     }
     .brand-tagline {
         display: none !important;
-    }
-    .home-hero {
-        padding: 1.5rem 1rem !important;
-    }
-    .hero-h1 {
-        font-size: 1.4rem !important;
     }
 }
