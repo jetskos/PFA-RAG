@@ -214,16 +214,14 @@
                     <i class="ti ti-moon" id="theme-toggle-dark-icon" style="font-size: 18px; display: none;"></i>
                 </button>
 
-                <form action="{% url 'set_language' %}" method="post" style="display:inline-flex; align-items:center; margin-inline-end: 8px;">
+                <form action="{% url 'set_language' %}" method="post" class="lang-switch">
                     {% csrf_token %}
                     <input name="next" type="hidden" value="{{ request.get_full_path|default:'/' }}">
-                    <div style="display:flex; align-items:center; background: var(--bg-surface, #fff); border: 1px solid var(--border-color, #e2e8f0); border-radius: 20px; padding: 2px;">
-                        <button type="submit" name="language" value="fr" style="background: {% if LANGUAGE_CODE == 'fr' or LANGUAGE_CODE == 'fr-fr' %}var(--primary, #0D9488){% else %}transparent{% endif %}; color: {% if LANGUAGE_CODE == 'fr' or LANGUAGE_CODE == 'fr-fr' %}white{% else %}var(--text-secondary, #64748b){% endif %}; border: none; border-radius: 18px; padding: 4px 10px; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s ease;">
-                            FR
-                        </button>
-                        <button type="submit" name="language" value="en" style="background: {% if LANGUAGE_CODE == 'en' or LANGUAGE_CODE == 'en-us' %}var(--primary, #0D9488){% else %}transparent{% endif %}; color: {% if LANGUAGE_CODE == 'en' or LANGUAGE_CODE == 'en-us' %}white{% else %}var(--text-secondary, #64748b){% endif %}; border: none; border-radius: 18px; padding: 4px 10px; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s ease;">
-                            EN
-                        </button>
+                    <div class="lang-switch-track">
+                        <button type="submit" name="language" value="fr"
+                                class="lang-switch-btn{% if LANGUAGE_CODE == 'fr' or LANGUAGE_CODE == 'fr-fr' %} is-active{% endif %}">FR</button>
+                        <button type="submit" name="language" value="en"
+                                class="lang-switch-btn{% if LANGUAGE_CODE == 'en' or LANGUAGE_CODE == 'en-us' %} is-active{% endif %}">EN</button>
                     </div>
                 </form>
 
@@ -429,6 +427,30 @@
             document.getElementById("modal-container").innerHTML = "";
         });
 
+        // Bascule de langue : on pose le cookie via /i18n/setlang/ puis on
+        // recharge la page courante avec le bon préfixe (/fr/ <-> /en/).
+        // (translate_url côté Django échoue quand le cookie et l'URL divergent.)
+        (function () {
+            const form = document.querySelector('.lang-switch');
+            if (!form) return;
+            form.addEventListener('submit', function (e) {
+                const btn = e.submitter || document.activeElement;
+                const lang = btn && btn.name === 'language' ? btn.value : null;
+                if (!lang) return;
+                e.preventDefault();
+                const body = new URLSearchParams({
+                    csrfmiddlewaretoken: form.querySelector('[name=csrfmiddlewaretoken]').value,
+                    language: lang,
+                });
+                fetch(form.action, { method: 'POST', body: body, credentials: 'include' })
+                    .catch(function () {})
+                    .finally(function () {
+                        const p = window.location.pathname.replace(/^\/(fr|en)(\/|$)/, '/' + lang + '$2');
+                        window.location.assign(p + window.location.search + window.location.hash);
+                    });
+            });
+        })();
+
         // Fonction pour gérer le menu mobile
         function toggleMobileMenu() {
             const nav = document.getElementById('main-nav');
@@ -509,28 +531,15 @@
     {% endwith %}
 
     {# ── PWA : bannière d'installation (Android/Chrome/Edge) ── #}
-    <div id="pwa-install-banner" role="dialog" aria-label="{% trans 'Installer l’application' %}"
-         style="display:none; position:fixed; left:0; right:0; z-index:1060;
-                bottom:calc(65px + env(safe-area-inset-bottom));
-                margin:0 auto; max-width:520px; padding:0 0.75rem;">
-        <div style="display:flex; align-items:center; gap:0.85rem; padding:0.85rem 1rem;
-                    background:var(--bg-surface,#fff); color:var(--text-primary,#0f172a);
-                    border:1px solid var(--border-color,#e2e8f0); border-radius:16px;
-                    box-shadow:0 12px 32px rgba(2,6,23,0.22);">
-            <img src="{% static 'images/pwa/icon-192.png' %}" alt="" width="40" height="40"
-                 style="border-radius:10px; flex-shrink:0;">
-            <div style="flex:1; min-width:0; line-height:1.3;">
-                <div style="font-weight:700; font-size:0.9rem;">{% trans "Installer EduTech" %}</div>
-                <div style="font-size:0.78rem; color:var(--text-secondary,#64748b);">{% trans "Accès plein écran, hors-ligne, depuis l’écran d’accueil." %}</div>
+    <div id="pwa-install-banner" class="pwa-install-banner" role="dialog" aria-label="{% trans 'Installer l’application' %}">
+        <div class="pwa-install-card">
+            <img src="{% static 'images/pwa/icon-192.png' %}" alt="" width="40" height="40" class="pwa-install-icon">
+            <div class="pwa-install-text">
+                <div class="pwa-install-title">{% trans "Installer EduTech" %}</div>
+                <div class="pwa-install-sub">{% trans "Accès plein écran, hors-ligne, depuis l’écran d’accueil." %}</div>
             </div>
-            <button type="button" id="pwa-install-accept"
-                    style="flex-shrink:0; border:none; cursor:pointer; background:var(--primary,#0d9488);
-                           color:#fff; font-weight:700; font-size:0.85rem; padding:0.55rem 0.9rem; border-radius:10px;">
-                {% trans "Installer" %}
-            </button>
-            <button type="button" id="pwa-install-dismiss" aria-label="{% trans 'Fermer' %}"
-                    style="flex-shrink:0; border:none; cursor:pointer; background:transparent;
-                           color:var(--text-secondary,#64748b); font-size:1.1rem; padding:0.25rem;">
+            <button type="button" id="pwa-install-accept" class="pwa-install-accept">{% trans "Installer" %}</button>
+            <button type="button" id="pwa-install-dismiss" class="pwa-install-dismiss" aria-label="{% trans 'Fermer' %}">
                 <i class="ti ti-x"></i>
             </button>
         </div>
