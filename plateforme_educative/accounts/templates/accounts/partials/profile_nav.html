@@ -57,16 +57,28 @@
         box-shadow: 0 4px 12px rgba(13, 148, 136, 0.25);
     }
     
-    @media (max-width: 480px) {
+    @media (max-width: 768px) {
         .profile-nav {
             display: flex;
             width: 100%;
+            gap: 0.25rem;
+            padding: 0.25rem;
+            margin-bottom: 1.25rem;
         }
         .profile-nav__tab {
-            flex: 1;
+            flex: 1 1 0;
+            min-width: 0;               /* autorise le rétrécissement */
             justify-content: center;
-            font-size: 0.85rem;
-            padding: 0.5rem 0.8rem;
+            gap: 0;
+            font-size: 0.8rem;
+            padding: 0.55rem 0.35rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        /* icônes retirées sur mobile : le libellé suffit et gagne ~24px/onglet */
+        .profile-nav__tab i {
+            display: none;
         }
     }
 </style>
