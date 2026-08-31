@@ -193,23 +193,18 @@ html, body {
     .brand-tagline {
         display: none !important;
     }
-    /* Sur mobile : marque compacte = pastille robot (dégradé teal→indigo),
-       lisible en 32px là où le logo blanc devient gris illisible. */
+    /* Sur mobile : marque compacte = logo robot EduTech (logo.png, PNG
+       transparent). Inversé en blanc sur le thème sombre. */
     .brand-logo-desktop { display: none !important; }
     .brand-logo-mobile {
-        display: inline-flex !important;
-        align-items: center;
-        justify-content: center;
-        width: 32px !important;
-        height: 32px !important;
-        border-radius: 9px;
-        background: linear-gradient(135deg, #0d9488 0%, #4f46e5 100%);
-        color: #ffffff;
+        display: block !important;
+        height: 36px !important;
+        width: auto !important;
+        object-fit: contain;
         flex-shrink: 0;
     }
-    .brand-logo-mobile i {
-        font-size: 20px;
-        line-height: 1;
+    [data-theme="dark"] .brand-logo-mobile {
+        filter: invert(1) brightness(1.8);
     }
 
     /* Off-canvas navigation menu — FULLY OPAQUE, no blur */
