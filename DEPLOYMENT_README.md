@@ -161,6 +161,41 @@ d'envoi d'e-mail et force l'IA locale (Ollama) sans même tester le réseau.
 Voir `plateforme_educative/DOCUMENTATION_HLS_FLUTE.md` §5 : lancer le récepteur du
 carrousel FLUTE en tâche de fond, sortie pointée sur `SATELLITE_INBOX_DIR`.
 
+### Import d'un cours en ligne de commande (sans interface web)
+
+Pour un déploiement scripté, reproductible, sans souris — l'équivalent du bouton
+**« Importer (ZIP) »** :
+
+```bash
+cd plateforme_educative
+
+# ajoute le cours
+python manage.py import_course /chemin/cours.zip
+
+# efface TOUS les cours puis injecte (scénario « on efface et on injecte »)
+python manage.py import_course /chemin/cours.zip --replace-all -y
+
+# remplace uniquement le cours dont le titre contient "IoT"
+python manage.py import_course /chemin/cours.zip --replace "IoT" -y
+
+# choisit le propriétaire (défaut : 1er superuser / ADMIN)
+python manage.py import_course /chemin/cours.zip --as prof@ecole.ma
+```
+
+Wrappers prêts à l'emploi (migrent d'abord, puis importent) :
+
+```bash
+bash plateforme_educative/deploy_course.sh cours.zip --replace-all      # Linux / Git Bash
+plateforme_educative\deploy_course.bat cours.zip --replace-all          # Windows
+```
+
+- **100 % hors-ligne** : exécution Celery forcée en synchrone, aucun worker requis.
+- Le **ZIP source n'est pas modifié** (l'import travaille sur une copie).
+- `--replace*` supprime aussi les fichiers média associés (MP4, PDF, couvertures,
+  dossiers HLS) — pas d'orphelins entre deux imports.
+- L'indexation IA des PDF (ChromaDB) est faite au passage si disponible ; sinon
+  la relancer avec `python manage.py indexer_pdfs`.
+
 ---
 
 ## 📱 7. Application mobile (PWA)
