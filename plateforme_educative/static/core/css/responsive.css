@@ -740,13 +740,31 @@ html, body {
         border-radius: 18px !important;
         box-shadow: 0 10px 30px rgba(2, 6, 23, 0.08) !important;
     }
+    /* Phase 3 (auth) : l'en-tête porte déjà la marque → pas de logo répété
+       dans la carte ; rythme resserré, plus de vide mort sous le sous-titre */
+    .auth-mobile-brand { display: none !important; }
     .auth-form-panel {
-        padding: 1.75rem 1.35rem 2rem !important;
+        padding: 1.25rem 1rem 1.75rem !important;
     }
-    .auth-mobile-brand {
-        display: flex !important;
+    .auth-form-header { margin-bottom: var(--m-4) !important; }
+    .auth-form-header .auth-form-sub,
+    .auth-form-panel > .auth-form-header p { margin-bottom: 0 !important; }
+    .auth-form-eyebrow { margin-bottom: var(--m-2) !important; }
+    .auth-form-title { font-size: clamp(1.4rem, 6vw, 1.7rem) !important; margin-bottom: var(--m-1) !important; }
+    .auth-field { margin-bottom: var(--m-4) !important; }
+    .auth-form-panel form p { margin-bottom: var(--m-4) !important; }
+    .auth-links { margin-top: var(--m-4) !important; }
+    .auth-links a { min-height: 44px; display: inline-flex; align-items: center; }
+
+    /* Pages auth "carte" (compte en attente, mot de passe oublié) */
+    .auth-container { min-height: auto !important; }
+    .auth-carte { max-width: 100% !important; }
+    .auth-carte h2 {
+        font-size: clamp(1.35rem, 5.5vw, 1.7rem) !important;
+        margin-bottom: var(--m-4) !important;
     }
-    
+
+
     /* --- ADMIN CARDS & LISTS OVERHAUL (Niveaux, Classes, Users) --- */
     .control-bar {
         flex-direction: column !important;
