@@ -562,20 +562,38 @@ html, body {
     .ia-shell {
         grid-template-columns: 1fr !important;
         height: auto !important;
-        gap: 1rem !important;
+        gap: .6rem !important;
         max-width: 100% !important;
     }
+    /* Barre du haut condensée : chapitre (pleine largeur) puis score +
+       progression en 2 tuiles compactes (sans la grille de 15 points),
+       puis le bouton retour. ~410px → ~220px avant le chat. */
     .ia-sidebar {
         flex-direction: row !important;
         flex-wrap: wrap !important;
-        gap: .75rem !important;
+        gap: .5rem !important;
+        margin-bottom: 0 !important;
     }
-    .ia-chapter-card { flex: 1 1 100% !important; }
-    .ia-score-card, .ia-progress-card { flex: 1 1 45% !important; min-width: 0 !important; }
-    .ia-back-btn { flex: 1 1 100% !important; min-height: 46px !important; justify-content: center !important; }
+    .ia-chapter-card { flex: 1 1 100% !important; padding: .75rem .9rem !important; }
+    .ia-chapter-name, .ia-chapter-card h2 { font-size: 1rem !important; line-height: 1.3 !important; }
+    .ia-score-card, .ia-progress-card {
+        flex: 1 1 calc(50% - .25rem) !important;
+        min-width: 0 !important;
+        padding: .7rem .85rem !important;
+    }
+    .ia-dots-grid { display: none !important; }
+    .ia-score-val { font-size: 1.5rem !important; }
+    .ia-score-card .ia-progress-track { margin: .35rem 0 !important; }
+    .ia-back-btn { flex: 1 1 100% !important; min-height: 44px !important; justify-content: center !important; }
+
+    /* Zone de chat : se fige en haut quand on défile, hauteur = viewport −
+       barre du bas − marge. Le composeur (bas de la colonne flex) reste
+       visible au-dessus de la nav basse (avant : il passait dessous). */
     .ia-chat-area {
-        height: calc(100dvh - 210px) !important;
-        min-height: 24rem !important;
+        position: sticky !important;
+        top: max(0.5rem, env(safe-area-inset-top, 0px)) !important;
+        height: calc(100dvh - 65px - env(safe-area-inset-bottom, 0px) - 1rem) !important;
+        min-height: 22rem !important;
         border-radius: 16px !important;
     }
     .ia-chat-header { padding: .8rem 1rem !important; }
