@@ -1,11 +1,27 @@
-# PLAN_MOBILE.md — Refonte du design mobile (Phase 0 : audit)
+# PLAN_MOBILE.md — Refonte du design mobile
 
-> Statut : **audit terminé, en attente de validation avant de coder.**
 > Périmètre : responsive < 768 px. Le desktop (≥ 769 px) ne doit pas bouger.
 > Méthode : parcours navigateur à 375 px (viewport 375×812), connecté
 > successivement en visiteur / élève (`enfant1@smart.com`) / formateur
-> (`prof@smart.com`) / admin (`admin@smart.com`), sur la branche
-> `finalisation-plateforme` au commit `a1e78c3`, base SQLite de démo.
+> (`prof@smart.com`) / admin (`admin@smart.com`).
+
+## Journal d'exécution
+
+| Phase | Commit | Contenu |
+|-------|--------|---------|
+| 0 — audit | `a1e78c3` | ce fichier |
+| 1 — coquille | `7070c3c` | en-tête **1 rangée** (G1) ; FR/EN à plat (G3) |
+| 2 — design system | `c221059` | tokens `--m-*` + gouttière unique 1 rem, fin du double padding (G7) ; cibles tactiles ≥ 44 px étendues (G8) ; filet typo h1/h2/h3 |
+| 3.1 — auth | `670f602` | inscription/connexion : plus de double logo (G9), plus de vide mort (1er champ −130 px), pages « carte » |
+| 3.2 — cours | *(RAS)* | catalogue (`::before` déco inoffensif), détail cours/chapitre déjà OK |
+| 3.3 — tuteur IA | `34e961e` | **session : composeur qui passait sous la barre du bas → corrigé** ; barre du haut condensée ~410 → ~180 px |
+| 3.4 — dashboards | `0d68c75` | cartes d'accès rapide élève « icône d'appli » (titres ne cassent plus) ; radar OK ; graphiques admin plafonnés 200 px |
+| 3.5 — formulaires | *(RAS)* | cours/gérer/événement/calendrier/wizard : déjà propres après Phase 2 |
+| 3.6 — logistique + gestion | `<en cours>` | **gestion users : 47 px de scroll-x → corrigé** (`<select>` masqué TomSelect sorti de l'écran) ; puces de rôle qui passent à la ligne ; `.logi-subtab` ≥ 44 px |
+
+---
+
+## Constats initiaux (Phase 0)
 
 ---
 

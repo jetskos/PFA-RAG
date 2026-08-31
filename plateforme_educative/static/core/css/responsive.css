@@ -44,6 +44,16 @@ html, body {
     max-width: 100vw;
 }
 
+/* TomSelect : le <select> original « accessible-hidden » garde sa position
+   statique. Dans un tableau large qui défile (ex. gestion des utilisateurs),
+   cette position peut tomber au-delà du viewport et créer un défilement
+   horizontal de page. On le sort franchement de l'écran (il reste
+   fonctionnellement présent pour l'accessibilité / la soumission du form). */
+.ts-hidden-accessible {
+    left: -9999px !important;
+    top: 0 !important;
+}
+
 /* =========================================
    TABLETTES ET SMARTPHONES (<= 992px)
    ========================================= */
@@ -800,6 +810,14 @@ html, body {
     }
 
 
+    /* Gestion des utilisateurs : les 4 puces de rôle passent à la ligne
+       (plutôt qu'un défilement horizontal peu découvrable) */
+    .admin-filter-group {
+        flex-wrap: wrap !important;
+        overflow-x: visible !important;
+    }
+    .admin-filter-btn { flex: 0 0 auto !important; }
+
     /* --- ADMIN CARDS & LISTS OVERHAUL (Niveaux, Classes, Users) --- */
     .control-bar {
         flex-direction: column !important;
@@ -854,13 +872,15 @@ html, body {
     input[type="search"], input[type="tel"], input[type="url"], textarea {
         min-height: 44px !important;
     }
-    /* Liens d'action secondaires ("Voir tout", "Gérer"…) : zone de tap élargie
-       sans grossir le texte */
-    .fmt-link, .profile-nav__tab, .logi-subnav a, .devoirs-tabs > a {
+    /* Liens d'action secondaires ("Voir tout", "Gérer"…) et onglets de
+       sous-navigation : zone de tap élargie sans grossir le texte */
+    .fmt-link, .profile-nav__tab, .logi-subnav a, .logi-subtab,
+    .devoirs-tabs > a {
         min-height: 44px !important;
         display: inline-flex !important;
         align-items: center !important;
     }
+    .header-inner .brand { min-height: 44px !important; }
     /* Cases à cocher / radios : un peu plus grandes au doigt */
     input[type="checkbox"], input[type="radio"] {
         min-width: 20px !important;
