@@ -69,9 +69,24 @@
   /* ── Step content (HTMX target) ── */
   #onboarding-card { padding: 0; }
 
-  @media (max-width: 540px) {
+  @media (max-width: 768px) {
+    /* L'onboarding prend tout l'écran : on masque l'en-tête et la barre de
+       navigation basse (qui, en z-index 1050, passait AU-DESSUS de l'overlay
+       et cachait le bouton « Accéder »). */
+    .site-header,
+    .mobile-bottom-nav { display: none !important; }
+    body { padding-bottom: 0 !important; }
+
+    /* Carte trop haute pour le viewport → l'overlay défile, ancré en haut */
+    .ob-overlay {
+      align-items: flex-start !important;
+      overflow-y: auto !important;
+      padding: 1rem 0.75rem calc(1.5rem + env(safe-area-inset-bottom, 0px)) !important;
+      padding-top: calc(1rem + env(safe-area-inset-top, 0px)) !important;
+    }
     .ob-card { border-radius: 20px; }
-    .ob-step-body { padding: 0 1.5rem 1.5rem !important; }
+    .ob-step-body { padding: 0 1.25rem 1.5rem !important; }
+    .ob-dots { padding-top: 1rem !important; }
   }
 </style>
 
