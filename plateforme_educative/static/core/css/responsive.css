@@ -359,12 +359,15 @@ html, body {
         grid-template-columns: 1fr !important;
         gap: 1rem !important;
     }
+    .glass-chart-card { padding: 1rem !important; }
+    /* Graphiques : hauteur plafonnée sur mobile (le 1er montait à 300px) */
+    .glass-chart-card canvas { max-height: 200px !important; }
     .cmd-grid {
         grid-template-columns: 1fr !important;
         gap: 1rem !important;
     }
     .cmd-panel {
-        padding: 1.25rem !important;
+        padding: 1rem !important;
         border-radius: 16px !important;
     }
 
@@ -381,8 +384,22 @@ html, body {
     }
     .quick-grid {
         grid-template-columns: 1fr 1fr !important;
-        gap: 0.75rem !important;
+        grid-auto-rows: 1fr !important;
+        gap: 0.6rem !important;
     }
+    /* Cartes d'accès rapide : disposition « icône d'appli » (icône au-dessus,
+       titre + sous-titre en dessous) → le texte ne casse plus mot à mot
+       dans une colonne de ~100 px */
+    .qa-card {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        text-align: left !important;
+        gap: 0.55rem !important;
+        padding: 0.9rem !important;
+    }
+    .qa-icon { width: 38px !important; height: 38px !important; font-size: 1.15rem !important; }
+    .qa-info h3 { font-size: 0.88rem !important; line-height: 1.25 !important; }
+    .qa-info p { font-size: 0.74rem !important; line-height: 1.3 !important; }
     .mid-grid,
     .prog-hero-content,
     .stat-strip {
