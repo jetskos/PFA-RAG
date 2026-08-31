@@ -54,9 +54,12 @@ def indexer_document_task(self, document_id: str, pdf_path: str):
         )
 
     except Exception as exc:
-        logger.error(
-            f"[ChromaDB] ✗ Erreur indexation {document_id}: {exc}",
-            exc_info=True,
+        # Indexation vectorielle optionnelle : un index ChromaDB absent ou
+        # corrompu ne doit pas polluer les logs d'une traceback par document.
+        # Réparer avec : python manage.py indexer_pdfs --reset
+        logger.warning(
+            "[ChromaDB] indexation ignoree pour le document %s : %s",
+            document_id[:8], exc,
         )
 
 import json

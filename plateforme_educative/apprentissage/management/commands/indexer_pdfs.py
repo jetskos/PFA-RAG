@@ -4,11 +4,12 @@ Management command : indexe tous les PDFs existants dans ChromaDB.
 Usage :
     python manage.py indexer_pdfs               # PDFs non encore indexés
     python manage.py indexer_pdfs --force       # Tout réindexer
+    python manage.py indexer_pdfs --reset       # Index corrompu : purge + réindexe
     python manage.py indexer_pdfs --stats       # Voir les stats ChromaDB
     python manage.py indexer_pdfs --chapitre <uuid>
 """
 import os
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
 from apprentissage.models import Document
 
 
@@ -19,6 +20,12 @@ class Command(BaseCommand):
         parser.add_argument(
             "--force", action="store_true",
             help="Réindexer même si déjà fait (vide et recrée les chunks)",
+        )
+        parser.add_argument(
+            "--reset", action="store_true",
+            help="Supprime entièrement l'index ChromaDB (media/chroma_db/) puis "
+                 "réindexe tout. À utiliser si l'index est corrompu "
+                 "(« Error loading hnsw index »). Implique --force.",
         )
         parser.add_argument(
             "--stats", action="store_true",
@@ -61,7 +68,29 @@ class Command(BaseCommand):
             ))
             return
 
-
+        # ── Réinitialisation de l'index (index corrompu) ─────────────────────
+        if options["reset"]:
+            options["force"] = True
+            import shutil
+            from tuteur_ia.tools import chroma_store
+            chroma_path = chroma_store._get_chroma_path()
+            chroma_store._client = None
+            chroma_store._collection = None
+            if os.path.isdir(chroma_path):
+                shutil.rmtree(chroma_path, ignore_errors=True)
+                if os.path.exists(os.path.join(chroma_path, "chroma.sqlite3")):
+                    raise CommandError(
+                        "Impossible de supprimer l'index ChromaDB : des fichiers "
+                        "sont verrouilles.\n"
+                        "  -> Arretez d'abord le serveur (runserver / daphne) ET "
+                        "le worker Celery, puis relancez :\n"
+                        "     python manage.py indexer_pdfs --reset"
+                    )
+                self.stdout.write(self.style.WARNING(
+                    f"Index ChromaDB supprime : {chroma_path}"
+                ))
+            else:
+                self.stdout.write(f"(aucun index existant a {chroma_path})")
 
         # ── Récupérer les documents à indexer ────────────────────────────────
         qs = Document.objects.filter(actif=True)
