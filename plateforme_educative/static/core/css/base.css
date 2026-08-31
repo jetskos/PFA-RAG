@@ -1939,21 +1939,11 @@ tr:hover td {
 
 /* Responsive adjustments */
 @media (max-width: 640px) {
+    /* L'en-tête mobile est géré par responsive.css (une seule rangée, menu
+       latéral off-canvas + barre de navigation basse). L'ancien empilement
+       vertical de .header-inner créait un en-tête sur 2 rangées. */
     .header-inner {
-        flex-direction: column;
-        align-items: stretch;
         padding: 1rem;
-    }
-
-    .main-nav {
-        flex-wrap: wrap;
-        justify-content: center;
-        margin-left: 0;
-    }
-
-    .header-actions {
-        margin-left: 0;
-        justify-content: center;
     }
 }
 @media (max-width: 768px) {
