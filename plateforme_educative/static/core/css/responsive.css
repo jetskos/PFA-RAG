@@ -1,5 +1,19 @@
 /* ── RESPONSIVE DESIGN (Mobile First & Adaptative) ── */
 
+/* ── Système d'espacement mobile (Phase 2) ──
+   Échelle unique réutilisée dans tout le bloc @media (max-width: 768px)
+   pour un rythme vertical/horizontal homogène d'une page à l'autre. */
+:root {
+    --m-1: 0.25rem;
+    --m-2: 0.5rem;
+    --m-3: 0.75rem;
+    --m-4: 1rem;
+    --m-5: 1.5rem;
+    --m-6: 2rem;
+    /* Retrait latéral de contenu unique sur mobile */
+    --page-gutter: 1rem;
+}
+
 /* Styles pour tous les écrans (modifications de base) */
 .mobile-only, .mobile-only-pdf {
     display: none !important;
@@ -255,17 +269,33 @@ html, body {
     /* --- GENERAL LAYOUT --- */
     /* le <body> porte déjà le dégagement de la nav basse (65px) : pas besoin
        d'un gros padding-bottom ici en plus. */
+    /* Retrait latéral UNIQUE (--page-gutter = 1rem) porté par .site-main.
+       Les conteneurs de page ("shells") ne rajoutent plus de retrait latéral
+       (évite le double padding : avant 12px + 14px = 26px de chaque côté). */
     .site-main {
-        padding: 0.9rem 0.75rem 1rem 0.75rem !important;
+        padding: 0.85rem var(--page-gutter) 1rem var(--page-gutter) !important;
     }
-    
+
+    .site-main > [class*="-shell"],
+    .site-main > .fmt-wrap,
+    .site-main > .main-wrap,
+    .site-main > .conteneur {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        max-width: 100% !important;
+        width: 100% !important;
+    }
+
     main.main-content,
     .container {
-        padding: 1rem !important;
+        padding: var(--page-gutter) !important;
     }
 
     .page-shell, .profile-shell, .admin-shell {
-        padding: 1rem 0.75rem !important;
+        padding-top: 1rem !important;
+        padding-bottom: 1rem !important;
         gap: 1rem;
     }
 
@@ -764,17 +794,36 @@ html, body {
     /* Global Tap Targets for Mobile (44x44px minimum recommended by Apple/Google) */
     .btn, button, .sidebar-chapter-link, .bottom-nav-item,
     .btn-primary, .btn-secondary, .btn-ghost, .btn-outline, .btn-danger, .btn-success,
-    a.btn-primary, a.btn-secondary, a.btn-ghost,
+    .btn-fmt, .btn-sm, .admin-filter-btn,
+    a.btn-primary, a.btn-secondary, a.btn-ghost, a.btn-fmt, a.btn-sm,
     select, input[type="text"], input[type="password"], input[type="email"],
     input[type="number"], input[type="date"], input[type="datetime-local"],
     input[type="search"], input[type="tel"], input[type="url"], textarea {
         min-height: 44px !important;
+    }
+    /* Liens d'action secondaires ("Voir tout", "Gérer"…) : zone de tap élargie
+       sans grossir le texte */
+    .fmt-link, .profile-nav__tab, .logi-subnav a, .devoirs-tabs > a {
+        min-height: 44px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+    }
+    /* Cases à cocher / radios : un peu plus grandes au doigt */
+    input[type="checkbox"], input[type="radio"] {
+        min-width: 20px !important;
+        min-height: 20px !important;
     }
     /* iOS : empêcher le zoom auto au focus des champs (police < 16px) */
     input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
     select, textarea {
         font-size: 16px !important;
     }
+
+    /* Filet typographique : tailles par défaut des titres si la page n'a pas
+       sa propre règle (sans !important → toute règle de classe l'emporte) */
+    h1 { font-size: clamp(1.35rem, 5.5vw, 1.8rem); line-height: 1.2; }
+    h2 { font-size: clamp(1.15rem, 5vw, 1.5rem); line-height: 1.25; }
+    h3 { font-size: clamp(1rem, 4vw, 1.2rem); line-height: 1.3; }
 
     /* Utilitaires mobile réutilisables */
     .two-col-cards,
