@@ -427,35 +427,43 @@ html, body {
 
     /* --- FORMATEUR DASHBOARD --- */
     .fmt-hero {
-        padding: 1.6rem 1.1rem 2.4rem !important;
-        border-radius: 0 0 20px 20px !important;
+        padding: 1.4rem 1.1rem 1.4rem !important;
+        border-radius: 0 0 18px 18px !important;
+        margin-bottom: 0.85rem !important;   /* plus de chevauchement -48px sur mobile */
     }
     .fmt-hero::before,
     .fmt-hero::after {
-        border-radius: 0 0 20px 20px !important;
+        border-radius: 0 0 18px 18px !important;
     }
     .fmt-hero-title {
-        font-size: clamp(1.4rem, 6vw, 1.9rem) !important;
+        font-size: clamp(1.3rem, 5.5vw, 1.7rem) !important;
     }
     .fmt-hero-right {
         display: none !important;
     }
+    /* Les pastilles du héros (1 cours · 5 chapitres · 0 demandes) répètent
+       exactement les tuiles KPI juste en dessous → masquées sur mobile */
+    .fmt-hero-pills { display: none !important; }
+    .fmt-hero-eyebrow { margin-bottom: 0.4rem !important; }
+    .fmt-hero-sub { margin-bottom: 0 !important; font-size: 0.85rem !important; }
     .fmt-wrap {
         padding: 0 0.9rem 1rem !important;
     }
     .fmt-kpi-row {
         grid-template-columns: 1fr 1fr !important;
-        gap: 0.7rem !important;
-        margin-bottom: 1.4rem !important;
+        gap: 0.6rem !important;
+        margin-bottom: 1.15rem !important;
     }
-    .kpi-card { padding: 1rem 1rem 0.9rem !important; }
+    /* Tuiles KPI resserrées (avant : ~180px de haut chacune) */
+    .kpi-card { padding: 0.85rem 0.85rem 0.8rem !important; }
+    .kpi-card-top { margin-bottom: 0.5rem !important; }
+    .kpi-icon { width: 34px !important; height: 34px !important; font-size: 1.05rem !important; }
+    .kpi-num { font-size: 1.5rem !important; margin-bottom: 0.15rem !important; }
+    .kpi-bar { margin-top: 0.55rem !important; }
     .fmt-main-grid {
         grid-template-columns: 1fr !important;
-        gap: 1rem !important;
-        margin-bottom: 1.25rem !important;
-    }
-    .kpi-num {
-        font-size: 1.7rem !important;
+        gap: 0.9rem !important;
+        margin-bottom: 1.15rem !important;
     }
     .cours-grid {
         grid-template-columns: 1fr !important;

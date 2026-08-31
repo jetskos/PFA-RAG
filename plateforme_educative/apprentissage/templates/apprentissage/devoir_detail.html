@@ -253,6 +253,20 @@
     }
     .submission-status-card.pending { background: rgba(59,130,246,0.06); border: 1.5px solid rgba(59,130,246,0.25); }
     .submission-status-card.graded { border: 1.5px solid; }
+
+    /* ── MOBILE ── */
+    @media (max-width: 768px) {
+        /* Fil d'Ariane : garder « Espace Formateur > Devoirs », masquer le
+           titre du cours et du devoir (repris dans la carte d'en-tête) */
+        .dd-breadcrumb { flex-wrap: nowrap; overflow: hidden; margin-bottom: 1rem; font-size: 0.8rem; }
+        .dd-breadcrumb > span { display: none; }
+        .dd-breadcrumb > i:nth-of-type(n+2) { display: none; }
+        .dd-breadcrumb > span:first-of-type + i,
+        .dd-breadcrumb > a { white-space: nowrap; }
+        .dd-header-card { padding: 1.3rem 1.15rem; }
+        .dd-header-title { font-size: clamp(1.25rem, 5.5vw, 1.6rem); }
+        .dd-header-eyebrow { margin-bottom: 0.5rem; }
+    }
 </style>
 
 <div class="page-shell" style="max-width: 1200px; margin: 0 auto; padding-top: 2rem;">

@@ -6444,3 +6444,6 @@ msgstr "No course"
 #, python-format
 msgid "Le cours « %(cours)s » est disponible pour votre niveau %(niveau)s."
 msgstr "The course \"%(cours)s\" is available for your level %(niveau)s."
+
+msgid "Exports"
+msgstr "Exports"

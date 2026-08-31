@@ -178,6 +178,7 @@
         margin-bottom: -2px;
         border-bottom: 2px solid transparent;
     }
+    .tab-item-short { display: none; }
     .tab-item:hover {
         color: #0D9488;
         background: rgba(13,148,136,0.05);
@@ -591,21 +592,37 @@
     @media (max-width: 768px) {
         .formateur-hero {
             flex-direction: column;
-            align-items: flex-start;
-            gap: 1.25rem;
-            padding: 1.75rem 1.35rem;
+            align-items: stretch;
+            gap: 0.85rem;
+            padding: 1.3rem 1.15rem;
             border-radius: 18px;
         }
-        .hero-title { font-size: 1.5rem; }
-        .hero-stats-row { flex-wrap: wrap; gap: 0.5rem; }
+        .hero-eyebrow { margin-bottom: 0.35rem; }
+        .hero-title { font-size: clamp(1.3rem, 5.5vw, 1.6rem); margin-bottom: 0.3rem; }
+        .hero-subtitle { font-size: 0.85rem; line-height: 1.45; margin-bottom: 0; }
+        /* Pastilles (1 cours · 5 devoirs · Mes étudiants) = doublon des
+           compteurs d'onglets juste en dessous → masquées sur mobile */
+        .hero-stats-row { display: none; }
+        .hero-right { flex-direction: row; gap: 0.5rem; width: 100%; }
+        .hero-right > * { flex: 1 1 0; min-width: 0; }
+        .btn-hero-primary, .btn-hero-secondary { padding: 0.7rem 0.75rem; font-size: 0.85rem; }
         .tabs-nav {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
-            gap: 0.25rem;
+            overflow-x: visible;
+            gap: 0.2rem;
         }
-        .tabs-nav::-webkit-scrollbar { display: none; }
-        .tab-item { flex: 0 0 auto; padding: 0.7rem 1rem; font-size: 0.85rem; white-space: nowrap; }
+        /* 3 onglets se partagent la largeur ; icônes masquées, texte tronqué
+           si besoin (« Historique des Exports » est rarement consulté) */
+        .tab-item {
+            flex: 1 1 0;
+            min-width: 0;
+            justify-content: center;
+            padding: 0.6rem 0.4rem;
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+        .tab-item > i:first-child { display: none; }
+        .tab-item-full { display: none; }
+        .tab-item-short { display: inline; }
         .formateur-courses-grid { grid-template-columns: 1fr; gap: 1rem; }
         /* Barre Importer / Exporter : deux boutons pleine largeur empilés */
         .fmt-io-toolbar { justify-content: stretch; gap: 0.6rem; }
@@ -685,9 +702,11 @@
             <i class="ti ti-clipboard-list"></i>
             {% translate "Devoirs" %}
             <span class="tab-badge">{{ devoirs|length }}</span>
+        </button>
         <button class="tab-item" onclick="switchFormTab('tab-exports', this)" id="btn-tab-exports">
             <i class="ti ti-history"></i>
-            {% translate "Historique des Exports" %}
+            <span class="tab-item-full">{% translate "Historique des Exports" %}</span>
+            <span class="tab-item-short">{% translate "Exports" %}</span>
         </button>
     </div>
     {% endwith %}
