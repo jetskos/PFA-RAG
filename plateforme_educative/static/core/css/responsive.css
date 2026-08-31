@@ -193,14 +193,23 @@ html, body {
     .brand-tagline {
         display: none !important;
     }
-    /* Sur mobile : marque compacte = pastille d'icône PWA nette, pas le
-       logo blanc (fond gris illisible en 28px). */
+    /* Sur mobile : marque compacte = pastille robot (dégradé teal→indigo),
+       lisible en 32px là où le logo blanc devient gris illisible. */
     .brand-logo-desktop { display: none !important; }
     .brand-logo-mobile {
-        display: block !important;
-        height: 30px !important;
-        width: 30px !important;
-        border-radius: 8px;
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+        width: 32px !important;
+        height: 32px !important;
+        border-radius: 9px;
+        background: linear-gradient(135deg, #0d9488 0%, #4f46e5 100%);
+        color: #ffffff;
+        flex-shrink: 0;
+    }
+    .brand-logo-mobile i {
+        font-size: 20px;
+        line-height: 1;
     }
 
     /* Off-canvas navigation menu — FULLY OPAQUE, no blur */
