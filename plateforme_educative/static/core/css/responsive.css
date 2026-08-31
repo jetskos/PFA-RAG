@@ -1072,12 +1072,27 @@ html, body {
     }
 
     /* --- Modales (HTMX, JSZip, etc.) --- */
+    /* Au-dessus de la barre de navigation basse (z-index 1050) + ancrées en
+       haut avec défilement interne : un formulaire long ne coupe plus le
+       bouton « Enregistrer » hors de l'écran. */
+    .modal-overlay,
+    #form-modal,
+    #import-preview-modal,
+    #export-preview-modal {
+        z-index: 1100 !important;
+        align-items: flex-start !important;
+        padding: 1rem 0.5rem !important;
+        overflow-y: auto !important;
+    }
     .modal-content,
     #form-modal > div,
     #import-preview-modal > div,
     #export-preview-modal > div {
-        width: 95% !important;
+        width: 100% !important;
         max-width: none !important;
+        margin: 0 auto !important;
+        max-height: calc(100dvh - 2rem) !important;
+        overflow-y: auto !important;
         padding: 1.25rem !important;
         border-radius: 16px !important;
     }
@@ -1113,11 +1128,11 @@ html, body {
         max-height: 70dvh !important;
     }
 
-    /* --- Toast messages --- */
+    /* --- Toast messages : au-dessus de la barre de navigation basse --- */
     .messages-zone {
         right: 0.75rem !important;
-        bottom: 1rem !important;
         left: 0.75rem !important;
+        bottom: calc(65px + env(safe-area-inset-bottom, 0px) + 0.75rem) !important;
         max-width: none !important;
         width: auto !important;
     }

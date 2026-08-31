@@ -17,7 +17,8 @@
 | 3.3 — tuteur IA | `34e961e` | **session : composeur qui passait sous la barre du bas → corrigé** ; barre du haut condensée ~410 → ~180 px |
 | 3.4 — dashboards | `0d68c75` | cartes d'accès rapide élève « icône d'appli » (titres ne cassent plus) ; radar OK ; graphiques admin plafonnés 200 px |
 | 3.5 — formulaires | *(RAS)* | cours/gérer/événement/calendrier/wizard : déjà propres après Phase 2 |
-| 3.6 — logistique + gestion | `<en cours>` | **gestion users : 47 px de scroll-x → corrigé** (`<select>` masqué TomSelect sorti de l'écran) ; puces de rôle qui passent à la ligne ; `.logi-subtab` ≥ 44 px |
+| 3.6 — logistique + gestion | `513ec63` | **gestion users : 47 px de scroll-x → corrigé** (`<select>` masqué TomSelect sorti de l'écran) ; puces de rôle qui passent à la ligne ; `.logi-subtab` ≥ 44 px |
+| 4 — composants dynamiques | `<en cours>` | menu latéral / dropdowns notifs + profil / FAB tuteur / panneau tuteur : re-vérifiés OK ; **toasts remontés au-dessus de la barre du bas** ; **modales : z-index > nav (1100), ancrées en haut + `overflow-y:auto` + `max-height` → le bouton « Enregistrer » d'un formulaire long est de nouveau atteignable** |
 
 ---
 
