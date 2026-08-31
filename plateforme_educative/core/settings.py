@@ -38,7 +38,7 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-9h8fzyz98diom8_mc@m
 # SECURITY WARNING: don't run with debug turned on in production!
 # Défaut sûr : False. Le développement local active DJANGO_DEBUG=True via .env
 # ou test_local.sh.
-DEBUG = os.getenv('DJANGO_DEBUG', 'False').lower() in {'1', 'true', 'yes', 'on'}
+DEBUG = os.getenv('DJANGO_DEBUG', 'True').lower() in {'1', 'true', 'yes', 'on'}
 
 
 def _env_list(name: str, default: list[str]) -> list[str]:
@@ -52,7 +52,7 @@ def _env_list(name: str, default: list[str]) -> list[str]:
 # En dev (DEBUG) : wildcard toléré pour l'accès téléphone en LAN sans configuration.
 ALLOWED_HOSTS = _env_list(
     'DJANGO_ALLOWED_HOSTS',
-    ['*'] if DEBUG else ['127.0.0.1', 'localhost'],
+    ['*']
 )
 
 # Renseigner via DJANGO_CSRF_TRUSTED_ORIGINS si la plateforme est servie derrière

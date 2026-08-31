@@ -49,6 +49,55 @@
     <script src="{% static 'vendor/htmx/htmx.min.js' %}" defer></script>
     <script src="{% static 'vendor/tom-select/tom-select.complete.min.js' %}" defer></script>
 
+    <style>
+        /* Mobile Bottom Sheet Styles */
+        .sheet-backdrop {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1040;
+            backdrop-filter: blur(2px);
+            transition: opacity 0.3s;
+        }
+        .mobile-bottom-sheet {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: var(--bg-surface, #fff);
+            border-radius: 20px 20px 0 0;
+            z-index: 1050;
+            padding: 1rem 1.5rem 2rem;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+        .mobile-bottom-sheet.open {
+            transform: translateY(0);
+        }
+        .bottom-sheet-drag-handle {
+            width: 40px; height: 5px;
+            background: #cbd5e1;
+            border-radius: 10px;
+            margin: 0 auto 1.5rem;
+        }
+        .bottom-sheet-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 12px 0;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-decoration: none;
+            border-bottom: 1px solid var(--border-light, #e2e8f0);
+        }
+        .bottom-sheet-item:last-child {
+            border-bottom: none;
+        }
+        .bottom-sheet-item i {
+            font-size: 1.25rem;
+            color: #0D9488;
+        }
+    </style>
 </head>
 
 <body>
@@ -458,6 +507,27 @@
             nav.classList.toggle('open');
             backdrop.classList.toggle('open');
         }
+
+        // Fonction pour gérer le bottom sheet mobile
+        function toggleBottomSheet() {
+            const sheet = document.getElementById('mobile-bottom-sheet');
+            const backdrop = document.getElementById('sheet-backdrop');
+            if (sheet.style.display === 'none' || sheet.style.display === '') {
+                sheet.style.display = 'block';
+                backdrop.style.display = 'block';
+                // Trigger reflow
+                void sheet.offsetWidth;
+                sheet.classList.add('open');
+                document.body.style.overflow = 'hidden'; // Prevent scrolling
+            } else {
+                sheet.classList.remove('open');
+                document.body.style.overflow = '';
+                setTimeout(() => {
+                    sheet.style.display = 'none';
+                    backdrop.style.display = 'none';
+                }, 300); // Match CSS transition duration
+            }
+        }
     </script>
 
     <div id="modal-container"></div>
@@ -470,65 +540,119 @@
                 <i class="ti ti-home"></i>
                 <span>{% trans "Accueil" %}</span>
             </a>
-
             <a href="{% url 'dashboard_admin_structure' %}" class="bottom-nav-item {% if current_url == 'dashboard_admin_structure' %}active{% endif %}">
                 <i class="ti ti-building-arch"></i>
-                <span>{% trans "Structure" %}</span>
+                <span>{% trans "Admin" %}</span>
             </a>
-
+            <a href="{% url 'apprentissage:liste_cours' %}" class="bottom-nav-item {% if current_url == 'liste_cours' or current_url == 'detail_cours' or current_url == 'detail_chapitre' %}active{% endif %}">
+                <i class="ti ti-book"></i>
+                <span>{% trans "Cours" %}</span>
+            </a>
             <a href="{% url 'accounts:admin_dashboard' %}" class="bottom-nav-item {% if current_url == 'admin_dashboard' %}active{% endif %}">
                 <i class="ti ti-users"></i>
-                <span>{% trans "Utilisateurs" %}</span>
+                <span>{% trans "Membres" %}</span>
             </a>
-
-            <a href="{% url 'accounts:system_settings' %}" class="bottom-nav-item {% if current_url == 'system_settings' %}active{% endif %}">
-                <i class="ti ti-settings"></i>
-                <span>{% trans "Paramètres" %}</span>
-            </a>
-
-            <!-- Trigger for advanced menu (the old off-canvas) -->
-            <button class="bottom-nav-item" onclick="toggleMobileMenu()">
+            <button class="bottom-nav-item" onclick="toggleBottomSheet()">
                 <i class="ti ti-menu-2"></i>
                 <span>{% trans "Menu" %}</span>
             </button>
-
         {% else %}
             <!-- FOR STUDENTS/TEACHERS -->
             <a href="{% url 'accueil' %}" class="bottom-nav-item {% if current_url == 'accueil' %}active{% endif %}">
                 <i class="ti ti-home"></i>
                 <span>{% trans "Accueil" %}</span>
             </a>
-
             <a href="{% url 'apprentissage:liste_cours' %}" class="bottom-nav-item {% if current_url == 'liste_cours' or current_url == 'detail_cours' or current_url == 'detail_chapitre' %}active{% endif %}">
                 <i class="ti ti-book"></i>
                 <span>{% trans "Cours" %}</span>
             </a>
-
             {% if user.is_authenticated %}
                 <a href="{% url 'apprentissage:calendrier' %}" class="bottom-nav-item {% if current_url == 'calendrier' %}active{% endif %}">
                     <i class="ti ti-calendar"></i>
                     <span>{% trans "Agenda" %}</span>
                 </a>
-
                 <a href="{% url 'accounts:profile' %}" class="bottom-nav-item {% if current_url == 'profile' %}active{% endif %}">
                     <i class="ti ti-user"></i>
                     <span>{% trans "Profil" %}</span>
                 </a>
-            {% else %}
-                <a href="{% url 'accounts:login' %}" class="bottom-nav-item {% if current_url == 'login' %}active{% endif %}">
-                    <i class="ti ti-login"></i>
-                    <span>{% trans "Connexion" %}</span>
-                </a>
             {% endif %}
-
-            <!-- Trigger for advanced menu (the old off-canvas) -->
-            <button class="bottom-nav-item" onclick="toggleMobileMenu()">
+            <button class="bottom-nav-item" onclick="toggleBottomSheet()">
                 <i class="ti ti-menu-2"></i>
                 <span>{% trans "Menu" %}</span>
             </button>
         {% endif %}
     </nav>
     {% endwith %}
+
+    <!-- Mobile Bottom Sheet Backdrop -->
+    <div class="sheet-backdrop" id="sheet-backdrop" style="display: none;" onclick="toggleBottomSheet()"></div>
+
+    <!-- Mobile Bottom Sheet Content -->
+    <div class="mobile-bottom-sheet" id="mobile-bottom-sheet" style="display: none;">
+        <div class="bottom-sheet-drag-handle"></div>
+        <div class="bottom-sheet-content">
+            {% if user.is_authenticated %}
+                
+                {% if user.role == 'ADMIN' %}
+                <div class="bottom-sheet-group">
+                    <a href="{% url 'apprentissage:calendrier' %}" class="bottom-sheet-item">
+                        <i class="ti ti-calendar"></i> <span>{% trans "Calendrier" %}</span>
+                    </a>
+                </div>
+                {% endif %}
+
+                {% if user.is_formateur %}
+                <div class="bottom-sheet-group">
+                    <a href="{% url 'apprentissage:espace_formateur' %}" class="bottom-sheet-item">
+                        <i class="ti ti-school"></i> <span>{% trans "Espace Formateur" %}</span>
+                    </a>
+                    <a href="{% url 'logistics:demandes' %}" class="bottom-sheet-item">
+                        <i class="ti ti-truck"></i> <span>{% trans "Logistique (Demandes)" %}</span>
+                    </a>
+                </div>
+                {% endif %}
+
+                {% if user.role == 'ADMIN' or user.is_superuser %}
+                <div class="bottom-sheet-group">
+                    {% if user.is_superuser %}
+                    <a href="{% url 'logistics:inventaire' %}" class="bottom-sheet-item">
+                        <i class="ti ti-tools"></i> <span>{% trans "Logistique (Inventaire)" %}</span>
+                    </a>
+                    {% endif %}
+                    <a href="{% url 'accounts:system_settings' %}" class="bottom-sheet-item">
+                        <i class="ti ti-settings"></i> <span>{% trans "Paramètres Système" %}</span>
+                    </a>
+                </div>
+                {% endif %}
+
+                <div class="bottom-sheet-group" style="margin-top: 0.5rem; border-top: 1px solid var(--border-light); padding-top: 0.5rem;">
+                    {% if user.role == 'ADMIN' %}
+                    <a href="{% url 'accounts:profile' %}" class="bottom-sheet-item">
+                        <i class="ti ti-user"></i> <span>{% trans "Mon Profil" %}</span>
+                    </a>
+                    {% endif %}
+                    <form action="{% url 'accounts:logout' %}" method="post" style="margin: 0; width: 100%;">
+                        {% csrf_token %}
+                        <button type="submit" class="bottom-sheet-item" style="width: 100%; background: none; border: none; cursor: pointer; text-align: left;">
+                            <i class="ti ti-logout" style="color: #ef4444;"></i>
+                            <span style="color: #ef4444;">{% trans "Déconnexion" %}</span>
+                        </button>
+                    </form>
+                </div>
+            {% else %}
+                <div class="bottom-sheet-group">
+                    <a href="{% url 'accounts:register' %}" class="bottom-sheet-item">
+                        <i class="ti ti-user-plus"></i>
+                        <span>{% trans "Créer un compte" %}</span>
+                    </a>
+                    <a href="{% url 'accounts:login' %}" class="bottom-sheet-item">
+                        <i class="ti ti-login"></i>
+                        <span>{% trans "Se connecter" %}</span>
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
 
     {# ── PWA : bannière d'installation (Android/Chrome/Edge) ── #}
     <div id="pwa-install-banner" class="pwa-install-banner" role="dialog" aria-label="{% trans 'Installer l’application' %}">
