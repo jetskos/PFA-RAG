@@ -314,6 +314,7 @@ def import_courses_task(self, import_job_id: str, user_id: str, zip_files: list)
                             vid_file = extract_dir / chap_data['video_fichier']
                             if vid_file.exists():
                                 verify_file(vid_file, vid_file.name)
+                                chapitre._skip_hls_signal = True
                                 with open(vid_file, 'rb') as f:
                                     chapitre.video_fichier.save(vid_file.name, File(f))
                                 # Le signal on_chapitre_save lance convertir_video_hls

@@ -129,6 +129,10 @@ def on_chapitre_save(sender, instance, created, **kwargs):
         return
 
     if created or _video_has_changed(instance):
+        if getattr(instance, '_skip_hls_signal', False):
+            logger.info(f"[HLS] Signal ignoré pour '{instance.titre}' (importation ZIP)")
+            return
+
         from apprentissage.tasks import convertir_video_hls
         from apprentissage.models import Chapitre
         Chapitre.objects.filter(pk=instance.pk).update(is_hls_ready=False, video_hls_url=None)
