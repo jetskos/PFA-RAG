@@ -1015,6 +1015,25 @@ document.head.appendChild(style);
 <!-- SheetJS for Excel export -->
 <script src="{% static 'vendor/xlsx/xlsx.full.min.js' %}"></script>
 <script>
+// Téléchargement d'un Blob fiable sur mobile / PWA : XLSX.writeFile() échoue
+// silencieusement, et une navigation fait sortir de l'app installée.
+// download-helper.js (chargé dans base.html) gère partage natif + repli <a download>.
+function triggerDownload(blob, filename) {
+    if (window.appDownloadBlob) { window.appDownloadBlob(blob, filename); return; }
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.rel = 'noopener';
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function () {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }, 1500);
+}
+
 function exportCSV(roleFilter) {
     const rows = document.querySelectorAll('.user-row');
     const data = [];
@@ -1091,7 +1110,13 @@ function exportCSV(roleFilter) {
     ws['!rows'] = [{ hpt: 32 }, { hpt: 18 }, { hpt: 8 }, { hpt: 26 }, ...data.map(() => ({ hpt: 20 }))];
 
     XLSX.utils.book_append_sheet(wb, ws, roleNames[roleFilter] || "{% translate 'Export' %}");
-    XLSX.writeFile(wb, `EduTech_${roleFilter}_${today.replace(/\//g,'-')}.xlsx`);
+
+    const fname = `EduTech_${roleFilter}_${today.replace(/\//g,'-')}.xlsx`;
+    const out = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    triggerDownload(
+        new Blob([out], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }),
+        fname
+    );
 }
 </script>
 {% endblock %}

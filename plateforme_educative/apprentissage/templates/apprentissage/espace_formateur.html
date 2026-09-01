@@ -1453,13 +1453,21 @@
     let importPollingInterval = null;
 
     function pollImportStatus(jobId) {
+        let importPollTries = 0;
+        const IMPORT_POLL_MAX = 300;   // 300 x 2s = 10 min
         importPollingInterval = setInterval(() => {
+            if (++importPollTries > IMPORT_POLL_MAX) {
+                clearInterval(importPollingInterval);
+                showToast("{% translate 'Import trop long. Vérifiez l’historique des imports.' %}", 'error');
+                closePreviewModal();
+                return;
+            }
             fetch(`${LANG_PREFIX}/apprentissage/formateur/import-status/${jobId}/`)
             .then(r => r.json())
             .then(data => {
                 const statusText = document.getElementById('upload-status-text');
                 const progressBar = document.getElementById('upload-progress-bar');
-                
+
                 if (data.status === 'EXTRACTION') {
                     statusText.innerHTML = '<span><i class="ti ti-archive"></i> {% translate "Extraction des fichiers..." %}</span>';
                     progressBar.style.width = '30%';

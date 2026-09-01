@@ -73,6 +73,10 @@ function bypass(url, request) {
   if (url.pathname.startsWith("/tuteur/")) return true;          // API tuteur IA
   if (url.pathname.includes("/repondre/") || url.pathname.includes("/qcm/")) return true;
   if (url.pathname.endsWith(".m3u8") || url.pathname.endsWith(".ts")) return true;
+  // Téléchargements de fichiers (Excel / CSV / ZIP) : laisser le navigateur les
+  // gérer nativement. Un `Content-Disposition: attachment` renvoyé PAR le SW ne
+  // déclenche pas le téléchargement sur mobile (page blanche / rien).
+  if (url.pathname.includes("/export")) return true;
   return false;
 }
 

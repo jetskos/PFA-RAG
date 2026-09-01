@@ -23,7 +23,7 @@
                     {% blocktranslate with m=bulletin.moyenne_generale %}Moyenne générale : {{ m }}/100{% endblocktranslate %}
                 </span>
             {% endif %}
-            <a href="{% url 'apprentissage:exporter_bulletin_csv' %}" class="btn btn-ghost">
+            <a href="{% url 'apprentissage:exporter_bulletin_csv' %}" data-download class="btn btn-ghost">
                 <i class="ti ti-download"></i> {% translate "Exporter CSV" %}
             </a>
         </div>

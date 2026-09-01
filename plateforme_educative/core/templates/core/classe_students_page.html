@@ -12,7 +12,7 @@
             <p>{% blocktranslate with niveau=classe.niveau.nom annee=classe.annee_scolaire %}Niveau : {{ niveau }} | Année : {{ annee }}{% endblocktranslate %}</p>
         </div>
         <div class="page-header-actions" style="display:flex; gap:0.5rem;">
-            <a href="{% url 'dashboard_admin_export_classe_students' classe.id %}" class="btn btn-primary">
+            <a href="{% url 'dashboard_admin_export_classe_students' classe.id %}" data-download class="btn btn-primary">
                 <i class="ti ti-file-export"></i> {% translate "Exporter (Excel)" %}
             </a>
             <a href="{% url 'dashboard_admin' %}?tab=classes" class="btn btn-ghost"><i class="ti ti-arrow-left"></i> {% translate "Retour aux classes" %}</a>

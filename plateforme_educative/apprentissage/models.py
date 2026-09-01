@@ -69,7 +69,20 @@ class Cours(models.Model):
         related_name='cours_crees',
         verbose_name=_('Créateur')
     )
-    
+    SOURCE_CHOICES = (
+        ('MANUEL', _('Créé sur la plateforme')),
+        ('IMPORT', _('Importé (ZIP)')),
+        ('SATELLITE', _('Reçu par satellite')),
+    )
+    source = models.CharField(
+        max_length=12,
+        choices=SOURCE_CHOICES,
+        default='MANUEL',
+        verbose_name=_('Origine'),
+        help_text=_("Les cours « satellite » sont remplacés à chaque mise à jour ; "
+                    "les autres (préchargés / créés à la main) sont persistants."),
+    )
+
     class Meta:
         verbose_name = _('Cours')
         verbose_name_plural = 'Cours'
@@ -629,6 +642,10 @@ class ImportJob(models.Model):
     )
     status = models.CharField(max_length=30, choices=STATUS_CHOICES, default='EN_ATTENTE')
     titre_cours = models.CharField(max_length=255, blank=True, null=True)
+    source = models.CharField(max_length=12, default='IMPORT',
+                              help_text="Origine posée sur les cours créés : IMPORT / SATELLITE")
+    pdfs_indexes = models.PositiveIntegerField(default=0, help_text="PDF indexés dans ChromaDB")
+    pdfs_total = models.PositiveIntegerField(default=0, help_text="PDF à indexer")
     erreur = models.TextField(blank=True, null=True)
     date_creation = models.DateTimeField(auto_now_add=True)
     date_fin = models.DateTimeField(null=True, blank=True)
