@@ -61,6 +61,8 @@ services:
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
       - OMP_NUM_THREADS=1
       - TOKENIZERS_PARALLELISM=false
+      - PRELOAD_CHROMA=0
+      - PRELOAD_OLLAMA=0
     env_file:
       - .env.docker
     depends_on:
