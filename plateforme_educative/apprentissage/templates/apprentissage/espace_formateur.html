@@ -658,7 +658,7 @@
                 <i class="ti ti-school"></i> {% translate "Espace Formateur" %}
             </span>
             <h1 class="hero-title">
-                {% blocktranslate with nom=request.user.get_full_name|default:request.user.email %}Bienvenue, <span>{{ nom }}</span>{% endblocktranslate %}
+                {% blocktranslate with nom=request.user.nom_affichage %}Bienvenue, <span>{{ nom }}</span>{% endblocktranslate %}
             </h1>
             <p class="hero-subtitle">{% translate "Gérez vos cours, suivez vos devoirs et pilotez l'apprentissage de vos étudiants." %}</p>
 
@@ -732,7 +732,7 @@
                 <div class="fc-cover">
                     <input type="checkbox" name="course_ids" value="{{ cours.id }}" class="course-export-checkbox" onchange="updateExportCount()" style="position: absolute; top: 1rem; left: 1rem; z-index: 10; transform: scale(1.4); cursor: pointer; accent-color: #0D9488;">
                     {% if cours.image_couverture %}
-                        <img src="{{ cours.image_couverture.url }}" alt="{{ cours.titre }}">
+                        <img src="{{ cours.image_couverture.url }}" alt="{{ cours.titre }}" loading="lazy" onerror="this.style.display='none'">
                         <div class="fc-cover-overlay"></div>
                     {% else %}
                         <div class="fc-cover-icon"><i class="ti ti-books"></i></div>

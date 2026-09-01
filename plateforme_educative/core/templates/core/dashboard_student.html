@@ -764,7 +764,7 @@
     <div class="db-hero">
         <div class="db-hero-text">
             <p class="eyebrow">{% translate "Espace Élève" %}</p>
-            <h1>{% blocktranslate with prenom=request.user.first_name|default:request.user.get_username %}Bienvenue, {{ prenom }}{% endblocktranslate %}</h1>
+            <h1>{% blocktranslate with prenom=request.user.nom_affichage %}Bienvenue, {{ prenom }}{% endblocktranslate %}</h1>
             <p>{% translate "Aperçu de votre progression académique et de vos cours." %}</p>
         </div>
         <div class="db-hero-badge">
@@ -822,7 +822,7 @@
             <!-- Left: identity + overall progress -->
             <div class="prog-hero-left">
                 <p class="prog-hero-eyebrow">{% translate "Progression académique" %}</p>
-                <h2 class="prog-hero-name">{{ request.user.first_name|default:request.user.get_username }}</h2>
+                <h2 class="prog-hero-name">{{ request.user.nom_affichage }}</h2>
                 <div class="prog-hero-meta">
                     <span class="chip"><i class="ti ti-school"></i> {% if classe %}{{ classe.nom }}{% else %}{% translate "Classe non assignée" %}{% endif %}</span>
                     <span class="chip"><i class="ti ti-certificate"></i> {% if niveau %}{{ niveau.nom }}{% else %}{% translate "Niveau non assigné" %}{% endif %}</span>

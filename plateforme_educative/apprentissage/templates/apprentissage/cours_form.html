@@ -334,7 +334,7 @@
                             <!-- Custom premium file upload zone -->
                             <div class="file-upload-zone" onclick="document.getElementById('{{ field.id_for_label }}').click()">
                                 {% if form.instance.image_couverture %}
-                                    <img id="image-preview" src="{{ form.instance.image_couverture.url }}" alt="{% translate 'Image de couverture' %}" class="image-preview-existing">
+                                    <img id="image-preview" src="{{ form.instance.image_couverture.url }}" alt="{% translate 'Image de couverture' %}" class="image-preview-existing" onerror="this.style.display='none'">
                                 {% else %}
                                     <i id="upload-icon" class="ti ti-photo" style="font-size: 2rem; color: var(--primary);"></i>
                                 {% endif %}

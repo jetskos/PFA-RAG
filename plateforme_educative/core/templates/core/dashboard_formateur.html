@@ -446,7 +446,7 @@
           EduTech · {% translate "Espace Formateur" %}
         </div>
         <h1 class="fmt-hero-title">
-          {% blocktranslate with nom=user.get_full_name|default:user.email|truncatechars:20 %}Bonjour, <em>{{ nom }}</em> 👋{% endblocktranslate %}
+          {% blocktranslate with nom=user.nom_affichage|truncatechars:20 %}Bonjour, <em>{{ nom }}</em> 👋{% endblocktranslate %}
         </h1>
         <p class="fmt-hero-sub">
           {% now "l d F Y" %} · {% translate "Prêt à inspirer vos apprenants aujourd'hui ?" %}
@@ -469,7 +469,7 @@
           {% if user.photo %}
             <img src="{{ user.photo.url }}" alt="{{ user.get_full_name }}">
           {% else %}
-            {{ user.get_full_name|default:user.email|first|upper }}
+            {{ user.nom_affichage|first|upper }}
           {% endif %}
         </div>
       </div>
@@ -555,7 +555,7 @@
               <input type="checkbox" name="course_ids" value="{{ cours.id }}" class="course-export-checkbox" onchange="updateExportCount()" style="position: absolute; top: 0.8rem; left: 0.8rem; z-index: 10; transform: scale(1.3); cursor: pointer; accent-color: #0f766e;">
               <div class="cours-cover">
                 {% if cours.image_couverture %}
-                  <img src="{{ cours.image_couverture.url }}" alt="{{ cours.titre }}">
+                  <img src="{{ cours.image_couverture.url }}" alt="{{ cours.titre }}" loading="lazy" onerror="this.style.display='none'">
                   <div class="cours-cover-overlay"></div>
                 {% else %}
                   📚
