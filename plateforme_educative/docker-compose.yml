@@ -40,6 +40,8 @@ services:
       - DJANGO_DEBUG=True
       - PRELOAD_CHROMA=0
       - PRELOAD_OLLAMA=0
+      - OMP_NUM_THREADS=1
+      - TOKENIZERS_PARALLELISM=false
     env_file:
       - .env.docker
     depends_on:
@@ -61,6 +63,8 @@ services:
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
       - PRELOAD_CHROMA=0
       - PRELOAD_OLLAMA=0
+      - OMP_NUM_THREADS=1
+      - TOKENIZERS_PARALLELISM=false
     env_file:
       - .env.docker
     depends_on:

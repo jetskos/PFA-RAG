@@ -55,17 +55,9 @@ def _get_embedding_function():
     if _embedding_fn is None:
         with _embedding_init_lock:
             if _embedding_fn is None:
-                try:
-                    from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
-                    _embedding_fn = SentenceTransformerEmbeddingFunction(
-                        model_name=EMBEDDING_MODEL
-                    )
-                    logger.info(f"Modèle d'embedding chargé en local via PyTorch : {EMBEDDING_MODEL}")
-                except ImportError:
-                    raise ImportError(
-                        "sentence-transformers non installé. "
-                        "Lancez : pip install sentence-transformers"
-                    )
+                from chromadb.utils.embedding_functions import DefaultEmbeddingFunction
+                _embedding_fn = DefaultEmbeddingFunction()
+                logger.info("Utilisation de DefaultEmbeddingFunction (local ONNX) - pas de PyTorch, API externe inutile !")
     return _embedding_fn
 
 
