@@ -35,12 +35,8 @@ class TuteurIaConfig(AppConfig):
 
         def preload_chroma():
             try:
-                from tuteur_ia.tools.chroma_store import get_collection, warm_up_embeddings
+                from tuteur_ia.tools.chroma_store import get_collection
                 collection = get_collection()
-                # Déclenche réellement le chargement du modèle ONNX (pas seulement
-                # l'ouverture de la collection) pendant le démarrage du serveur,
-                # plutôt que lors du premier message d'un élève.
-                warm_up_embeddings()
                 logger.info(
                     f"[ChromaDB] Modèle d'embedding prêt à "
                     f"{collection.count()} chunks en mémoire."
