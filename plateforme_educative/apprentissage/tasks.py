@@ -253,7 +253,10 @@ def import_courses_task(self, import_job_id: str, user_id: str, zip_files: list)
                 niveau_code = c_data.get('niveau') or "NA"
                 niveau, _ = Niveau.objects.get_or_create(code=niveau_code, defaults={'nom': niveau_code})
                 
-                cours_titre = f"{c_data.get('titre', 'Cours importé')} (Importé)"
+                # « (Importé) » ajouté une seule fois : ne pas empiler le suffixe
+                # quand on réimporte un cours déjà exporté (« X (Importé) (Importé)… »).
+                _src_titre = (c_data.get('titre') or 'Cours importé').strip()
+                cours_titre = _src_titre if _src_titre.endswith('(Importé)') else f"{_src_titre} (Importé)"
                 cours = Cours.objects.create(
                     titre=cours_titre,
                     description=c_data.get('description', ''),

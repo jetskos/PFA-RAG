@@ -130,8 +130,9 @@ class Command(BaseCommand):
         cours = meta.get("cours", {})
         chapitres = meta.get("chapitres", [])
         n_docs = sum(len(c.get("documents", [])) for c in chapitres)
+        _t = (cours.get("titre") or "Cours importe").strip()
         return {
-            "titre": f"{cours.get('titre', 'Cours importe')} (Importe)",
+            "titre": _t if _t.endswith("(Importé)") else f"{_t} (Importé)",
             "niveau": cours.get("niveau") or "NA",
             "chapitres": len(chapitres),
             "documents": n_docs,
