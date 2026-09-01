@@ -24,8 +24,7 @@ COPY requirements.txt /app/
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 # Force CPU-only ONNX runtime to prevent CUDA provider SIGSEGV in Docker.
-# Install a stable version of onnxruntime (1.15.1) to avoid SIGSEGV in newer kernels
-RUN pip install --no-cache-dir --force-reinstall "onnxruntime==1.15.1"
+
 
 # Copy the entire Django project into the container
 COPY . /app/

@@ -55,18 +55,17 @@ def _get_embedding_function():
     if _embedding_fn is None:
         with _embedding_init_lock:
             if _embedding_fn is None:
-                # Forcer les variables d'environnement AVANT l'import d'onnxruntime
-                # pour éviter le SIGSEGV lors de l'initialisation du pool de threads.
-                import os
-                os.environ["OMP_NUM_THREADS"] = "1"
-                os.environ["OMP_WAIT_POLICY"] = "PASSIVE"
-                os.environ["GOMP_SPINCOUNT"] = "0"
-                os.environ["OPENBLAS_NUM_THREADS"] = "1"
-                os.environ["MKL_NUM_THREADS"] = "1"
-
-                from chromadb.utils.embedding_functions import DefaultEmbeddingFunction
-                _embedding_fn = DefaultEmbeddingFunction()
-                logger.info("Utilisation de DefaultEmbeddingFunction (local ONNX) - pas de PyTorch, API externe inutile !")
+                try:
+                    from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
+                    _embedding_fn = SentenceTransformerEmbeddingFunction(
+                        model_name=EMBEDDING_MODEL
+                    )
+                    logger.info(f"Modèle d'embedding chargé en local via PyTorch : {EMBEDDING_MODEL}")
+                except ImportError:
+                    raise ImportError(
+                        "sentence-transformers non installé. "
+                        "Lancez : pip install sentence-transformers"
+                    )
     return _embedding_fn
 
 
