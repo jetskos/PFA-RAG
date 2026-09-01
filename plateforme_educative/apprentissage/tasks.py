@@ -369,6 +369,15 @@ def convertir_video_hls(self, chapitre_id: str):
             logger.warning(f"[HLS] Pas de vidéo pour le chapitre {chapitre_id}")
             return
             
+        try:
+            from accounts.models import ConfigurationSysteme
+            config = ConfigurationSysteme.objects.first()
+            if config and not config.activer_hls:
+                logger.info(f"[HLS] La conversion HLS est désactivée dans la configuration système (chapitre {chapitre_id}).")
+                return
+        except Exception:
+            pass
+            
         video_path = Path(chapitre.video_fichier.path)
         if not video_path.exists():
             logger.warning(f"[HLS] Fichier vidéo introuvable : {video_path}")

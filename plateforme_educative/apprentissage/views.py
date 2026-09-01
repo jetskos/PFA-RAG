@@ -82,7 +82,16 @@ def _get_video_context(chapitre):
         'is_vimeo': False,
         'vimeo_embed_url': '',
         'is_unavailable_offline': False,
+        'activer_hls': False,
     }
+    
+    try:
+        from accounts.models import ConfigurationSysteme
+        config = ConfigurationSysteme.objects.first()
+        if config:
+            context['activer_hls'] = config.activer_hls
+    except Exception:
+        pass
 
     online = has_internet(host="www.youtube.com", port=443)
 

@@ -641,8 +641,11 @@
                         <source src="{{ chapitre.video_fichier.url }}" type="video/mp4">
                         {% translate "Votre navigateur ne supporte pas la lecture de vidéos." %}
                     </video>
-                    <div class="video-source-info" style="margin-top: 0.5rem;">
-                        <i class="ti ti-wifi-off"></i> {% translate "Mode hors-ligne — Vidéo locale" %}
+                    <div class="video-source-info" style="margin-top: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
+                        <span><i class="ti ti-wifi-off"></i> {% translate "Mode hors-ligne — Vidéo locale" %}</span>
+                        {% if activer_hls %}
+                        <span class="badge bg-warning text-dark"><i class="ti ti-loader ti-spin"></i> {% translate "Optimisation HLS en arrière-plan..." %}</span>
+                        {% endif %}
                     </div>
                 {% endif %}
             {% elif chapitre.url_video %}
