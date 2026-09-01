@@ -33,22 +33,10 @@ class TuteurIaConfig(AppConfig):
 
         import threading
 
-        # chromadb a un import circulaire interne qui déclenche un deadlock
-        # si deux threads l'importent en même temps. On force l'import
-        # de manière SYNCHRONE dans le thread principal avant de démarrer
-        # le thread de préchargement.
-        try:
-            from tuteur_ia.tools.chroma_store import get_collection, warm_up_embeddings
-            get_collection()
-        except Exception as e:
-            logger.warning(f"[ChromaDB] Initialisation impossible au démarrage : {e}")
-            return
-
         def preload_chroma():
             try:
+                from tuteur_ia.tools.chroma_store import get_collection, warm_up_embeddings
                 collection = get_collection()
-                # Charge le modèle ONNX en mémoire au démarrage du serveur
-                # pour éviter le cold-start lors du premier appel.
                 warm_up_embeddings()
                 logger.info(
                     f"[ChromaDB] Modèle d'embedding prêt à "

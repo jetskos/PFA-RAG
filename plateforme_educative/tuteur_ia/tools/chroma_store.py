@@ -46,11 +46,24 @@ def _get_chroma_path() -> str:
 
 
 def _get_embedding_function():
-    """Retourne la fonction d'embedding (singleton, création protégée par verrou)."""
+    """Retourne la fonction d'embedding (singleton, création protégée par verrou).
+    
+    Utilise DefaultEmbeddingFunction de chromadb mais avec des options ONNX
+    forcées (CPU-only, 1 thread) pour éviter le SIGSEGV sous Linux/Docker.
+    """
     global _embedding_fn
     if _embedding_fn is None:
         with _embedding_init_lock:
             if _embedding_fn is None:
+                # Forcer les variables d'environnement AVANT l'import d'onnxruntime
+                # pour éviter le SIGSEGV lors de l'initialisation du pool de threads.
+                import os
+                os.environ["OMP_NUM_THREADS"] = "1"
+                os.environ["OMP_WAIT_POLICY"] = "PASSIVE"
+                os.environ["GOMP_SPINCOUNT"] = "0"
+                os.environ["OPENBLAS_NUM_THREADS"] = "1"
+                os.environ["MKL_NUM_THREADS"] = "1"
+
                 from chromadb.utils.embedding_functions import DefaultEmbeddingFunction
                 _embedding_fn = DefaultEmbeddingFunction()
                 logger.info("Utilisation de DefaultEmbeddingFunction (local ONNX) - pas de PyTorch, API externe inutile !")
