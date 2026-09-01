@@ -1536,7 +1536,18 @@ def check_export_status_view(request, job_id):
 def check_import_status_view(request, job_id):
     """Vérifie l'état d'un import."""
     from .models import ImportJob
+    from django.utils import timezone
+    from datetime import timedelta
     job = get_object_or_404(ImportJob, pk=job_id, formateur=request.user)
+
+    # Job bloqué : un import interrompu (onglet fermé, process tué) reste en état
+    # non terminal pour toujours. Au-delà de 15 min, on le déclare échoué.
+    if job.status not in ('TERMINE', 'FAILED') and job.date_creation < timezone.now() - timedelta(minutes=15):
+        job.status = 'FAILED'
+        job.erreur = job.erreur or "Import interrompu (délai dépassé)."
+        job.date_fin = timezone.now()
+        job.save(update_fields=['status', 'erreur', 'date_fin'])
+
     data = {
         'status': job.status,
         'erreur': job.erreur,

@@ -67,6 +67,7 @@ import zipfile
 import shutil
 from pathlib import Path
 from django.conf import settings
+from django.db import transaction
 from django.utils import timezone
 from .models import ExportJob, Cours
 import hashlib
@@ -248,89 +249,91 @@ def import_courses_task(self, import_job_id: str, user_id: str, zip_files: list)
                 job.status = 'SAUVEGARDE_BDD'
                 job.titre_cours = metadata.get('cours', {}).get('titre', 'Cours importé')
                 job.save()
-                    
+
                 c_data = metadata.get('cours', {})
-                niveau_code = c_data.get('niveau') or "NA"
-                niveau, _ = Niveau.objects.get_or_create(code=niveau_code, defaults={'nom': niveau_code})
-                
-                # « (Importé) » ajouté une seule fois : ne pas empiler le suffixe
-                # quand on réimporte un cours déjà exporté (« X (Importé) (Importé)… »).
-                _src_titre = (c_data.get('titre') or 'Cours importé').strip()
-                cours_titre = _src_titre if _src_titre.endswith('(Importé)') else f"{_src_titre} (Importé)"
-                cours = Cours.objects.create(
-                    titre=cours_titre,
-                    description=c_data.get('description', ''),
-                    resume=c_data.get('resume', ''),
-                    niveau=niveau,
-                    createur=user,
-                    source=getattr(job, 'source', 'IMPORT') or 'IMPORT',
-                    actif=True # Les cours importés sont directement actifs
-                )
-                imported_cours_titres.append(cours_titre)
-                
-                if 'image_couverture' in c_data:
-                    img_file = extract_dir / c_data['image_couverture']
-                    if img_file.exists():
-                        verify_file(img_file, img_file.name)
-                        with open(img_file, 'rb') as f:
-                            cours.image_couverture.save(img_file.name, File(f))
-                            
-                for chap_data in metadata.get('chapitres', []):
-                    chapitre = Chapitre.objects.create(
-                        cours=cours,
-                        titre=chap_data.get('titre', 'Chapitre sans titre'),
-                        description=chap_data.get('description', ''),
-                        ordre=chap_data.get('ordre', 0),
-                        url_video=chap_data.get('url_video', '')
+
+                # Création du cours en une seule transaction : si quoi que ce soit
+                # échoue (fichier corrompu, écriture concurrente, interruption),
+                # tout est annulé — pas de cours à moitié importé en base.
+                with transaction.atomic():
+                    niveau_code = c_data.get('niveau') or "NA"
+                    niveau, _ = Niveau.objects.get_or_create(code=niveau_code, defaults={'nom': niveau_code})
+
+                    # « (Importé) » ajouté une seule fois : ne pas empiler le suffixe
+                    # quand on réimporte un cours déjà exporté (« X (Importé) (Importé)… »).
+                    _src_titre = (c_data.get('titre') or 'Cours importé').strip()
+                    cours_titre = _src_titre if _src_titre.endswith('(Importé)') else f"{_src_titre} (Importé)"
+                    cours = Cours.objects.create(
+                        titre=cours_titre,
+                        description=c_data.get('description', ''),
+                        resume=c_data.get('resume', ''),
+                        niveau=niveau,
+                        createur=user,
+                        source=getattr(job, 'source', 'IMPORT') or 'IMPORT',
+                        actif=True  # Les cours importés sont directement actifs
                     )
-                    
-                    if 'video_fichier' in chap_data:
-                        vid_file = extract_dir / chap_data['video_fichier']
-                        if vid_file.exists():
-                            verify_file(vid_file, vid_file.name)
-                            with open(vid_file, 'rb') as f:
-                                chapitre.video_fichier.save(vid_file.name, File(f))
-                                
-                            # Si le dossier HLS est aussi fourni, on le restaure et on bypass la génération FFmpeg
-                            if 'video_hls_dir' in chap_data and 'video_hls_playlist' in chap_data:
-                                hls_src_dir = extract_dir / chap_data['video_hls_dir']
-                                if hls_src_dir.exists() and hls_src_dir.is_dir():
-                                    for hls_file in hls_src_dir.rglob('*'):
-                                        if hls_file.is_file():
-                                            rel_name = f"{chap_data['video_hls_dir']}/{hls_file.name}"
-                                            verify_file(hls_file, rel_name)
-                                    
-                                    # Déplacer vers media/videos/hls/<uuid>
-                                    dest_hls_dir = Path(settings.MEDIA_ROOT) / 'videos' / 'hls' / f"chap_{chapitre.id}_hls"
-                                    dest_hls_dir.mkdir(parents=True, exist_ok=True)
-                                    
-                                    # Copier les fichiers
-                                    for item in hls_src_dir.iterdir():
-                                        if item.is_file():
-                                            shutil.copy2(item, dest_hls_dir / item.name)
-                                            
-                                    chapitre.is_hls_ready = True
-                                    rel_hls_path = str((dest_hls_dir / chap_data['video_hls_playlist']).relative_to(settings.MEDIA_ROOT)).replace('\\\\', '/').replace('\\', '/')
-                                    chapitre.video_hls_url = rel_hls_path
-                                    chapitre.save(update_fields=['is_hls_ready', 'video_hls_url'])
-                            else:
-                                convertir_video_hls.delay(str(chapitre.pk))
-                                
-                    for doc_data in chap_data.get('documents', []):
-                        doc = Document.objects.create(
-                            chapitre=chapitre,
-                            titre=doc_data.get('titre', 'Document'),
-                            type_document=doc_data.get('type_document', 'RESSOURCE'),
-                            description=doc_data.get('description', ''),
-                            ordre=doc_data.get('ordre', 0)
+                    imported_cours_titres.append(cours_titre)
+
+                    if 'image_couverture' in c_data:
+                        img_file = extract_dir / c_data['image_couverture']
+                        if img_file.exists():
+                            verify_file(img_file, img_file.name)
+                            with open(img_file, 'rb') as f:
+                                cours.image_couverture.save(img_file.name, File(f))
+
+                    for chap_data in metadata.get('chapitres', []):
+                        chapitre = Chapitre.objects.create(
+                            cours=cours,
+                            titre=chap_data.get('titre', 'Chapitre sans titre'),
+                            description=chap_data.get('description', ''),
+                            ordre=chap_data.get('ordre', 0),
+                            url_video=chap_data.get('url_video', '')
                         )
-                        if 'fichier_pdf' in doc_data:
-                            pdf_file = extract_dir / doc_data['fichier_pdf']
-                            if pdf_file.exists():
-                                verify_file(pdf_file, pdf_file.name)
-                                with open(pdf_file, 'rb') as f:
-                                    doc.fichier_pdf.save(pdf_file.name, File(f))
-                                docs_to_index.append(doc)
+
+                        # HLS pré-généré fourni : on le restaure AVANT d'attacher la
+                        # vidéo, pour que is_hls_ready soit posé quand le signal
+                        # on_chapitre_save se déclenche → convertir_video_hls voit
+                        # que c'est déjà prêt et ne relance pas FFmpeg inutilement.
+                        if 'video_hls_dir' in chap_data and 'video_hls_playlist' in chap_data:
+                            hls_src_dir = extract_dir / chap_data['video_hls_dir']
+                            if hls_src_dir.exists() and hls_src_dir.is_dir():
+                                for hls_file in hls_src_dir.rglob('*'):
+                                    if hls_file.is_file():
+                                        verify_file(hls_file, f"{chap_data['video_hls_dir']}/{hls_file.name}")
+                                dest_hls_dir = Path(settings.MEDIA_ROOT) / 'videos' / 'hls' / f"chap_{chapitre.id}_hls"
+                                dest_hls_dir.mkdir(parents=True, exist_ok=True)
+                                for item in hls_src_dir.iterdir():
+                                    if item.is_file():
+                                        shutil.copy2(item, dest_hls_dir / item.name)
+                                rel_hls_path = str((dest_hls_dir / chap_data['video_hls_playlist']).relative_to(settings.MEDIA_ROOT)).replace('\\\\', '/').replace('\\', '/')
+                                chapitre.is_hls_ready = True
+                                chapitre.video_hls_url = rel_hls_path
+                                chapitre.save(update_fields=['is_hls_ready', 'video_hls_url'])
+
+                        if 'video_fichier' in chap_data:
+                            vid_file = extract_dir / chap_data['video_fichier']
+                            if vid_file.exists():
+                                verify_file(vid_file, vid_file.name)
+                                with open(vid_file, 'rb') as f:
+                                    chapitre.video_fichier.save(vid_file.name, File(f))
+                                # Le signal on_chapitre_save lance convertir_video_hls
+                                # si nécessaire — et le saute si is_hls_ready (ci-dessus).
+
+                        for doc_data in chap_data.get('documents', []):
+                            doc = Document.objects.create(
+                                chapitre=chapitre,
+                                titre=doc_data.get('titre', 'Document'),
+                                type_document=doc_data.get('type_document', 'RESSOURCE'),
+                                description=doc_data.get('description', ''),
+                                ordre=doc_data.get('ordre', 0)
+                            )
+                            if 'fichier_pdf' in doc_data:
+                                pdf_file = extract_dir / doc_data['fichier_pdf']
+                                if pdf_file.exists():
+                                    verify_file(pdf_file, pdf_file.name)
+                                    with open(pdf_file, 'rb') as f:
+                                        doc.fichier_pdf.save(pdf_file.name, File(f))
+                                    docs_to_index.append(doc)
                                     
             finally:
                 # Cleanup
@@ -401,7 +404,13 @@ def convertir_video_hls(self, chapitre_id: str):
         if not chapitre.video_fichier:
             logger.warning(f"[HLS] Pas de vidéo pour le chapitre {chapitre_id}")
             return
-            
+
+        # HLS déjà présent (import d'un cours avec HLS pré-généré) : ne pas ré-encoder.
+        if chapitre.is_hls_ready and chapitre.video_hls_url:
+            if (Path(settings.MEDIA_ROOT) / chapitre.video_hls_url).exists():
+                logger.info("[HLS] Déjà prêt (chapitre %s), conversion ignorée.", chapitre_id)
+                return
+
         try:
             from accounts.models import ConfigurationSysteme
             config = ConfigurationSysteme.objects.first()
