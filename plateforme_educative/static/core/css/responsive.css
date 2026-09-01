@@ -476,7 +476,13 @@ html, body {
         padding: 1.75rem 1.15rem !important;
         border-radius: 16px !important;
         margin-bottom: 1.25rem !important;
+        /* overflow visible : sinon le menu déroulant « niveau » est coupé.
+           Le fond reste rogné par border-radius ; les orbes décoratives
+           (::before/::after) sont masquées juste en dessous. */
+        overflow: visible !important;
     }
+    .catalog-hero::before,
+    .catalog-hero::after { display: none !important; }
     .hero-title {
         font-size: clamp(1.5rem, 6vw, 2rem) !important;
     }
@@ -496,23 +502,68 @@ html, body {
         flex-direction: column !important;
         max-width: none !important;
     }
-    .nivel-select-wrap select,
+    .nivel-select-wrap,
     .catalog-search-container,
     .catalog-search-container input {
         width: 100% !important;
         min-width: 0 !important;
     }
     .catalog-search-container input { font-size: 16px !important; min-height: 46px !important; }
+
+    /* Sélecteur de niveau : ce <select> est remplacé par un widget TomSelect.
+       Par défaut son contrôle s'affiche en petit bloc blanc (~120px) avec la
+       flèche détachée — illisible sur le hero foncé. On le refait en champ
+       « verre dépoli » pleine largeur, assorti à la barre de recherche. */
+    .nivel-select-wrap { display: block !important; }
+    .nivel-select-wrap .ts-wrapper { width: 100% !important; }
+    .nivel-select-wrap .ts-wrapper .ts-control {
+        width: 100% !important;
+        min-height: 48px !important;
+        padding: 0 42px 0 16px !important;
+        background: rgba(255, 255, 255, 0.14) !important;
+        border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        border-radius: 12px !important;
+        box-shadow: none !important;
+    }
+    .nivel-select-wrap .ts-control,
+    .nivel-select-wrap .ts-control .item,
+    .nivel-select-wrap .ts-control > input {
+        color: #fff !important;
+        font-size: 16px !important;
+    }
+    .nivel-select-wrap .ts-control > input::placeholder { color: rgba(255, 255, 255, 0.75) !important; opacity: 1 !important; }
+    .nivel-select-wrap > i.ti-chevron-down {
+        position: absolute !important;
+        top: 24px !important;
+        transform: translateY(-50%) !important;
+        right: 14px !important;
+        color: rgba(255, 255, 255, 0.85) !important;
+        font-size: 1rem !important;
+        z-index: 2;
+    }
+    /* Menu déroulant TomSelect : sombre pour rester lisible */
+    .nivel-select-wrap .ts-dropdown {
+        background: #0f172a !important;
+        border: 1px solid rgba(255, 255, 255, 0.15) !important;
+        border-radius: 12px !important;
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45) !important;
+    }
+    .nivel-select-wrap .ts-dropdown .option {
+        color: rgba(255, 255, 255, 0.9) !important;
+        padding: 12px 16px !important;
+        font-size: 15px !important;
+    }
+    .nivel-select-wrap .ts-dropdown .option.active {
+        background: rgba(13, 148, 136, 0.35) !important;
+        color: #fff !important;
+    }
     .grille-cours {
         grid-template-columns: 1fr !important;
         gap: 1rem !important;
     }
-    .filter-chips-bar {
-        overflow-x: auto;
-        flex-wrap: nowrap !important;
-        -webkit-overflow-scrolling: touch;
-        padding-bottom: 0.5rem;
-    }
+    /* La barre de chips « Niveau » fait doublon avec le sélecteur du hero
+       sur mobile — on la masque pour gagner de la hauteur (moins de scroll). */
+    .filter-chips-bar { display: none !important; }
     .card-footer .btn-consult { min-height: 46px !important; }
     .card-footer .btn-edit-card { min-height: 46px !important; min-width: 46px !important; justify-content: center !important; }
 

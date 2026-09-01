@@ -14,7 +14,7 @@ from django.views.decorators.http import require_GET
 from django.shortcuts import render
 
 # Incrémenter à chaque changement de la logique de cache du service worker.
-SW_CACHE_VERSION = "v5"
+SW_CACHE_VERSION = "v6"
 
 
 @require_GET
