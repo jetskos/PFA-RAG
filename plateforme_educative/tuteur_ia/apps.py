@@ -12,10 +12,10 @@ class TuteurIaConfig(AppConfig):
 
     def ready(self):
         import sys
-        # Ne jamais précharger pendant les commandes de gestion Django
+        # Ne jamais précharger pendant les commandes de gestion Django ni dans Celery
         if any(cmd in sys.argv for cmd in
                ['migrate', 'makemigrations', 'test', 'shell', 'db',
-                'showmigrations', 'collectstatic', 'check']):
+                'showmigrations', 'collectstatic', 'check', 'celery']):
             return
 
         # Préchargement ChromaDB activé par défaut au démarrage du serveur.

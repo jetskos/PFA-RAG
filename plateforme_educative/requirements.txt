@@ -15,9 +15,9 @@ langchain-groq>=0.0.1
 langchain-openai>=0.0.8
 langchain-ollama>=0.2.0
 langgraph>=0.0.25
-chromadb>=0.4.22
-onnxruntime>=1.14.1
-tokenizers>=0.13.3
+chromadb==0.4.24
+onnxruntime==1.17.1
+tokenizers==0.15.2
 PyPDF2>=3.0.0
 beautifulsoup4>=4.12.0
 pdfplumber>=0.11.0
