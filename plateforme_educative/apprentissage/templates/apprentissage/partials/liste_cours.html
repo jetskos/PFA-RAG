@@ -5,7 +5,7 @@
         <!-- Cover Image -->
         <div class="cover-image">
             {% if cours.image_couverture %}
-            <img src="{{ cours.image_couverture.url }}" alt="{{ cours.titre }}">
+            <img src="{{ cours.image_couverture.url }}" alt="{{ cours.titre }}" loading="lazy" onerror="this.style.display='none'">
             {% endif %}
             <div class="cover-overlay"></div>
 
@@ -22,7 +22,7 @@
                     {% if cours.createur == request.user %}
                         {% translate "Par vous" %}
                     {% elif cours.createur %}
-                        {{ cours.createur.get_full_name|default:cours.createur.email }}
+                        {{ cours.createur.nom_affichage }}
                     {% else %}
                         {% translate "Formateur" %}
                     {% endif %}

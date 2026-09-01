@@ -260,7 +260,7 @@
             {% if user.photo %}
               <img src="{{ user.photo.url }}" alt="{% translate 'Photo' %}">
             {% else %}
-              {{ user.first_name|default:user.email|first|upper }}
+              {{ user.nom_affichage|first|upper }}
             {% endif %}
           </div>
           <div class="ob-photo-info">
@@ -421,7 +421,7 @@
             {% if user.photo %}
               <img src="{{ user.photo.url }}" alt="{% translate 'Photo' %}">
             {% else %}
-              {{ user.first_name|default:user.email|first|upper }}
+              {{ user.nom_affichage|first|upper }}
             {% endif %}
           </div>
           <div class="ob-photo-info">

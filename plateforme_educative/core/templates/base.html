@@ -281,13 +281,7 @@
                         aria-expanded="false">
                         <div class="profile-capsule-info">
                             <span class="profile-capsule-name">
-                                {% if user.first_name and user.last_name %}
-                                {{ user.first_name }} {{ user.last_name }}
-                                {% elif user.first_name %}
-                                {{ user.first_name }}
-                                {% else %}
-                                {{ user.get_full_name|truncatechars:16 }}
-                                {% endif %}
+                                {{ user.nom_affichage|truncatechars:18 }}
                             </span>
                             <span
                                 class="profile-capsule-badge {% if user.is_superuser or user.role == 'ADMIN' %}badge-admin{% elif user.is_formateur %}badge-formateur{% else %}badge-eleve{% endif %}">
@@ -302,7 +296,7 @@
                                 {% if user.first_name %}
                                 {{ user.first_name|make_list|first|upper }}{% if user.last_name %}{{ user.last_name|make_list|first|upper }}{% endif %}
                                 {% else %}
-                                {{ user.email|slice:":2"|upper }}
+                                {{ user.nom_affichage|slice:":2"|upper }}
                                 {% endif %}
                             </span>
                             {% endif %}
