@@ -117,16 +117,28 @@ class Command(BaseCommand):
         base = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434").rstrip("/")
         model = os.getenv("OLLAMA_MODEL", os.getenv("LOCAL_LLM_MODEL", "qwen2.5:1.5b-instruct"))
         try:
-            with urllib.request.urlopen(f"{base}/api/tags", timeout=3) as r:
-                import json
-                tags = json.load(r)
-            names = {m.get("name", "") for m in tags.get("models", [])}
-            if any(model.split(":")[0] in n for n in names):
-                self._line(OK, "Ollama joignable + modèle présent", model)
+            if base.endswith("/v1"):
+                # Compatibilité OpenAI (ex: llama.cpp, LM Studio)
+                with urllib.request.urlopen(f"{base}/models", timeout=3) as r:
+                    import json
+                    data = json.load(r)
+                names = {m.get("id", "") for m in data.get("data", [])}
+                provider = "Serveur IA (llama.cpp)"
             else:
-                self._warn("Ollama joignable mais modèle absent", f"ollama pull {model}")
+                # API Native Ollama
+                with urllib.request.urlopen(f"{base}/api/tags", timeout=3) as r:
+                    import json
+                    data = json.load(r)
+                names = {m.get("name", "") for m in data.get("models", [])}
+                provider = "Ollama"
+                
+            # llama.cpp peut parfois renvoyer une liste de modèles vide selon sa config, on valide si ça répond
+            if any(model.split(":")[0] in n for n in names) or not names:
+                self._line(OK, f"{provider} joignable", model)
+            else:
+                self._warn(f"{provider} joignable mais modèle incertain", f"attendu: {model}")
         except (urllib.error.URLError, socket.timeout, ConnectionError, OSError):
-            self._warn("Ollama injoignable", f"IA indisponible hors-ligne — installez Ollama + `ollama pull {model}`")
+            self._warn("Moteur IA injoignable", f"LLM hors-ligne indisponible sur {base}")
 
     def _embeddings(self):
         try:
