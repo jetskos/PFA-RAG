@@ -33,26 +33,9 @@ class TuteurIaConfig(AppConfig):
 
         import threading
 
-        # chromadb a un import circulaire interne qui déclenche un deadlock
-        # ("_ModuleLock") si deux threads l'importent pour la première fois en
-        # même temps — ça arrivait quand ce thread de préchargement démarrait
-        # pendant qu'une requête importait aussi chromadb. `import chroma_store`
-        # seul ne suffit pas : chromadb n'y est importé que paresseusement, à
-        # l'intérieur des fonctions. On appelle donc get_collection() ici, de
-        # façon SYNCHRONE dans le thread principal de démarrage Django (avant
-        # toute requête et avant le thread ci-dessous), pour forcer réellement
-        # l'import de chromadb une bonne fois pour toutes pendant le boot —
-        # un coût ponctuel de ~2-3s au démarrage, acceptable pour éliminer
-        # toute course d'import ensuite.
-        try:
-            from tuteur_ia.tools.chroma_store import get_collection, warm_up_embeddings
-            get_collection()
-        except Exception as e:
-            logger.warning(f"[ChromaDB] Initialisation impossible au démarrage : {e}")
-            return
-
         def preload_chroma():
             try:
+                from tuteur_ia.tools.chroma_store import get_collection, warm_up_embeddings
                 collection = get_collection()
                 # Déclenche réellement le chargement du modèle ONNX (pas seulement
                 # l'ouverture de la collection) pendant le démarrage du serveur,
