@@ -273,7 +273,7 @@
             <p class="fn-subtitle">{% translate "Scores QCM agrégés, progression par cours et détection des élèves en difficulté." %}</p>
         </div>
         <div class="fn-hero-right">
-            <a href="{% url 'apprentissage:exporter_notes_classe_csv' %}?classe={{ classe_selectionnee|default:'' }}" class="btn-hero-primary">
+            <a href="{% url 'apprentissage:exporter_notes_classe_csv' %}?classe={{ classe_selectionnee|default:'' }}" data-download class="btn-hero-primary">
                 <i class="ti ti-download"></i> {% translate "Exporter CSV" %}
             </a>
             <a href="{% url 'apprentissage:espace_formateur' %}" class="btn-hero-secondary">

@@ -276,7 +276,7 @@
       </div>
     </div>
     <div class="logi-hero-right">
-      <a href="{% url 'logistics:exporter_equipements' %}" class="logi-btn-ghost" title="{% translate 'Exporter en Excel' %}">
+      <a href="{% url 'logistics:exporter_equipements' %}" data-download class="logi-btn-ghost" title="{% translate 'Exporter en Excel' %}">
         <i class="ti ti-download"></i> {% translate "Exporter" %}
       </a>
       {% if user.is_staff or user.role == "ADMIN" or user.is_formateur %}
