@@ -12,6 +12,10 @@ class TuteurIaConfig(AppConfig):
 
     def ready(self):
         import sys
+        
+        # Désactiver le parallélisme des tokenizers Rust pour éviter les deadlocks (hangs infinis)
+        # lorsqu'appelé depuis un worker Celery ou un thread.
+
         # Ne jamais précharger pendant les commandes de gestion Django
         if any(cmd in sys.argv for cmd in
                ['migrate', 'makemigrations', 'test', 'shell', 'db',
