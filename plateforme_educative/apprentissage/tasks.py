@@ -290,10 +290,17 @@ def import_courses_task(self, import_job_id: str, user_id: str, zip_files: list)
                             url_video=chap_data.get('url_video', '')
                         )
 
-                        # HLS pré-généré fourni : on le restaure AVANT d'attacher la
-                        # vidéo, pour que is_hls_ready soit posé quand le signal
-                        # on_chapitre_save se déclenche → convertir_video_hls voit
-                        # que c'est déjà prêt et ne relance pas FFmpeg inutilement.
+                        if 'video_fichier' in chap_data:
+                            vid_file = extract_dir / chap_data['video_fichier']
+                            if vid_file.exists():
+                                verify_file(vid_file, vid_file.name)
+                                with open(vid_file, 'rb') as f:
+                                    chapitre.video_fichier.save(vid_file.name, File(f))
+                                # Le signal on_chapitre_save lance convertir_video_hls (is_hls_ready=False)
+
+                        # HLS pré-généré fourni : on le restaure APRES avoir attaché la
+                        # vidéo, pour écraser le is_hls_ready=False mis par le signal.
+                        # Quand la tâche Celery démarrera, elle verra is_hls_ready=True et s'arrêtera.
                         if 'video_hls_dir' in chap_data and 'video_hls_playlist' in chap_data:
                             hls_src_dir = extract_dir / chap_data['video_hls_dir']
                             if hls_src_dir.exists() and hls_src_dir.is_dir():
@@ -309,15 +316,6 @@ def import_courses_task(self, import_job_id: str, user_id: str, zip_files: list)
                                 chapitre.is_hls_ready = True
                                 chapitre.video_hls_url = rel_hls_path
                                 chapitre.save(update_fields=['is_hls_ready', 'video_hls_url'])
-
-                        if 'video_fichier' in chap_data:
-                            vid_file = extract_dir / chap_data['video_fichier']
-                            if vid_file.exists():
-                                verify_file(vid_file, vid_file.name)
-                                with open(vid_file, 'rb') as f:
-                                    chapitre.video_fichier.save(vid_file.name, File(f))
-                                # Le signal on_chapitre_save lance convertir_video_hls
-                                # si nécessaire — et le saute si is_hls_ready (ci-dessus).
 
                         for doc_data in chap_data.get('documents', []):
                             doc = Document.objects.create(
