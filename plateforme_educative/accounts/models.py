@@ -108,7 +108,24 @@ class Utilisateur(AbstractBaseUser, PermissionsMixin):
 
     def get_short_name(self):
         return self.first_name or self.email.split('@')[0]
-    
+
+    @property
+    def nom_affichage(self):
+        """Nom lisible pour l'affichage personnel (salutations, en-têtes, avatar).
+
+        Ne renvoie JAMAIS l'adresse e-mail complète à l'écran : à défaut de
+        prénom/nom, on présente la partie locale de l'e-mail en capitales
+        (ex. « jean.dupont@ecole.ma » -> « Jean Dupont »).
+        """
+        fn = (self.first_name or "").strip()
+        ln = (self.last_name or "").strip()
+        if fn and ln:
+            return f"{fn} {ln}"
+        if fn:
+            return fn
+        local = self.email.split("@")[0]
+        return local.replace(".", " ").replace("_", " ").replace("-", " ").strip().title() or self.email
+
     # Gestion des mots de passe temporaires expirables
     is_temp_password = models.BooleanField(default=False)
     temp_password_created_at = models.DateTimeField(null=True, blank=True)

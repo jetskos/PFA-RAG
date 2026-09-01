@@ -116,7 +116,7 @@
                 <!-- En-tête de cours -->
                 <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.25rem;">
                     {% if cours.image_couverture %}
-                    <img src="{{ cours.image_couverture.url }}" alt="{{ cours.titre }}"
+                    <img src="{{ cours.image_couverture.url }}" alt="{{ cours.titre }}" loading="lazy" onerror="this.style.display='none'"
                          style="width: 44px; height: 44px; border-radius: 0.5rem; object-fit: cover; flex-shrink: 0;">
                     {% else %}
                     <div style="width: 44px; height: 44px; border-radius: 0.5rem; background: var(--primary-gradient, linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%));
