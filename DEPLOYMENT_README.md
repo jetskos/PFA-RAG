@@ -161,38 +161,55 @@ d'envoi d'e-mail et force l'IA locale (Ollama) sans même tester le réseau.
 Voir `plateforme_educative/DOCUMENTATION_HLS_FLUTE.md` §5 : lancer le récepteur du
 carrousel FLUTE en tâche de fond, sortie pointée sur `SATELLITE_INBOX_DIR`.
 
-### Import d'un cours en ligne de commande (sans interface web)
+### Import en ligne de commande (sans interface web)
 
-Pour un déploiement scripté, reproductible, sans souris — l'équivalent du bouton
-**« Importer (ZIP) »** :
+Pour un déploiement scripté, reproductible, sans souris — et pour un
+**orchestrateur externe** (page « Updates » / script satellite) qui coche
+« simulation » par défaut avant d'exécuter réellement.
+
+**Toutes les commandes acceptent `--dry-run`** : elles affichent ce qu'elles
+feraient (suppressions, cours créés, objets rechargés, fichiers médias) **sans
+rien écrire**, et sortent avec le code retour `0`. Retirer `--dry-run` exécute
+pour de vrai. Une commande qui échoue sort avec un **code retour ≠ 0** (scriptable).
+
+#### a) Un cours déposé — équivalent du bouton « Importer (ZIP) »
 
 ```bash
 cd plateforme_educative
 
-# ajoute le cours
-python manage.py import_course /chemin/cours.zip
+# simulation (n'écrit rien) — scénario « on efface et on injecte »
+python manage.py import_course /chemin/cours.zip --replace-all --dry-run
 
-# efface TOUS les cours puis injecte (scénario « on efface et on injecte »)
+# exécution réelle
 python manage.py import_course /chemin/cours.zip --replace-all -y
 
-# remplace uniquement le cours dont le titre contient "IoT"
-python manage.py import_course /chemin/cours.zip --replace "IoT" -y
-
-# choisit le propriétaire (défaut : 1er superuser / ADMIN)
-python manage.py import_course /chemin/cours.zip --as prof@ecole.ma
+# variantes
+python manage.py import_course /chemin/cours.zip                       # ajoute sans rien effacer
+python manage.py import_course /chemin/cours.zip --replace "IoT" -y     # remplace le cours ciblé
+python manage.py import_course /chemin/cours.zip --as prof@ecole.ma     # propriétaire (défaut : 1er superuser/ADMIN)
 ```
 
-Wrappers prêts à l'emploi (migrent d'abord, puis importent) :
+Wrappers (migrent d'abord, puis importent) :
 
 ```bash
 bash plateforme_educative/deploy_course.sh cours.zip --replace-all      # Linux / Git Bash
 plateforme_educative\deploy_course.bat cours.zip --replace-all          # Windows
 ```
 
+#### b) Snapshot complet de la plateforme (base + médias)
+
+```bash
+python manage.py backup_satellite                              # produit media/satellite_backups/*.zip
+python manage.py restore_satellite snapshot.zip --dry-run      # simulation
+python manage.py restore_satellite snapshot.zip                # flush → médias → loaddata → réindexation RAG
+```
+
+#### Notes
+
 - **100 % hors-ligne** : exécution Celery forcée en synchrone, aucun worker requis.
 - Le **ZIP source n'est pas modifié** (l'import travaille sur une copie).
-- `--replace*` supprime aussi les fichiers média associés (MP4, PDF, couvertures,
-  dossiers HLS) — pas d'orphelins entre deux imports.
+- `import_course --replace*` supprime aussi les fichiers média associés (MP4, PDF,
+  couvertures, dossiers HLS) — pas d'orphelins entre deux imports.
 - L'indexation IA des PDF (ChromaDB) est faite au passage si disponible ; sinon
   la relancer avec `python manage.py indexer_pdfs`.
 

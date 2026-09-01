@@ -6,16 +6,22 @@ Importe un ou plusieurs cours depuis des ZIP d'export, en ligne de commande
     python manage.py import_course cours1.zip cours2.zip --as prof@ecole.ma
     python manage.py import_course cours.zip --replace "IoT Learning Series" -y
     python manage.py import_course cours.zip --replace-all -y
+    python manage.py import_course cours.zip --replace-all --dry-run   # simulation
 
 Détails :
 - Le(s) ZIP source(s) ne sont PAS modifiés : l'import travaille sur une copie.
 - L'exécution est forcée en mode synchrone (pas besoin d'un worker Celery).
 - --replace / --replace-all suppriment aussi les fichiers média associés
   (couvertures, MP4, PDF) pour éviter les orphelins entre deux « efface / injecte ».
+- --dry-run : n'écrit RIEN (ni base, ni fichiers). Affiche ce qui serait
+  supprimé puis importé, et le code retour reste 0. Pour un script d'orchestration
+  qui coche « simulation » par défaut avant d'exécuter réellement.
 """
+import json
 import logging
 import shutil
 import tempfile
+import zipfile
 from pathlib import Path
 
 from django.conf import settings
@@ -46,6 +52,10 @@ class Command(BaseCommand):
         parser.add_argument(
             "-y", "--yes", action="store_true",
             help="Ne pas demander de confirmation avant une suppression.",
+        )
+        parser.add_argument(
+            "--dry-run", action="store_true",
+            help="Simulation : affiche ce qui serait supprimé/importé sans rien écrire.",
         )
 
     # ── helpers ──────────────────────────────────────────────────────────────
@@ -106,6 +116,67 @@ class Command(BaseCommand):
             pass
         return 0
 
+    @staticmethod
+    def _inspect_zip(path):
+        """Lit course_metadata.json dans le ZIP sans rien extraire sur disque."""
+        try:
+            with zipfile.ZipFile(path) as zf:
+                with zf.open("course_metadata.json") as f:
+                    meta = json.load(f)
+        except KeyError:
+            raise CommandError(f"{path.name} : course_metadata.json absent (ce n'est pas un export de cours).")
+        except (zipfile.BadZipFile, json.JSONDecodeError) as exc:
+            raise CommandError(f"{path.name} : archive illisible ({exc}).")
+        cours = meta.get("cours", {})
+        chapitres = meta.get("chapitres", [])
+        n_docs = sum(len(c.get("documents", [])) for c in chapitres)
+        return {
+            "titre": f"{cours.get('titre', 'Cours importe')} (Importe)",
+            "niveau": cours.get("niveau") or "NA",
+            "chapitres": len(chapitres),
+            "documents": n_docs,
+            "fichiers_verifies": len(meta.get("checksums", {})),
+        }
+
+    def _dry_run(self, zips, user, opts):
+        from apprentissage.models import Cours
+        w, s = self.style.WARNING, self.style.SUCCESS
+        self.stdout.write(w("=== SIMULATION (--dry-run) - aucune ecriture base ni fichier ==="))
+        self.stdout.write(f"Proprietaire des cours importes : {user.email}")
+
+        if opts["replace_all"]:
+            qs = Cours.objects.all()
+            self.stdout.write(w(f"\n[EFFACE] TOUS les cours : {qs.count()} a supprimer"))
+            for t in qs.values_list("titre", flat=True):
+                self.stdout.write(f"    - {t}")
+        elif opts["replace"]:
+            qs = Cours.objects.filter(titre__icontains=opts["replace"])
+            self.stdout.write(w(f"\n[EFFACE] cours contenant « {opts['replace']} » : {qs.count()} a supprimer"))
+            for t in qs.values_list("titre", flat=True):
+                self.stdout.write(f"    - {t}")
+        else:
+            self.stdout.write("\n[EFFACE] rien (pas de --replace / --replace-all)")
+
+        self.stdout.write(w("\n[INJECTE] cours qui seraient crees :"))
+        for src in zips:
+            info = self._inspect_zip(src)
+            self.stdout.write(
+                f"    + {info['titre']}  [niveau {info['niveau']}, "
+                f"{info['chapitres']} chapitre(s), {info['documents']} document(s), "
+                f"{info['fichiers_verifies']} fichier(s) verifie(s) par hash]"
+            )
+
+        real = "python manage.py import_course " + " ".join(f'"{p}"' for p in zips)
+        if opts["as_email"]:
+            real += f" --as {opts['as_email']}"
+        if opts["replace_all"]:
+            real += " --replace-all"
+        elif opts["replace"]:
+            real += f' --replace "{opts["replace"]}"'
+        real += " -y"
+        self.stdout.write(s(f"\nCommande reelle equivalente :\n  {real}"))
+        self.stdout.write(s("\n[OK] Simulation terminee - rien n'a ete modifie."))
+
     # ── main ─────────────────────────────────────────────────────────────────
     def handle(self, *args, **opts):
         from apprentissage.models import Cours, ImportJob
@@ -119,6 +190,11 @@ class Command(BaseCommand):
             zips.append(p)
 
         user = self._resolve_user(opts["as_email"])
+
+        if opts["dry_run"]:
+            self._dry_run(zips, user, opts)
+            return
+
         self.stdout.write(f"Propriétaire des cours importés : {user.email}")
 
         # 1) Efface
