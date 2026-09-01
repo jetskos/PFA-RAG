@@ -2,20 +2,26 @@
 Importe un ou plusieurs cours depuis des ZIP d'export, en ligne de commande
 (sans passer par l'interface web « Importer (ZIP) »).
 
-    python manage.py import_course cours.zip
-    python manage.py import_course cours1.zip cours2.zip --as prof@ecole.ma
-    python manage.py import_course cours.zip --replace "IoT Learning Series" -y
-    python manage.py import_course cours.zip --replace-all -y
-    python manage.py import_course cours.zip --replace-all --dry-run   # simulation
+    python manage.py import_course cours.zip                          # ajoute, n'efface rien
+    python manage.py import_course cours.zip --replace "IoT" -y        # remplace un cours précis
+    python manage.py import_course cours.zip --replace-satellite -y    # met à jour SEULEMENT les cours "satellite"
+    python manage.py import_course cours.zip --replace-all -y          # réinitialise TOUT le catalogue
+    python manage.py import_course cours.zip --replace-satellite --dry-run   # simulation
 
-Détails :
+Modes de suppression (avant l'import) :
+- aucun            : n'efface rien (ajoute le cours)
+- --replace TITRE  : supprime les cours dont le titre contient TITRE
+- --replace-satellite : supprime UNIQUEMENT les cours d'origine "satellite" (source=SATELLITE).
+                    Les cours préchargés / créés à la main (source=MANUEL) et les autres
+                    imports (source=IMPORT) ne sont PAS touchés. Les nouveaux cours sont
+                    marqués source=SATELLITE.
+- --replace-all    : supprime TOUS les cours existants (réinitialisation complète).
+
+Autres :
 - Le(s) ZIP source(s) ne sont PAS modifiés : l'import travaille sur une copie.
 - L'exécution est forcée en mode synchrone (pas besoin d'un worker Celery).
-- --replace / --replace-all suppriment aussi les fichiers média associés
-  (couvertures, MP4, PDF) pour éviter les orphelins entre deux « efface / injecte ».
-- --dry-run : n'écrit RIEN (ni base, ni fichiers). Affiche ce qui serait
-  supprimé puis importé, et le code retour reste 0. Pour un script d'orchestration
-  qui coche « simulation » par défaut avant d'exécuter réellement.
+- --replace* supprime aussi les fichiers média associés (couvertures, MP4, PDF, HLS).
+- --dry-run : n'écrit RIEN. Affiche ce qui serait supprimé puis importé, code retour 0.
 """
 import json
 import logging
@@ -46,8 +52,13 @@ class Command(BaseCommand):
             help="Supprime d'abord les cours dont le titre CONTIENT TITRE (insensible à la casse).",
         )
         parser.add_argument(
+            "--replace-satellite", action="store_true",
+            help="Supprime d'abord UNIQUEMENT les cours d'origine « satellite », puis importe "
+                 "les nouveaux en les marquant « satellite ». Les cours préchargés sont préservés.",
+        )
+        parser.add_argument(
             "--replace-all", action="store_true",
-            help="Supprime TOUS les cours existants avant l'import.",
+            help="Supprime TOUS les cours existants avant l'import (réinitialisation complète).",
         )
         parser.add_argument(
             "-y", "--yes", action="store_true",
@@ -72,8 +83,23 @@ class Command(BaseCommand):
             raise CommandError("Aucun superuser ni ADMIN trouvé. Précisez --as <email>.")
         return user
 
-    def _delete_courses(self, queryset, confirm):
+    def _plan(self, opts):
+        """Retourne (queryset_a_supprimer | None, libelle, source_a_poser)."""
         from apprentissage.models import Cours
+        modes = [opts["replace_all"], opts["replace_satellite"], bool(opts["replace"])]
+        if sum(1 for m in modes if m) > 1:
+            raise CommandError("Choisir un seul mode : --replace-all OU --replace-satellite OU --replace.")
+        if opts["replace_all"]:
+            return Cours.objects.all(), "TOUS les cours", "IMPORT"
+        if opts["replace_satellite"]:
+            return (Cours.objects.filter(source="SATELLITE"),
+                    "les cours d'origine « satellite » (les préchargés sont préservés)", "SATELLITE")
+        if opts["replace"]:
+            return (Cours.objects.filter(titre__icontains=opts["replace"]),
+                    f"les cours contenant « {opts['replace']} »", "IMPORT")
+        return None, None, "IMPORT"
+
+    def _delete_courses(self, queryset, confirm):
         titres = list(queryset.values_list("titre", flat=True))
         if not titres:
             self.stdout.write("  (aucun cours à supprimer)")
@@ -93,7 +119,6 @@ class Command(BaseCommand):
                 for doc in chap.documents.all():
                     removed_files += self._unlink_field(doc.fichier_pdf)
                 removed_files += self._unlink_field(chap.video_fichier)
-                # dossier HLS éventuel
                 if getattr(chap, "video_hls_url", ""):
                     hls_dir = (media_root / chap.video_hls_url).parent
                     if hls_dir.is_dir() and media_root in hls_dir.parents:
@@ -140,23 +165,18 @@ class Command(BaseCommand):
         }
 
     def _dry_run(self, zips, user, opts):
-        from apprentissage.models import Cours
         w, s = self.style.WARNING, self.style.SUCCESS
+        qs, libelle, source_tag = self._plan(opts)
         self.stdout.write(w("=== SIMULATION (--dry-run) - aucune ecriture base ni fichier ==="))
         self.stdout.write(f"Proprietaire des cours importes : {user.email}")
+        self.stdout.write(f"Origine posee sur les nouveaux cours : {source_tag}")
 
-        if opts["replace_all"]:
-            qs = Cours.objects.all()
-            self.stdout.write(w(f"\n[EFFACE] TOUS les cours : {qs.count()} a supprimer"))
-            for t in qs.values_list("titre", flat=True):
-                self.stdout.write(f"    - {t}")
-        elif opts["replace"]:
-            qs = Cours.objects.filter(titre__icontains=opts["replace"])
-            self.stdout.write(w(f"\n[EFFACE] cours contenant « {opts['replace']} » : {qs.count()} a supprimer"))
-            for t in qs.values_list("titre", flat=True):
-                self.stdout.write(f"    - {t}")
+        if qs is None:
+            self.stdout.write("\n[EFFACE] rien")
         else:
-            self.stdout.write("\n[EFFACE] rien (pas de --replace / --replace-all)")
+            self.stdout.write(w(f"\n[EFFACE] {libelle} : {qs.count()} a supprimer"))
+            for t in qs.values_list("titre", flat=True):
+                self.stdout.write(f"    - {t}")
 
         self.stdout.write(w("\n[INJECTE] cours qui seraient crees :"))
         for src in zips:
@@ -172,6 +192,8 @@ class Command(BaseCommand):
             real += f" --as {opts['as_email']}"
         if opts["replace_all"]:
             real += " --replace-all"
+        elif opts["replace_satellite"]:
+            real += " --replace-satellite"
         elif opts["replace"]:
             real += f' --replace "{opts["replace"]}"'
         real += " -y"
@@ -180,7 +202,7 @@ class Command(BaseCommand):
 
     # ── main ─────────────────────────────────────────────────────────────────
     def handle(self, *args, **opts):
-        from apprentissage.models import Cours, ImportJob
+        from apprentissage.models import ImportJob
         from apprentissage.tasks import import_courses_task
 
         zips = []
@@ -191,20 +213,19 @@ class Command(BaseCommand):
             zips.append(p)
 
         user = self._resolve_user(opts["as_email"])
+        qs, libelle, source_tag = self._plan(opts)
 
         if opts["dry_run"]:
             self._dry_run(zips, user, opts)
             return
 
         self.stdout.write(f"Propriétaire des cours importés : {user.email}")
+        self.stdout.write(f"Origine des cours importés : {source_tag}")
 
         # 1) Efface
-        if opts["replace_all"]:
-            self.stdout.write(self.style.WARNING("Suppression de TOUS les cours..."))
-            self._delete_courses(Cours.objects.all(), opts["yes"])
-        elif opts["replace"]:
-            self.stdout.write(self.style.WARNING(f"Suppression des cours contenant « {opts['replace']} »..."))
-            self._delete_courses(Cours.objects.filter(titre__icontains=opts["replace"]), opts["yes"])
+        if qs is not None:
+            self.stdout.write(self.style.WARNING(f"Suppression : {libelle}..."))
+            self._delete_courses(qs, opts["yes"])
 
         # 2) Injecte — exécution synchrone forcée (aucun worker requis)
         settings.CELERY_TASK_ALWAYS_EAGER = True
@@ -217,8 +238,7 @@ class Command(BaseCommand):
             pass
 
         # L'indexation IA des PDF (ChromaDB) est optionnelle et bruyante en cas
-        # d'échec : on baisse son logger le temps de l'import. À relancer au
-        # besoin avec « python manage.py indexer_pdfs ».
+        # d'échec : on baisse son logger le temps de l'import.
         tasks_logger = logging.getLogger("apprentissage.tasks")
         prev_level = tasks_logger.level
         tasks_logger.setLevel(logging.CRITICAL)
@@ -230,7 +250,7 @@ class Command(BaseCommand):
                 # L'import supprime le ZIP qu'on lui passe : on travaille sur une copie.
                 tmp = Path(tempfile.gettempdir()) / f"import_{timezone.now():%Y%m%d%H%M%S}_{src.name}"
                 shutil.copy2(src, tmp)
-                job = ImportJob.objects.create(formateur=user)
+                job = ImportJob.objects.create(formateur=user, source=source_tag)
                 try:
                     import_courses_task(str(job.id), user.id, [str(tmp)])
                 finally:

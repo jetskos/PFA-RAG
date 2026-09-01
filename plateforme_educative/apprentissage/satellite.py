@@ -196,7 +196,7 @@ def apply_update(update, user):
     work_path = work_dir / f"sat_{uuid.uuid4().hex}_{update.logical_name}"
     shutil.copy2(source, work_path)
 
-    job = ImportJob.objects.create(formateur=user)
+    job = ImportJob.objects.create(formateur=user, source='SATELLITE')
     update.import_job = job
     update.status = 'IMPORTING'
     update.applied_by = user

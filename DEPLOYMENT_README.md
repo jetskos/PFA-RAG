@@ -174,26 +174,40 @@ pour de vrai. Une commande qui échoue sort avec un **code retour ≠ 0** (scrip
 
 #### a) Un cours déposé — équivalent du bouton « Importer (ZIP) »
 
+Chaque cours porte une **origine** (`source`) : `MANUEL` (créé sur la plateforme /
+préchargé), `IMPORT` (import ZIP), `SATELLITE` (reçu par satellite). Le mode de
+suppression choisi décide de ce qui est touché **avant** l'import :
+
+| Besoin | Commande | Ce qui est supprimé | Origine posée |
+|---|---|---|---|
+| Ajouter un cours | `import_course cours.zip` | rien | `IMPORT` |
+| Mettre à jour un cours précis | `import_course cours.zip --replace "IoT" -y` | les cours dont le titre contient « IoT » | `IMPORT` |
+| **Mise à jour satellite** (recommandé pour la page « Updates ») | `import_course cours.zip --replace-satellite -y` | **uniquement** les cours `source=SATELLITE` — les préchargés (`MANUEL`) sont **préservés** | `SATELLITE` |
+| Réinitialiser tout le catalogue | `import_course cours.zip --replace-all -y` | **tous** les cours | `IMPORT` |
+
 ```bash
 cd plateforme_educative
 
-# simulation (n'écrit rien) — scénario « on efface et on injecte »
-python manage.py import_course /chemin/cours.zip --replace-all --dry-run
+# simulation (n'écrit rien) — met à jour SEULEMENT les cours satellite
+python manage.py import_course /chemin/cours.zip --replace-satellite --dry-run
 
 # exécution réelle
-python manage.py import_course /chemin/cours.zip --replace-all -y
+python manage.py import_course /chemin/cours.zip --replace-satellite -y
 
-# variantes
-python manage.py import_course /chemin/cours.zip                       # ajoute sans rien effacer
-python manage.py import_course /chemin/cours.zip --replace "IoT" -y     # remplace le cours ciblé
-python manage.py import_course /chemin/cours.zip --as prof@ecole.ma     # propriétaire (défaut : 1er superuser/ADMIN)
+# choisir le propriétaire (défaut : 1er superuser / ADMIN)
+python manage.py import_course /chemin/cours.zip --replace-satellite --as prof@ecole.ma -y
 ```
+
+> **Scénario cible** : le LMS garde des cours préchargés (`MANUEL`), le carrousel
+> satellite ne pousse que des cours `SATELLITE`, et chaque « Update LMS » remplace
+> uniquement ces derniers. Les modes sont exclusifs (`--replace-all` / `--replace-satellite`
+> / `--replace` : un seul à la fois).
 
 Wrappers (migrent d'abord, puis importent) :
 
 ```bash
-bash plateforme_educative/deploy_course.sh cours.zip --replace-all      # Linux / Git Bash
-plateforme_educative\deploy_course.bat cours.zip --replace-all          # Windows
+bash plateforme_educative/deploy_course.sh cours.zip --replace-satellite   # Linux / Git Bash
+plateforme_educative\deploy_course.bat cours.zip --replace-satellite       # Windows
 ```
 
 #### b) Snapshot complet de la plateforme (base + médias)

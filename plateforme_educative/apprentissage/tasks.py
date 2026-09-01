@@ -263,6 +263,7 @@ def import_courses_task(self, import_job_id: str, user_id: str, zip_files: list)
                     resume=c_data.get('resume', ''),
                     niveau=niveau,
                     createur=user,
+                    source=getattr(job, 'source', 'IMPORT') or 'IMPORT',
                     actif=True # Les cours importés sont directement actifs
                 )
                 imported_cours_titres.append(cours_titre)

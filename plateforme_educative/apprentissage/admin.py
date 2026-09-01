@@ -4,15 +4,16 @@ from .models import Cours, Chapitre, Document, SatelliteUpdate
 
 @admin.register(Cours)
 class CoursAdmin(admin.ModelAdmin):
-    list_display = ('titre', 'niveau', 'actif', 'date_creation')
-    list_filter = ('niveau', 'actif', 'date_creation')
+    list_display = ('titre', 'niveau', 'source', 'actif', 'date_creation')
+    list_filter = ('source', 'niveau', 'actif', 'date_creation')
     search_fields = ('titre', 'description')
     fieldsets = (
         ('Informations générales', {
             'fields': ('titre', 'description', 'resume', 'niveau')
         }),
         ('Statut', {
-            'fields': ('actif',)
+            'fields': ('actif', 'source'),
+            'description': "« satellite » = remplacé à chaque mise à jour ; « manuel » = persistant.",
         }),
         ('Dates', {
             'fields': ('date_creation', 'date_modification'),
