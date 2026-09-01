@@ -644,6 +644,8 @@ class ImportJob(models.Model):
     titre_cours = models.CharField(max_length=255, blank=True, null=True)
     source = models.CharField(max_length=12, default='IMPORT',
                               help_text="Origine posée sur les cours créés : IMPORT / SATELLITE")
+    pdfs_indexes = models.PositiveIntegerField(default=0, help_text="PDF indexés dans ChromaDB")
+    pdfs_total = models.PositiveIntegerField(default=0, help_text="PDF à indexer")
     erreur = models.TextField(blank=True, null=True)
     date_creation = models.DateTimeField(auto_now_add=True)
     date_fin = models.DateTimeField(null=True, blank=True)

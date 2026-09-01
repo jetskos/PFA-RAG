@@ -224,8 +224,14 @@ python manage.py restore_satellite snapshot.zip                # flush → médi
 - Le **ZIP source n'est pas modifié** (l'import travaille sur une copie).
 - `import_course --replace*` supprime aussi les fichiers média associés (MP4, PDF,
   couvertures, dossiers HLS) — pas d'orphelins entre deux imports.
-- L'indexation IA des PDF (ChromaDB) est faite au passage si disponible ; sinon
-  la relancer avec `python manage.py indexer_pdfs`.
+- **Indexation RAG automatique** : chaque PDF importé est extrait, découpé et
+  indexé dans ChromaDB **pendant l'import**, de façon synchrone et dans un seul
+  processus (le signal `post_save` de `Document`). L'import affiche
+  `[INDEX] N/M PDF indexes dans ChromaDB`. **Aucune commande manuelle à lancer.**
+  Si `N < M` (service IA momentanément indisponible), la ligne indique de relancer
+  `python manage.py indexer_pdfs` — mais en fonctionnement normal ce n'est jamais
+  nécessaire. Ne **pas** faire tourner deux imports en parallèle : deux processus
+  qui écrivent dans la même base ChromaDB corrompent l'index HNSW.
 
 ---
 

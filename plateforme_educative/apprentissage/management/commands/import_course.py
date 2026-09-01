@@ -259,6 +259,14 @@ class Command(BaseCommand):
                 if job.status == "TERMINE":
                     ok += 1
                     self.stdout.write(self.style.SUCCESS(f"  [OK] - {job.titre_cours}"))
+                    if job.pdfs_total:
+                        line = f"  [INDEX] {job.pdfs_indexes}/{job.pdfs_total} PDF indexes dans ChromaDB"
+                        if job.pdfs_indexes < job.pdfs_total:
+                            line += ("\n  -> service IA indispo au moment de l'import. "
+                                     "Relancer : python manage.py indexer_pdfs")
+                            self.stdout.write(self.style.WARNING(line))
+                        else:
+                            self.stdout.write(self.style.SUCCESS(line))
                 else:
                     failed += 1
                     self.stdout.write(self.style.ERROR(

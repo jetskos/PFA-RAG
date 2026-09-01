@@ -337,12 +337,41 @@ def import_courses_task(self, import_job_id: str, user_id: str, zip_files: list)
                 shutil.rmtree(extract_dir, ignore_errors=True)
                 if zip_path.exists():
                     zip_path.unlink()
+        # Indexation ChromaDB : le signal post_save de Document a déjà indexé
+        # chaque PDF de manière SYNCHRONE (apprentissage/signals.py) — dans CE
+        # processus, un PDF à la fois. On ne relance PAS `indexer_document_task.delay()`
+        # ici : cela ferait écrire un 2e processus (le worker Celery) dans la même
+        # base ChromaDB en parallèle → corruption de l'index HNSW.
+        # On se contente de vérifier le résultat et de le consigner sur le job.
+        idx_ok = idx_total = 0
+        if job and docs_to_index:
+            job.status = 'INDEXATION_IA'
+            job.save(update_fields=['status'])
+            for doc in docs_to_index:
+                idx_total += 1
+                try:
+                    doc.refresh_from_db(fields=['contenu_extrait'])
+                    if (doc.contenu_extrait or '').strip():
+                        idx_ok += 1
+                        continue
+                    # Le signal a échoué (ChromaDB indispo au 1er passage) : on retente
+                    # ici, toujours dans le même processus.
+                    indexer_document_task(str(doc.id), doc.fichier_pdf.path)
+                    doc.refresh_from_db(fields=['contenu_extrait'])
+                    if (doc.contenu_extrait or '').strip():
+                        idx_ok += 1
+                except Exception as _e:
+                    logger.warning("[Import] indexation non confirmée pour %s : %s", doc.id, _e)
+
         if job:
-            if docs_to_index:
-                job.status = 'INDEXATION_IA'
-                job.save()
-                for doc in docs_to_index:
-                    indexer_document_task.delay(str(doc.id), doc.fichier_pdf.path)
+            job.pdfs_indexes = idx_ok
+            job.pdfs_total = idx_total
+            if idx_total and idx_ok < idx_total:
+                logger.warning(
+                    "[Import] %s/%s PDF indexes dans ChromaDB. Relancer quand le "
+                    "service IA est pret : python manage.py indexer_pdfs",
+                    idx_ok, idx_total,
+                )
 
             job.status = 'TERMINE'
             job.titre_cours = ", ".join(imported_cours_titres) if imported_cours_titres else "Cours importé"
