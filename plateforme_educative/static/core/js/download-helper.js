@@ -1,13 +1,16 @@
 /* Téléchargement de fichiers fiable en PWA / mobile.
  *
  * Problème résolu : un <a href> vers une URL d'export fait une navigation.
- * Dans une PWA installée (mode standalone), Android sort alors de l'application
- * pour ouvrir le navigateur, et le téléchargement échoue souvent.
+ * Dans une PWA installée (ou un raccourci d'écran d'accueil), le navigateur
+ * sort alors du contexte de l'app, et le téléchargement échoue souvent.
  *
  * Ici on récupère le fichier en Blob (aucune navigation), puis :
- *   - mobile : feuille de partage native si dispo (navigator.share) → l'utilisateur
- *     choisit « Enregistrer dans Fichiers », Drive, WhatsApp… sans quitter l'app ;
+ *   - mobile en contexte sécurisé : feuille de partage native (navigator.share)
+ *     → « Enregistrer dans Fichiers », Drive, WhatsApp… sans quitter l'app ;
  *   - sinon : <a download> sur le Blob (garanti sans navigation).
+ *
+ * Ce helper ne fait JAMAIS de window.location = … (ce serait la cause du
+ * « ça bascule sur le navigateur »). En dernier recours il affiche un message.
  *
  * Usage :
  *   - <a href="…" data-download>  (nom de fichier lu dans Content-Disposition)
@@ -21,8 +24,26 @@
     catch (e) { return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || ""); }
   }
 
-  function saveViaAnchor(blob, filename) {
-    var url = URL.createObjectURL(blob);
+  function toast(msg, isError) {
+    try {
+      var t = document.createElement("div");
+      t.textContent = msg;
+      t.setAttribute("role", "status");
+      t.style.cssText =
+        "position:fixed;left:50%;bottom:calc(72px + env(safe-area-inset-bottom,0px));" +
+        "transform:translateX(-50%);z-index:99999;max-width:90vw;" +
+        "padding:10px 16px;border-radius:10px;font:600 13px/1.4 system-ui,sans-serif;" +
+        "color:#fff;background:" + (isError ? "#b5372a" : "#0d9488") + ";" +
+        "box-shadow:0 8px 24px rgba(0,0,0,.35);text-align:center;";
+      document.body.appendChild(t);
+      setTimeout(function () { t.style.transition = "opacity .3s"; t.style.opacity = "0"; }, 2600);
+      setTimeout(function () { try { document.body.removeChild(t); } catch (e) {} }, 3000);
+    } catch (e) {}
+  }
+
+  function saveViaAnchor(blobOrUrl, filename) {
+    var isBlob = (typeof blobOrUrl !== "string");
+    var url = isBlob ? URL.createObjectURL(blobOrUrl) : blobOrUrl;
     var a = document.createElement("a");
     a.href = url;
     a.download = filename || "export";
@@ -32,28 +53,26 @@
     a.click();
     setTimeout(function () {
       try { document.body.removeChild(a); } catch (e) {}
-      URL.revokeObjectURL(url);
+      if (isBlob) URL.revokeObjectURL(url);
     }, 1500);
   }
 
   function saveBlob(blob, filename) {
     filename = filename || "export";
 
-    // Anciens Edge / IE
     if (window.navigator && window.navigator.msSaveOrOpenBlob) {
       window.navigator.msSaveOrOpenBlob(blob, filename);
       return Promise.resolve();
     }
 
-    // Mobile : feuille de partage native (reste dans l'app)
     var file = null;
     try { file = new File([blob], filename, { type: blob.type || "application/octet-stream" }); }
     catch (e) { file = null; }
 
     if (file && isTouch() && navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
       return navigator.share({ files: [file], title: filename }).catch(function (err) {
-        if (err && err.name === "AbortError") return;   // annulé par l'utilisateur : ne rien faire
-        saveViaAnchor(blob, filename);                    // autre erreur : repli
+        if (err && err.name === "AbortError") return;
+        saveViaAnchor(blob, filename);
       });
     }
 
@@ -73,24 +92,29 @@
   window.appDownload = function (url, filename, triggerEl) {
     var restore = null;
     if (triggerEl) {
-      var prev = triggerEl.getAttribute("aria-busy");
+      var prevBusy = triggerEl.getAttribute("aria-busy");
       triggerEl.setAttribute("aria-busy", "true");
-      triggerEl.style.opacity = "0.6";
+      triggerEl.style.opacity = "0.55";
       triggerEl.style.pointerEvents = "none";
       restore = function () {
         triggerEl.style.opacity = "";
         triggerEl.style.pointerEvents = "";
-        if (prev === null) triggerEl.removeAttribute("aria-busy"); else triggerEl.setAttribute("aria-busy", prev);
+        if (prevBusy === null) triggerEl.removeAttribute("aria-busy");
+        else triggerEl.setAttribute("aria-busy", prevBusy);
       };
     }
     return fetch(url, { credentials: "same-origin" })
       .then(function (res) {
         if (!res.ok) throw new Error("HTTP " + res.status);
-        return res.blob().then(function (blob) { return saveBlob(blob, filename || filenameFromResponse(res)); });
+        var name = filename || filenameFromResponse(res);
+        return res.blob().then(function (blob) { return saveBlob(blob, name); });
       })
-      .catch(function () {
-        // Dernier recours : navigation classique.
-        window.location.href = url;
+      .catch(function (err) {
+        // JAMAIS de navigation ici. On tente un <a download> direct sur l'URL
+        // (même origine → le navigateur télécharge sans quitter la page),
+        // et on prévient l'utilisateur.
+        try { saveViaAnchor(url, filename || "export"); } catch (e) {}
+        toast("Export impossible (" + (err && err.message ? err.message : "erreur") + ")", true);
       })
       .finally(function () { if (restore) restore(); });
   };
