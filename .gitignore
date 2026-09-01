@@ -9,3 +9,4 @@ media/
 chroma_db/
 staticfiles/
 plateforme_educative/.https_dev/
+*.md
