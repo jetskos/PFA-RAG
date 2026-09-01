@@ -23,6 +23,10 @@ WORKDIR /app
 COPY requirements.txt /app/
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
+# Force CPU-only ONNX runtime to prevent CUDA provider SIGSEGV in Docker.
+# chromadb installs onnxruntime (full) as dep; we replace it with onnxruntime-cpu
+# which has the same Python API but never tries to load libcuda.so / TensorRT.
+RUN pip install --no-cache-dir --force-reinstall "onnxruntime-cpu>=1.17.0"
 
 # Copy the entire Django project into the container
 COPY . /app/
