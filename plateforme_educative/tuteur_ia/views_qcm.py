@@ -30,8 +30,9 @@ LETTRES = ['A', 'B', 'C', 'D']
 
 # Limite de contexte envoyé au LLM pour la génération QCM.
 # Un prompt trop long ralentit massivement la génération (tokens ∝ temps).
-# 4 000 chars ≈ 1 000 tokens — largement suffisant pour 8 questions pédagogiques.
-_QCM_MAX_CONTENT_CHARS = 4_000
+# 3 000 chars ≈ 750 tokens — suffisant pour 8 questions pédagogiques et ~10 s
+# de prefill de moins qu'à 4 000 sur CPU.
+_QCM_MAX_CONTENT_CHARS = 3_000
 
 
 def _get_pdf_content_for_qcm(chapitre) -> str:
@@ -259,7 +260,9 @@ def _generer_questions_ia(chapitre, n_questions: int = 8) -> tuple[list[dict], s
         logger.warning(f"Contenu PDF vide ou non indexé pour le chapitre {chapitre.id}")
         return [], 'no_content'
 
-    llm = get_llm(temperature=0.4)
+    # max_tokens explicite : 8 questions JSON ≈ 900 tokens ; 1200 laisse une
+    # marge sans permettre au petit modèle de partir en boucle (coûteux sur CPU).
+    llm = get_llm(temperature=0.4, max_tokens=1200)
 
     system_prompt = (
         f"Tu crées {n_questions} questions QCM en JSON, basées STRICTEMENT sur le "
@@ -291,7 +294,7 @@ def _generer_questions_ia(chapitre, n_questions: int = 8) -> tuple[list[dict], s
     # pour ne pas laisser une requête HTTP (ou un warmup) traîner plusieurs
     # minutes si le moteur local est lent. On sert ce qu'on a accumulé.
     import time as _time
-    deadline = _time.monotonic() + float(os.environ.get("QCM_GEN_MAX_SECONDS", "150"))
+    deadline = _time.monotonic() + float(os.environ.get("QCM_GEN_MAX_SECONDS", "110"))
 
     try:
         for tentative in range(3):

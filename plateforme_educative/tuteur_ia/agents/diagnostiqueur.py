@@ -11,7 +11,7 @@ from tuteur_ia.prompts.diagnostiqueur import (
     DIAGNOSTIC_SYSTEM_PROMPT,
     DIAGNOSTIC_USER_PROMPT_TEMPLATE,
 )
-from tuteur_ia.agents.llm_factory import get_llm
+from tuteur_ia.agents.llm_factory import get_llm, clip_rag
 
 logger = logging.getLogger(__name__)
 
@@ -67,7 +67,7 @@ def diagnostiqueur_node(state: StudyBuddyState) -> dict[str, Any]:
         concept=state["current_concept"],
         concepts_maitrises=", ".join(state["student_profile"].get("mastered_concepts", [])) or "aucun",
         concepts_fragiles=", ".join(state["student_profile"].get("fragile_concepts", [])) or "aucun",
-        rag_content=rag_content or "[Pas de contenu de référence disponible]",
+        rag_content=clip_rag(rag_content) or "[Pas de contenu de référence disponible]",
     )
 
     messages = [

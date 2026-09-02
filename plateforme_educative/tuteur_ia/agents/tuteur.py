@@ -7,7 +7,7 @@ from typing import Any
 from langchain_core.messages import SystemMessage, HumanMessage
 from tuteur_ia.graph.state import StudyBuddyState
 from tuteur_ia.prompts.tuteur import TUTOR_SYSTEM_PROMPT, TUTOR_USER_PROMPT_TEMPLATE
-from tuteur_ia.agents.llm_factory import get_llm, with_language, language_directive
+from tuteur_ia.agents.llm_factory import get_llm, with_language, language_directive, clip_rag
 
 logger = logging.getLogger(__name__)
 
@@ -86,7 +86,7 @@ def tuteur_node(state: StudyBuddyState) -> dict[str, Any]:
         current_concept=state["current_concept"],
         student_niveau=state.get("niveau", "DEBUTANT"),
         mastery_background=", ".join(state["student_profile"].get("mastered_concepts", [])) or "aucun concept maîtrisé",
-        rag_content=rag_content or "[Pas de contenu de référence disponible]",
+        rag_content=clip_rag(rag_content) or "[Pas de contenu de référence disponible]",
         recent_messages=recent_messages or "[Début de la session]",
     )
 

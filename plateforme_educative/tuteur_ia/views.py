@@ -328,7 +328,10 @@ def poser_question(request, session_id):
         messages_to_send = [SystemMessage(content=with_language(system_prompt))] + chat_history + [HumanMessage(content=question)]
 
         # ── LLM rapide : llama-3.1-8b-instant (le plus rapide sur Groq) ──
-        llm = get_llm(temperature=0.0)
+        # max_tokens plafonné : sans limite le moteur local (qwen 1.5B sur CPU)
+        # part jusqu'à OLLAMA_NUM_PREDICT sur une demande de résumé — ~1-2 min.
+        # 500 tokens ≈ 350 mots : suffisant pour un résumé de chapitre concis.
+        llm = get_llm(temperature=0.0, max_tokens=500)
         try:
             response = llm.invoke(messages_to_send)
         except Exception as llm_err:
