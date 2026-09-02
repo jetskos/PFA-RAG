@@ -9,6 +9,7 @@ Flux :
 """
 import json
 import logging
+import os
 import random
 
 from django.contrib.auth.decorators import login_required
@@ -286,8 +287,17 @@ def _generer_questions_ia(chapitre, n_questions: int = 8) -> tuple[list[dict], s
     valid: list[dict] = []
     vus: set[str] = set()
 
+    # Plafond global : on ne relance pas d'appel LLM au-delà de cette durée,
+    # pour ne pas laisser une requête HTTP (ou un warmup) traîner plusieurs
+    # minutes si le moteur local est lent. On sert ce qu'on a accumulé.
+    import time as _time
+    deadline = _time.monotonic() + float(os.environ.get("QCM_GEN_MAX_SECONDS", "150"))
+
     try:
         for tentative in range(3):
+            if tentative > 0 and _time.monotonic() > deadline:
+                logger.warning("[QCM IA] plafond de temps atteint — arrêt des tentatives.")
+                break
             logger.info(
                 f"[QCM IA] Appel LLM {tentative + 1}/3 pour '{chapitre.titre}' "
                 f"({len(contenu)} chars de contexte, {n_questions} questions)"

@@ -6447,3 +6447,9 @@ msgstr "The course \"%(cours)s\" is available for your level %(niveau)s."
 
 msgid "Exports"
 msgstr "Exports"
+
+msgid "utilisateur(s)"
+msgstr "user(s)"
+
+msgid "Voir le contenu du chapitre pour la justification."
+msgstr "See the chapter content for the explanation."

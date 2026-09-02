@@ -29,6 +29,10 @@ OLLAMA_KEEP_ALIVE = os.getenv("OLLAMA_KEEP_ALIVE", "30m")
 OLLAMA_NUM_PREDICT = int(os.getenv("OLLAMA_NUM_PREDICT", "2048"))
 # Fenêtre de contexte : RAG + prompt système + historique sous 2048 tokens sur CPU.
 OLLAMA_NUM_CTX = int(os.getenv("OLLAMA_NUM_CTX", "2048"))
+# Délai max d'UN appel au moteur local. Une génération QCM légitime sur CPU
+# peut prendre ~40-60 s ; au-delà de OLLAMA_TIMEOUT le modèle est considéré
+# bloqué et l'appel est abandonné (au lieu de figer le worker web à l'infini).
+OLLAMA_TIMEOUT = float(os.getenv("OLLAMA_TIMEOUT", "90"))
 # Laisse Ollama auto-détecter GPU/CPU par défaut (ne pas fixer num_gpu).
 # Testé sur machine de dev : forcer le CPU (num_gpu=0) s'est avéré NETTEMENT
 # plus lent et instable (17-32s/appel) que l'auto-détection GPU (1,5-1,9s
@@ -150,6 +154,7 @@ def get_llm(temperature: float = 0.7, model_name: str = None, max_tokens: int = 
             api_key="sk-no-key-required", # Ni Ollama ni llama-server ne requièrent de clé
             base_url=base_url,
             max_retries=1,
+            timeout=OLLAMA_TIMEOUT,       # borne l'appel — un llama.cpp bloqué ne fige plus le worker
             max_tokens=max_tokens if max_tokens is not None else OLLAMA_NUM_PREDICT,
         )
 
