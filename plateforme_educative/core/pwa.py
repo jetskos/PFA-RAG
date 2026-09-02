@@ -17,7 +17,7 @@ from django.views.decorators.http import require_GET
 from django.shortcuts import render
 
 # Incrémenter à chaque changement de la logique de cache du service worker.
-SW_CACHE_VERSION = "v10"
+SW_CACHE_VERSION = "v11"
 
 
 @require_GET
@@ -40,6 +40,7 @@ def manifest(request):
     return render(
         request,
         "pwa/manifest.webmanifest",
+        {"icon_v": SW_CACHE_VERSION},
         content_type="application/manifest+json; charset=utf-8",
     )
 
