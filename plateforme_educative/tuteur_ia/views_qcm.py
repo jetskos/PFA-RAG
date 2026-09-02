@@ -143,7 +143,18 @@ def _normaliser_question(q: dict) -> dict | None:
     if len(options) > 4:
         autres = [o for o in options if o != reponse][:3]
         options = [reponse, *autres]
-        random.shuffle(options)
+
+    # Le petit modèle local ne donne parfois que 3 options : compléter à 4
+    # avec un distracteur neutre (toujours faux ici) pour un QCM homogène.
+    if len(options) == 3:
+        blob = " ".join(options + [question]).lower()
+        _fr = any(c in blob for c in "àâäéèêëïîïôûùüç") or any(
+            f" {w} " in f" {blob} " for w in ("le", "la", "les", "un", "une", "des", "est", "quoi")
+        )
+        options.append("Aucune de ces réponses" if _fr else "None of the above")
+
+    # Mélanger pour que la bonne réponse ne soit pas toujours au même rang.
+    random.shuffle(options)
 
     if not explication:
         explication = gettext("Voir le contenu du chapitre pour la justification.")
@@ -292,16 +303,25 @@ def _generer_questions_ia(chapitre, n_questions: int = 8) -> tuple[list[dict], s
                     continue
                 vus.add(cle)
                 valid.append(nq)
+            _f = {"Aucune de ces réponses", "None of the above"}
+            complets = sum(1 for q in valid if not any(o in _f for o in q['options']))
             logger.info(
                 f"[QCM IA] tentative {tentative + 1} : {len(brutes)} brutes -> "
-                f"{len(valid)} questions valides cumulées."
+                f"{len(valid)} valides cumulées ({complets} à 4 options fournies)."
             )
-            if len(valid) >= n_questions:
+            if complets >= n_questions:
                 break
 
         if len(valid) >= cible:
+            # Privilégier les questions dont le modèle a fourni lui-même les
+            # 4 options ; celles complétées par un distracteur neutre passent
+            # après (elles ne servent que s'il n'y en a pas assez de « vraies »).
+            _fillers = {"Aucune de ces réponses", "None of the above"}
             random.shuffle(valid)
-            return valid[:n_questions], ''
+            valid.sort(key=lambda q: any(o in _fillers for o in q['options']))
+            retenues = valid[:n_questions]
+            random.shuffle(retenues)
+            return retenues, ''
         logger.warning(
             f"[QCM IA] échec : {len(valid)} questions valides seulement "
             f"(cible {cible}) après 3 tentatives."
