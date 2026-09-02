@@ -213,6 +213,7 @@ def import_courses_task(self, import_job_id: str, user_id: str, zip_files: list)
         job = ImportJob.objects.get(pk=import_job_id)
         user = Utilisateur.objects.get(pk=user_id)
         imported_cours_titres = []
+        imported_cours_ids = []
         
         job.status = 'EXTRACTION'
         job.save()
@@ -273,6 +274,7 @@ def import_courses_task(self, import_job_id: str, user_id: str, zip_files: list)
                         actif=True  # Les cours importés sont directement actifs
                     )
                     imported_cours_titres.append(cours_titre)
+                    imported_cours_ids.append(str(cours.id))
 
                     if 'image_couverture' in c_data:
                         img_file = extract_dir / c_data['image_couverture']
@@ -383,6 +385,27 @@ def import_courses_task(self, import_job_id: str, user_id: str, zip_files: list)
             job.titre_cours = ", ".join(imported_cours_titres) if imported_cours_titres else "Cours importé"
             job.date_fin = timezone.now()
             job.save()
+
+        # Pré-génération des QCM en arrière-plan, un chapitre à la fois.
+        # L'import est déjà marqué TERMINE : le formateur n'attend pas. Les tâches
+        # sont dispatchées APRÈS les tâches HLS de cet import (donc sans les
+        # retarder) et une par chapitre pour que le worker solo puisse intercaler
+        # d'autres travaux. En mode EAGER (tests / mono-nœud) on saute : ce serait
+        # synchrone et bloquant — la commande `warmup_qcm` reste dispo à la main.
+        try:
+            from django.conf import settings as _settings
+            if imported_cours_ids and not getattr(_settings, 'CELERY_TASK_ALWAYS_EAGER', False):
+                from tuteur_ia.tasks import warmup_qcm_chapitre_task
+                chap_ids = list(
+                    Chapitre.objects
+                    .filter(cours_id__in=imported_cours_ids, actif=True)
+                    .values_list('id', flat=True)
+                )
+                for _cid in chap_ids:
+                    warmup_qcm_chapitre_task.delay(str(_cid))
+                logger.info("[Import] warmup QCM dispatché pour %s chapitre(s)", len(chap_ids))
+        except Exception as _e:
+            logger.warning("[Import] dispatch warmup QCM impossible : %s", _e)
 
         logger.info(f"[Import] Fin de l'importation par l'utilisateur {user_id}")
         logger.info("Import : importation terminée (%s)", ', '.join(imported_cours_titres) if imported_cours_titres else 'aucun cours')

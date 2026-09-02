@@ -1,8 +1,9 @@
 """
 Tâches Celery pour le module tuteur_ia.
-- generer_qcm_task          : génération asynchrone du QCM par IA
-- repondre_socratique_task  : un tour du tuteur socratique (graph LangGraph),
-                              hors du thread de la requête HTTP
+- generer_qcm_task           : génération asynchrone du QCM par IA
+- warmup_qcm_chapitre_task   : pré-génère le cache QCM d'un chapitre (après import)
+- repondre_socratique_task   : un tour du tuteur socratique (graph LangGraph),
+                               hors du thread de la requête HTTP
 """
 import json
 import logging
@@ -15,6 +16,55 @@ from django.utils.translation import gettext
 logger = logging.getLogger(__name__)
 
 MAX_QUESTIONS_SOCRATIQUE = 15
+
+
+@shared_task(bind=True, max_retries=0,
+             name='tuteur_ia.tasks.warmup_qcm_chapitre_task')
+def warmup_qcm_chapitre_task(self, chapitre_id: str, min_questions: int = 8):
+    """
+    Pré-génère les questions QCM d'UN chapitre et les stocke dans QuestionCache.
+
+    Dispatché (un appel par chapitre) à la fin de `import_courses_task` : le
+    formateur voit l'import terminé tout de suite, le cache QCM se remplit
+    ensuite. Une tâche par chapitre (plutôt qu'une grosse tâche par cours) pour
+    que le worker `--pool=solo` puisse intercaler d'autres tâches entre deux.
+
+    Best-effort : idempotent (saute si le cache a déjà `min_questions`), borné
+    par QCM_GEN_MAX_SECONDS dans `_generer_questions_ia`, n'échoue jamais.
+    """
+    try:
+        from apprentissage.models import Chapitre
+        from tuteur_ia.models import QuestionCache
+        from tuteur_ia.views_qcm import _generer_questions_ia
+
+        chapitre = (Chapitre.objects
+                    .filter(pk=chapitre_id, actif=True)
+                    .select_related('cours').first())
+        if chapitre is None:
+            return {'chapitre': chapitre_id, 'skipped': 'introuvable'}
+
+        cache, _ = QuestionCache.objects.get_or_create(chapitre=chapitre)
+        pool = cache.questions or []
+        if len(pool) >= min_questions:
+            return {'chapitre': chapitre_id, 'skipped': 'cache déjà chaud', 'pool': len(pool)}
+
+        questions, reason = _generer_questions_ia(chapitre, n_questions=min_questions)
+        if not questions:
+            logger.info("[warmup QCM] chapitre %s ignoré : %s", chapitre_id[:8], reason)
+            return {'chapitre': chapitre_id, 'skipped': reason}
+
+        existing = {q['question'].strip().lower() for q in pool}
+        for q in questions:
+            if q['question'].strip().lower() not in existing:
+                pool.append(q)
+        cache.questions = pool
+        cache.save()
+        logger.info("[warmup QCM] chapitre %s : %s questions en cache", chapitre_id[:8], len(pool))
+        return {'chapitre': chapitre_id, 'ok': True, 'pool': len(pool)}
+
+    except Exception as e:  # best-effort : ne jamais faire échouer la chaîne d'import
+        logger.warning("[warmup QCM] chapitre %s : %s", str(chapitre_id)[:8], e)
+        return {'chapitre': chapitre_id, 'error': str(e)}
 
 
 @shared_task(bind=True, max_retries=0,
