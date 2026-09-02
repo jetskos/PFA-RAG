@@ -20,7 +20,7 @@ class TuteurIaConfig(AppConfig):
         if any(cmd in sys.argv for cmd in
                ['migrate', 'makemigrations', 'test', 'shell', 'db',
                 'showmigrations', 'collectstatic', 'check', 'celery',
-                'indexer_pdfs', 'import_course', 'backfill_bm25',
+                'indexer_pdfs', 'import_course', 'backfill_bm25', 'warmup_qcm',
                 'seed_demo', 'seed_english_course', 'seed_iot_course']):
             return
 
