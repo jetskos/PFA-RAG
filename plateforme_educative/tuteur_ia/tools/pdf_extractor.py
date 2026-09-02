@@ -46,8 +46,39 @@ def extract_text_from_pdf(pdf_path: str) -> str:
 
 # ── Nettoyage ────────────────────────────────────────────────────────────────
 
+def _dedouble_word(token: str) -> str:
+    """Répare un mot en « faux gras ».
+
+    Certains PDF (titres stylés, polices double-frappe) font dessiner chaque
+    glyphe deux fois ; pdfplumber émet alors « WWoorrkksshheeeett ». Si le mot
+    est purement alphabétique, de longueur paire, et que chaque caractère est
+    répété deux à deux, on rétablit le mot d'origine. Aucun mot réel FR/EN ne
+    présente ce motif (« ttoottoo ») : la transformation est sûre.
+    """
+    if (len(token) >= 4 and len(token) % 2 == 0
+            and token.isalpha() and token[0::2] == token[1::2]):
+        return token[0::2]
+    return token
+
+
+def _degarble(text: str) -> str:
+    """Corrige les artefacts d'extraction PDF mécaniquement identifiables.
+
+    - « (cid:12) » : glyphe sans table Unicode → supprimé
+    - caractères de contrôle (hors tab / saut de ligne)
+    - mots en faux gras dédoublés (voir _dedouble_word)
+
+    N'invente aucun contenu ; sans effet sur un texte déjà propre (idempotent).
+    """
+    text = re.sub(r'\(cid:\d+\)', '', text)
+    text = re.sub(r'[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]', '', text)
+    text = re.sub(r'\S+', lambda m: _dedouble_word(m.group(0)), text)
+    return text
+
+
 def clean_text(text: str) -> str:
     """Nettoie le texte extrait."""
+    text = _degarble(text)                      # Artefacts PDF (cid, faux gras)
     text = re.sub(r'-\n(\w)',  r'\1',   text)   # Mots coupés en fin de ligne
     text = re.sub(r'\n{3,}',  '\n\n',  text)   # Sauts de ligne excessifs
     text = re.sub(r' +\n',    '\n',    text)   # Espaces en fin de ligne
