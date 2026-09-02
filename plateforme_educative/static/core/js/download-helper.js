@@ -91,30 +91,25 @@
 
     if (shareable) {
       return navigator.share({ files: [file], title: filename }).catch(function (err) {
-        if (err && err.name === "AbortError") return;            // l'utilisateur a fermé la feuille
-        if (isStandalone()) return _pwaFallback(sourceUrl);       // PWA : <a download> inerte
-        saveViaAnchor(blob, filename);
+        if (err && err.name === "AbortError") return;   // l'utilisateur a fermé la feuille
+        saveViaAnchor(blob, filename);                   // TWA / navigateur : téléchargement direct
       });
     }
 
-    if (isStandalone() && isTouch()) return _pwaFallback(sourceUrl);
-
+    // `<a download>` sur un Blob : marche sur desktop ET dans une app Android
+    // empaquetée (TWA) — la TWA passe le téléchargement au gestionnaire Android.
     saveViaAnchor(blob, filename);
     return Promise.resolve();
   }
 
-  // Dans une PWA installée sous Android, impossible d'écrire un fichier sans la
-  // feuille de partage. En dernier recours on rouvre l'URL d'export dans le
-  // navigateur système (qui, lui, sait télécharger) ; sinon on prévient.
-  function _pwaFallback(sourceUrl) {
+  // Repli quand un fetch d'export échoue en contexte standalone : rouvrir
+  // l'URL dans le navigateur système, qui sait toujours télécharger.
+  function _openInBrowser(sourceUrl) {
     if (sourceUrl) {
-      try {
-        window.open(sourceUrl, "_blank", "noopener");
-        toast("Téléchargement ouvert dans le navigateur.");
-        return Promise.resolve();
-      } catch (e) {}
+      try { window.open(sourceUrl, "_blank", "noopener"); return Promise.resolve(); }
+      catch (e) {}
     }
-    toast("Pour enregistrer ce fichier, ouvre la plateforme dans Chrome (menu ⋮ → « Ouvrir dans Chrome »).", true);
+    toast("Téléchargement impossible. Réessaie ou ouvre dans Chrome.", true);
     return Promise.resolve();
   }
 
@@ -149,10 +144,10 @@
         return res.blob().then(function (blob) { return saveBlob(blob, name, url); });
       })
       .catch(function (err) {
-        // JAMAIS de navigation directe ici. En PWA on rouvre l'URL dans le
-        // navigateur ; ailleurs un <a download> même origine suffit.
-        if (isStandalone() && isTouch()) { _pwaFallback(url); return; }
-        try { saveViaAnchor(url, filename || "export"); } catch (e) {}
+        // Le fetch a échoué : <a download> direct sur l'URL même origine
+        // (marche desktop + TWA) ; en dernier recours, ouvrir dans le navigateur.
+        try { saveViaAnchor(url, filename || "export"); }
+        catch (e) { return _openInBrowser(url); }
         toast("Export impossible (" + (err && err.message ? err.message : "erreur") + ")", true);
       })
       .finally(function () { if (restore) restore(); });
