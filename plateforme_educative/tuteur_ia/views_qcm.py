@@ -91,6 +91,71 @@ def _get_pdf_content_for_qcm(chapitre) -> str:
     return ""
 
 
+def _normaliser_question(q: dict) -> dict | None:
+    """
+    Nettoie une question produite par le LLM avant validation.
+
+    Les petits modèles locaux (qwen2.5-1.5b) respectent mal un schéma strict :
+    nombre d'options variable (3 au lieu de 4), `reponse_correcte` parfois
+    renvoyée sous forme de liste, clé `explanation` au lieu de `explication`…
+    On récupère ce qui est exploitable au lieu de tout rejeter.
+
+    Retourne un dict propre {question, options, reponse_correcte, explication}
+    ou None si la question est irrécupérable.
+    """
+    if not isinstance(q, dict):
+        return None
+
+    question = str(q.get('question') or '').strip()
+
+    options = q.get('options')
+    if not isinstance(options, list):
+        return None
+    options = [str(o).strip() for o in options if str(o).strip()]
+    options = list(dict.fromkeys(options))  # dédoublonne en gardant l'ordre
+
+    reponse = q.get('reponse_correcte')
+    if isinstance(reponse, list):
+        reponse = reponse[0] if reponse else ''
+    reponse = str(reponse or '').strip()
+
+    explication = str(q.get('explication') or q.get('explanation') or '').strip()
+
+    # Une question a besoin d'un énoncé, d'une bonne réponse et d'au moins
+    # 3 choix pour rester un vrai QCM.
+    if not question or not reponse or len(options) < 3:
+        return None
+
+    # La bonne réponse doit figurer parmi les options (sinon l'élève ne peut
+    # jamais cocher juste). Tolérance sur la ponctuation / la casse.
+    if reponse not in options:
+        _norm = lambda s: s.rstrip(' .').casefold()
+        match = next((o for o in options if _norm(o) == _norm(reponse)), None)
+        if match:
+            reponse = match
+        elif len(options) < 4:
+            options.append(reponse)
+        else:
+            options[-1] = reponse
+
+    # Le template n'affiche que 4 lettres (A/B/C/D) : plafonner à 4 options
+    # en conservant toujours la bonne réponse.
+    if len(options) > 4:
+        autres = [o for o in options if o != reponse][:3]
+        options = [reponse, *autres]
+        random.shuffle(options)
+
+    if not explication:
+        explication = gettext("Voir le contenu du chapitre pour la justification.")
+
+    return {
+        'question': question,
+        'options': options,
+        'reponse_correcte': reponse,
+        'explication': explication,
+    }
+
+
 def _generer_questions_ia(chapitre, n_questions: int = 8) -> tuple[list[dict], str]:
     """
     Génère n questions QCM depuis le contenu ChromaDB du chapitre.
@@ -154,13 +219,15 @@ def _generer_questions_ia(chapitre, n_questions: int = 8) -> tuple[list[dict], s
                     data = {}
                     
             questions = data.get('questions', [])
-            valid = [
-                q for q in questions
-                if (q.get('question') and
-                    isinstance(q.get('options'), list) and len(q['options']) == 4 and
-                    q.get('reponse_correcte') and q.get('explication'))
-            ]
-            logger.info(f"[QCM IA] {len(valid)} questions valides générées.")
+            valid = []
+            for q in questions:
+                nq = _normaliser_question(q)
+                if nq:
+                    valid.append(nq)
+            logger.info(
+                f"[QCM IA] {len(valid)}/{len(questions)} questions valides "
+                f"après normalisation."
+            )
             if valid:
                 return valid[:n_questions], ''
 
@@ -181,7 +248,7 @@ def _ajouter_lettres(questions: list[dict]) -> list[dict]:
         q_copy = dict(q)
         q_copy['options_avec_lettres'] = [
             {'lettre': LETTRES[i], 'texte': opt}
-            for i, opt in enumerate(q.get('options', []))
+            for i, opt in enumerate(q.get('options', [])[:4])
         ]
         result.append(q_copy)
     return result
