@@ -190,6 +190,96 @@ def admin_dashboard(request):
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
+@require_http_methods(['GET'])
+def export_users_excel(request):
+    """
+    Export Excel de la liste des utilisateurs — généré côté serveur.
+
+    Remplace l'ancien export SheetJS côté navigateur : un fichier avec
+    en-tête `Content-Disposition: attachment` se télécharge correctement
+    partout, y compris dans l'app Android empaquetée (TWA) où un Blob
+    généré en JS ne s'enregistre pas.
+
+    `?role=ELEVE|FORMATEUR|ADMIN` filtre ; absent ou `ALL` = tout le monde.
+    """
+    import openpyxl
+    from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
+    from openpyxl.utils import get_column_letter
+
+    role = (request.GET.get('role') or 'ALL').upper()
+    qs = (Utilisateur.objects.all()
+          .select_related('classe', 'classe__niveau')
+          .order_by('last_name', 'first_name', 'email'))
+    libelles = {
+        'ELEVE': _("Élèves"), 'FORMATEUR': _("Formateurs"), 'ADMIN': _("Administrateurs"),
+    }
+    if role in ('ELEVE', 'FORMATEUR', 'ADMIN'):
+        qs = qs.filter(role=role)
+        titre_pop = libelles[role]
+    else:
+        role = 'ALL'
+        titre_pop = _("Tous les utilisateurs")
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Utilisateurs"
+
+    ws.merge_cells('A1:E1')
+    ws['A1'] = f"{_('Export')} — {titre_pop}"
+    ws['A1'].font = Font(name="Calibri", size=16, bold=True, color="FFFFFF")
+    ws['A1'].fill = PatternFill(start_color="0D9488", end_color="0D9488", fill_type="solid")
+    ws['A1'].alignment = Alignment(horizontal="center", vertical="center")
+    ws.row_dimensions[1].height = 40
+    ws['A2'] = f"{_('Généré le')} {timezone.now().strftime('%d/%m/%Y %H:%M')}"
+    ws['A2'].font = Font(name="Calibri", size=10, color="64748B")
+    ws['A4'] = f"{qs.count()} {_('utilisateur(s)')}"
+    ws['A4'].font = Font(name="Calibri", size=11, bold=True, color="334155")
+
+    headers = [_("Nom"), _("Prénom"), _("Adresse email"), _("Rôle"), _("Niveau assigné")]
+    header_row = 6
+    thin = Border(*(Side(style='thin', color='CBD5E1'),) * 4)
+    for col, text in enumerate(headers, 1):
+        c = ws.cell(row=header_row, column=col, value=str(text))
+        c.font = Font(name="Calibri", size=11, bold=True, color="FFFFFF")
+        c.fill = PatternFill(start_color="4F46E5", end_color="4F46E5", fill_type="solid")
+        c.alignment = Alignment(horizontal="center", vertical="center")
+        c.border = thin
+    ws.row_dimensions[header_row].height = 25
+
+    row = header_row + 1
+    role_display = {k: str(v) for k, v in Utilisateur.ROLE_CHOICES}
+    for u in qs:
+        vals = [
+            u.last_name or "-",
+            u.first_name or "-",
+            u.email,
+            role_display.get(u.role, u.role),
+            u.niveau_label or "—",
+        ]
+        for col, v in enumerate(vals, 1):
+            c = ws.cell(row=row, column=col, value=v)
+            c.font = Font(name="Calibri", size=11)
+            c.border = thin
+            if row % 2 == 0:
+                c.fill = PatternFill(start_color="F8FAFC", end_color="F8FAFC", fill_type="solid")
+        row += 1
+
+    for col_cells in ws.columns:
+        letter = get_column_letter(col_cells[0].column)
+        longest = max((len(str(c.value)) for c in col_cells if c.row > 1 and c.value), default=12)
+        ws.column_dimensions[letter].width = max(longest + 4, 14)
+
+    nom_fichier = f"utilisateurs_{role.lower()}_{timezone.now():%Y-%m-%d}.xlsx"
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = f'attachment; filename="{nom_fichier}"'
+    wb.save(response)
+    return response
+
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
 def user_details(request, user_id):
     try:
         user = Utilisateur.objects.get(pk=user_id)

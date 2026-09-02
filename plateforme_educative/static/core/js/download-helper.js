@@ -156,6 +156,11 @@
   document.addEventListener("click", function (e) {
     var a = e.target.closest ? e.target.closest("a[data-download]") : null;
     if (!a) return;
+    // En app installée / TWA : laisser le navigateur suivre le lien. La réponse
+    // porte `Content-Disposition: attachment`, donc la TWA la remet au
+    // gestionnaire de téléchargement Android — c'est le chemin le plus fiable.
+    // Ailleurs (desktop, onglet mobile) : fetch -> Blob -> pas de flash d'onglet.
+    if (isStandalone()) return;
     e.preventDefault();
     window.appDownload(a.href, a.getAttribute("data-filename") || "", a);
   });

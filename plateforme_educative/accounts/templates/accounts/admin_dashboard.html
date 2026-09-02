@@ -484,16 +484,16 @@
         
         <div class="admin-controls-right">
             <div class="custom-dropdown" id="exportDropdown">
-                <button class="btn-export-select" onclick="toggleExportMenu()">
+                <button class="btn-export-select" onclick="toggleExportMenu()" type="button">
                     <span>{% translate "Exporter Excel..." %}</span>
                     <i class="ti ti-download"></i>
                 </button>
+                {% url 'accounts:export_users_excel' as _export_url %}
                 <div class="custom-dropdown-menu" id="exportMenu">
-                    <div class="dropdown-item" onclick="handleExport('ALL')">{% translate "Tous les utilisateurs" %}</div>
-                    <div class="dropdown-item" onclick="handleExport('VISIBLE')">{% translate "Vue filtrée actuelle" %}</div>
-                    <div class="dropdown-item" onclick="handleExport('ELEVE')">{% translate "Élèves" %}</div>
-                    <div class="dropdown-item" onclick="handleExport('FORMATEUR')">{% translate "Formateurs" %}</div>
-                    <div class="dropdown-item" onclick="handleExport('ADMIN')">{% translate "Administrateurs" %}</div>
+                    <a class="dropdown-item" data-download href="{{ _export_url }}?role=ALL">{% translate "Tous les utilisateurs" %}</a>
+                    <a class="dropdown-item" data-download href="{{ _export_url }}?role=ELEVE">{% translate "Élèves" %}</a>
+                    <a class="dropdown-item" data-download href="{{ _export_url }}?role=FORMATEUR">{% translate "Formateurs" %}</a>
+                    <a class="dropdown-item" data-download href="{{ _export_url }}?role=ADMIN">{% translate "Administrateurs" %}</a>
                 </div>
             </div>
             <button class="admin-btn-primary" onclick="toggleDrawer()">
