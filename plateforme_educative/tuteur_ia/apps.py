@@ -12,10 +12,16 @@ class TuteurIaConfig(AppConfig):
 
     def ready(self):
         import sys
-        # Ne jamais précharger pendant les commandes de gestion Django ni dans Celery
+        # Ne jamais précharger pendant les commandes de gestion Django ni dans Celery.
+        # Les commandes d'indexation/seed écrivent elles-mêmes dans ChromaDB : le
+        # thread de préchargement qui ouvrirait la collection en parallèle crée une
+        # course (vu en prod : « attempt to write a readonly database » pendant un
+        # `indexer_pdfs --reset` qui supprime le dossier sous le thread).
         if any(cmd in sys.argv for cmd in
                ['migrate', 'makemigrations', 'test', 'shell', 'db',
-                'showmigrations', 'collectstatic', 'check', 'celery']):
+                'showmigrations', 'collectstatic', 'check', 'celery',
+                'indexer_pdfs', 'import_course', 'backfill_bm25',
+                'seed_demo', 'seed_english_course', 'seed_iot_course']):
             return
 
         # Préchargement ChromaDB activé par défaut au démarrage du serveur.
