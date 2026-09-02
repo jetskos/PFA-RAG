@@ -6,7 +6,7 @@ import time
 from typing import Any
 from langchain_core.messages import SystemMessage, HumanMessage
 from tuteur_ia.graph.state import StudyBuddyState
-from tuteur_ia.prompts.tuteur import TUTOR_SYSTEM_PROMPT, TUTOR_USER_PROMPT_TEMPLATE
+from tuteur_ia.prompts.tuteur import tutor_prompts
 from tuteur_ia.agents.llm_factory import get_llm, with_language, language_directive, clip_rag
 
 logger = logging.getLogger(__name__)
@@ -56,10 +56,16 @@ def tuteur_node(state: StudyBuddyState) -> dict[str, Any]:
     Nœud Tuteur : pose une question socratique pour guider l'étudiant.
     N'utilise jamais la réponse directe — guide par le questionnement.
     """
-    # max_tokens court : la consigne (TUTOR_SYSTEM_PROMPT) demande 2 phrases +
-    # 1 question max — un plafond bas évite qu'un petit modèle local ne parte
-    # en digression (voir diagnostiqueur_node pour le détail du problème observé).
+    # max_tokens court : la consigne demande 2 phrases + 1 question max — un
+    # plafond bas évite qu'un petit modèle local ne parte en digression
+    # (voir diagnostiqueur_node pour le détail du problème observé).
     llm = get_llm(temperature=0.7, max_tokens=250)
+
+    # Prompt dans la langue de la session : sur qwen 1.5B, une consigne d'une
+    # ligne ne suffit pas à faire répondre en français si tout le prompt est en
+    # anglais (et inversement). get_language() est réactivé par la tâche Celery.
+    from django.utils.translation import get_language
+    system_prompt, user_template = tutor_prompts(get_language() or "fr")
 
     rag_content = state.get("rag_context")
     if not rag_content:
@@ -81,7 +87,7 @@ def tuteur_node(state: StudyBuddyState) -> dict[str, Any]:
             if role == "Tuteur":
                 last_ai_message = content
 
-    user_prompt = TUTOR_USER_PROMPT_TEMPLATE.format(
+    user_prompt = user_template.format(
         etudiant_email=state.get("etudiant_id", "unknown"),
         current_concept=state["current_concept"],
         student_niveau=state.get("niveau", "DEBUTANT"),
@@ -90,11 +96,10 @@ def tuteur_node(state: StudyBuddyState) -> dict[str, Any]:
         recent_messages=recent_messages or "[Début de la session]",
     )
 
-    # La consigne de langue est répétée à la fin du prompt utilisateur : les
-    # petits modèles locaux mirroir la langue de leur dernière entrée (ici un
-    # gabarit en français), la consigne système seule ne suffit pas.
+    # La consigne de langue est répétée en fin de prompt utilisateur, en renfort
+    # du prompt déjà rédigé dans la bonne langue.
     messages = [
-        SystemMessage(content=with_language(TUTOR_SYSTEM_PROMPT)),
+        SystemMessage(content=with_language(system_prompt)),
         HumanMessage(content=f"{user_prompt}\n\n{language_directive()}"),
     ]
 
