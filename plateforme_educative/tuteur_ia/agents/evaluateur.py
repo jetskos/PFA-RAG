@@ -8,7 +8,7 @@ from typing import Any
 from langchain_core.messages import SystemMessage, HumanMessage
 from tuteur_ia.graph.state import StudyBuddyState
 from tuteur_ia.prompts.evaluateur import EVALUATOR_SYSTEM_PROMPT, EVALUATOR_USER_PROMPT_TEMPLATE
-from tuteur_ia.agents.llm_factory import get_llm
+from tuteur_ia.agents.llm_factory import get_llm, clip_rag
 
 logger = logging.getLogger(__name__)
 
@@ -68,7 +68,7 @@ def evaluateur_node(state: StudyBuddyState) -> dict[str, Any]:
         previous_score=previous_score,
         last_question=last_question or "[Question non disponible]",
         student_response=student_response or "[Pas de réponse]",
-        rag_content=rag_content or "[Pas de contenu de référence]",
+        rag_content=clip_rag(rag_content) or "[Pas de contenu de référence]",
     )
 
 

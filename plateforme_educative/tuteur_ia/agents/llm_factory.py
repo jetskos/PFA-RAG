@@ -22,13 +22,20 @@ OLLAMA_BASE_URL  = os.getenv("OLLAMA_BASE_URL", os.getenv("LOCAL_LLM_URL", "http
 # Garde le modèle chargé en RAM en continu : évite les 10-20s de rechargement
 # qu'Ollama impose par défaut après 5 min d'inactivité entre deux messages.
 OLLAMA_KEEP_ALIVE = os.getenv("OLLAMA_KEEP_ALIVE", "30m")
-# Plafonne la longueur de génération (au lieu de laisser Ollama tourner sans
-# limite jusqu'à la fenêtre de contexte). 1024 tokens laisse assez de marge
-# pour le cas le plus long — les 8 questions QCM en JSON (views_qcm.py,
-# ~900 tokens) — tout en bornant un tuteur/évaluateur qui partirait en boucle.
-OLLAMA_NUM_PREDICT = int(os.getenv("OLLAMA_NUM_PREDICT", "2048"))
-# Fenêtre de contexte : RAG + prompt système + historique sous 2048 tokens sur CPU.
-OLLAMA_NUM_CTX = int(os.getenv("OLLAMA_NUM_CTX", "2048"))
+# Plafonne la longueur de génération (au lieu de laisser le moteur local tourner
+# sans limite jusqu'à la fenêtre de contexte). 1024 tokens laisse assez de marge
+# pour le cas le plus long — les 8 questions QCM en JSON (views_qcm.py, ~900
+# tokens, qui passe de toute façon un max_tokens explicite) — tout en bornant un
+# tuteur/assistant/évaluateur qui partirait en digression : sur CPU chaque token
+# superflu coûte ~50-100 ms.
+OLLAMA_NUM_PREDICT = int(os.getenv("OLLAMA_NUM_PREDICT", "1024"))
+# Fenêtre de contexte : RAG + prompt système + historique. 4096 suffit sur CPU
+# (au-delà, les buffers de calcul grossissent pour rien).
+OLLAMA_NUM_CTX = int(os.getenv("OLLAMA_NUM_CTX", "4096"))
+# Longueur max d'un contexte RAG injecté dans un prompt agent. Les nœuds
+# socratiques concatènent jusqu'à ~9 chunks (4-5k car.) : au-delà de cette borne
+# le prefill CPU explose sans gain pédagogique. ~1800 car. ≈ 500 tokens.
+RAG_MAX_CHARS = int(os.getenv("RAG_MAX_CHARS", "1800"))
 # Délai max d'UN appel au moteur local. Une génération QCM légitime sur CPU
 # peut prendre ~40-60 s ; au-delà de OLLAMA_TIMEOUT le modèle est considéré
 # bloqué et l'appel est abandonné (au lieu de figer le worker web à l'infini).
@@ -184,6 +191,18 @@ def language_directive() -> str:
 def with_language(system_prompt: str) -> str:
     """Ajoute la consigne de langue active à un prompt système."""
     return f"{system_prompt}\n\n{language_directive()}"
+
+
+def clip_rag(text: str) -> str:
+    """Tronque un contexte RAG à RAG_MAX_CHARS — borne le coût de prefill CPU.
+
+    Les agents socratiques concatènent plusieurs chunks sans limite ; un prompt
+    trop long ralentit chaque appel (temps ∝ tokens) sans bénéfice pédagogique.
+    """
+    text = text or ""
+    if len(text) <= RAG_MAX_CHARS:
+        return text
+    return text[:RAG_MAX_CHARS].rstrip() + "\n[...]"
 
 
 # ── Détection « moteur LLM injoignable » ────────────────────────────────────
