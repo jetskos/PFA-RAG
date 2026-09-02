@@ -156,11 +156,86 @@ def _normaliser_question(q: dict) -> dict | None:
     }
 
 
+def _extraire_questions_llm(content: str) -> list[dict]:
+    """
+    Extrait toutes les questions d'une réponse LLM, même mal formée.
+
+    Les petits modèles locaux (qwen2.5-1.5b) produisent souvent :
+      - la clé "questions" répétée : {"questions":[A],"questions":[B]}
+        (json.loads n'en garde qu'une) ;
+      - des objets JSON concaténés sans tableau : {...}{...} ;
+      - un JSON tronqué en fin de génération.
+    On récupère un maximum de dicts {question, options, …}.
+    """
+    if not content:
+        return []
+
+    out: list[dict] = []
+
+    def _absorber(obj):
+        if isinstance(obj, dict):
+            if isinstance(obj.get('questions'), list):
+                out.extend(x for x in obj['questions'] if isinstance(x, dict))
+            elif 'question' in obj or 'options' in obj:
+                out.append(obj)
+        elif isinstance(obj, list):
+            out.extend(x for x in obj if isinstance(x, dict))
+
+    # Fusionne les clés "questions" dupliquées à l'intérieur d'un même objet.
+    def _pairs_hook(pairs):
+        d = {}
+        for k, v in pairs:
+            if k == 'questions' and isinstance(v, list):
+                d.setdefault('questions', []).extend(v)
+            elif k not in d:
+                d[k] = v
+        return d
+
+    dec = json.JSONDecoder(object_pairs_hook=_pairs_hook)
+
+    # Scanne tous les objets JSON de premier niveau de la sortie.
+    i, n = 0, len(content)
+    while i < n:
+        j = content.find('{', i)
+        if j == -1:
+            break
+        try:
+            obj, end = dec.raw_decode(content, j)
+            _absorber(obj)
+            i = max(end, j + 1)
+        except json.JSONDecodeError:
+            i = j + 1
+
+    # Filet de sécurité : rien extrait → tenter une réparation de troncature.
+    if not out:
+        s, e = content.find('{'), content.rfind('}')
+        if s != -1 and e > s:
+            frag = content[s:e + 1]
+            for suffixe in ('', ']}', '"}]}', '"}]} '):
+                try:
+                    _absorber(json.loads(frag + suffixe, object_pairs_hook=_pairs_hook))
+                except json.JSONDecodeError:
+                    continue
+                if out:
+                    break
+
+    # Dédoublonnage par énoncé.
+    vus, uniq = set(), []
+    for q in out:
+        cle = str(q.get('question', '')).strip().casefold()
+        if cle and cle not in vus:
+            vus.add(cle)
+            uniq.append(q)
+    return uniq
+
+
 def _generer_questions_ia(chapitre, n_questions: int = 8) -> tuple[list[dict], str]:
     """
     Génère n questions QCM depuis le contenu ChromaDB du chapitre.
-    Utilise le modèle Groq rapide llama-3.1-8b-instant avec un prompt court
-    et un contexte limité pour minimiser le temps de génération.
+
+    Le modèle hors-ligne (qwen2.5-1.5b) est petit et instable : on appelle
+    le LLM jusqu'à 3 fois et on accumule les questions valides d'un appel à
+    l'autre jusqu'à en avoir assez.
     """
     from tuteur_ia.agents.llm_factory import get_llm, with_language, is_llm_unavailable_error
     from langchain_core.messages import SystemMessage, HumanMessage
@@ -172,65 +247,65 @@ def _generer_questions_ia(chapitre, n_questions: int = 8) -> tuple[list[dict], s
         logger.warning(f"Contenu PDF vide ou non indexé pour le chapitre {chapitre.id}")
         return [], 'no_content'
 
-    # Modèle rapide + timeout de 25 secondes pour éviter tout blocage infini
     llm = get_llm(temperature=0.4)
 
-    # Prompt système court (≈80 tokens au lieu de ≈250) pour réduire la latence
     system_prompt = (
-        f"Tu crées exactement {n_questions} questions QCM en JSON basées STRICTEMENT "
-        "sur le texte fourni. Chaque question a 4 options courtes (max 5 mots), "
-        "1 bonne réponse, 1 explication ≤6 mots. "
-        'Format : {"questions":[{"question":"...","options":["A","B","C","D"],'
+        f"Tu crées {n_questions} questions QCM en JSON, basées STRICTEMENT sur le "
+        "texte fourni. Réponds UNIQUEMENT avec UN SEUL objet JSON, sans aucun texte "
+        "autour. La clé \"questions\" apparaît UNE SEULE FOIS et contient un tableau. "
+        "Chaque question DOIT avoir EXACTEMENT 4 options courtes (max 6 mots), une "
+        "seule bonne réponse copiée mot pour mot depuis les options, et une "
+        "explication courte. "
+        'Format EXACT : {"questions":[{"question":"...","options":["...","...","...","..."],'
         '"reponse_correcte":"...","explication":"..."}]}'
     )
-
     user_prompt = (
         f"TEXTE SOURCE :\n{contenu}\n\n"
-        f"Génère exactement {n_questions} questions QCM tirées de ce texte."
+        f"Génère {n_questions} questions QCM tirées de ce texte. "
+        "Un seul tableau \"questions\", 4 options par question."
     )
+    messages = [
+        SystemMessage(content=with_language(system_prompt)),
+        HumanMessage(content=user_prompt),
+    ]
+
+    # Plancher : en dessous de 3 questions valides on renvoie une erreur ;
+    # sinon on sert ce qu'on a (le cache s'enrichit d'un appel à l'autre).
+    cible = 3
+    valid: list[dict] = []
+    vus: set[str] = set()
 
     try:
-        logger.info(
-            f"[QCM IA] Appel LLM pour '{chapitre.titre}' "
-            f"({len(contenu)} chars de contexte, {n_questions} questions)"
-        )
-        response = llm.invoke([
-            SystemMessage(content=with_language(system_prompt)),
-            HumanMessage(content=user_prompt),
-        ])
-
-        content = response.content.strip()
-        start = content.find('{')
-        end   = content.rfind('}') + 1
-        if start != -1 and end > start:
-            json_str = content[start:end]
-            try:
-                data = json.loads(json_str)
-            except json.JSONDecodeError:
-                # Tentative de réparation d'un JSON tronqué par le LLM (ex: OLLAMA_NUM_PREDICT trop petit)
-                last_brace = json_str.rfind('}')
-                if last_brace != -1:
-                    try:
-                        data = json.loads(json_str[:last_brace+1] + "]}")
-                        logger.warning("[QCM IA] JSON tronqué récupéré avec succès (quelques questions perdues).")
-                    except json.JSONDecodeError:
-                        data = {}
-                else:
-                    data = {}
-                    
-            questions = data.get('questions', [])
-            valid = []
-            for q in questions:
-                nq = _normaliser_question(q)
-                if nq:
-                    valid.append(nq)
+        for tentative in range(3):
             logger.info(
-                f"[QCM IA] {len(valid)}/{len(questions)} questions valides "
-                f"après normalisation."
+                f"[QCM IA] Appel LLM {tentative + 1}/3 pour '{chapitre.titre}' "
+                f"({len(contenu)} chars de contexte, {n_questions} questions)"
             )
-            if valid:
-                return valid[:n_questions], ''
+            response = llm.invoke(messages)
+            brutes = _extraire_questions_llm((response.content or '').strip())
+            for q in brutes:
+                nq = _normaliser_question(q)
+                if not nq:
+                    continue
+                cle = nq['question'].casefold()
+                if cle in vus:
+                    continue
+                vus.add(cle)
+                valid.append(nq)
+            logger.info(
+                f"[QCM IA] tentative {tentative + 1} : {len(brutes)} brutes -> "
+                f"{len(valid)} questions valides cumulées."
+            )
+            if len(valid) >= n_questions:
+                break
 
+        if len(valid) >= cible:
+            random.shuffle(valid)
+            return valid[:n_questions], ''
+        logger.warning(
+            f"[QCM IA] échec : {len(valid)} questions valides seulement "
+            f"(cible {cible}) après 3 tentatives."
+        )
     except Exception as e:
         logger.error(f"Erreur génération QCM IA : {e}", exc_info=True)
         if is_llm_unavailable_error(e):
