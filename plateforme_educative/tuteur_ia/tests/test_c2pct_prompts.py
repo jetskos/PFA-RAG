@@ -15,25 +15,27 @@ from tuteur_ia.prompts.memoire       import MEMORY_SYSTEM_PROMPT, MEMORY_USER_PR
 
 
 class TuteurPromptC2PCTTest(SimpleTestCase):
+    # Le prompt du tuteur est en anglais (le petit modèle suit mieux les
+    # consignes EN) ; la langue de la RÉPONSE est fixée par language_directive().
 
     def test_contains_c2pct_marker(self):
         self.assertIn("C2PCT", TUTOR_SYSTEM_PROMPT)
 
     def test_contains_decomposition_phase(self):
-        self.assertIn("Décomposition", TUTOR_SYSTEM_PROMPT)
+        self.assertIn("Breaking down", TUTOR_SYSTEM_PROMPT)
 
     def test_contains_structuration_phase(self):
-        self.assertIn("Structuration", TUTOR_SYSTEM_PROMPT)
+        self.assertIn("Algorithmic structuring", TUTOR_SYSTEM_PROMPT)
 
     def test_contains_generalisation_phase(self):
-        self.assertIn("Généralisation", TUTOR_SYSTEM_PROMPT)
+        self.assertIn("Generalising", TUTOR_SYSTEM_PROMPT)
 
     def test_contains_communication_phase(self):
-        self.assertIn("Communication", TUTOR_SYSTEM_PROMPT)
+        self.assertIn("Communicating the solution", TUTOR_SYSTEM_PROMPT)
 
     def test_still_has_core_rules(self):
-        self.assertIn("RÈGLES", TUTOR_SYSTEM_PROMPT)
-        self.assertIn("vocabulaire", TUTOR_SYSTEM_PROMPT.lower())
+        self.assertIn("RULES", TUTOR_SYSTEM_PROMPT)
+        self.assertIn("simple words", TUTOR_SYSTEM_PROMPT.lower())
 
     def test_user_template_has_required_placeholders(self):
         # Doit pouvoir être formaté sans KeyError

@@ -8,6 +8,7 @@ urlpatterns = [
     path('session/<uuid:chapitre_id>/',           views.demarrer_session, name='demarrer_session'),
     path('session/<uuid:session_id>/repondre/',   views.repondre,         name='repondre'),
     path('session/<uuid:session_id>/statut/',     views.statut_session,   name='statut_session'),
+    path('session/tache/<str:task_id>/',          views.statut_tache_tuteur, name='statut_tache_tuteur'),
 
     # ── Assistant RAG (explicatif) ───────────────────────────────────────
     path('assistant/<uuid:chapitre_id>/',         views.demarrer_assistant, name='demarrer_assistant'),

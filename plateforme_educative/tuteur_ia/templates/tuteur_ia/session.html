@@ -518,6 +518,20 @@ let maxQuestions = 0;
 const langCode = "{{ request.LANGUAGE_CODE|default:'fr' }}";
 const URL_INIT    = `/${langCode}/tuteur/session/${CHAPITRE_ID}/`;
 const urlRepondre = id => `/${langCode}/tuteur/session/${id}/repondre/`;
+const urlTache    = tid => `/${langCode}/tuteur/session/tache/${tid}/`;
+
+// Sonde le résultat d'un tour socratique lancé en tâche de fond (serveur).
+async function pollTache(taskId, { tries = 90, delay = 3000 } = {}) {
+    for (let i = 0; i < tries; i++) {
+        await new Promise(r => setTimeout(r, delay));
+        let d;
+        try { d = await (await fetch(urlTache(taskId), { headers: { 'X-CSRFToken': CSRF_TOKEN } })).json(); }
+        catch (e) { continue; }               // coupure réseau passagère → on réessaie
+        if (d.status === 'en_cours') continue;
+        return d;                              // 'pret' ou 'erreur'
+    }
+    return { status: 'erreur', error: "{% translate 'Le tuteur met trop de temps. Réessaie.' %}" };
+}
 
 // ── UI ───────────────────────────────────────────────────────────────────
 function removeLoader(id='init-loader') { document.getElementById(id)?.remove(); }
@@ -659,10 +673,22 @@ async function envoyer() {
             headers:{'Content-Type':'application/json','X-CSRFToken':CSRF_TOKEN},
             body: JSON.stringify({message:txt}),
         });
-        const data = await r.json();
+        let data = await r.json();
+
+        // 202 → le tuteur travaille en arrière-plan (serveur) : on sonde.
+        if (r.status === 202 && data.task_id) {
+            data = await pollTache(data.task_id);
+        }
         removeLoader('typing-indicator');
 
-        if (!r.ok) { addMsg(`❌ ${data.error||"{% translate 'Erreur serveur' %}"}`, 'err'); setInput(true); return; }
+        if (data.status === 'erreur' || (!data.message && data.error)) {
+            addMsg(`❌ ${data.error || data.detail || "{% translate 'Erreur serveur' %}"}`, 'err');
+            setInput(true);
+            return;
+        }
+        if (!r.ok && r.status !== 202) {
+            addMsg(`❌ ${data.error||"{% translate 'Erreur serveur' %}"}`, 'err'); setInput(true); return;
+        }
 
         addMsg(data.message, 'ai');
         updateStats(data.mastery_score, data.iteration, maxQuestions);

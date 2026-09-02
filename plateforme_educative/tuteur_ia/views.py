@@ -87,164 +87,88 @@ def demarrer_session(request, chapitre_id):
         return JsonResponse({"error": str(e)}, status=500)
 
 
+def _reponse_from_payload(payload: dict):
+    """Traduit le dict renvoyé par la tâche socratique en JsonResponse."""
+    if payload.get('error'):
+        code = 503 if payload.get('llm_unavailable') else (400 if payload.get('session_terminee') else 500)
+        return JsonResponse(payload, status=code)
+    return JsonResponse({
+        "message":          payload.get("message") or gettext("Continue, tu es sur la bonne voie !"),
+        "mastery_score":    payload.get("mastery_score", 0.0),
+        "iteration":        payload.get("iteration", 0),
+        "session_terminee": payload.get("session_terminee", False),
+    })
+
+
 @login_required
 @require_http_methods(['POST'])
 def repondre(request, session_id):
     """
-    POST {'message': '...'} → inject réponse étudiant, retourne question suivante.
-    Stoppe quand mastery_score >= 0.75 OU iteration >= MAX_QUESTIONS.
-    """
-    session = get_object_or_404(SessionTuteur, id=session_id, etudiant=request.user)
+    POST {'message': '...'} → un tour du tuteur socratique.
 
+    Le graph (diagnostic → question → évaluation) est lourd (~50 s sur CPU).
+    On le lance donc dans une tâche Celery :
+      - serveur (worker + Redis) → 202 {task_id}, le front sonde `statut_tache`
+      - local/offline (CELERY_TASK_ALWAYS_EAGER) → la tâche tourne inline,
+        on renvoie directement le résultat (200).
+    """
+    from django.conf import settings
+    from django.utils.translation import get_language
+    from tuteur_ia.tasks import repondre_socratique_task
+
+    session = get_object_or_404(SessionTuteur, id=session_id, etudiant=request.user)
     if session.statut != 'EN_COURS':
         return JsonResponse({"error": gettext("Session déjà terminée.")}, status=400)
 
     try:
-        data    = json.loads(request.body)
-        message = data.get('message', '').strip()
+        message = json.loads(request.body).get('message', '').strip()
     except json.JSONDecodeError:
         message = request.POST.get('message', '').strip()
-
     if not message:
         return JsonResponse({"error": "Message vide."}, status=400)
 
+    async_result = repondre_socratique_task.delay(str(session.id), message, get_language() or 'fr')
+
+    if getattr(settings, 'CELERY_TASK_ALWAYS_EAGER', False):
+        # eager (local/offline) : la tâche a tourné inline, le résultat est prêt
+        try:
+            payload = async_result.result
+            if isinstance(payload, Exception):
+                raise payload
+            return _reponse_from_payload(payload or {})
+        except Exception as e:
+            logger.error("Tuteur socratique (eager) : %s", e, exc_info=True)
+            return JsonResponse({"error": str(e)}, status=500)
+
+    return JsonResponse({"task_id": async_result.id, "pending": True}, status=202)
+
+
+@login_required
+@require_http_methods(['GET'])
+def statut_tache_tuteur(request, task_id):
+    """Polling du résultat d'un tour socratique lancé en tâche de fond."""
     try:
-        graph  = get_graph()
-        config = {"configurable": {"thread_id": session.thread_id}}
+        uuid_module.UUID(str(task_id))
+    except (ValueError, TypeError, AttributeError):
+        return JsonResponse({'status': 'erreur', 'detail': gettext("Tâche introuvable.")}, status=404)
 
-        # Normaliser niveau étudiant
-        def _get_niveau(user):
-            lbl = getattr(user, 'niveau_label', '').upper()
-            if 'DÉBUTANT' in lbl or 'DEBUTANT' in lbl:
-                return 'DEBUTANT'
-            if 'INTERMÉDIAIRE' in lbl or 'INTERMEDIAIRE' in lbl:
-                return 'INTERMEDIAIRE'
-            if 'AVANCÉ' in lbl or 'AVANCE' in lbl:
-                return 'AVANCE'
-            return 'DEBUTANT'
-
-        profil_ia, _ = ProfilEtudiantIA.objects.get_or_create(etudiant=request.user)
-        niveau = _get_niveau(request.user)
-        chapitre = session.chapitre
-        cours    = chapitre.cours
-
-        # Vérifier si le graph a déjà un état (sessions existantes)
-        state_obj = graph.get_state(config)
-        graph_initialized = bool(state_obj.values and "current_concept" in state_obj.values)
-
-        t0 = time.perf_counter()
-        if not graph_initialized:
-            # PREMIER MESSAGE : lancer le graph depuis zéro avec le message
-            # de l'étudiant déjà inclus dans l'état initial.
-            initial_state = {
-                "messages":        [HumanMessage(content=message)],
-                "subject":         cours.titre,
-                "current_concept": chapitre.titre,
-                "chapitre_id":     str(chapitre.id),
-                "cours_id":        str(cours.id),
-                "etudiant_id":     str(request.user.id),
-                "niveau":          niveau,
-                "diagnosis":       None,
-                "last_evaluation": None,
-                "mastery_score":   0.0,
-                "iteration":       0,
-                "student_profile": profil_ia.to_dict(),
-                "next_action":     "tutor",
-                "rag_context":     None,
-            }
-            final_state = None
-            for event in graph.stream(initial_state, config, stream_mode="values"):
-                final_state = event
-        else:
-            # TOURS SUIVANTS : injecter la réponse et continuer
-            graph.update_state(
-                config,
-                {"messages": [HumanMessage(content=message)]},
-                as_node="tutor",
-            )
-            final_state = None
-            for event in graph.stream(None, config, stream_mode="values"):
-                final_state = event
-        logger.info(
-            f"[TIMING] repondre() graph.stream() total "
-            f"({'premier message' if not graph_initialized else 'tour suivant'}): "
-            f"{time.perf_counter() - t0:.2f}s"
-        )
-
-        tutor_response = ""
-        mastery_score  = 0.0
-        iteration      = 0
-        next_action    = "tutor"
-
-        if final_state:
-            tutor_response = _get_last_ai_message(final_state.get("messages", []))
-            mastery_score  = final_state.get("mastery_score", 0.0)
-            iteration      = final_state.get("iteration", 0)
-            next_action    = final_state.get("next_action", "tutor")
-
-        # Terminer la session si score atteint ou nb max de questions
-        session_terminee = (
-            mastery_score >= 0.75 or
-            iteration >= MAX_QUESTIONS or
-            next_action == "end"
-        )
-
-        session.mastery_score_final = mastery_score
-        if session_terminee:
-            session.statut = 'TERMINEE'
-            
-            # --- SAUVEGARDE DU SCORE QCM DANS LE CARNET DE NOTES ---
-            try:
-                from apprentissage.models import Devoir, Soumission
-                # Vérifier si un devoir IA existe déjà pour ce chapitre
-                devoir_ia, created = Devoir.objects.get_or_create(
-                    chapitre=session.chapitre,
-                    titre=f"QCM Intelligence Artificielle - {session.chapitre.titre}",
-                    defaults={
-                        'consigne': "Évaluation générée automatiquement par le Tuteur IA.",
-                        'note_max': 100,
-                        'createur': session.chapitre.cours.createur,
-                    }
-                )
-                
-                # Créer ou mettre à jour la soumission pour l'étudiant
-                soumission, s_created = Soumission.objects.get_or_create(
-                    devoir=devoir_ia,
-                    etudiant=session.etudiant,
-                    defaults={
-                        'note': min(mastery_score * 100, 100),
-                        'feedback': "Score automatique par le Tuteur IA.",
-                    }
-                )
-                if not s_created:
-                    nouvelle_note = min(mastery_score * 100, 100)
-                    if soumission.note is None or nouvelle_note > soumission.note:
-                        soumission.note = nouvelle_note
-                        soumission.save(update_fields=['note'])
-            except Exception as e:
-                logger.error(f"Erreur sauvegarde carnet de notes: {e}")
-            # --------------------------------------------------------
-
-        session.save()
-
-        return JsonResponse({
-            "message":          tutor_response or gettext("Continue, tu es sur la bonne voie !"),
-            "mastery_score":    mastery_score,
-            "iteration":        iteration,
-            "session_terminee": session_terminee,
-        })
-
+    try:
+        from celery.result import AsyncResult
+        res = AsyncResult(task_id)
+        if res.state in ('PENDING', 'STARTED', 'RETRY'):
+            return JsonResponse({'status': 'en_cours'})
+        if res.state == 'SUCCESS':
+            data = res.get() or {}
+            reponse = _reponse_from_payload(data)
+            body = json.loads(reponse.content)
+            body['status'] = 'erreur' if data.get('error') else 'pret'
+            return JsonResponse(body, status=reponse.status_code if data.get('error') else 200)
+        if res.state == 'FAILURE':
+            return JsonResponse({'status': 'erreur', 'detail': str(res.result)}, status=500)
+        return JsonResponse({'status': 'en_cours'})
     except Exception as e:
-        from tuteur_ia.agents.llm_factory import is_llm_unavailable_error
-        if is_llm_unavailable_error(e):
-            logger.warning("Tuteur IA indisponible (LLM injoignable) : %s", e)
-            return JsonResponse({
-                "error": gettext("Le tuteur IA n'est pas disponible pour le moment. Réessaie dans un instant ou préviens ton formateur."),
-                "llm_unavailable": True,
-            }, status=503)
-        import traceback
-        traceback.print_exc()
-        return JsonResponse({"error": str(e)}, status=500)
+        logger.error(f"statut_tache_tuteur {task_id} : {e}", exc_info=True)
+        return JsonResponse({'status': 'erreur', 'detail': gettext("Erreur lors de la vérification.")}, status=500)
 
 
 @login_required
