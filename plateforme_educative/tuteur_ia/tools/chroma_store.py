@@ -29,6 +29,14 @@ _client = None
 _collection = None
 _embedding_fn = None
 _embedding_init_lock = threading.Lock()
+_collection_lock = threading.Lock()
+
+# mtime du fichier SQLite de ChromaDB au moment où on a (re)chargé la collection.
+# ChromaDB 0.4.x garde l'index HNSW en RAM par process et ne le resynchronise
+# pas tout seul : sans ça, le process web ne verrait jamais les documents
+# indexés par le worker Celery lors d'un import (le tuteur répond « aucun
+# contenu » alors que les chunks existent sur disque).
+_collection_disk_mtime = 0.0
 
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
@@ -70,42 +78,94 @@ def warm_up_embeddings() -> None:
     _get_embedding_function()(["préchargement"])
 
 
+def _chroma_marker_mtime() -> float:
+    """mtime du fichier SQLite de ChromaDB : avance à chaque écriture, y
+    compris depuis un autre process (worker Celery pendant un import)."""
+    try:
+        return os.path.getmtime(os.path.join(_get_chroma_path(), "chroma.sqlite3"))
+    except OSError:
+        return 0.0
+
+
+def _reset_chroma_singletons() -> None:
+    """Libère client + collection en cache pour forcer une relecture du disque."""
+    global _client, _collection
+    try:
+        if _client is not None and hasattr(_client, "_system"):
+            _client._system.stop()
+    except Exception:
+        pass
+    for _path in (
+        "chromadb.api.client",
+        "chromadb.api.shared_system_client",
+    ):
+        try:
+            import importlib
+            mod = importlib.import_module(_path)
+            mod.SharedSystemClient.clear_system_cache()
+            break
+        except Exception:
+            continue
+    _client = None
+    _collection = None
+
+
 def get_collection():
     """
-    Retourne la collection ChromaDB (singleton).
-    Crée le client et la collection si nécessaire.
+    Retourne la collection ChromaDB (singleton, rechargée si le disque a bougé).
+
+    Recharge la collection quand un AUTRE process a écrit dans la base depuis
+    notre dernier chargement — indispensable ici : l'import de cours indexe
+    via le worker Celery, et le process web garderait sinon un index HNSW
+    périmé (tuteur / QCM « aucun contenu » alors que les chunks existent).
     """
-    global _client, _collection
+    global _client, _collection, _collection_disk_mtime
 
-    if _collection is not None:
+    if _collection is not None and _chroma_marker_mtime() <= _collection_disk_mtime + 2.0:
         return _collection
 
-    try:
-        import chromadb
+    with _collection_lock:
+        disk_mtime = _chroma_marker_mtime()
+        if _collection is not None and disk_mtime <= _collection_disk_mtime + 2.0:
+            return _collection
+        if _collection is not None:
+            logger.info("[ChromaDB] base modifiée sur disque — rechargement de la collection")
+            _reset_chroma_singletons()
 
-        chroma_path = _get_chroma_path()
-        os.makedirs(chroma_path, exist_ok=True)
+        try:
+            import chromadb
 
-        _client = chromadb.PersistentClient(path=chroma_path)
-        _collection = _client.get_or_create_collection(
-            name=CHROMA_COLLECTION_NAME,
-            embedding_function=_get_embedding_function(),
-            metadata={"hnsw:space": "cosine"},
-        )
+            chroma_path = _get_chroma_path()
+            os.makedirs(chroma_path, exist_ok=True)
 
-        logger.info(
-            f"Collection ChromaDB '{CHROMA_COLLECTION_NAME}' prête "
-            f"({_collection.count()} vecteurs) — {chroma_path}"
-        )
-        return _collection
+            _client = chromadb.PersistentClient(path=chroma_path)
+            _collection = _client.get_or_create_collection(
+                name=CHROMA_COLLECTION_NAME,
+                embedding_function=_get_embedding_function(),
+                metadata={"hnsw:space": "cosine"},
+            )
+            _collection_disk_mtime = _chroma_marker_mtime()
 
-    except ImportError:
-        raise ImportError(
-            "chromadb non installé. Lancez : pip install chromadb"
-        )
-    except Exception as e:
-        logger.error(f"Erreur initialisation ChromaDB : {e}")
-        raise
+            logger.info(
+                f"Collection ChromaDB '{CHROMA_COLLECTION_NAME}' prête "
+                f"({_collection.count()} vecteurs) — {chroma_path}"
+            )
+            return _collection
+
+        except ImportError:
+            raise ImportError(
+                "chromadb non installé. Lancez : pip install chromadb"
+            )
+        except Exception as e:
+            logger.error(f"Erreur initialisation ChromaDB : {e}")
+            raise
+
+
+def _touch_collection_mtime() -> None:
+    """À appeler après nos propres écritures : évite de recharger la collection
+    juste après (le disque a bougé, mais c'est nous qui l'avons fait)."""
+    global _collection_disk_mtime
+    _collection_disk_mtime = _chroma_marker_mtime()
 
 
 # ── Opérations CRUD ──────────────────────────────────────────────────────────
@@ -175,6 +235,7 @@ def add_chunks(
         f"Indexé {len(chunks)} chunks pour '{document_titre}' "
         f"(doc={document_id[:8]}...)"
     )
+    _touch_collection_mtime()  # notre propre écriture : pas besoin de recharger
 
     # ── Sync DB pour BM25 ────────────────────────────────────────────────────
     try:
@@ -222,6 +283,7 @@ def delete_document(document_id: str):
                 chapitre_id = meta.get("chapitre_id")
                 cours_id    = meta.get("cours_id")
             collection.delete(ids=existing["ids"])
+            _touch_collection_mtime()
             logger.info(f"ChromaDB : supprimé {len(existing['ids'])} chunks pour doc {document_id}")
     except Exception as e:
         logger.error(f"Erreur suppression ChromaDB : {e}")
