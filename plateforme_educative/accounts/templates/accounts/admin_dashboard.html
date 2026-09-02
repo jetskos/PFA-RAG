@@ -488,12 +488,12 @@
                     <span>{% translate "Exporter Excel..." %}</span>
                     <i class="ti ti-download"></i>
                 </button>
-                {% url 'accounts:export_users_excel' as _export_url %}
+                {% url 'accounts:export_users_excel' as export_users_url %}
                 <div class="custom-dropdown-menu" id="exportMenu">
-                    <a class="dropdown-item" data-download href="{{ _export_url }}?role=ALL">{% translate "Tous les utilisateurs" %}</a>
-                    <a class="dropdown-item" data-download href="{{ _export_url }}?role=ELEVE">{% translate "Élèves" %}</a>
-                    <a class="dropdown-item" data-download href="{{ _export_url }}?role=FORMATEUR">{% translate "Formateurs" %}</a>
-                    <a class="dropdown-item" data-download href="{{ _export_url }}?role=ADMIN">{% translate "Administrateurs" %}</a>
+                    <a class="dropdown-item" data-download href="{{ export_users_url }}?role=ALL">{% translate "Tous les utilisateurs" %}</a>
+                    <a class="dropdown-item" data-download href="{{ export_users_url }}?role=ELEVE">{% translate "Élèves" %}</a>
+                    <a class="dropdown-item" data-download href="{{ export_users_url }}?role=FORMATEUR">{% translate "Formateurs" %}</a>
+                    <a class="dropdown-item" data-download href="{{ export_users_url }}?role=ADMIN">{% translate "Administrateurs" %}</a>
                 </div>
             </div>
             <button class="admin-btn-primary" onclick="toggleDrawer()">
