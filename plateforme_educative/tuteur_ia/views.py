@@ -297,13 +297,42 @@ def poser_question(request, session_id):
             "du chapitre **« %(chapitre)s »**. Cette question est hors sujet."
         ) % {'chapitre': titre_chapitre}
 
+        # Prompt système dans la langue de l'UI : sur qwen 1.5B, un prompt en
+        # français fait répondre en français même si la question est en anglais
+        # (et inversement). On rédige donc le prompt dans la bonne langue.
+        from django.utils.translation import get_language
+        lang_en = (get_language() or 'fr').lower().startswith('en')
+
         if aucun_document:
-            # Pas de PDF indexé → on ne peut pas répondre
+            if lang_en:
+                system_prompt = (
+                    f"You are the Assistant Tutor for the chapter '{titre_chapitre}'.\n"
+                    "No PDF document has been indexed for this chapter yet.\n"
+                    "Answer EXACTLY: \"No document is available for this chapter. "
+                    "Please ask your instructor to upload the content.\""
+                )
+            else:
+                system_prompt = (
+                    f"Tu es le Tuteur Assistant du chapitre '{titre_chapitre}'.\n"
+                    "Aucun document PDF n'est encore indexé pour ce chapitre.\n"
+                    "Réponds EXACTEMENT : \"Aucun document n'est disponible pour ce chapitre. "
+                    "Veuillez contacter votre formateur pour qu'il uploade le contenu.\""
+                )
+        elif lang_en:
             system_prompt = (
-                f"Tu es le Tuteur Assistant du chapitre '{titre_chapitre}'.\n"
-                "Aucun document PDF n'est encore indexé pour ce chapitre.\n"
-                "Réponds EXACTEMENT : \"Aucun document n'est disponible pour ce chapitre. "
-                "Veuillez contacter votre formateur pour qu'il uploade le contenu.\""
+                f"You are the Educational Assistant Tutor for the chapter '{titre_chapitre}'.\n\n"
+                "PDF DOCUMENT EXTRACTS (primary source):\n"
+                "---\n"
+                f"{context}\n"
+                "---\n\n"
+                "INSTRUCTIONS AND RULES:\n"
+                "1. SUMMARY AND OVERVIEW REQUESTS: If the pupil asks to summarise the chapter, explain the lesson, "
+                "or give the key points (e.g. 'summarise this chapter', 'explain the lesson', 'key points'), "
+                "you MUST answer with a clear, well-structured, concise summary based on the lesson extracts above.\n\n"
+                "2. QUESTIONS ABOUT THE LESSON: Answer concisely, kindly and pedagogically, relying on the document content.\n\n"
+                "3. COMPLETELY OFF-TOPIC QUESTIONS: Only if the pupil asks something with NO connection to the subject "
+                "(e.g. weather, celebrities, cooking recipes, sports), answer:\n"
+                f"\"{refus_hors_sujet}\""
             )
         else:
             system_prompt = (
