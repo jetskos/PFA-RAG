@@ -6,6 +6,9 @@ complète. Le manifeste et le SW sont rendus comme des templates Django afin
 que les URL `{% static %}` (hashées en production par ManifestStaticFilesStorage)
 soient correctes.
 """
+import json
+import os
+
 from django.http import HttpResponse
 from django.templatetags.static import static
 from django.utils.translation import gettext as _
@@ -44,3 +47,42 @@ def manifest(request):
 @require_GET
 def offline(request):
     return render(request, "pwa/offline.html")
+
+
+@require_GET
+@cache_control(max_age=3600)
+def assetlinks(request):
+    """
+    Digital Asset Links — sert `/.well-known/assetlinks.json`.
+
+    Nécessaire pour empaqueter la PWA en application Android (TWA / Bubblewrap) :
+    Android vérifie que la clé de signature de l'APK est bien déclarée par le
+    domaine. Sans ça, l'app affiche une barre d'URL au lieu du plein écran.
+
+    Renseigner via variables d'environnement (valeurs données par Bubblewrap
+    à la création du keystore) :
+        TWA_PACKAGE_NAME=net.ddns.smartbeam.edutech
+        TWA_SHA256_CERT_FINGERPRINTS=AA:BB:CC:...   (plusieurs → séparés par des virgules)
+    """
+    fingerprints = [
+        fp.strip()
+        for fp in os.getenv("TWA_SHA256_CERT_FINGERPRINTS", "").replace(";", ",").split(",")
+        if fp.strip()
+    ]
+    package = os.getenv("TWA_PACKAGE_NAME", "").strip()
+
+    statements = []
+    if package and fingerprints:
+        statements.append({
+            "relation": ["delegate_permission/common.handle_all_urls"],
+            "target": {
+                "namespace": "android_app",
+                "package_name": package,
+                "sha256_cert_fingerprints": fingerprints,
+            },
+        })
+
+    return HttpResponse(
+        json.dumps(statements, indent=2),
+        content_type="application/json",
+    )
