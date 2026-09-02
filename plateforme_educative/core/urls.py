@@ -51,6 +51,8 @@ urlpatterns = [
     path('sw.js', pwa.service_worker, name='pwa_service_worker'),
     path('manifest.webmanifest', pwa.manifest, name='pwa_manifest'),
     path('offline/', pwa.offline, name='pwa_offline'),
+    # Digital Asset Links — requis pour l'app Android (TWA/Bubblewrap).
+    path('.well-known/assetlinks.json', pwa.assetlinks, name='pwa_assetlinks'),
 ]
 
 urlpatterns += i18n_patterns(
