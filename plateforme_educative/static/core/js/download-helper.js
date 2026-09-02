@@ -24,6 +24,17 @@
     catch (e) { return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || ""); }
   }
 
+  // PWA installée (écran d'accueil) : le <a download> y est inerte sous Android
+  // et la page se contente de « sortir » vers rien. Il FAUT la feuille de partage.
+  function isStandalone() {
+    try {
+      return window.matchMedia("(display-mode: standalone)").matches
+        || window.matchMedia("(display-mode: fullscreen)").matches
+        || window.matchMedia("(display-mode: minimal-ui)").matches
+        || window.navigator.standalone === true;
+    } catch (e) { return false; }
+  }
+
   function toast(msg, isError) {
     try {
       var t = document.createElement("div");
@@ -57,7 +68,7 @@
     }, 1500);
   }
 
-  function saveBlob(blob, filename) {
+  function saveBlob(blob, filename, sourceUrl) {
     filename = filename || "export";
 
     if (window.navigator && window.navigator.msSaveOrOpenBlob) {
@@ -69,14 +80,41 @@
     try { file = new File([blob], filename, { type: blob.type || "application/octet-stream" }); }
     catch (e) { file = null; }
 
-    if (file && isTouch() && navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+    // `canShare` est un indice, pas une garantie : certains Chrome Android le
+    // renvoient à false alors que le partage de fichier marche. On tente donc
+    // dès qu'on a un File + navigator.share, et le catch gère l'échec réel.
+    var shareable = false;
+    try {
+      shareable = !!(file && isTouch() && navigator.share &&
+        (!navigator.canShare || navigator.canShare({ files: [file] })));
+    } catch (e) { shareable = !!(file && isTouch() && navigator.share); }
+
+    if (shareable) {
       return navigator.share({ files: [file], title: filename }).catch(function (err) {
-        if (err && err.name === "AbortError") return;
+        if (err && err.name === "AbortError") return;            // l'utilisateur a fermé la feuille
+        if (isStandalone()) return _pwaFallback(sourceUrl);       // PWA : <a download> inerte
         saveViaAnchor(blob, filename);
       });
     }
 
+    if (isStandalone() && isTouch()) return _pwaFallback(sourceUrl);
+
     saveViaAnchor(blob, filename);
+    return Promise.resolve();
+  }
+
+  // Dans une PWA installée sous Android, impossible d'écrire un fichier sans la
+  // feuille de partage. En dernier recours on rouvre l'URL d'export dans le
+  // navigateur système (qui, lui, sait télécharger) ; sinon on prévient.
+  function _pwaFallback(sourceUrl) {
+    if (sourceUrl) {
+      try {
+        window.open(sourceUrl, "_blank", "noopener");
+        toast("Téléchargement ouvert dans le navigateur.");
+        return Promise.resolve();
+      } catch (e) {}
+    }
+    toast("Pour enregistrer ce fichier, ouvre la plateforme dans Chrome (menu ⋮ → « Ouvrir dans Chrome »).", true);
     return Promise.resolve();
   }
 
@@ -107,12 +145,13 @@
       .then(function (res) {
         if (!res.ok) throw new Error("HTTP " + res.status);
         var name = filename || filenameFromResponse(res);
-        return res.blob().then(function (blob) { return saveBlob(blob, name); });
+        // `url` est passé en 3e arg : repli PWA = rouvrir cette URL dans Chrome.
+        return res.blob().then(function (blob) { return saveBlob(blob, name, url); });
       })
       .catch(function (err) {
-        // JAMAIS de navigation ici. On tente un <a download> direct sur l'URL
-        // (même origine → le navigateur télécharge sans quitter la page),
-        // et on prévient l'utilisateur.
+        // JAMAIS de navigation directe ici. En PWA on rouvre l'URL dans le
+        // navigateur ; ailleurs un <a download> même origine suffit.
+        if (isStandalone() && isTouch()) { _pwaFallback(url); return; }
         try { saveViaAnchor(url, filename || "export"); } catch (e) {}
         toast("Export impossible (" + (err && err.message ? err.message : "erreur") + ")", true);
       })
