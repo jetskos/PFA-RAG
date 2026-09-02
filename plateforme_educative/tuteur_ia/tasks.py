@@ -1,15 +1,156 @@
 """
 Tâches Celery pour le module tuteur_ia.
-- generer_qcm_task : génération asynchrone du QCM par IA
+- generer_qcm_task          : génération asynchrone du QCM par IA
+- repondre_socratique_task  : un tour du tuteur socratique (graph LangGraph),
+                              hors du thread de la requête HTTP
 """
 import json
 import logging
 import random
 
 from celery import shared_task
+from django.utils import translation
 from django.utils.translation import gettext
 
 logger = logging.getLogger(__name__)
+
+MAX_QUESTIONS_SOCRATIQUE = 15
+
+
+@shared_task(bind=True, max_retries=0,
+             name='tuteur_ia.tasks.repondre_socratique_task')
+def repondre_socratique_task(self, session_id: str, message: str, lang: str = 'fr'):
+    """
+    Exécute un tour du tuteur socratique (diagnostic → question → évaluation)
+    pour `message`, met à jour la session et le carnet de notes, et retourne
+    un dict JSON-sérialisable :
+        {message, mastery_score, iteration, session_terminee}
+    ou {error, llm_unavailable?}.
+
+    `lang` = langue de l'UI de l'élève au moment de l'envoi ('fr'|'en') —
+    on la réactive ici car la tâche Celery n'a pas le contexte de la requête.
+    """
+    import time
+    from langchain_core.messages import HumanMessage
+    from tuteur_ia.models import ProfilEtudiantIA, SessionTuteur
+    from tuteur_ia.graph.workflow import get_graph
+    from tuteur_ia.views import _get_last_ai_message
+    from tuteur_ia.agents.llm_factory import is_llm_unavailable_error
+
+    translation.activate(lang if lang in ('fr', 'en') else 'fr')
+
+    try:
+        session = SessionTuteur.objects.select_related('chapitre', 'chapitre__cours').get(pk=session_id)
+    except SessionTuteur.DoesNotExist:
+        return {'error': gettext("Session introuvable.")}
+
+    if session.statut != 'EN_COURS':
+        return {'error': gettext("Session déjà terminée."), 'session_terminee': True}
+
+    try:
+        graph = get_graph()
+        config = {"configurable": {"thread_id": session.thread_id}}
+
+        def _niveau(user):
+            lbl = (getattr(user, 'niveau_label', '') or '').upper()
+            if 'DÉBUTANT' in lbl or 'DEBUTANT' in lbl:
+                return 'DEBUTANT'
+            if 'INTERMÉDIAIRE' in lbl or 'INTERMEDIAIRE' in lbl:
+                return 'INTERMEDIAIRE'
+            if 'AVANCÉ' in lbl or 'AVANCE' in lbl:
+                return 'AVANCE'
+            return 'DEBUTANT'
+
+        etu = session.etudiant
+        profil_ia, _ = ProfilEtudiantIA.objects.get_or_create(etudiant=etu)
+        chapitre = session.chapitre
+        cours = chapitre.cours
+
+        state_obj = graph.get_state(config)
+        initialized = bool(state_obj.values and "current_concept" in state_obj.values)
+
+        t0 = time.perf_counter()
+        final_state = None
+        if not initialized:
+            initial_state = {
+                "messages": [HumanMessage(content=message)],
+                "subject": cours.titre,
+                "current_concept": chapitre.titre,
+                "chapitre_id": str(chapitre.id),
+                "cours_id": str(cours.id),
+                "etudiant_id": str(etu.id),
+                "niveau": _niveau(etu),
+                "diagnosis": None,
+                "last_evaluation": None,
+                "mastery_score": 0.0,
+                "iteration": 0,
+                "student_profile": profil_ia.to_dict(),
+                "next_action": "tutor",
+                "rag_context": None,
+            }
+            for event in graph.stream(initial_state, config, stream_mode="values"):
+                final_state = event
+        else:
+            graph.update_state(config, {"messages": [HumanMessage(content=message)]}, as_node="tutor")
+            for event in graph.stream(None, config, stream_mode="values"):
+                final_state = event
+        logger.info(f"[TIMING] repondre_socratique_task graph.stream(): {time.perf_counter() - t0:.2f}s")
+
+        tutor_response, mastery_score, iteration, next_action = "", 0.0, 0, "tutor"
+        if final_state:
+            tutor_response = _get_last_ai_message(final_state.get("messages", []))
+            mastery_score = final_state.get("mastery_score", 0.0)
+            iteration = final_state.get("iteration", 0)
+            next_action = final_state.get("next_action", "tutor")
+
+        session_terminee = (
+            mastery_score >= 0.75
+            or iteration >= MAX_QUESTIONS_SOCRATIQUE
+            or next_action == "end"
+        )
+        session.mastery_score_final = mastery_score
+        if session_terminee:
+            session.statut = 'TERMINEE'
+            try:
+                from apprentissage.models import Devoir, Soumission
+                devoir_ia, _ = Devoir.objects.get_or_create(
+                    chapitre=chapitre,
+                    titre=f"QCM Intelligence Artificielle - {chapitre.titre}",
+                    defaults={
+                        'consigne': "Évaluation générée automatiquement par le Tuteur IA.",
+                        'note_max': 100,
+                        'createur': cours.createur,
+                    },
+                )
+                soumission, s_created = Soumission.objects.get_or_create(
+                    devoir=devoir_ia, etudiant=etu,
+                    defaults={'note': min(mastery_score * 100, 100),
+                              'feedback': "Score automatique par le Tuteur IA."},
+                )
+                if not s_created:
+                    nn = min(mastery_score * 100, 100)
+                    if soumission.note is None or nn > soumission.note:
+                        soumission.note = nn
+                        soumission.save(update_fields=['note'])
+            except Exception as e:
+                logger.error(f"[Socratique] Erreur carnet de notes : {e}")
+        session.save()
+
+        return {
+            "message": tutor_response or gettext("Continue, tu es sur la bonne voie !"),
+            "mastery_score": mastery_score,
+            "iteration": iteration,
+            "session_terminee": session_terminee,
+        }
+
+    except Exception as e:
+        logger.error(f"[Socratique] Erreur dans repondre_socratique_task : {e}", exc_info=True)
+        if is_llm_unavailable_error(e):
+            return {
+                "error": gettext("Le tuteur IA n'est pas disponible pour le moment. Réessaie dans un instant ou préviens ton formateur."),
+                "llm_unavailable": True,
+            }
+        return {"error": gettext("Le tuteur IA a rencontré un problème. Réessaie dans un instant.")}
 
 LETTRES = ['A', 'B', 'C', 'D']
 
