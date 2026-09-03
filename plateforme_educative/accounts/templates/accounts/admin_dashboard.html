@@ -458,10 +458,10 @@
                 </button>
                 {% url 'accounts:export_users_excel' as export_users_url %}
                 <div class="custom-dropdown-menu" id="exportMenu">
-                    <a class="dropdown-item" data-download href="{{ export_users_url }}?role=ALL">{% translate "Tous les utilisateurs" %}</a>
-                    <a class="dropdown-item" data-download href="{{ export_users_url }}?role=ELEVE">{% translate "Élèves" %}</a>
-                    <a class="dropdown-item" data-download href="{{ export_users_url }}?role=FORMATEUR">{% translate "Formateurs" %}</a>
-                    <a class="dropdown-item" data-download href="{{ export_users_url }}?role=ADMIN">{% translate "Administrateurs" %}</a>
+                    <a class="dropdown-item" href="#" onclick="window.open('{{ export_users_url }}?role=ALL', '_blank'); return false;">{% translate "Tous les utilisateurs" %}</a>
+                    <a class="dropdown-item" href="#" onclick="window.open('{{ export_users_url }}?role=ELEVE', '_blank'); return false;">{% translate "Élèves" %}</a>
+                    <a class="dropdown-item" href="#" onclick="window.open('{{ export_users_url }}?role=FORMATEUR', '_blank'); return false;">{% translate "Formateurs" %}</a>
+                    <a class="dropdown-item" href="#" onclick="window.open('{{ export_users_url }}?role=ADMIN', '_blank'); return false;">{% translate "Administrateurs" %}</a>
                 </div>
             </div>
             <button class="admin-btn-primary" 

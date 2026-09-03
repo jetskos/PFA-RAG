@@ -228,12 +228,16 @@ def export_users_excel(request):
     row = header_row + 1
     role_display = {k: str(v) for k, v in Utilisateur.ROLE_CHOICES}
     for u in qs:
+        niveau_str = "—"
+        if u.classe and u.classe.niveau:
+            niveau_str = u.classe.niveau.nom
+        
         vals = [
             u.last_name or "-",
             u.first_name or "-",
             u.email,
             role_display.get(u.role, u.role),
-            u.niveau_label or "—",
+            niveau_str,
         ]
         for col, v in enumerate(vals, 1):
             c = ws.cell(row=row, column=col, value=v)
