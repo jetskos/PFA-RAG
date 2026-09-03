@@ -14,6 +14,7 @@ Usage :
     python manage.py warmup_qcm
     python manage.py warmup_qcm --min 8
     python manage.py warmup_qcm --course "Internet of Things"
+    python manage.py warmup_qcm --course "English" --lang en --force
 """
 import logging
 
@@ -34,14 +35,32 @@ class Command(BaseCommand):
             "--course", type=str, default="",
             help="Ne traiter que les cours dont le titre contient cette chaîne.",
         )
+        parser.add_argument(
+            "--lang", type=str, default="",
+            help="Langue des questions générées ('fr' | 'en'). "
+                 "Par défaut : langue par défaut du site. À utiliser avec "
+                 "--course pour un cours dans une autre langue.",
+        )
+        parser.add_argument(
+            "--force", action="store_true",
+            help="Vide le cache des chapitres ciblés avant de régénérer "
+                 "(sinon un chapitre déjà chaud est sauté). Utile pour "
+                 "régénérer un cours dans la bonne langue.",
+        )
 
     def handle(self, *args, **options):
+        from django.utils import translation
         from apprentissage.models import Chapitre
         from tuteur_ia.models import QuestionCache
         from tuteur_ia.views_qcm import _generer_questions_ia
 
         min_q = max(1, options["min"])
         course_filter = options["course"].strip()
+
+        lang = (options["lang"] or "").strip().lower()[:2]
+        if lang in ("fr", "en"):
+            translation.activate(lang)
+            self.stdout.write(f"Langue des questions : {lang}")
 
         # La génération loggue chaque échec LLM en ERROR avec la stacktrace ; en
         # warmup c'est du bruit attendu (moteur IA absent). On abaisse le niveau
@@ -59,9 +78,13 @@ class Command(BaseCommand):
             self.stdout.write(self.style.WARNING("Aucun chapitre actif à traiter."))
             return
 
+        force = options["force"]
         done = skipped = failed = 0
         for chapitre in chapitres:
             cache, _ = QuestionCache.objects.get_or_create(chapitre=chapitre)
+            if force and cache.questions:
+                cache.questions = []
+                cache.save()
             pool = cache.questions or []
             if len(pool) >= min_q:
                 skipped += 1
