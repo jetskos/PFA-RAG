@@ -16,8 +16,9 @@ from django.views.decorators.cache import cache_control
 from django.views.decorators.http import require_GET
 from django.shortcuts import render
 
-# Incrémenter à chaque changement de la logique de cache du service worker.
-SW_CACHE_VERSION = "v12"
+# Incrémenter à chaque changement de la logique de cache du service worker
+# OU d'un asset statique critique mis en cache (ici : download-helper.js v13).
+SW_CACHE_VERSION = "v13"
 
 
 @require_GET
