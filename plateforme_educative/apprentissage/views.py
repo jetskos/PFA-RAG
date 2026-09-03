@@ -246,14 +246,39 @@ def gerer_cours(request, pk):
     cours = get_object_or_404(Cours, pk=pk)
 
     chapitres = cours.chapitres.all().order_by('ordre')
+    progressions = Progression.objects.filter(cours=cours).select_related('etudiant')
 
     context = {
         'cours': cours,
         'chapitres': chapitres,
+        'progressions': progressions,
+        'nb_chapitres_total': chapitres.count(),
         'can_edit_documents': True,
     }
 
     return render(request, 'apprentissage/gerer_cours.html', context)
+
+from django.http import JsonResponse
+
+@login_required
+@FormateurCoursRequiredMixin.as_decorator()
+@require_http_methods(['POST'])
+def toggle_cours_actif(request, pk):
+    """Activer ou désactiver un cours."""
+    cours = get_object_or_404(Cours, pk=pk)
+    cours.actif = not cours.actif
+    cours.save()
+    return JsonResponse({'status': 'success', 'actif': cours.actif})
+
+@login_required
+@FormateurChapitreRequiredMixin.as_decorator()
+@require_http_methods(['POST'])
+def toggle_chapitre_actif(request, chapitre_id):
+    """Activer ou désactiver un chapitre."""
+    chapitre = get_object_or_404(Chapitre, pk=chapitre_id)
+    chapitre.actif = not chapitre.actif
+    chapitre.save()
+    return JsonResponse({'status': 'success', 'actif': chapitre.actif})
 
 
 @login_required
@@ -268,12 +293,19 @@ def ajouter_chapitre(request, cours_id):
         if form.is_valid():
             chapitre = form.save(commit=False)
             chapitre.cours = cours
+            if __import__('apprentissage.models', fromlist=['Chapitre']).Chapitre.objects.filter(cours=cours, ordre=chapitre.ordre).exists():
+                form.add_error('ordre', 'Un chapitre avec cet ordre existe déjà pour ce cours.')
+                context = {
+                    'form': form,
+                    'cours': cours,
+                    'action_url': reverse('apprentissage:ajouter_chapitre', args=[cours.pk]),
+                    'submit_label': 'Soumettre',
+                }
+                return _htmx_modal_error_response(request, 'apprentissage/partials/chapitre_form.html', context)
             chapitre.save()
-            chapitres = cours.chapitres.all().order_by('ordre')
-            return render(request, 'apprentissage/partials/chapitres_list.html', {
-                'cours': cours,
-                'chapitres': chapitres,
-            })
+            response = HttpResponse(status=204)
+            response['HX-Redirect'] = reverse('apprentissage:gerer_cours', args=[cours.pk])
+            return response
     else:
         form = ChapitreForm()
 
@@ -322,12 +354,20 @@ def editer_chapitre(request, chapitre_id):
     if request.method == 'POST':
         form = ChapitreForm(request.POST, request.FILES, instance=chapitre)
         if form.is_valid():
-            form.save()
-            chapitres = cours.chapitres.all().order_by('ordre')
-            return render(request, 'apprentissage/partials/chapitres_list.html', {
-                'cours': cours,
-                'chapitres': chapitres,
-            })
+            chapitre = form.save(commit=False)
+            if Chapitre.objects.filter(cours=cours, ordre=chapitre.ordre).exclude(pk=chapitre.pk).exists():
+                form.add_error('ordre', 'Un chapitre avec cet ordre existe déjà pour ce cours.')
+                context = {
+                    'form': form,
+                    'cours': cours,
+                    'action_url': reverse('apprentissage:editer_chapitre', args=[chapitre.pk]),
+                    'submit_label': 'Enregistrer',
+                }
+                return _htmx_modal_error_response(request, 'apprentissage/partials/chapitre_form.html', context)
+            chapitre.save()
+            response = HttpResponse(status=204)
+            response['HX-Redirect'] = reverse('apprentissage:gerer_cours', args=[cours.pk])
+            return response
     else:
         form = ChapitreForm(instance=chapitre)
 
@@ -353,11 +393,9 @@ def supprimer_chapitre(request, chapitre_id):
     cours = chapitre.cours
 
     chapitre.delete()
-    chapitres = cours.chapitres.all().order_by('ordre')
-    return render(request, 'apprentissage/partials/chapitres_list.html', {
-        'cours': cours,
-        'chapitres': chapitres,
-    })
+    response = HttpResponse(status=204)
+    response['HX-Redirect'] = reverse('apprentissage:gerer_cours', args=[cours.pk])
+    return response
 
 
 @login_required
@@ -375,12 +413,9 @@ def ajouter_document(request, chapitre_id):
             document.chapitre = chapitre
             document.save()
             # Retourner la liste des documents mise à jour
-            documents = chapitre.documents.all().order_by('type_document', 'ordre')
-            return render(request, 'apprentissage/partials/documents_list.html', {
-                'documents': documents,
-                'chapitre': chapitre,
-                'can_edit_documents': True,
-            })
+            response = HttpResponse(status=204)
+            response['HX-Redirect'] = reverse('apprentissage:gerer_cours', args=[chapitre.cours.pk])
+            return response
     else:
         form = DocumentForm()
 
@@ -410,12 +445,9 @@ def editer_document(request, document_id):
         form = DocumentForm(request.POST, request.FILES, instance=document)
         if form.is_valid():
             form.save()
-            documents = chapitre.documents.all().order_by('type_document', 'ordre')
-            return render(request, 'apprentissage/partials/documents_list.html', {
-                'documents': documents,
-                'chapitre': chapitre,
-                'can_edit_documents': True,
-            })
+            response = HttpResponse(status=204)
+            response['HX-Redirect'] = reverse('apprentissage:gerer_cours', args=[chapitre.cours.pk])
+            return response
     else:
         form = DocumentForm(instance=document)
 
@@ -443,12 +475,9 @@ def supprimer_document(request, document_id):
     cours = chapitre.cours
 
     document.delete()
-    documents = chapitre.documents.all().order_by('type_document', 'ordre')
-    return render(request, 'apprentissage/partials/documents_list.html', {
-        'documents': documents,
-        'chapitre': chapitre,
-        'can_edit_documents': True,
-    })
+    response = HttpResponse(status=204)
+    response['HX-Redirect'] = reverse('apprentissage:gerer_cours', args=[chapitre.cours.pk])
+    return response
 
 
 @login_required

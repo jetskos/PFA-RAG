@@ -16,8 +16,11 @@ urlpatterns = [
     path('profil/modifier/', views.profile_edit_view, name='profile_edit'),
     path('profil/securite/', views.change_password_view, name='change_password'),
     path('gestion/', views.admin_dashboard, name='admin_dashboard'),
-    path('gestion/utilisateurs/<uuid:user_id>/details/', views.user_details, name='user_details'),
+    path('gestion/utilisateurs/ajouter/', views.ajouter_utilisateur, name='ajouter_utilisateur'),
+    path('gestion/utilisateurs/<uuid:user_id>/editer/', views.editer_utilisateur, name='editer_utilisateur'),
+    path('gestion/utilisateurs/<uuid:user_id>/supprimer/', views.supprimer_utilisateur, name='supprimer_utilisateur'),
     path('gestion/utilisateurs/export/', views.export_users_excel, name='export_users_excel'),
+    path('gestion/utilisateurs/<uuid:user_id>/details/', views.user_details, name='user_details'),
     path('gestion/parametres/', views.system_settings_view, name='system_settings'),
     path('gestion/utilisateurs/reset-password/', views.reset_user_password_ajax, name='reset_user_password_ajax'),
     # Réinitialisation de mot de passe (via mot de passe temporaire)

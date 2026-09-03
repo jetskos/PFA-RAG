@@ -3,11 +3,11 @@
       enctype="multipart/form-data"
       hx-post="{{ request.path }}"
       hx-encoding="multipart/form-data"
-      hx-target="#docs-chapitre-{% if chapitre %}{{ chapitre.id }}{% else %}{{ document.chapitre.id }}{% endif %}"
+      hx-target="#modal-body"
       hx-swap="innerHTML"
       hx-indicator="#indexing-indicator"
       hx-disabled-elt="find button"
-      hx-on::after-request="if(event.detail.successful) { document.getElementById('form-modal').style.display='none'; window.location.reload(); }">
+      hx-on::after-request="if(event.detail.xhr.status === 204) { document.getElementById('form-modal').style.display='none'; }">
     {% csrf_token %}
 
     <style>
@@ -80,6 +80,7 @@
                         /* Make form inputs look premium inside modal */
                         #{{ field.id_for_label }} {
                             width: 100%;
+                            box-sizing: border-box;
                             padding: 0.65rem 1rem;
                             border-radius: 10px;
                             border: 1.5px solid var(--border-default, #cbd5e1);

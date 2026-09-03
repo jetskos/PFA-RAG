@@ -2,10 +2,10 @@ from django.db import transaction
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.paginator import Paginator
 from django.http import HttpResponse
-from django.urls import reverse
-from .forms import InscriptionForm, ProfileForm, PasswordResetRequestForm, ConfigurationSystemeForm
-from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.decorators.http import require_http_methods
+from .forms import InscriptionForm, ProfileForm, PasswordResetRequestForm, ConfigurationSystemeForm, AdminUserForm
+from django.urls import reverse
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import JsonResponse
 from .models import Utilisateur, Niveau, Classe, Notification, ConfigurationSysteme
 from .services import UserService
@@ -59,109 +59,84 @@ def register_view(request):
 
 def pending_view(request):
     return render(request, 'accounts/pending.html')
+def _htmx_modal_error_response(request, template_name, context):
+    """Render a form back into the modal when an HTMX submission is invalid."""
+    response = render(request, template_name, context)
+    if request.headers.get('HX-Request') == 'true':
+        response['HX-Retarget'] = '#modal-body'
+    return response
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+@require_http_methods(['GET', 'POST'])
+def ajouter_utilisateur(request):
+    if request.method == 'POST':
+        form = AdminUserForm(request.POST)
+        if form.is_valid():
+            form.save()
+            response = HttpResponse(status=204)
+            response['HX-Redirect'] = reverse('accounts:admin_dashboard')
+            return response
+    else:
+        form = AdminUserForm()
+    
+    context = {
+        'form': form,
+        'action_url': reverse('accounts:ajouter_utilisateur'),
+        'submit_label': _("Créer l'utilisateur"),
+        'title': _('Création de profil')
+    }
+    if request.method == 'POST':
+        return _htmx_modal_error_response(request, 'accounts/partials/user_form.html', context)
+    return render(request, 'accounts/partials/user_form.html', context)
+
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+@require_http_methods(['GET', 'POST'])
+def editer_utilisateur(request, user_id):
+    user = get_object_or_404(Utilisateur, pk=user_id)
+    if request.method == 'POST':
+        form = AdminUserForm(request.POST, instance=user)
+        if form.is_valid():
+            form.save()
+            response = HttpResponse(status=204)
+            response['HX-Redirect'] = reverse('accounts:admin_dashboard')
+            return response
+    else:
+        form = AdminUserForm(instance=user)
+    
+    context = {
+        'form': form,
+        'action_url': reverse('accounts:editer_utilisateur', args=[user.id]),
+        'delete_url': reverse('accounts:supprimer_utilisateur', args=[user.id]),
+        'submit_label': _("Enregistrer"),
+        'title': _("Modifier l'utilisateur")
+    }
+    if request.method == 'POST':
+        return _htmx_modal_error_response(request, 'accounts/partials/user_form.html', context)
+    return render(request, 'accounts/partials/user_form.html', context)
+
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+@require_http_methods(['POST'])
+def supprimer_utilisateur(request, user_id):
+    user = get_object_or_404(Utilisateur, pk=user_id)
+    user.delete()
+    response = HttpResponse(status=204)
+    response['HX-Redirect'] = reverse('accounts:admin_dashboard')
+    return response
 
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 def admin_dashboard(request):
     """Superuser view to manage users (create/update/delete)."""
+    # La vue admin_dashboard ne gère plus les POST JSON. 
+    # Elle affiche juste la liste.
     if request.method == 'POST':
-        # Support action-based POSTs: save or delete
-        action = request.POST.get('action', 'save')
-
-        if action == 'create':
-            email = (request.POST.get('email') or '').strip().lower()
-            password = request.POST.get('password') or ''
-            role = request.POST.get('role') or 'ELEVE'
-            classe_id = request.POST.get('classe_id') or None
-            niveau_id = request.POST.get('niveau') or None
-            is_formateur = (role == 'FORMATEUR')
-
-            first_name = (request.POST.get('first_name') or '').strip()
-            last_name = (request.POST.get('last_name') or '').strip()
-
-            if not email or not password:
-                return JsonResponse({'status': 'error', 'message': _('Email et mot de passe sont requis.')}, status=400)
-            if Utilisateur.objects.filter(email=email).exists():
-                return JsonResponse({'status': 'error', 'message': _('Cet email existe deja.')}, status=400)
-            if role not in dict(Utilisateur.ROLE_CHOICES):
-                return JsonResponse({'status': 'error', 'message': _('Role invalide.')}, status=400)
-
-            # Ensure role and helper flag remain coherent.
-            if role == 'FORMATEUR':
-                is_formateur = True
-
-            classe = None
-            if classe_id:
-                try:
-                    classe = Classe.objects.select_related('niveau').get(pk=classe_id)
-                except Classe.DoesNotExist:
-                    return JsonResponse({'status': 'error', 'message': _('Classe introuvable.')}, status=404)
-            elif niveau_id:
-                try:
-                    niveau = Niveau.objects.get(pk=niveau_id)
-                except Niveau.DoesNotExist:
-                    return JsonResponse({'status': 'error', 'message': _('Niveau introuvable.')}, status=404)
-                classe = (
-                    Classe.objects.filter(niveau=niveau, actif=True)
-                    .order_by('annee_scolaire', 'nom')
-                    .first()
-                )
-
-            statut_compte = 'ACTIVE' if role != 'ELEVE' else 'PENDING'
-            is_active = role != 'ELEVE'
-
-            user = Utilisateur.objects.create_user(
-                email=email,
-                password=password,
-                first_name=first_name,
-                last_name=last_name,
-                role=role,
-                statut_compte=statut_compte,
-                is_active=is_active,
-                classe=classe,
-                is_formateur=is_formateur,
-            )
-
-            if role == 'ADMIN':
-                user.is_staff = True
-                user.is_superuser = True
-                user.save()
-            return JsonResponse({
-                'status': 'success',
-                'user': {
-                    'id': str(user.id),
-                    'email': user.email,
-                    'full_name': user.get_full_name(),
-                    'role': user.role,
-                    'statut_compte': user.statut_compte,
-                    'niveau': user.niveau,
-                    'classe': str(user.classe) if user.classe else '',
-                    'is_formateur': user.is_formateur,
-                    'is_superuser': user.is_superuser,
-                    'photo_url': user.photo.url if user.photo else '',
-                }
-            })
-
-        user_id = request.POST.get('user_id')
-
-        try:
-            user = Utilisateur.objects.get(pk=user_id)
-        except Utilisateur.DoesNotExist:
-            return JsonResponse({'status': 'error', 'message': _('Utilisateur introuvable')}, status=404)
-
-        if action == 'delete':
-            success, error_msg = UserService.delete_user(user, request.user)
-            if not success:
-                return JsonResponse({'status': 'error', 'message': error_msg}, status=400)
-            return JsonResponse({'status': 'success'})
-
-        # default: save updates
-        success, error_msg = UserService.update_user(user, request.POST, request.user)
-        if not success:
-            return JsonResponse({'status': 'error', 'message': error_msg}, status=404)
-
-        return JsonResponse({'status': 'success'})
+        return HttpResponseForbidden("Utilisez les endpoints HTMX pour modifier les utilisateurs.")
 
     # GET
     users_list = Utilisateur.objects.all().order_by('-date_creation')
@@ -174,6 +149,9 @@ def admin_dashboard(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
+    from .models import ConfigurationSysteme
+    config_sys, _ = ConfigurationSysteme.objects.get_or_create(id=1)
+    
     return render(request, 'accounts/admin_dashboard.html', {
         'users': page_obj,
         'page_obj': page_obj,
@@ -185,6 +163,7 @@ def admin_dashboard(request):
         'student_count': student_count,
         'formateur_count': formateur_count,
         'admin_count': admin_count,
+        'offline_mode': config_sys.mode_hors_ligne,
     })
 
 
