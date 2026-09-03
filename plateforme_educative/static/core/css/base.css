@@ -53,6 +53,19 @@
     --bordure: var(--gray-300);
     --brand: #0D9488;
     --brand-light: #CCFBF1;
+
+    /* Alias de compat : d'anciens noms de variables restent utilises dans
+       certains templates avec un fallback CLAIR en dur -> invisible en dark.
+       On les fait pointer sur les vraies variables (theme-aware) => corrects
+       en clair ET en sombre, sans override supplementaire. */
+    --bg-hover: var(--bg-surface-alt, var(--gray-100));
+    --bg-body: var(--bg-app, var(--bg-page));
+    --border-strong: var(--border-color-hover, var(--border-default));
+    --fond: var(--bg-surface);
+    --primary-color: var(--brand-primary, var(--primaire));
+    --primary-gradient: var(--brand-gradient, linear-gradient(135deg, var(--primaire), #0f766e));
+    --texte-primaire: var(--text-primary, var(--texte));
+    --red: #EF4444;
 }
 
 [data-theme="dark"] {
