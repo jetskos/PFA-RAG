@@ -101,10 +101,11 @@
     }
     .sat-card--warn {
         display: flex; align-items: center; gap: 0.6rem;
-        border-color: rgba(245, 158, 11, 0.4); color: #92400e;
-        background: rgba(245, 158, 11, 0.08); font-weight: 600;
+        border-color: rgba(245, 158, 11, 0.4); color: var(--text-primary, #92400e);
+        background: rgba(245, 158, 11, 0.10); font-weight: 600;
     }
-    .sat-card--muted { background: rgba(241, 245, 249, 0.6); }
+    .sat-card--warn i { color: #f59e0b; }
+    .sat-card--muted { background: var(--bg-hover, rgba(241, 245, 249, 0.6)); }
     .sat-card-head {
         display: flex; align-items: center; justify-content: space-between;
         gap: 1rem; flex-wrap: wrap; margin-bottom: 0.85rem;
@@ -120,7 +121,7 @@
     .sat-row {
         display: flex; align-items: center; justify-content: space-between; gap: 1rem;
         padding: 0.6rem 0.75rem; border-radius: 10px;
-        background: rgba(255, 255, 255, 0.7); border: 1px solid var(--border-light, #e2e8f0);
+        background: var(--bg-hover, rgba(255, 255, 255, 0.7)); border: 1px solid var(--border-light, #e2e8f0);
     }
     .sat-row--history { background: transparent; border-color: transparent; padding: 0.35rem 0.25rem; }
     .sat-row-info { display: flex; align-items: center; gap: 0.65rem; min-width: 0; }
@@ -134,7 +135,8 @@
         display: inline-flex; align-items: center; gap: 0.4rem;
         padding: 0.5rem 0.9rem; border-radius: 9px; cursor: pointer;
         font-size: 0.85rem; font-weight: 700; font-family: inherit;
-        border: 1px solid var(--border-light, #cbd5e1); background: #fff; color: #0f172a;
+        border: 1px solid var(--border-light, #cbd5e1);
+        background: var(--bg-surface, #fff); color: var(--text-primary, #0f172a);
         transition: all 0.15s ease; white-space: nowrap;
     }
     .sat-btn:hover { border-color: #0d9488; color: #0d9488; }

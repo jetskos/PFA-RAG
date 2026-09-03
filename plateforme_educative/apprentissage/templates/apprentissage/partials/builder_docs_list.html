@@ -1,0 +1,47 @@
+{% load i18n %}
+{% comment %}
+    Liste des documents d'un chapitre dans le constructeur de cours.
+    Inclus depuis gerer_cours.html avec  {chapitre, documents}.
+    Cible de rafraîchissement : #docs-<chapitre.id>.
+    Le CSRF des requêtes HTMX est ajouté globalement (base.html htmx:configRequest).
+{% endcomment %}
+{% if documents %}
+    {% for doc in documents %}
+    <div class="doc-item-builder" id="doc-row-{{ doc.id }}">
+        <div class="doc-icon-builder pdf">
+            <i class="ti ti-file-type-pdf"></i>
+        </div>
+        <div class="doc-info-builder">
+            <div class="doc-name-builder">{{ doc.titre }}</div>
+            <div class="doc-meta-builder">{{ doc.get_type_document_display }}</div>
+        </div>
+        <div class="doc-actions-builder">
+            {% if doc.fichier_pdf %}
+            <a href="{{ doc.fichier_pdf.url }}" target="_blank" rel="noopener"
+               class="wsbtn-icon" title="{% translate 'Visualiser' %}">
+                <i class="ti ti-eye"></i>
+            </a>
+            <a href="{% url 'apprentissage:telecharger_document' doc.id %}" data-download
+               class="wsbtn-icon" title="{% translate 'Télécharger' %}">
+                <i class="ti ti-download"></i>
+            </a>
+            {% endif %}
+            <button type="button" class="wsbtn-icon" title="{% translate 'Modifier le document' %}"
+                    hx-get="{% url 'apprentissage:editer_document' doc.id %}"
+                    hx-target="#modal-body" hx-swap="innerHTML"
+                    onclick="document.getElementById('form-modal').style.display='flex'">
+                <i class="ti ti-pencil"></i>
+            </button>
+            <button type="button" class="wsbtn-icon danger" title="{% translate 'Supprimer le document' %}"
+                    hx-post="{% url 'apprentissage:supprimer_document' doc.id %}"
+                    hx-confirm="{% translate 'Supprimer ce document ?' %}">
+                <i class="ti ti-trash"></i>
+            </button>
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+    <div class="no-docs-hint">
+        <i class="ti ti-file-off"></i> {% translate "Aucun document — ajoutez un PDF ci-dessous." %}
+    </div>
+{% endif %}
