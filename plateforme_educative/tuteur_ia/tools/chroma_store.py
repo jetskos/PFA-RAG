@@ -189,17 +189,14 @@ def add_chunks(
     """
     collection = get_collection()
 
-    # Supprimer les anciens chunks de ce document (re-indexation)
+    # Supprimer les anciens chunks de ce document (re-indexation).
+    # Suppression par filtre `where` directement : plus fiable qu'un `get` suivi
+    # d'un `delete(ids=...)` quand le cache HNSW du client est désynchronisé
+    # (le `get` renvoyait alors [] et les anciens chunks survivaient).
     try:
-        existing = collection.get(
-            where={"document_id": document_id},
-            include=[],
-        )
-        if existing["ids"]:
-            collection.delete(ids=existing["ids"])
-            logger.info(f"Supprimé {len(existing['ids'])} anciens chunks pour doc {document_id}")
+        collection.delete(where={"document_id": document_id})
     except Exception as e:
-        logger.warning(f"Impossible de supprimer les anciens chunks : {e}")
+        logger.warning(f"Impossible de supprimer les anciens chunks doc {document_id[:8]} : {e}")
 
     if not chunks:
         logger.warning(f"Aucun chunk à indexer pour document {document_id}")
@@ -222,10 +219,13 @@ def add_chunks(
             "chunk_index":    str(chunk["id"]),
         })
 
-    # Ajouter par batch de 100 (limite ChromaDB)
+    # Ajouter par batch de 100 (limite ChromaDB).
+    # `upsert` plutôt que `add` : si un ancien chunk de même ID a survécu à la
+    # suppression ci-dessus (cache client désynchronisé), on écrase son texte
+    # au lieu de le laisser tel quel avec un simple warning « existing ID ».
     batch_size = 100
     for i in range(0, len(ids), batch_size):
-        collection.add(
+        collection.upsert(
             ids=ids[i:i+batch_size],
             documents=documents[i:i+batch_size],
             metadatas=metadatas[i:i+batch_size],
