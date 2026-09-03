@@ -24,8 +24,10 @@
     catch (e) { return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || ""); }
   }
 
-  // PWA installée (écran d'accueil) : le <a download> y est inerte sous Android
-  // et la page se contente de « sortir » vers rien. Il FAUT la feuille de partage.
+  // PWA installée (écran d'accueil) / TWA : une navigation vers une URL
+  // `attachment` fait sortir de l'app. On privilégie donc navigator.share
+  // (contexte sécurisé HTTPS) puis, à défaut, <a download> sur un Blob —
+  // jamais de navigation.
   function isStandalone() {
     try {
       return window.matchMedia("(display-mode: standalone)").matches
@@ -156,11 +158,11 @@
   document.addEventListener("click", function (e) {
     var a = e.target.closest ? e.target.closest("a[data-download]") : null;
     if (!a) return;
-    // En app installée / TWA : laisser le navigateur suivre le lien. La réponse
-    // porte `Content-Disposition: attachment`, donc la TWA la remet au
-    // gestionnaire de téléchargement Android — c'est le chemin le plus fiable.
-    // Ailleurs (desktop, onglet mobile) : fetch -> Blob -> pas de flash d'onglet.
-    if (isStandalone()) return;
+    // TOUJOURS intercepter — y compris en PWA installée / TWA. Laisser le lien
+    // naviguer vers une URL `Content-Disposition: attachment` fait SORTIR de
+    // l'app (le navigateur système prend la main). À la place : fetch -> Blob,
+    // puis feuille de partage (mobile) ou <a download> sur le Blob (aucune
+    // navigation) -> le téléchargement se fait sans quitter l'app.
     e.preventDefault();
     window.appDownload(a.href, a.getAttribute("data-filename") || "", a);
   });
