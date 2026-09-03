@@ -24,8 +24,10 @@
     catch (e) { return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || ""); }
   }
 
-  // PWA installée (écran d'accueil) : le <a download> y est inerte sous Android
-  // et la page se contente de « sortir » vers rien. Il FAUT la feuille de partage.
+  // PWA installée (écran d'accueil) / TWA : une navigation vers une URL
+  // `attachment` fait sortir de l'app. On privilégie donc navigator.share
+  // (contexte sécurisé HTTPS) puis, à défaut, <a download> sur un Blob —
+  // jamais de navigation.
   function isStandalone() {
     try {
       return window.matchMedia("(display-mode: standalone)").matches
@@ -102,17 +104,6 @@
     return Promise.resolve();
   }
 
-  // Repli quand un fetch d'export échoue en contexte standalone : rouvrir
-  // l'URL dans le navigateur système, qui sait toujours télécharger.
-  function _openInBrowser(sourceUrl) {
-    if (sourceUrl) {
-      try { window.open(sourceUrl, "_blank", "noopener"); return Promise.resolve(); }
-      catch (e) {}
-    }
-    toast("Téléchargement impossible. Réessaie ou ouvre dans Chrome.", true);
-    return Promise.resolve();
-  }
-
   function filenameFromResponse(res, fallback) {
     var cd = res.headers.get("Content-Disposition") || "";
     var m = cd.match(/filename\*=(?:UTF-8'')?["']?([^"';]+)/i) || cd.match(/filename=["']?([^"';]+)/i);
@@ -136,19 +127,24 @@
         else triggerEl.setAttribute("aria-busy", prevBusy);
       };
     }
-    return fetch(url, { credentials: "same-origin" })
+    return fetch(url, { credentials: "same-origin", redirect: "follow" })
       .then(function (res) {
         if (!res.ok) throw new Error("HTTP " + res.status);
+        var ct = (res.headers.get("Content-Type") || "").toLowerCase();
+        // Sécurité : si on récupère une page HTML au lieu du fichier (session
+        // expirée -> redirection vers la page de login), on NE sauvegarde PAS
+        // ce HTML (c'est le bug "le fichier s'ouvre dans Chrome"). On prévient.
+        if (res.redirected || ct.indexOf("text/html") === 0) {
+          toast("Session expirée. Recharge la page et réessaie.", true);
+          return;
+        }
         var name = filename || filenameFromResponse(res);
-        // `url` est passé en 3e arg : repli PWA = rouvrir cette URL dans Chrome.
-        return res.blob().then(function (blob) { return saveBlob(blob, name, url); });
+        return res.blob().then(function (blob) { return saveBlob(blob, name); });
       })
       .catch(function (err) {
-        // Le fetch a échoué : <a download> direct sur l'URL même origine
-        // (marche desktop + TWA) ; en dernier recours, ouvrir dans le navigateur.
-        try { saveViaAnchor(url, filename || "export"); }
-        catch (e) { return _openInBrowser(url); }
-        toast("Export impossible (" + (err && err.message ? err.message : "erreur") + ")", true);
+        // Aucun window.open ici : rouvrir l'URL d'export dans un onglet séparé
+        // renvoie la page de login (pas de session partagée) -> pire que rien.
+        toast("Export impossible (" + (err && err.message ? err.message : "erreur") + "). Réessaie.", true);
       })
       .finally(function () { if (restore) restore(); });
   };
@@ -156,11 +152,11 @@
   document.addEventListener("click", function (e) {
     var a = e.target.closest ? e.target.closest("a[data-download]") : null;
     if (!a) return;
-    // En app installée / TWA : laisser le navigateur suivre le lien. La réponse
-    // porte `Content-Disposition: attachment`, donc la TWA la remet au
-    // gestionnaire de téléchargement Android — c'est le chemin le plus fiable.
-    // Ailleurs (desktop, onglet mobile) : fetch -> Blob -> pas de flash d'onglet.
-    if (isStandalone()) return;
+    // TOUJOURS intercepter — y compris en PWA installée / TWA. Laisser le lien
+    // naviguer vers une URL `Content-Disposition: attachment` fait SORTIR de
+    // l'app (le navigateur système prend la main). À la place : fetch -> Blob,
+    // puis feuille de partage (mobile) ou <a download> sur le Blob (aucune
+    // navigation) -> le téléchargement se fait sans quitter l'app.
     e.preventDefault();
     window.appDownload(a.href, a.getAttribute("data-filename") || "", a);
   });
