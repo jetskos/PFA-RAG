@@ -710,7 +710,7 @@
                                                     <i class="ti ti-external-link"></i> {% translate "Ouvrir" %}
                                                 </a>
                                             {% endif %}
-                                            <a class="btn btn-outline" href="{% url 'apprentissage:telecharger_document' doc.id %}" style="padding: 0.4rem 0.6rem;">
+                                            <a class="btn btn-outline" data-download href="{% url 'apprentissage:telecharger_document' doc.id %}" style="padding: 0.4rem 0.6rem;">
                                                 <i class="ti ti-download"></i> <span class="desktop-only-pdf">{% translate "Télécharger" %}</span>
                                             </a>
                                         </div>

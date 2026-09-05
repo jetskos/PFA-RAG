@@ -888,7 +888,7 @@
                 <!-- Stats / Actions -->
                 <div class="devoir-stats">
                     {% if job.status == 'SUCCESS' and job.fichier_zip %}
-                        <a href="{{ job.fichier_zip.url }}" download class="devoir-action" style="background: linear-gradient(135deg, #10b981, #059669);">
+                        <a href="{{ job.fichier_zip.url }}" data-download data-filename="Export_{{ job.cours.titre|slugify }}.zip" class="devoir-action" style="background: linear-gradient(135deg, #10b981, #059669);">
                             <i class="ti ti-download"></i> {% translate "Télécharger le ZIP" %}
                         </a>
                     {% elif job.status == 'PENDING' %}
