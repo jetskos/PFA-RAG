@@ -152,12 +152,19 @@
   document.addEventListener("click", function (e) {
     var a = e.target.closest ? e.target.closest("a[data-download]") : null;
     if (!a) return;
-    // TOUJOURS intercepter — y compris en PWA installée / TWA. Laisser le lien
-    // naviguer vers une URL `Content-Disposition: attachment` fait SORTIR de
-    // l'app (le navigateur système prend la main). À la place : fetch -> Blob,
-    // puis feuille de partage (mobile) ou <a download> sur le Blob (aucune
-    // navigation) -> le téléchargement se fait sans quitter l'app.
+    
     e.preventDefault();
+
+    // RESTAURATION SUIVANT LA DEMANDE UTILISATEUR :
+    // La navigation directe évite le crash du Blob et le popup "Mes Fichiers".
+    // Attention : Sur Android TWA, le fichier téléchargé sera la page de connexion HTML
+    // ("corrupted files") car le gestionnaire de téléchargement n'a pas les cookies.
+    var isAndroid = /Android/i.test(navigator.userAgent || "");
+    if (isAndroid) {
+        window.location.assign(a.href);
+        return;
+    }
+
     window.appDownload(a.href, a.getAttribute("data-filename") || "", a);
   });
 })();
